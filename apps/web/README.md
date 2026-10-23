@@ -20,8 +20,9 @@ Không đặt `VITE_API_URL` thì app dùng **dữ liệu giả trong trình duy
 
 ## Nối BE thật
 
-Đặt `VITE_API_URL` (xem `.env.example`). Hợp đồng API nằm ở đầu file `src/api/http.ts`; kiểu dữ liệu dùng chung ở
-`packages/shared`. Đăng nhập Google cần thêm `VITE_GOOGLE_CLIENT_ID`.
+Đặt `VITE_API_URL=/api` (xem `.env.example`). BE ở `apps/api`, chạy cùng domain; cách chạy ở README gốc. Hợp đồng
+API nằm ở đầu file `src/api/http.ts`; kiểu dữ liệu dùng chung ở `packages/shared`. Đăng nhập Google cần thêm
+`VITE_GOOGLE_CLIENT_ID`.
 
 ## Lệnh
 
@@ -34,11 +35,11 @@ Không đặt `VITE_API_URL` thì app dùng **dữ liệu giả trong trình duy
 
 ## Deploy Vercel
 
-Project root `./` (gốc repo), preset `Other`. [`vercel.json`](../../vercel.json) ở gốc repo đã khai báo build command (`npm run build`, build `@careers/shared` trước rồi tới web), output `apps/web/dist`, rewrite cho SPA và header bảo mật.
+Project root `./` (gốc repo), preset `Other`. [`vercel.json`](../../vercel.json) ở gốc repo đã khai báo build command (`npm run build`, build `@careers/shared` trước rồi tới web), output `apps/web/dist`, rewrite cho SPA và BE (`/api`), header bảo mật. Chi tiết ở README gốc.
 
 Biến môi trường trên Vercel:
 
-- Có BE: `VITE_API_URL`, `VITE_SITE_URL`, `VITE_GOOGLE_CLIENT_ID`, thông tin công ty (`VITE_COMPANY_NAME`, `VITE_HR_EMAIL`, `VITE_HR_PHONE`, `VITE_HR_ZALO`).
+- Có BE: `VITE_API_URL=/api`, `VITE_SITE_URL`, `VITE_GOOGLE_CLIENT_ID`, thông tin công ty (`VITE_COMPANY_NAME`, `VITE_HR_EMAIL`, `VITE_HR_PHONE`, `VITE_HR_ZALO`). Env của BE xem `apps/api/.env.example`.
 - Chưa có BE: không cần biến nào, thiếu `VITE_API_URL` thì tự dùng dữ liệu giả trong trình duyệt.
   **Lên thật phải đặt `VITE_API_URL`**, nếu không hồ sơ ứng viên chỉ nằm trong trình duyệt của họ, HR không nhận được.
 

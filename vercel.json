@@ -3,7 +3,35 @@
   "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "apps/web/dist",
+  "regions": ["sin1"],
   "rewrites": [
+    {
+      "source": "/viec-lam/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/share/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api"
+    },
     {
       "source": "/((?!assets/).*)",
       "destination": "/index.html"
