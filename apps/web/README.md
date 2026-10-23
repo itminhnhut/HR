@@ -39,8 +39,8 @@ Project root `./` (gốc repo), preset `Other`. [`vercel.json`](../../vercel.jso
 Biến môi trường trên Vercel:
 
 - Có BE: `VITE_API_URL`, `VITE_SITE_URL`, `VITE_GOOGLE_CLIENT_ID`, thông tin công ty (`VITE_COMPANY_NAME`, `VITE_HR_EMAIL`, `VITE_HR_PHONE`, `VITE_HR_ZALO`).
-- Chưa có BE, chỉ muốn cho xem thử: `VITE_DEMO=1`. Bản build production **không** tự chạy dữ liệu giả nếu thiếu biến này,
-  để tránh hồ sơ ứng viên chỉ nằm trong trình duyệt của họ.
+- Chưa có BE: không cần biến nào, thiếu `VITE_API_URL` thì tự dùng dữ liệu giả trong trình duyệt.
+  **Lên thật phải đặt `VITE_API_URL`**, nếu không hồ sơ ứng viên chỉ nằm trong trình duyệt của họ, HR không nhận được.
 
 ## Cấu trúc
 
