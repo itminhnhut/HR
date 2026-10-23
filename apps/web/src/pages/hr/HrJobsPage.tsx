@@ -10,7 +10,7 @@ import {
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import type { JobAction } from '../../api';
-import { useHrJobs, useJobAction } from '../../api/queries';
+import { useDeleteJob, useHrJobs, useJobAction } from '../../api/queries';
 import { copyText, useFlash, usePageMeta } from '../../lib/hooks';
 import { jobUrl } from '../../lib/site';
 import { ButtonLink } from '../../ui/Button';
@@ -63,6 +63,7 @@ interface RowHandlers {
   busy: boolean;
   run: (action: JobAction) => void;
   onFilled: () => void;
+  onDelete: () => void;
 }
 
 // ── Small pieces ────────────────────────────────────────────────────────
@@ -144,10 +145,11 @@ function ActLink({
   );
 }
 
-function JobActions({ row, busy, run, onFilled }: { row: HrJobRowDto } & RowHandlers) {
+function JobActions({ row, busy, run, onFilled, onDelete }: { row: HrJobRowDto } & RowHandlers) {
   const navigate = useNavigate();
   const [copied, flashCopied] = useFlash();
   const [confirmFill, setConfirmFill] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const { status } = row;
   const canEdit = status === 'draft' || isLive(status) || status === 'paused';
   const canMore = isLive(status) || status === 'paused';
@@ -158,6 +160,22 @@ function JobActions({ row, busy, run, onFilled }: { row: HrJobRowDto } & RowHand
         <ActLink icon="send" to={`/hr/tin/${row.id}`}>
           Đăng
         </ActLink>
+      )}
+      {status === 'draft' && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => {
+            // Deleting cannot be undone, so it takes a second tap.
+            if (!confirmDelete) return setConfirmDelete(true);
+            setConfirmDelete(false);
+            onDelete();
+          }}
+          className={`${actClass} ${confirmDelete ? 'font-medium text-error' : 'text-body hover:text-navy'}`}
+        >
+          <Icon name="trash" size={16} stroke={1.5} />
+          {confirmDelete ? 'Bấm lần nữa để xóa' : 'Xóa'}
+        </button>
       )}
       {row.extendTo && (
         <ActButton icon="calendar" onClick={() => run('extend')} disabled={busy}>
@@ -441,6 +459,7 @@ export function HrJobsPage() {
   usePageMeta('Tin tuyển dụng');
   const jobs = useHrJobs();
   const action = useJobAction();
+  const remove = useDeleteJob();
   const location = useLocation();
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>('all');
@@ -464,9 +483,13 @@ export function HrJobsPage() {
   };
 
   const handlers = (row: HrJobRowDto): RowHandlers => ({
-    busy: action.isPending && action.variables?.id === row.id,
+    busy: (action.isPending && action.variables?.id === row.id) || (remove.isPending && remove.variables === row.id),
     run: (kind) => run(row, kind),
     onFilled: () => run(row, 'fill', () => setFilled({ id: row.id, title: row.title, total: row.totalApplications })),
+    onDelete: () => {
+      setActionError(null);
+      remove.mutate(row.id, { onError: (e) => setActionError(errorMessage(e)) });
+    },
   });
 
   return (

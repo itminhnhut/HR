@@ -5,6 +5,7 @@ import {
   formatDate,
   formatSalary,
   hasSalary,
+  jobPostingData,
   todayInVietnam,
   type JobCardDto,
   type JobDetailDto,
@@ -572,42 +573,7 @@ function SimilarJobs({ jobs, title }: { jobs: JobCardDto[]; title: string }) {
 /** Google for Jobs. Only for jobs that take applications (BR-16). */
 function useJobPostingJsonLd(job: JobDetailDto) {
   useEffect(() => {
-    const data: Record<string, unknown> = {
-      '@context': 'https://schema.org',
-      '@type': 'JobPosting',
-      title: job.title,
-      description: [job.summary, ...job.responsibilities, ...job.requirements].filter(Boolean).join('\n'),
-      datePosted: job.publishedAt?.slice(0, 10),
-      validThrough: `${job.deadline}T23:59:59+07:00`,
-      employmentType: { full_time: 'FULL_TIME', part_time: 'PART_TIME', internship: 'INTERN', contract: 'CONTRACTOR' }[
-        job.employmentType
-      ],
-      hiringOrganization: { '@type': 'Organization', name: SITE.company, sameAs: SITE.url },
-      jobLocation: {
-        '@type': 'Place',
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: job.address ?? undefined,
-          addressLocality: job.city,
-          addressCountry: 'VN',
-        },
-      },
-      directApply: true,
-    };
-    if (job.remote) data.jobLocationType = 'TELECOMMUTE';
-    // BR-08: no salary in the structured data when the job does not state one.
-    if (hasSalary(job)) {
-      data.baseSalary = {
-        '@type': 'MonetaryAmount',
-        currency: 'VND',
-        value: {
-          '@type': 'QuantitativeValue',
-          minValue: (job.salaryMin ?? job.salaryMax)! * 1e6,
-          maxValue: (job.salaryMax ?? job.salaryMin)! * 1e6,
-          unitText: 'MONTH',
-        },
-      };
-    }
+    const data = jobPostingData(job, { name: SITE.company, url: SITE.url });
     const el = document.createElement('script');
     el.type = 'application/ld+json';
     el.textContent = JSON.stringify(data);

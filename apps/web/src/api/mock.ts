@@ -585,6 +585,21 @@ export const mockApi: Api = {
     return delay({ ok: true as const });
   },
 
+  async hrDeleteJob(id) {
+    const db = load();
+    requireHr(db);
+    const job = db.jobs.find((j) => j.id === id);
+    if (!job) return fail(404, 'Không tìm thấy tin.');
+    if (job.state !== 'draft') return fail(422, 'Chỉ xóa được bản nháp.');
+    db.jobs = db.jobs.filter((j) => j.id !== id);
+    save();
+    return delay({ ok: true as const });
+  },
+
+  hrCvUrl() {
+    return null;
+  },
+
   async hrApplications(jobId) {
     const db = load();
     requireHr(db);
