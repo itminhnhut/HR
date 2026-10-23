@@ -85,7 +85,7 @@ export function SubscribeBox({
         <button
           type="submit"
           disabled={subscribe.isPending}
-          className="btn-glow min-h-[52px] rounded-control border-0 bg-navy px-6 text-[15px] font-medium text-white disabled:opacity-60"
+          className="btn-glow min-h-[52px] shrink-0 whitespace-nowrap rounded-control border-0 bg-navy px-6 text-[15px] font-medium text-white disabled:opacity-60"
         >
           {subscribe.isPending ? 'Đang gửi…' : 'Nhận thông báo'}
         </button>
