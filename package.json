@@ -1,6 +1,7 @@
 {
   "name": "careers",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -9,8 +10,8 @@
     "dev": "npm run build -w @careers/shared && npm run dev -w @careers/web",
     "dev:api": "npm run dev -w @careers/api",
     "build": "npm run build -w @careers/shared && npm run build -w @careers/web",
-    "test": "vitest run && npm run test -w @careers/web",
-    "typecheck": "npm run build -w @careers/shared && npm run typecheck -w @careers/shared -w @careers/web",
+    "test": "npm run build -w @careers/shared && vitest run && npm run test -w @careers/web",
+    "typecheck": "npm run build -w @careers/shared && npm run typecheck -w @careers/shared -w @careers/web -w @careers/api",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -1,90 +1,61 @@
-import type { Context, MiddlewareHandler } from 'hono';
+import type { Context } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { createRemoteJWKSet, jwtVerify, SignJWT } from 'jose';
-import { config, isAllowedHrEmail } from './config.js';
+import { jwtVerify, SignJWT } from 'jose';
+import type { Env } from '../app.js';
 
-const COOKIE = 'hr_session';
-const MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
-const GOOGLE_JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
+export const COOKIES = {
+  hr: { name: 'hr_session', maxAge: 7 * 24 * 60 * 60 },
+  candidate: { name: 'candidate_session', maxAge: 30 * 24 * 60 * 60 },
+  /** Google email waiting for the one-time phone check (BR-22). */
+  pendingGoogle: { name: 'candidate_google', maxAge: 10 * 60 },
+} as const;
 
-export interface HrSession {
-  email: string;
-  name: string | null;
-}
+type CookieKind = keyof typeof COOKIES;
 
-function sessionKey(): Uint8Array {
-  const secret = process.env.SESSION_SECRET;
-  if (!secret || secret.length < 32) throw new Error('SESSION_SECRET must be at least 32 characters');
-  return new TextEncoder().encode(secret);
-}
+const key = (secret: string) => new TextEncoder().encode(secret);
 
-/** Verify a Google Identity Services ID token and return the verified account. */
-export async function verifyGoogleCredential(credential: string): Promise<HrSession | null> {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  if (!clientId) throw new Error('GOOGLE_CLIENT_ID is not set');
-  try {
-    const { payload } = await jwtVerify(credential, GOOGLE_JWKS, {
-      issuer: ['https://accounts.google.com', 'accounts.google.com'],
-      audience: clientId,
-    });
-    const email = typeof payload.email === 'string' ? payload.email.toLowerCase() : null;
-    if (!email || payload.email_verified !== true) return null;
-    return { email, name: typeof payload.name === 'string' ? payload.name : null };
-  } catch {
-    return null;
-  }
-}
-
-export async function startSession(c: Context, session: HrSession): Promise<void> {
-  const token = await new SignJWT({ name: session.name })
+/** Signed (HS256), httpOnly session cookie. `subject` is the email or phone. */
+export async function setSession(
+  c: Context<Env>,
+  kind: CookieKind,
+  subject: string,
+  claims: Record<string, string | null> = {},
+): Promise<void> {
+  const { config, now } = c.get('deps');
+  const { name, maxAge } = COOKIES[kind];
+  const issuedAt = Math.floor(now().getTime() / 1000);
+  const token = await new SignJWT({ ...claims, kind })
     .setProtectedHeader({ alg: 'HS256' })
-    .setSubject(session.email)
-    .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
-    .sign(sessionKey());
-  setCookie(c, COOKIE, token, {
-    httpOnly: true,
-    secure: config.isProduction,
-    sameSite: 'Lax',
-    path: '/',
-    maxAge: MAX_AGE_SECONDS,
-  });
+    .setSubject(subject)
+    .setIssuedAt(issuedAt)
+    .setExpirationTime(issuedAt + maxAge)
+    .sign(key(config.sessionSecret));
+  setCookie(c, name, token, { httpOnly: true, secure: config.secureCookies, sameSite: 'Lax', path: '/', maxAge });
 }
 
-export function endSession(c: Context): void {
-  deleteCookie(c, COOKIE, { path: '/' });
+export interface SessionClaims {
+  subject: string;
+  claims: Record<string, unknown>;
 }
 
-/** Re-checks the allow-list on every request, so removing an email revokes access at once. */
-export async function readSession(c: Context): Promise<HrSession | null> {
-  const token = getCookie(c, COOKIE);
+export async function readSession(c: Context<Env>, kind: CookieKind): Promise<SessionClaims | null> {
+  const token = getCookie(c, COOKIES[kind].name);
   if (!token) return null;
+  const { config, now } = c.get('deps');
   try {
-    const { payload } = await jwtVerify(token, sessionKey(), { algorithms: ['HS256'] });
-    if (!isAllowedHrEmail(payload.sub)) return null;
-    return { email: payload.sub!, name: typeof payload.name === 'string' ? payload.name : null };
+    const { payload } = await jwtVerify(token, key(config.sessionSecret), {
+      algorithms: ['HS256'],
+      currentDate: now(),
+    });
+    // A cookie signed for another purpose must not open this door.
+    if (payload.kind !== kind || typeof payload.sub !== 'string') return null;
+    return { subject: payload.sub, claims: payload };
   } catch {
+    // Expired, tampered or signed with an old secret: treat as signed out.
     return null;
   }
 }
 
-export type HrEnv = { Variables: { hr: HrSession } };
-
-export const requireHr: MiddlewareHandler<HrEnv> = async (c, next) => {
-  const session = await readSession(c);
-  if (!session) return c.json({ error: 'Cần đăng nhập.' }, 401);
-  c.set('hr', session);
-  await next();
-};
-
-/**
- * CSRF guard for cookie-authenticated writes: browsers cannot attach a custom
- * header to a cross-site form post, and cross-origin fetch with one needs a
- * CORS preflight that this API never grants.
- */
-export const requireFetchHeader: MiddlewareHandler = async (c, next) => {
-  if (c.req.method !== 'GET' && c.req.header('x-requested-with') !== 'fetch') {
-    return c.json({ error: 'Yêu cầu không hợp lệ.' }, 403);
-  }
-  await next();
-};
+export function clearSession(c: Context<Env>, kind: CookieKind): void {
+  deleteCookie(c, COOKIES[kind].name, { path: '/' });
+}
