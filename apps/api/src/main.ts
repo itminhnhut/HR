@@ -32,15 +32,6 @@ function googleSignIn(): GoogleVerifier {
   };
 }
 
-/** Locally the demo HR account works without configuration, like the FE mock. */
-const hrEmails = () => emailList(process.env.HR_EMAILS ?? (onVercel ? '' : 'hr@congty.vn'));
-
-const emailList = (value: string | undefined) =>
-  (value ?? '')
-    .split(',')
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
 /** Local stand-ins for services without credentials yet (see local-dev.ts). Ignored on Vercel. */
 export interface LocalOverrides {
   db?: Db;
@@ -57,7 +48,6 @@ export function createProductionApp(local: LocalOverrides = {}) {
       companyName: process.env.COMPANY_NAME ?? 'Tên công ty',
       isProduction: process.env.VERCEL_ENV === 'production',
       sessionSecret: sessionSecret(),
-      hrEmails: hrEmails(),
       secureCookies: onVercel,
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,

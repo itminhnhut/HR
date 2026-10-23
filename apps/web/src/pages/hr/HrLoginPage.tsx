@@ -1,34 +1,15 @@
+import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
-import { ApiError, isDemo } from '../../api';
+import { isDemo } from '../../api';
+import { DEMO_HR } from '../../api/mock-seed';
 import { useHrMe, useHrSignIn } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { SITE } from '../../lib/site';
+import { Button } from '../../ui/Button';
+import { TextField } from '../../ui/Field';
 import { Notice } from '../../ui/feedback';
 import { Icon, LogoMark } from '../../ui/icons';
 import { errorMessage } from './parts';
-
-function GoogleMark() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path
-        fill="#4285F4"
-        d="M22.5 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9c-.3 1.4-1.1 2.5-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.7 3.2-8z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8C3.9 20.6 7.7 23 12 23z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.8 14.2c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7H2.1C1.4 8.5 1 10.2 1 12s.4 3.5 1.1 5l3.7-2.8z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2C17.5 2.1 15 1 12 1 7.7 1 3.9 3.4 2.1 7l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"
-      />
-    </svg>
-  );
-}
 
 function Brand() {
   return (
@@ -69,32 +50,20 @@ function Brand() {
   );
 }
 
-function NotAllowed({ error }: { error: ApiError }) {
-  const email = error.fieldErrors.email;
-  return (
-    <div
-      role="alert"
-      className="flex items-start gap-3 rounded-control border border-silver bg-tint px-4 py-3.5 text-sm leading-relaxed text-navy"
-    >
-      <Icon name="alert" size={18} className="mt-0.5 shrink-0" />
-      <span>
-        Tài khoản {email ? <strong className="font-semibold">{email}</strong> : 'Google này'} chưa được cấp quyền HR.
-        Đăng nhập bằng email khác, hoặc nhờ quản trị viên thêm email này.
-      </span>
-    </div>
-  );
-}
-
 export function HrLoginPage() {
   usePageMeta('Đăng nhập HR');
   const me = useHrMe();
   const signIn = useHrSignIn();
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   if (me.data) return <Navigate to="/hr" replace />;
 
-  const error = signIn.error;
-  const forbidden = error instanceof ApiError && error.status === 403;
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    signIn.mutate({ email, password }, { onSuccess: () => navigate('/hr', { replace: true }) });
+  };
 
   return (
     <div className="grid min-h-dvh grid-cols-1 bg-mist text-navy lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
@@ -103,35 +72,49 @@ export function HrLoginPage() {
         <div className="flex w-full max-w-[420px] flex-col gap-6">
           <div className="flex flex-col gap-2">
             <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[34px]">Đăng nhập</h2>
-            <p className="m-0 text-[15px] leading-relaxed text-slate">
-              Dùng tài khoản Google (Gmail) đã được cấp quyền HR. Không cần mật khẩu riêng.
-            </p>
+            <p className="m-0 text-[15px] leading-relaxed text-slate">Dùng tài khoản HR được cấp riêng cho bạn.</p>
           </div>
 
-          {forbidden && <NotAllowed error={error} />}
-          {error && !forbidden && (
+          {signIn.error && (
             <Notice tone="error" icon="alert">
-              {errorMessage(error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
+              {errorMessage(signIn.error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
             </Notice>
           )}
 
-          <div className="flex flex-col gap-2.5">
-            <button
-              type="button"
-              disabled={signIn.isPending}
-              onClick={() => signIn.mutate(undefined, { onSuccess: () => navigate('/hr', { replace: true }) })}
-              className="flex min-h-14 items-center justify-center gap-3 rounded-control border border-silver bg-white text-base font-medium text-navy transition-colors hover:bg-mist disabled:opacity-60"
-            >
-              <GoogleMark />
-              {signIn.isPending ? 'Đang đăng nhập…' : 'Đăng nhập bằng Google'}
-            </button>
-            {isDemo && <span className="text-xs text-muted">Bản chạy thử: bấm để vào với tài khoản HR mẫu.</span>}
-          </div>
+          <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              autoComplete="username"
+              inputMode="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Mật khẩu"
+              type="password"
+              name="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button type="submit" size="lg" disabled={signIn.isPending || !email.trim() || !password}>
+              {signIn.isPending ? 'Đang đăng nhập…' : 'Đăng nhập'}
+            </Button>
+            {isDemo && (
+              <span className="text-xs text-muted">
+                Bản chạy thử: {DEMO_HR.email} / {DEMO_HR.password}
+              </span>
+            )}
+          </form>
 
           <ul className="m-0 flex list-none flex-col gap-2.5 border-t border-line p-0 pt-[18px] text-[13px] text-slate">
             <li className="flex items-center gap-2.5">
               <Icon name="lock" size={16} stroke={1.5} className="text-accent" />
-              Chỉ email trong danh sách HR mới vào được
+              Nhập sai 5 lần, tài khoản tạm khoá 15 phút
             </li>
             <li className="flex items-center gap-2.5">
               <Icon name="clock" size={16} stroke={1.5} className="text-accent" />

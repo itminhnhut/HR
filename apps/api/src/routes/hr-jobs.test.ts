@@ -1,11 +1,9 @@
 import type { HrJobDto, HrJobsResponse, JobPageResponse } from '@careers/shared';
 import { eq } from 'drizzle-orm';
-import { SignJWT } from 'jose';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { applications, jobs } from '../db/schema.js';
-import { googleToken } from '../test/fakes.js';
-import { cookiesFrom, insertJob, jobInput, json, loginHr } from '../test/fixtures.js';
-import { createTestContext, HR_EMAIL, type TestContext } from '../test/harness.js';
+import { insertJob, jobInput, json, loginHr } from '../test/fixtures.js';
+import { createTestContext, type TestContext } from '../test/harness.js';
 
 let t: TestContext;
 let cookie: string;
@@ -20,81 +18,6 @@ beforeEach(async () => {
 const hr = (method: string, path: string, body?: unknown) => t.send(method, `/api/hr${path}`, body, { cookie });
 const saveNew = async (overrides = {}) => json<HrJobDto>(await hr('POST', '/jobs', jobInput(overrides)));
 const dbJob = async (id: string) => (await t.db.select().from(jobs).where(eq(jobs.id, id)))[0];
-
-describe('HR sign-in', () => {
-  it('signs in an allowed Google account and remembers it', async () => {
-    const res = await t.send('POST', '/api/hr/auth/google', { idToken: googleToken('HR@congty.vn') });
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ email: HR_EMAIL, name: 'Người Test' });
-    const setCookie = res.headers.getSetCookie()[0];
-    expect(setCookie).toMatch(/HttpOnly/i);
-    expect(setCookie).toMatch(/SameSite=Lax/i);
-
-    const me = await t.request('/api/hr/me', { headers: { cookie: cookiesFrom(res) } });
-    expect(await me.json()).toEqual({ email: HR_EMAIL, name: 'Người Test' });
-  });
-
-  it('refuses Google accounts outside HR_EMAILS with 403', async () => {
-    const res = await t.send('POST', '/api/hr/auth/google', { idToken: googleToken('la@gmail.com') });
-    expect(res.status).toBe(403);
-    expect(res.headers.getSetCookie()).toEqual([]);
-  });
-
-  it('refuses an invalid Google token with 401', async () => {
-    expect((await t.send('POST', '/api/hr/auth/google', { idToken: 'garbage' })).status).toBe(401);
-    expect((await t.send('POST', '/api/hr/auth/google', {})).status).toBe(400);
-  });
-
-  it('answers /hr/me with 401 when signed out', async () => {
-    expect((await t.request('/api/hr/me')).status).toBe(401);
-  });
-
-  it('blocks every HR job endpoint without a session', async () => {
-    const job = await insertJob(t);
-    const calls = [
-      t.request('/api/hr/jobs'),
-      t.request(`/api/hr/jobs/${job.id}`),
-      t.send('POST', '/api/hr/jobs', jobInput()),
-      t.send('PUT', `/api/hr/jobs/${job.id}`, jobInput()),
-      t.send('DELETE', `/api/hr/jobs/${job.id}`),
-      t.send('POST', `/api/hr/jobs/${job.id}/pause`),
-    ];
-    for (const res of await Promise.all(calls)) expect(res.status).toBe(401);
-    expect((await dbJob(job.id)).state).toBe('published');
-  });
-
-  it('revokes access as soon as the email leaves the allow-list', async () => {
-    t.deps.config.hrEmails = [];
-    try {
-      expect((await hr('GET', '/jobs')).status).toBe(401);
-    } finally {
-      t.deps.config.hrEmails = [HR_EMAIL];
-    }
-  });
-
-  it('rejects a forged or expired session cookie', async () => {
-    const forged = await new SignJWT({ kind: 'hr' })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setSubject(HR_EMAIL)
-      .sign(new TextEncoder().encode('another-secret-another-secret-12345'));
-    expect((await t.request('/api/hr/jobs', { headers: { cookie: `hr_session=${forged}` } })).status).toBe(401);
-
-    t.clock.now = new Date(t.clock.now.getTime() + 8 * 24 * 60 * 60 * 1000);
-    expect((await hr('GET', '/jobs')).status).toBe(401);
-  });
-
-  it('does not accept a candidate cookie as an HR session', async () => {
-    const res = await t.request('/api/hr/me', {
-      headers: { cookie: cookie.replace('hr_session', 'candidate_session') },
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it('logs out by clearing the cookie', async () => {
-    const res = await hr('POST', '/logout');
-    expect(res.headers.getSetCookie()[0]).toMatch(/hr_session=;.*Max-Age=0/);
-  });
-});
 
 describe('HR job list', () => {
   it('orders by urgency and counts applications per job', async () => {

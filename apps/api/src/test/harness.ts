@@ -49,7 +49,6 @@ export async function createTestContext(): Promise<TestContext> {
       companyName: 'Công ty Test',
       isProduction: false,
       sessionSecret: 'test-secret-test-secret-test-secret!',
-      hrEmails: [HR_EMAIL],
       secureCookies: false,
     },
     cvStore,

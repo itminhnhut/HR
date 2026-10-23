@@ -7,7 +7,9 @@ import { migrate } from 'drizzle-orm/pglite/migrator';
 import type { Db } from './db/index.js';
 import * as schema from './db/schema.js';
 import { seedDemoData } from './db/seed.js';
+import { findHrUser, upsertHrUser } from './services/hr-accounts.js';
 import type { CvStore } from './lib/cv-store.js';
+import { generatePassword } from './lib/password.js';
 import type { LocalOverrides } from './main.js';
 
 /**
@@ -16,6 +18,9 @@ import type { LocalOverrides } from './main.js';
  */
 const DATA_DIR = fileURLToPath(new URL('../.data', import.meta.url));
 const MIGRATIONS = fileURLToPath(new URL('../drizzle', import.meta.url));
+/** Local only. The password is random per machine and kept in .data/hr-login.txt (git-ignored). */
+const LOCAL_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
+const LOCAL_HR_FILE = join(DATA_DIR, 'hr-login.txt');
 
 async function localDb(): Promise<Db> {
   await mkdir(DATA_DIR, { recursive: true });
@@ -26,7 +31,21 @@ async function localDb(): Promise<Db> {
     const seeded = await seedDemoData(db, new Date());
     console.info(`Local database seeded with ${seeded.jobs} demo jobs.`);
   }
+  await ensureLocalHr(db);
   return db;
+}
+
+/** Creates the local HR account with a fresh random password the first time (or after the file is deleted). */
+async function ensureLocalHr(db: Db): Promise<void> {
+  const saved = await readFile(LOCAL_HR_FILE, 'utf8').catch(() => null);
+  if (saved && (await findHrUser(db, LOCAL_HR.email))) {
+    console.info(`Local HR login is in ${LOCAL_HR_FILE}`);
+    return;
+  }
+  const password = generatePassword();
+  await upsertHrUser(db, { ...LOCAL_HR, password });
+  await writeFile(LOCAL_HR_FILE, `Email: ${LOCAL_HR.email}\nMật khẩu: ${password}\n`, { mode: 0o600 });
+  console.info(`Local HR account ${LOCAL_HR.email}, password saved to ${LOCAL_HR_FILE}`);
 }
 
 function localCvStore(): CvStore {

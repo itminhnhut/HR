@@ -1,29 +1,23 @@
 import type { HrMe } from '@careers/shared';
 import { Hono } from 'hono';
-import { z } from 'zod';
 import type { Env } from '../app.js';
 import { currentHr, requireHr } from '../lib/hr-auth.js';
 import { HttpError } from '../lib/http-error.js';
 import { readJson } from '../lib/request.js';
+import { passwordFingerprint } from '../lib/password.js';
 import { clearSession, setSession } from '../lib/session.js';
+import { signIn, toHrMe } from '../services/hr-accounts.js';
 import { hrApplicationRoutes } from './hr-applications.js';
 import { hrJobRoutes } from './hr-jobs.js';
 
-const idTokenSchema = z.object({ idToken: z.string().min(1) });
-
 export const hrRoutes = new Hono<Env>();
 
-hrRoutes.post('/auth/google', async (c) => {
-  const parsed = idTokenSchema.safeParse(await readJson(c));
-  if (!parsed.success) throw new HttpError(400, 'Thiếu thông tin đăng nhập Google.');
-  const { verifyGoogleToken, config } = c.get('deps');
-  const identity = await verifyGoogleToken(parsed.data.idToken);
-  if (!identity) throw new HttpError(401, 'Không xác minh được tài khoản Google, thử lại.');
-  if (!config.hrEmails.includes(identity.email)) {
-    throw new HttpError(403, `Tài khoản ${identity.email} chưa được cấp quyền vào trang tuyển dụng.`);
-  }
-  await setSession(c, 'hr', identity.email, { name: identity.name });
-  return c.json<HrMe>({ email: identity.email, name: identity.name });
+/** HR accounts have their own password (scripts/hr-user.ts creates them). */
+hrRoutes.post('/auth/login', async (c) => {
+  const { db, now } = c.get('deps');
+  const user = await signIn(db, await readJson(c), now());
+  await setSession(c, 'hr', user.email, { pw: passwordFingerprint(user.passwordHash) });
+  return c.json<HrMe>(toHrMe(user));
 });
 
 hrRoutes.get('/me', async (c) => {

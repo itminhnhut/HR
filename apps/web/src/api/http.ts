@@ -17,7 +17,7 @@ import { ApiError, type Api } from './types';
  *   DELETE /candidate/me                → { ok }
  *   POST   /candidate/logout            → { ok }
  *   GET    /hr/me                       → HrMe | 401
- *   POST   /hr/auth/google              { idToken } → HrMe   403 = email not allowed
+ *   POST   /hr/auth/login               { email, password } → HrMe   401 wrong, 429 locked 15 min
  *   POST   /hr/logout                   → { ok }
  *   GET    /hr/jobs                     → HrJobsResponse
  *   GET    /hr/jobs/:id                 → HrJobDto
@@ -133,7 +133,7 @@ export const httpApi: Api = {
   candidateLogout: () => request('/candidate/logout', { method: 'POST' }),
 
   hrMe: () => request('/hr/me', {}, true),
-  hrGoogleSignIn: async () => request('/hr/auth/google', json('POST', { idToken: await googleIdToken() })),
+  hrSignIn: (email, password) => request('/hr/auth/login', json('POST', { email, password })),
   hrLogout: () => request('/hr/logout', { method: 'POST' }),
   hrJobs: () => request('/hr/jobs'),
   hrJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`),

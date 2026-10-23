@@ -456,8 +456,11 @@ export const mockApi: Api = {
     return delay(db.session.hr ? { email: db.session.hr, name: DEMO_HR.name } : null);
   },
 
-  async hrGoogleSignIn() {
+  async hrSignIn(email, password) {
     const db = load();
+    if (email.trim().toLowerCase() !== DEMO_HR.email || password !== DEMO_HR.password) {
+      return fail(401, 'Email hoặc mật khẩu chưa đúng.');
+    }
     db.session.hr = DEMO_HR.email;
     save();
     return delay({ email: DEMO_HR.email, name: DEMO_HR.name });

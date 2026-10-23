@@ -31,12 +31,26 @@ Thiếu gì trong `apps/api/.env` thì BE ở máy tự thay bằng bản local:
 - Không có `DATABASE_URL`: Postgres chạy trong tiến trình (PGlite), lưu ở `apps/api/.data/db`. Xoá thư mục `.data` để
   làm lại từ đầu.
 - Không có `BLOB_READ_WRITE_TOKEN`: CV lưu thành file trong `apps/api/.data/files`.
-- Không có `GOOGLE_CLIENT_ID`: nút Google đăng nhập bằng `VITE_DEV_GOOGLE_EMAIL`. `HR_EMAILS` mặc định là
-  `hr@congty.vn`, giống bản mock.
+- Không có `GOOGLE_CLIENT_ID`: nút Google của ứng viên đăng nhập bằng `VITE_DEV_GOOGLE_EMAIL`.
+- Tài khoản HR ở máy: `hr@congty.vn`, mật khẩu ngẫu nhiên tạo lần đầu, xem `apps/api/.data/hr-login.txt`. Xoá file
+  đó rồi chạy lại `dev:api` để đổi mật khẩu.
 - OTP: mã in ra ở terminal chạy `dev:api`.
 
 Những thay thế này chỉ có ở máy; trên Vercel BE bắt buộc có Neon, Blob và Google. Dùng Neon thật ở máy thì điền
 `DATABASE_URL` rồi chạy `npm run db:migrate -w @careers/api` và `npm run db:seed -w @careers/api`.
+
+## Tài khoản HR
+
+HR đăng nhập bằng email và mật khẩu riêng (không dùng Google). Mật khẩu băm bằng scrypt mức OWASP (N=2¹⁷); tối
+thiểu 12 ký tự, đủ 3 trong 4 loại ký tự, không chứa tên email hay cụm phổ biến. Sai 5 lần thì khoá 15 phút. Tạo tài khoản hoặc đặt lại
+mật khẩu (in mật khẩu mới một lần), xoá tài khoản:
+
+```bash
+DATABASE_URL=... npm run hr:user -w @careers/api -- --email hr@lee-hr.com --name "Phòng Nhân sự"
+DATABASE_URL=... npm run hr:user -w @careers/api -- --email hr@lee-hr.com --delete
+```
+
+Đổi mật khẩu thì mọi phiên cũ của tài khoản đó bị đăng xuất; xoá tài khoản thì mất quyền ngay.
 
 ## Test
 

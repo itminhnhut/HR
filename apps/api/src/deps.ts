@@ -10,8 +10,6 @@ export interface AppConfig {
   isProduction: boolean;
   /** Signs session cookies. At least 32 characters. */
   sessionSecret: string;
-  /** Lowercase Google accounts allowed into /hr. */
-  hrEmails: string[];
   /** Secure cookies need HTTPS: on for Vercel, off for http://localhost. */
   secureCookies: boolean;
 }

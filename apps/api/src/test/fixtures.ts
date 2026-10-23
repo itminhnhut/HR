@@ -1,6 +1,6 @@
 import { addDays, todayInVietnam, type JobInput } from '@careers/shared';
 import { jobs, type Job, type NewJob } from '../db/schema.js';
-import { googleToken } from './fakes.js';
+import { findHrUser, upsertHrUser } from '../services/hr-accounts.js';
 import { HR_EMAIL, type TestContext } from './harness.js';
 
 let counter = 0;
@@ -40,8 +40,12 @@ export function cookiesFrom(res: Response): string {
     .join('; ');
 }
 
-export async function loginHr(t: TestContext, email = HR_EMAIL): Promise<string> {
-  const res = await t.send('POST', '/api/hr/auth/google', { idToken: googleToken(email) });
+export const HR_PASSWORD = 'Kiem-Tra-Fixture-2026';
+
+/** Creates the HR account if needed and signs in; returns the Cookie header value. */
+export async function loginHr(t: TestContext, email = HR_EMAIL, password = HR_PASSWORD): Promise<string> {
+  if (!(await findHrUser(t.db, email))) await upsertHrUser(t.db, { email, name: 'Phòng Nhân sự', password });
+  const res = await t.send('POST', '/api/hr/auth/login', { email, password });
   if (res.status !== 200) throw new Error(`HR login failed: ${res.status}`);
   return cookiesFrom(res);
 }

@@ -78,7 +78,8 @@ export interface Api {
 
   // HR
   hrMe(): Promise<HrMe | null>;
-  hrGoogleSignIn(): Promise<HrMe>;
+  /** Own HR accounts (email + password), not Google. 401 wrong, 429 locked after 5 tries. */
+  hrSignIn(email: string, password: string): Promise<HrMe>;
   hrLogout(): Promise<{ ok: true }>;
   hrJobs(): Promise<HrJobsResponse>;
   hrJob(id: string): Promise<HrJobDto>;

@@ -431,5 +431,5 @@ export function buildSeed(now: Date = new Date()): MockDb {
 }
 
 /** HR emails allowed in the demo. The real allowlist lives in the BE. */
-export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
+export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự', password: 'Demo-Lee-HR-2026' };
 export const DEMO_OTP = '123456';

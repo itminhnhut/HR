@@ -6,7 +6,8 @@ import type { CandidateOverview } from '@careers/shared';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Api, ApiError } from '../../web/src/api/types.js';
 import { seedDemoData } from './db/seed.js';
-import { googleToken, pdfFile } from './test/fakes.js';
+import { upsertHrUser } from './services/hr-accounts.js';
+import { pdfFile } from './test/fakes.js';
 import { createTestContext, type TestContext } from './test/harness.js';
 
 let t: TestContext;
@@ -56,11 +57,8 @@ beforeEach(async () => {
 });
 
 async function signInHr() {
-  await browserFetch('/api/hr/auth/google', {
-    method: 'POST',
-    headers: { 'x-requested-with': 'careers-web', 'content-type': 'application/json' },
-    body: JSON.stringify({ idToken: googleToken('hr@congty.vn') }),
-  });
+  await upsertHrUser(t.db, { email: 'hr@lee-hr.com', name: 'HR', password: 'Hop-Dong-Test-2026' });
+  return api.hrSignIn('hr@lee-hr.com', 'Hop-Dong-Test-2026');
 }
 
 describe('public pages through the FE client', () => {
@@ -154,8 +152,10 @@ describe('HR through the FE client', () => {
   it('is signed out until Google sign-in, then manages jobs and applications', async () => {
     expect(await api.hrMe()).toBeNull();
     expect((await failure(api.hrJobs())).status).toBe(401);
-    await signInHr();
-    expect(await api.hrMe()).toMatchObject({ email: 'hr@congty.vn' });
+    const wrong = await failure(api.hrSignIn('hr@lee-hr.com', 'sai'));
+    expect(wrong.status).toBe(401);
+    expect(await signInHr()).toEqual({ email: 'hr@lee-hr.com', name: 'HR' });
+    expect(await api.hrMe()).toMatchObject({ email: 'hr@lee-hr.com' });
 
     const { jobs } = await api.hrJobs();
     const draft = jobs.find((j) => j.status === 'draft');

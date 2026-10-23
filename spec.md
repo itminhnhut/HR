@@ -130,3 +130,8 @@ Mỗi bước là 1 commit, test xanh mới sang bước sau.
 - **Ngày giờ:** mọi luật theo ngày Việt Nam (`todayInVietnam`). Test cố định đồng hồ để không phụ thuộc giờ chạy.
 - **Gói Hobby** chỉ cho dùng phi thương mại. Chạy thật cho công ty thì cần Pro.
 - **Package mới:** `@electric-sql/pglite` (dev). Kiểm tra security advisory trước khi thêm.
+
+## Thay đổi sau khi duyệt
+
+- 2026-10-23: HR không đăng nhập bằng Google nữa mà dùng tài khoản riêng (email + mật khẩu, bảng `hr_users`, scrypt,
+  khoá 15 phút sau 5 lần sai). Bỏ `HR_EMAILS`. Tạo tài khoản bằng `npm run hr:user`. Google chỉ còn cho ứng viên.

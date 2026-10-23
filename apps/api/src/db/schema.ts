@@ -167,9 +167,28 @@ export const otpCodes = pgTable('otp_codes', {
   sentAt: tz('sent_at').notNull(),
 });
 
+/** HR accounts with their own password (no Google). Deleting a row revokes access at once. */
+export const hrUsers = pgTable(
+  'hr_users',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** Login name, stored lowercase. Does not need to be a real mailbox. */
+    email: text('email').notNull(),
+    name: text('name'),
+    /** scrypt, see lib/password.ts. */
+    passwordHash: text('password_hash').notNull(),
+    failedAttempts: integer('failed_attempts').notNull().default(0),
+    lockedUntil: tz('locked_until'),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [uniqueIndex('hr_users_email_idx').on(t.email)],
+);
+
 export type Job = typeof jobs.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
 export type Application = typeof applications.$inferSelect;
 export type NewApplication = typeof applications.$inferInsert;
 export type Subscriber = typeof subscribers.$inferSelect;
 export type Candidate = typeof candidates.$inferSelect;
+export type HrUser = typeof hrUsers.$inferSelect;

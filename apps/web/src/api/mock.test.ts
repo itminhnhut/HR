@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { addDays as addDaysIso } from '@careers/shared';
 import { mockApi, resetMockDb } from './mock';
+import { DEMO_HR } from './mock-seed';
 import { ApiError } from './types';
 
 const base = {
@@ -78,13 +79,19 @@ describe('subscribe', () => {
 });
 
 describe('hr', () => {
+  it('signs HR in only with the right password', async () => {
+    const err = await rejection(run(mockApi.hrSignIn(DEMO_HR.email, 'sai')));
+    expect(err.status).toBe(401);
+    expect(await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password))).toMatchObject({ email: DEMO_HR.email });
+  });
+
   it('blocks HR endpoints without a session', async () => {
     const err = await rejection(run(mockApi.hrJobs()));
     expect(err.status).toBe(401);
   });
 
   it('lists jobs with an extension target only when allowed', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const { jobs } = await run(mockApi.hrJobs());
     const expiring = jobs.find((j) => j.id === 'j3')!;
     expect(expiring.status).toBe('expiring');
@@ -93,13 +100,13 @@ describe('hr', () => {
   });
 
   it('opening an application marks it seen', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const detail = await run(mockApi.hrApplication('a2'));
     expect(detail.status).toBe('seen');
   });
 
   it('will not publish a job with a deadline over 60 days (BR-01)', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const job = await run(mockApi.hrJob('j7'));
     const err = await rejection(
       run(
@@ -115,7 +122,7 @@ describe('hr', () => {
   });
 
   it('deletes drafts but never a job that was published', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const { jobs } = await run(mockApi.hrJobs());
     const draft = jobs.find((j) => j.status === 'draft')!;
     const live = jobs.find((j) => j.status === 'open')!;
@@ -136,7 +143,7 @@ describe('hr', () => {
 
 describe('editing live jobs', () => {
   it('keeps the public link when the title changes (BR-04)', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const job = await run(mockApi.hrJob('j1'));
     const saved = await run(
       mockApi.hrSaveJob('j1', { ...job, department: 'Kinh doanh', title: 'Chuyên viên Kinh doanh', intent: 'draft' }),
@@ -145,7 +152,7 @@ describe('editing live jobs', () => {
   });
 
   it('cannot push the deadline past 60 days from publishing by editing (BR-18)', async () => {
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const job = await run(mockApi.hrJob('j3')); // published 20 days ago
     const err = await rejection(
       run(
@@ -172,7 +179,7 @@ describe('candidate', () => {
   it('deleting data removes applications (BR-14)', async () => {
     await run(mockApi.verifyOtp('0912345128', '123456'));
     await run(mockApi.deleteCandidateData());
-    await run(mockApi.hrGoogleSignIn());
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const { applications } = await run(mockApi.hrApplications());
     expect(applications.some((a) => a.phone === '0912345128')).toBe(false);
   });

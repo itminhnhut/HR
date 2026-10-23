@@ -110,7 +110,10 @@ export const useHrMe = () => useQuery({ queryKey: keys.hrMe, queryFn: api.hrMe, 
 
 export function useHrSignIn() {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: () => api.hrGoogleSignIn(), onSuccess: (me) => qc.setQueryData(keys.hrMe, me) });
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) => api.hrSignIn(email, password),
+    onSuccess: (me) => qc.setQueryData(keys.hrMe, me),
+  });
 }
 
 export function useHrSignOut() {
