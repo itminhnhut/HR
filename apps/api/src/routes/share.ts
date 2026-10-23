@@ -1,103 +1,61 @@
 import {
-  deadlineEnd,
   EMPLOYMENT_TYPE_LABEL,
   formatDate,
   formatSalary,
-  hasSalary,
   isListed,
+  jobPostingData,
   locationLabel,
-  type JobDetailDto,
 } from '@careers/shared';
-import { and, eq, ne } from 'drizzle-orm';
-import { Hono } from 'hono';
-import { getDb } from '../db/index.js';
+import { eq } from 'drizzle-orm';
+import { Hono, type Context } from 'hono';
+import type { Env } from '../app.js';
 import { jobs } from '../db/schema.js';
-import { config } from '../lib/config.js';
-import { toJobDetail } from '../lib/mappers.js';
+import { toDetail } from '../services/job-mappers.js';
+import { listedJobs } from '../services/public-jobs.js';
 
 /**
- * Server-rendered pages for crawlers only. The frontend's vercel.json routes
- * bot user-agents (Zalo, Facebook, Googlebot…) for /jobs/:slug here, so link
- * previews and Google Jobs see real content while people get the SPA.
+ * Server-rendered pages for link previews and crawlers. vercel.json sends bot
+ * user-agents (Zalo, Facebook, Google…) asking for /viec-lam/:slug here, so
+ * previews and Google for Jobs see real content while people get the SPA.
  */
-export const shareRoutes = new Hono();
+export const shareRoutes = new Hono<Env>();
 
-const escapeHtml = (text: string) =>
-  text.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
+const HTML_ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (ch) => HTML_ESCAPES[ch] ?? ch);
 
-const GOOGLE_EMPLOYMENT_TYPE = {
-  full_time: 'FULL_TIME',
-  part_time: 'PART_TIME',
-  internship: 'INTERN',
-  contract: 'CONTRACTOR',
-} as const;
+const list = (heading: string, lines: string[]) =>
+  lines.length > 0
+    ? `<h2>${escapeHtml(heading)}</h2><ul>${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`
+    : '';
 
-function jobPostingJsonLd(job: JobDetailDto): string {
-  const description = [
-    ['Bạn sẽ làm gì', job.responsibilities],
-    ['Chúng tôi cần ở bạn', job.requirements],
-    ['Bạn nhận được', job.benefits],
-  ]
-    .filter(([, lines]) => lines.length > 0)
-    .map(
-      ([heading, lines]) =>
-        `<p><b>${escapeHtml(heading as string)}</b></p><ul>${(lines as string[]).map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`,
-    )
-    .join('');
+/** /viec-lam/:slug only arrives here for crawler user-agents (see vercel.json). */
+shareRoutes.get('/viec-lam/:slug', (c) => sharePage(c, c.req.param('slug')));
+shareRoutes.get('/share/jobs/:slug', (c) => sharePage(c, c.req.param('slug')));
 
-  const data: Record<string, unknown> = {
-    '@context': 'https://schema.org/',
-    '@type': 'JobPosting',
-    title: job.title,
-    description,
-    datePosted: job.publishedAt,
-    validThrough: deadlineEnd(job.deadline).toISOString(),
-    employmentType: GOOGLE_EMPLOYMENT_TYPE[job.employmentType],
-    hiringOrganization: { '@type': 'Organization', name: config.companyName, sameAs: config.siteUrl },
-    jobLocation: {
-      '@type': 'Place',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: job.address ?? undefined,
-        addressLocality: job.city,
-        addressCountry: 'VN',
-      },
-    },
-    directApply: true,
-  };
-  // BR-08: only send salary when HR actually entered one.
-  if (hasSalary(job)) {
-    data.baseSalary = {
-      '@type': 'MonetaryAmount',
-      currency: 'VND',
-      value: {
-        '@type': 'QuantitativeValue',
-        minValue: job.salaryMin != null ? job.salaryMin * 1_000_000 : undefined,
-        maxValue: job.salaryMax != null ? job.salaryMax * 1_000_000 : undefined,
-        unitText: 'MONTH',
-      },
-    };
+async function sharePage(c: Context<Env>, slug: string) {
+  const { db, config, now } = c.get('deps');
+  const row = await db.query.jobs.findFirst({ where: eq(jobs.slug, slug) });
+  if (!row || row.state === 'draft') {
+    return c.html(
+      '<!doctype html><html lang="vi"><title>Không tìm thấy</title><p>Không tìm thấy vị trí này.</p></html>',
+      404,
+    );
   }
-  // "</" would end the script tag early.
-  return JSON.stringify(data).replace(/</g, '\\u003c');
-}
 
-shareRoutes.get('/jobs/:slug', async (c) => {
-  const [row] = await getDb()
-    .select()
-    .from(jobs)
-    .where(and(eq(jobs.slug, c.req.param('slug')), ne(jobs.state, 'draft')))
-    .limit(1);
-  if (!row) return c.html('<!doctype html><title>Không tìm thấy</title><p>Không tìm thấy vị trí này.</p>', 404);
-
-  const job = toJobDetail(row);
+  const job = toDetail(row, now());
   const listed = isListed(job.status);
-  const url = `${config.siteUrl}/jobs/${job.slug}`;
+  const url = `${config.siteUrl}/viec-lam/${job.slug}`;
   const title = `${job.title} – ${config.companyName}`;
   const summary = `${formatSalary(job)} · ${locationLabel(job)} · ${EMPLOYMENT_TYPE_LABEL[job.employmentType]} · Hạn nộp ${formatDate(job.deadline)}`;
+  // BR-05: a closed job keeps its page; BR-16: but drops out of Google for Jobs.
   const description = listed ? summary : `Vị trí này đã ngừng nhận hồ sơ. ${summary}`;
+  // "</" inside JSON would end the script tag early.
+  const jsonLd = JSON.stringify(jobPostingData(job, { name: config.companyName, url: config.siteUrl })).replace(
+    /</g,
+    '\\u003c',
+  );
 
-  c.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+  c.header('cache-control', 'public, s-maxage=300, stale-while-revalidate=600');
   return c.html(`<!doctype html>
 <html lang="vi">
 <head>
@@ -107,40 +65,51 @@ shareRoutes.get('/jobs/:slug', async (c) => {
 <link rel="canonical" href="${escapeHtml(url)}">
 ${listed ? '' : '<meta name="robots" content="noindex">'}
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="${escapeHtml(config.companyName)}">
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:url" content="${escapeHtml(url)}">
-<meta property="og:image" content="${escapeHtml(config.siteUrl)}/og-image.png">
-${listed ? `<script type="application/ld+json">${jobPostingJsonLd(job)}</script>` : ''}
+${listed ? `<script type="application/ld+json">${jsonLd}</script>` : ''}
 </head>
 <body>
 <h1>${escapeHtml(job.title)}</h1>
 <p>${escapeHtml(description)}</p>
-${job.responsibilities.length ? `<h2>Bạn sẽ làm gì</h2><ul>${job.responsibilities.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>` : ''}
-${job.requirements.length ? `<h2>Chúng tôi cần ở bạn</h2><ul>${job.requirements.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>` : ''}
-${job.benefits.length ? `<h2>Bạn nhận được</h2><ul>${job.benefits.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>` : ''}
+${list('Bạn sẽ làm gì', job.responsibilities)}
+${list('Chúng tôi cần ở bạn', job.requirements)}
 <p><a href="${escapeHtml(url)}">Xem và ứng tuyển</a></p>
 </body>
 </html>`);
-});
+}
 
 shareRoutes.get('/sitemap.xml', async (c) => {
-  const rows = await getDb().select().from(jobs).where(eq(jobs.state, 'published'));
-  const urls = rows
-    .map((row) => toJobDetail(row))
-    .filter((job) => isListed(job.status))
-    .map((job) => `<url><loc>${escapeHtml(`${config.siteUrl}/jobs/${job.slug}`)}</loc></url>`);
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const { db, config, now } = c.get('deps');
+  const site = escapeHtml(config.siteUrl);
+  // BR-16: only jobs taking applications are in the sitemap.
+  const urls = (await listedJobs(db, now())).map(
+    (job) =>
+      `<url><loc>${site}/viec-lam/${escapeHtml(job.slug)}</loc><lastmod>${job.updatedAt.toISOString().slice(0, 10)}</lastmod></url>`,
+  );
+  c.header('content-type', 'application/xml; charset=utf-8');
+  c.header('cache-control', 'public, s-maxage=600');
+  return c.body(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>${escapeHtml(config.siteUrl)}/</loc></url>
-<url><loc>${escapeHtml(config.siteUrl)}/about</loc></url>
+<url><loc>${site}/</loc></url>
+<url><loc>${site}/gioi-thieu</loc></url>
 ${urls.join('\n')}
-</urlset>`;
-  c.header('Content-Type', 'application/xml; charset=utf-8');
-  c.header('Cache-Control', 'public, s-maxage=600');
-  return c.body(xml);
+</urlset>`);
 });
 
-shareRoutes.get('/robots.txt', (c) =>
-  c.text(`User-agent: *\nDisallow: /hr\nDisallow: /api\nSitemap: ${config.siteUrl}/sitemap.xml\n`),
-);
+shareRoutes.get('/robots.txt', (c) => {
+  const { config } = c.get('deps');
+  return c.text(
+    [
+      'User-agent: *',
+      'Disallow: /hr',
+      'Disallow: /api',
+      'Disallow: /ho-so-cua-toi',
+      'Disallow: /dang-nhap',
+      `Sitemap: ${config.siteUrl}/sitemap.xml`,
+      '',
+    ].join('\n'),
+  );
+});

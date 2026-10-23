@@ -154,6 +154,14 @@ export function useJobAction() {
   });
 }
 
+export function useDeleteJob() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.hrDeleteJob(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.hrJobs }),
+  });
+}
+
 export const useApplications = (jobId?: string) =>
   useQuery({
     queryKey: keys.hrApps(jobId),

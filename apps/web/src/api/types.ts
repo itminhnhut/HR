@@ -84,9 +84,13 @@ export interface Api {
   hrJob(id: string): Promise<HrJobDto>;
   hrSaveJob(id: string | null, input: JobInput): Promise<HrJobDto>;
   hrJobAction(id: string, action: JobAction): Promise<{ ok: true }>;
+  /** Only drafts can be deleted. */
+  hrDeleteJob(id: string): Promise<{ ok: true }>;
   hrApplications(jobId?: string): Promise<ApplicationsResponse>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
+  /** Link that opens an uploaded CV for HR, or null where files are not stored (demo). */
+  hrCvUrl(applicationId: string): string | null;
   hrSubscribers(): Promise<SubscriberDto[]>;
   hrDeleteSubscriber(id: string): Promise<{ ok: true }>;
 }

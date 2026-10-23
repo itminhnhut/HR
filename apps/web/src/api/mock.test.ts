@@ -113,6 +113,25 @@ describe('hr', () => {
     );
     expect(err.fieldErrors.deadline).toMatch(/60 ngày/);
   });
+
+  it('deletes drafts but never a job that was published', async () => {
+    await run(mockApi.hrGoogleSignIn());
+    const { jobs } = await run(mockApi.hrJobs());
+    const draft = jobs.find((j) => j.status === 'draft')!;
+    const live = jobs.find((j) => j.status === 'open')!;
+
+    await run(mockApi.hrDeleteJob(draft.id));
+    const err = await rejection(run(mockApi.hrDeleteJob(live.id)));
+
+    const after = (await run(mockApi.hrJobs())).jobs.map((j) => j.id);
+    expect(after).not.toContain(draft.id);
+    expect(after).toContain(live.id);
+    expect(err.status).toBe(422);
+  });
+
+  it('has no CV download link in the demo', () => {
+    expect(mockApi.hrCvUrl('a1')).toBeNull();
+  });
 });
 
 describe('editing live jobs', () => {

@@ -23,9 +23,11 @@ import { ApiError, type Api } from './types';
  *   GET    /hr/jobs/:id                 → HrJobDto
  *   POST   /hr/jobs  |  PUT /hr/jobs/:id  JobInput → HrJobDto
  *   POST   /hr/jobs/:id/:action         (publish|extend|pause|resume|fill) → { ok }
+ *   DELETE /hr/jobs/:id                 → { ok }   drafts only, else 422
  *   GET    /hr/applications?jobId=      → ApplicationsResponse
  *   GET    /hr/applications/:id         → ApplicationDetailDto (marks "seen")
  *   PATCH  /hr/applications/:id         { status?, note?, thanked? } → ApplicationDetailDto
+ *   GET    /hr/applications/:id/cv      → the uploaded PDF (inline)
  *   GET    /hr/subscribers              → SubscriberDto[]
  *   DELETE /hr/subscribers/:id          → { ok }
  */
@@ -58,6 +60,10 @@ const json = (method: string, data?: unknown): RequestInit => ({
 
 /** Google Identity Services one-tap / popup, returns an ID token for the BE to verify. */
 function googleIdToken(): Promise<string> {
+  // Local dev without an OAuth client: the local BE accepts "dev:<email>". Stripped from production builds.
+  if (import.meta.env.DEV && import.meta.env.VITE_DEV_GOOGLE_EMAIL) {
+    return Promise.resolve(`dev:${import.meta.env.VITE_DEV_GOOGLE_EMAIL}`);
+  }
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   if (!clientId) return Promise.reject(new ApiError(500, 'Chưa cấu hình VITE_GOOGLE_CLIENT_ID.'));
   type Gis = {
@@ -134,9 +140,11 @@ export const httpApi: Api = {
   hrSaveJob: (id, input) =>
     id ? request(`/hr/jobs/${encodeURIComponent(id)}`, json('PUT', input)) : request('/hr/jobs', json('POST', input)),
   hrJobAction: (id, action) => request(`/hr/jobs/${encodeURIComponent(id)}/${action}`, { method: 'POST' }),
+  hrDeleteJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrApplications: (jobId) => request(`/hr/applications${jobId ? `?jobId=${encodeURIComponent(jobId)}` : ''}`),
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
+  hrCvUrl: (id) => `${BASE}/hr/applications/${encodeURIComponent(id)}/cv`,
   hrSubscribers: () => request('/hr/subscribers'),
   hrDeleteSubscriber: (id) => request(`/hr/subscribers/${encodeURIComponent(id)}`, { method: 'DELETE' }),
 };

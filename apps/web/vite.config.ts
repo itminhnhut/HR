@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'preview' ? './' : '/',
   plugins: [react(), tailwindcss()],
   build: { target: 'es2022', sourcemap: mode !== 'preview' },
+  // With VITE_API_URL=/api in .env.local, `npm run dev:api` (port 8787) answers these paths.
+  server: {
+    proxy: Object.fromEntries(
+      ['/api', '/share', '/sitemap.xml', '/robots.txt'].map((path) => [path, 'http://localhost:8787']),
+    ),
+  },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],

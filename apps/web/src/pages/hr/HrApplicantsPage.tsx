@@ -9,7 +9,7 @@ import {
 } from '@careers/shared';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
-import { isDemo } from '../../api';
+import { api, isDemo } from '../../api';
 import { useApplication, useApplications, useUpdateApplication } from '../../api/queries';
 import { copyText, useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { SITE, telLink } from '../../lib/site';
@@ -121,7 +121,8 @@ const bigAction =
   'flex flex-col items-center justify-center gap-1.5 rounded-control px-1.5 py-3 text-[13px] font-medium no-underline max-lg:rounded-card max-lg:py-3.5';
 
 function BigActions({ app }: { app: ApplicationDetailDto }) {
-  const cvLink = app.cvLink && /^https?:\/\//i.test(app.cvLink) ? app.cvLink : null;
+  const pastedLink = app.cvLink && /^https?:\/\//i.test(app.cvLink) ? app.cvLink : null;
+  const cvLink = pastedLink ?? (app.cvFileName ? api.hrCvUrl(app.id) : null);
   return (
     <div className="grid grid-cols-3 gap-2">
       <a href={telLink(app.phone)} className={`${bigAction} btn-glow bg-accent text-white hover:text-white`}>
