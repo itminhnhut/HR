@@ -34,7 +34,7 @@ Không đặt `VITE_API_URL` thì app dùng **dữ liệu giả trong trình duy
 
 ## Deploy Vercel
 
-Project root `apps/web`, build command `npm run build`, output `dist`. `vercel.json` đã có rewrite cho SPA và header bảo mật.
+Project root `./` (gốc repo), preset `Other`. [`vercel.json`](../../vercel.json) ở gốc repo đã khai báo build command (`npm run build`, build `@careers/shared` trước rồi tới web), output `apps/web/dist`, rewrite cho SPA và header bảo mật.
 
 Biến môi trường trên Vercel:
 
