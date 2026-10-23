@@ -1,0 +1,290 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-22T08:40:00Z"
+  },
+  "title": "Trang tuyển dụng – Mockup",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 1540,
+      "title": "1 · Danh sách việc làm",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "JobDetail.dc.html": {
+      "x": 1360,
+      "y": 0,
+      "w": 1280,
+      "h": 2900,
+      "title": "2 · Chi tiết việc làm",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ApplyModal.dc.html": {
+      "x": 2720,
+      "y": 0,
+      "w": 1280,
+      "h": 1000,
+      "title": "3 · Gửi hồ sơ",
+      "is_interactive": true
+    },
+    "JobExpired.dc.html": {
+      "x": 4080,
+      "y": 0,
+      "w": 1280,
+      "h": 1500,
+      "title": "4 · Tin đã đóng / tạm dừng (ví dụ: tin B2B sau khi đóng)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "About.dc.html": {
+      "x": 5440,
+      "y": 0,
+      "w": 1280,
+      "h": 1900,
+      "title": "5 · Giới thiệu công ty",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "MainMobile.dc.html": {
+      "x": 0,
+      "y": 3420,
+      "w": 390,
+      "h": 1880,
+      "title": "1m · Danh sách (mobile)",
+      "is_interactive": true
+    },
+    "JobDetailMobile.dc.html": {
+      "x": 470,
+      "y": 3420,
+      "w": 390,
+      "h": 844,
+      "title": "2m · Chi tiết (mobile)",
+      "is_interactive": true
+    },
+    "ApplyMobile.dc.html": {
+      "x": 940,
+      "y": 3420,
+      "w": 390,
+      "h": 844,
+      "title": "3m · Gửi hồ sơ (mobile)",
+      "is_interactive": true
+    },
+    "JobExpiredMobile.dc.html": {
+      "x": 1410,
+      "y": 3420,
+      "w": 390,
+      "h": 844,
+      "title": "4m · Tin hết hạn (mobile)",
+      "is_interactive": true
+    },
+    "AdminJobs.dc.html": {
+      "x": 0,
+      "y": 5820,
+      "w": 1280,
+      "h": 1300,
+      "title": "6 · HR – Quản lý tin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminJobForm.dc.html": {
+      "x": 1360,
+      "y": 5820,
+      "w": 1280,
+      "h": 2200,
+      "title": "7 · HR – Đăng tin mới",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminApplicants.dc.html": {
+      "x": 2720,
+      "y": 5820,
+      "w": 1280,
+      "h": 1000,
+      "title": "8 · HR – Hồ sơ ứng viên",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "BusinessRules.dc.html": {
+      "x": 0,
+      "y": 10640,
+      "w": 1600,
+      "h": 3560,
+      "title": "BA · Vòng đời tin tuyển dụng"
+    },
+    "CandidateAccountMobile.dc.html": {
+      "x": 1880,
+      "y": 3420,
+      "w": 390,
+      "h": 844,
+      "title": "9m · Hồ sơ của tôi (mobile)",
+      "is_interactive": true
+    },
+    "AdminLogin.dc.html": {
+      "x": 4080,
+      "y": 5820,
+      "w": 1280,
+      "h": 800,
+      "title": "HR – Đăng nhập",
+      "is_interactive": true,
+      "expand": "fill"
+    },
+    "AdminSubscribers.dc.html": {
+      "x": 5440,
+      "y": 5820,
+      "w": 1280,
+      "h": 900,
+      "title": "HR – Người chờ tin",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "AdminApplicantsMobile.dc.html": {
+      "x": 6800,
+      "y": 5820,
+      "w": 390,
+      "h": 844,
+      "title": "8m · HR – Hồ sơ (mobile)",
+      "is_interactive": true
+    },
+    "CandidateLogin.dc.html": {
+      "x": 0,
+      "y": 8540,
+      "w": 1280,
+      "h": 820,
+      "title": "9 · Ứng viên – Đăng nhập (tùy chọn)",
+      "is_interactive": true,
+      "expand": "fill"
+    },
+    "CandidateAccount.dc.html": {
+      "x": 1360,
+      "y": 8540,
+      "w": 1280,
+      "h": 1180,
+      "title": "10 · Ứng viên – Hồ sơ của tôi",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "Privacy.dc.html": {
+      "x": 2720,
+      "y": 8540,
+      "w": 1280,
+      "h": 1500,
+      "title": "11 · Chính sách dữ liệu",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "ShareImage.dc.html": {
+      "x": 4080,
+      "y": 8540,
+      "w": 1200,
+      "h": 630,
+      "title": "12 · Ảnh khi chia sẻ link (Zalo/Facebook)"
+    },
+    "Skeleton.dc.html": {
+      "x": 5360,
+      "y": 8540,
+      "w": 1280,
+      "h": 1240,
+      "title": "13 · Đang tải / trống / lỗi",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "SkeletonMobile.dc.html": {
+      "x": 6720,
+      "y": 8540,
+      "w": 390,
+      "h": 844,
+      "title": "13m · Đang tải (mobile)",
+      "is_interactive": true
+    },
+    "AdminSkeleton.dc.html": {
+      "x": 7270,
+      "y": 5820,
+      "w": 1280,
+      "h": 900,
+      "title": "HR – Đang tải",
+      "is_interactive": true
+    },
+    "StyleGuide.dc.html": {
+      "x": 1680,
+      "y": 10640,
+      "w": 1600,
+      "h": 1600,
+      "title": "Hệ thống giao diện (màu, chữ, hiệu ứng)",
+      "is_interactive": true
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "JobDetail.dc.html",
+    "ApplyModal.dc.html",
+    "JobExpired.dc.html",
+    "About.dc.html",
+    "MainMobile.dc.html",
+    "JobDetailMobile.dc.html",
+    "ApplyMobile.dc.html",
+    "JobExpiredMobile.dc.html",
+    "AdminJobs.dc.html",
+    "AdminJobForm.dc.html",
+    "AdminApplicants.dc.html",
+    "CandidateAccountMobile.dc.html",
+    "AdminLogin.dc.html",
+    "AdminSubscribers.dc.html",
+    "AdminApplicantsMobile.dc.html",
+    "CandidateLogin.dc.html",
+    "CandidateAccount.dc.html",
+    "Privacy.dc.html",
+    "ShareImage.dc.html",
+    "AdminSkeleton.dc.html",
+    "Skeleton.dc.html",
+    "SkeletonMobile.dc.html",
+    "BusinessRules.dc.html",
+    "StyleGuide.dc.html"
+  ],
+  "notes": {
+    "rowCandidate": {
+      "x": 0,
+      "y": -300,
+      "text": "Trang cho ứng viên",
+      "kind": "title1",
+      "maxW": 6720
+    },
+    "rowMobile": {
+      "x": 0,
+      "y": 3120,
+      "text": "Bản mobile",
+      "kind": "title1",
+      "maxW": 2300
+    },
+    "rowAdmin": {
+      "x": 0,
+      "y": 5520,
+      "text": "Trang quản trị cho HR",
+      "kind": "title1",
+      "maxW": 8600
+    },
+    "rowBA": {
+      "x": 0,
+      "y": 10340,
+      "text": "Nghiệp vụ",
+      "kind": "title1",
+      "maxW": 3300
+    },
+    "rowAccount": {
+      "x": 0,
+      "y": 8240,
+      "text": "Tài khoản ứng viên & trang phụ",
+      "kind": "title1",
+      "maxW": 7200
+    }
+  },
+  "designSystems": []
+}

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>HR – Hồ sơ ứng viên (mobile)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}
+@keyframes sheet{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.sheet{animation:sheet .3s ease-out both}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; display: flex; flex-direction: column; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #F5F7FA">
+
+  <header style="flex: 0 0 auto; background: #0B1F3A; color: #FFFFFF; padding: 12px 16px 0; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 22px; font-weight: 500">Hồ sơ ứng viên</span>
+      <button type="button" aria-label="Mở menu quản trị" aria-expanded="{{menuExpanded}}" onClick="{{openMenu}}" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 207, 220, 0.45); border-radius: 4px; background: transparent; color: #FFFFFF">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+    </div>
+    <div role="group" aria-label="Lọc theo trạng thái" style="display: flex; gap: 18px; overflow-x: auto; white-space: nowrap">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+        <sc-if value="{{t.on}}" hint-placeholder-val="{{false}}">
+          <button type="button" aria-pressed="true" onClick="{{t.pick}}" style="flex: 0 0 auto; min-height: 44px; padding: 0 2px; border: 0; border-bottom: 2px solid #FFFFFF; background: transparent; font: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF">{{t.label}} {{t.count}}</button>
+        </sc-if>
+        <sc-if value="{{t.off}}" hint-placeholder-val="{{true}}">
+          <button type="button" aria-pressed="false" onClick="{{t.pick}}" style="flex: 0 0 auto; min-height: 44px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; background: transparent; font: inherit; font-size: 14px; color: #AEBBCC">{{t.label}} {{t.count}}</button>
+        </sc-if>
+      </sc-for>
+    </div>
+  </header>
+
+  <ul style="flex: 1; overflow-y: auto; margin: 0; padding: 8px 0; list-style: none">
+    <sc-for list="{{rows}}" as="a" hint-placeholder-count="6">
+      <li>
+        <button type="button" onClick="{{a.open}}" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 0; border-bottom: 1px solid #EDF0F4; background: #FFFFFF; font: inherit; color: #0B1F3A; text-align: left">
+          <span style="width: 42px; height: 42px; flex: 0 0 42px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C5CFDC; color: #1C3F78; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 18px; font-weight: 500">{{a.initial}}</span>
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 600">{{a.name}}</span>
+            <span style="font-size: 12px; color: #556479; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{a.job}}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px; font-size: 12px">
+            <span style="color: {{a.color}}; font-weight: 600">{{a.statusLabel}}</span>
+            <span style="color: #5F6C80">{{a.date}}</span>
+          </span>
+        </button>
+      </li>
+    </sc-for>
+  </ul>
+
+  <sc-if value="{{hasSelected}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(11, 31, 58, 0.55); display: flex; align-items: flex-end">
+      <section aria-label="Chi tiết ứng viên" class="sheet" style="width: 100%; max-height: 92%; overflow-y: auto; box-sizing: border-box; background: #FFFFFF; border-radius: 14px 14px 0 0; padding: 10px 18px 26px; display: flex; flex-direction: column; gap: 16px">
+        <span style="align-self: center; width: 40px; height: 4px; border-radius: 999px; background: #D5DCE6"></span>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <span style="width: 52px; height: 52px; flex: 0 0 52px; border-radius: 999px; background: #0B1F3A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 22px; font-weight: 500">{{sel.initial}}</span>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <strong style="font-family: 'Playfair Display', Georgia, serif; font-size: 24px; line-height: 1.15; font-weight: 500">{{sel.name}}</strong>
+            <span style="font-size: 13px; color: #556479">{{sel.job}} · {{sel.date}}</span>
+          </div>
+          <button type="button" onClick="{{close}}" aria-label="Đóng" style="width: 44px; height: 44px; border: 0; border-radius: 999px; background: #EEF2F7; color: #556479; display: flex; align-items: center; justify-content: center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 4px; border-radius: 6px; background: #1C3F78; color: #FFFFFF; font-size: 13px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>Gọi</a>
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 4px; border-radius: 6px; border: 1px solid #C5CFDC; color: #0B1F3A; font-size: 13px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8.5 8.5 0 0 1-12.4 7.6L3 21l1.5-5.2A8.5 8.5 0 1 1 21 12z"></path></svg>Nhắn Zalo</a>
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 4px; border-radius: 6px; border: 1px solid #C5CFDC; color: #0B1F3A; font-size: 13px; font-weight: 500; text-decoration: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>Xem CV</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px">
+          <span style="font-size: 12px; color: #5F6C80">Điện thoại</span>
+          <strong style="font-weight: 600">{{sel.phone}}</strong>
+        </div>
+        <sc-if value="{{sel.hasMessage}}" hint-placeholder-val="{{true}}">
+          <p style="margin: 0; padding: 12px 14px; border-left: 2px solid #C5CFDC; background: #F8FAFC; font-size: 14px; line-height: 1.6; color: #2A3A50">{{sel.message}}</p>
+        </sc-if>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 12px; color: #5F6C80">Cập nhật trạng thái</span>
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <button type="button" onClick="{{toInterview}}" style="min-height: 46px; border: 1px solid #0B1F3A; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #0B1F3A">Hẹn PV</button>
+            <button type="button" onClick="{{toPass}}" style="min-height: 46px; border: 1px solid #B9D8C6; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; color: #1F6B45">Đạt</button>
+            <button type="button" onClick="{{toReject}}" style="min-height: 46px; border: 1px solid #DDE3EB; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 13px; color: #556479">Chưa phù hợp</button>
+          </div>
+        </div>
+        <label style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 12px; color: #5F6C80">Ghi chú nội bộ</span>
+          <textarea rows="2" placeholder="vd: hẹn PV thứ 5 lúc 10h" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 16px; color: #0B1F3A"></textarea>
+        </label>
+      </section>
+    </div>
+  </sc-if>
+  <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; z-index: 10; background: rgba(11, 31, 58, 0.55)">
+      <nav aria-label="Menu quản trị" style="position: absolute; top: 0; right: 0; bottom: 0; width: 290px; box-sizing: border-box; background: #0B1F3A; color: #FFFFFF; padding: 12px 18px; display: flex; flex-direction: column; gap: 2px">
+        <button type="button" onClick="{{closeMenu}}" aria-label="Đóng menu" style="align-self: flex-end; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(197, 207, 220, 0.45); border-radius: 4px; background: transparent; color: #FFFFFF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </button>
+        <a href="AdminJobs.dc.html" style="display: flex; align-items: center; min-height: 52px; border-bottom: 1px solid rgba(197, 207, 220, 0.18); color: #C5CFDC; font-size: 16px; text-decoration: none">Tin tuyển dụng</a>
+        <a href="AdminApplicantsMobile.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 52px; border-bottom: 1px solid rgba(197, 207, 220, 0.18); color: #FFFFFF; font-size: 16px; font-weight: 500; text-decoration: none">Hồ sơ ứng viên</a>
+        <a href="AdminSubscribers.dc.html" style="display: flex; align-items: center; min-height: 52px; border-bottom: 1px solid rgba(197, 207, 220, 0.18); color: #C5CFDC; font-size: 16px; text-decoration: none">Người chờ tin</a>
+        <a href="MainMobile.dc.html" style="display: flex; align-items: center; min-height: 52px; border-bottom: 1px solid rgba(197, 207, 220, 0.18); color: #C5CFDC; font-size: 16px; text-decoration: none">Xem trang ứng viên</a>
+        <a href="AdminLogin.dc.html" style="display: flex; align-items: center; min-height: 52px; color: #AEBBCC; font-size: 16px; text-decoration: none">Đăng xuất</a>
+      </nav>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: 'all',
+      selectedId: 'a1',
+      menu: false,
+      statuses: { a1: 'interview', a2: 'new', a3: 'new', a4: 'interview', a5: 'new', a6: 'pass', a7: 'reject' }
+    };
+  }
+  people() {
+    return [
+      { id: 'a1', name: 'Trần Minh Anh', job: 'Nhân viên Kinh doanh B2B', date: '21/10', phone: '0912 345 128', message: 'Em có 2 năm bán phần mềm cho doanh nghiệp, có thể bắt đầu đầu tháng 12.' },
+      { id: 'a2', name: 'Lê Hoàng Phúc', job: 'Lập trình viên Frontend (React)', date: '21/10', phone: '0903 455 455', message: 'Đã làm React 3 năm.' },
+      { id: 'a3', name: 'Phạm Thu Hà', job: 'Chuyên viên Tuyển dụng', date: '20/10', phone: '0938 902 902', message: '' },
+      { id: 'a4', name: 'Nguyễn Quốc Bảo', job: 'Nhân viên Kinh doanh B2B', date: '18/10', phone: '0977 317 317', message: 'Có xe, sẵn sàng đi gặp khách.' },
+      { id: 'a5', name: 'Võ Ngọc Trâm', job: 'Chuyên viên Marketing Nội dung', date: '17/10', phone: '0389 664 664', message: '' },
+      { id: 'a6', name: 'Đặng Gia Huy', job: 'Lập trình viên Frontend (React)', date: '14/10', phone: '0868 210 210', message: '' },
+      { id: 'a7', name: 'Bùi Thanh Tùng', job: 'Nhân viên Chăm sóc khách hàng', date: '12/10', phone: '0795 589 589', message: '' }
+    ];
+  }
+  setStatus(status) {
+    this.setState({ statuses: { ...this.state.statuses, [this.state.selectedId]: status } });
+  }
+  renderVals() {
+    const { tab, selectedId, statuses } = this.state;
+    const meta = {
+      new: ['Mới', '#1C3F78'], seen: ['Đã xem', '#5F6C80'], interview: ['Hẹn PV', '#0B1F3A'],
+      pass: ['Đạt', '#1F6B45'], reject: ['Chưa phù hợp', '#5F6C80']
+    };
+    const all = this.people().map((p) => ({ ...p, status: statuses[p.id] }));
+    const defs = [['all', 'Tất cả'], ['new', 'Mới'], ['seen', 'Đã xem'], ['interview', 'Hẹn PV'], ['pass', 'Đạt'], ['reject', 'Chưa phù hợp']];
+    const tabs = defs.map(([id, label]) => ({
+      label,
+      count: all.filter((p) => id === 'all' || p.status === id).length,
+      on: id === tab,
+      off: id !== tab,
+      pick: () => this.setState({ tab: id })
+    }));
+    const initial = (name) => name.split(' ').pop().charAt(0);
+    const rows = all
+      .filter((p) => tab === 'all' || p.status === tab)
+      .map((p) => ({
+        ...p,
+        initial: initial(p.name),
+        statusLabel: meta[p.status][0],
+        color: meta[p.status][1],
+        open: () => {
+          const next = { ...this.state.statuses };
+          if (next[p.id] === 'new') next[p.id] = 'seen';
+          this.setState({ selectedId: p.id, statuses: next });
+        }
+      }));
+    const picked = all.find((p) => p.id === selectedId);
+    return {
+      tabs,
+      rows,
+      hasSelected: Boolean(picked),
+      menuOpen: this.state.menu,
+      menuExpanded: this.state.menu ? 'true' : 'false',
+      openMenu: () => this.setState({ menu: true }),
+      closeMenu: () => this.setState({ menu: false }),
+      sel: picked ? { ...picked, initial: initial(picked.name), hasMessage: picked.message !== '' } : {},
+      close: () => this.setState({ selectedId: null }),
+      toInterview: () => this.setStatus('interview'),
+      toPass: () => this.setStatus('pass'),
+      toReject: () => this.setStatus('reject')
+    };
+  }
+}
+</script>
+</body>
+</html>

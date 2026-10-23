@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>HR – Đăng tin tuyển dụng</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+@media (max-width: 720px){.rg1{grid-template-columns:minmax(0,1fr)!important}.rg2{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (max-width: 960px){.tblwrap{overflow-x:auto}}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}a:hover{color:#0B1F3A}
+.in{transition:border-color .2s ease,box-shadow .2s ease}
+.in:focus{outline:none;border-color:#1C3F78;box-shadow:0 0 0 3px rgba(28,63,120,.12)}
+.btn{transition:filter .2s ease}.btn:hover{filter:brightness(1.15)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #F5F7FA; min-height: 100vh; display: flex; flex-wrap: wrap; align-items: stretch">
+
+  <aside style="flex: 1 1 240px; max-width: 100%; box-sizing: border-box; background: #0B1F3A; color: #AEBBCC; padding: 26px 16px; display: flex; flex-direction: column; gap: 28px">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 0 10px; text-decoration: none; color: #FFFFFF">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" stroke-width="1.2"></circle><path d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span style="display: flex; flex-direction: column; line-height: 1.2"><span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-weight: 500; font-size: 18px">[Tên công ty]</span><span style="font-size: 12px; color: #AEBBCC">Quản trị tuyển dụng</span></span>
+    </a>
+    <nav aria-label="Quản trị" style="display: flex; flex-direction: column; gap: 4px">
+      <a href="AdminJobs.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); border-left: 2px solid #C5CFDC; color: #FFFFFF; font-size: 14px; font-weight: 500; text-decoration: none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        Tin tuyển dụng
+      </a>
+      <a href="AdminApplicants.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px 0 14px; border-radius: 4px; color: #AEBBCC; font-size: 14px; text-decoration: none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13l3-8h12l3 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"></path><path d="M3 13h5l1.5 2.5h5L16 13h5"></path></svg>
+        <span style="flex: 1">Hồ sơ ứng viên</span>
+        <span style="min-width: 22px; padding: 2px 7px; box-sizing: border-box; border-radius: 999px; background: #FFFFFF; color: #0B1F3A; font-size: 12px; font-weight: 600; text-align: center">3</span>
+      </a>
+      <a href="AdminSubscribers.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px 0 14px; border-radius: 4px; color: #AEBBCC; font-size: 14px; text-decoration: none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg>
+        Người chờ tin
+      </a>
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px 0 14px; border-radius: 4px; color: #AEBBCC; font-size: 14px; text-decoration: none">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"></path><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>
+        Xem trang ứng viên
+      </a>
+    </nav>
+    <a href="AdminLogin.dc.html" style="margin-top: auto; display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 12px 0 14px; border-radius: 4px; border-top: 1px solid rgba(197, 207, 220, 0.18); color: #AEBBCC; font-size: 14px; text-decoration: none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"></path><path d="M10 17l-5-5 5-5M5 12h11"></path></svg>
+      <span style="flex: 1; display: flex; flex-direction: column; line-height: 1.3"><span>Đăng xuất</span><span style="font-size: 12px; color: #AEBBCC">hr@[tên miền].vn</span></span>
+    </a>
+  </aside>
+
+  <main style="flex: 999 1 600px; min-width: 0; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <a href="AdminJobs.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; font-size: 14px; color: #556479; text-decoration: none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"></path></svg>
+        Danh sách tin
+      </a>
+      <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 36px; line-height: 1.15; font-weight: 500">Đăng tin tuyển dụng</h1>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start">
+      <form style="flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+
+        <fieldset style="margin: 0; padding: 26px; border: 1px solid #E4E9F0; border-radius: 6px; background: #FFFFFF; display: flex; flex-direction: column; gap: 18px">
+          <legend style="padding: 0 8px; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Thông tin chính</legend>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+            <span>Tên vị trí</span>
+            <input type="text" class="in" value="{{title}}" onChange="{{setTitle}}" placeholder="Dùng tên phổ biến, vd: Nhân viên Kinh doanh" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Phòng ban</span>
+              <select class="in" value="{{dept}}" onChange="{{setDept}}" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option>Kinh doanh</option><option>Kỹ thuật</option><option>Marketing</option><option>Vận hành</option><option>Nhân sự</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Hình thức</span>
+              <select class="in" value="{{type}}" onChange="{{setType}}" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option>Toàn thời gian</option><option>Bán thời gian</option><option>Thực tập</option><option>Làm từ xa</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Kinh nghiệm</span>
+              <select class="in" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option>Không yêu cầu</option><option selected>Từ 1 năm</option><option>Từ 2 năm</option><option>Từ 3 năm</option></select>
+            </label>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Địa chỉ làm việc cụ thể</span>
+              <input type="text" class="in" value="{{location}}" onChange="{{setLocation}}" placeholder="Số nhà, đường, quận" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Giờ làm</span>
+              <input type="text" class="in" value="T2 – T6, 8:30 – 17:30" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+          </div>
+          <div class="rg2" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Cấp bậc</span>
+              <select class="in" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option>Thực tập sinh</option><option selected>Nhân viên</option><option>Trưởng nhóm</option><option>Quản lý</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Học vấn</span>
+              <select class="in" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option>Không yêu cầu</option><option>Trung cấp</option><option selected>Cao đẳng trở lên</option><option>Đại học trở lên</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Ngoại ngữ</span>
+              <select class="in" style="min-height: 46px; padding: 0 12px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; background: #FFFFFF"><option selected>Không bắt buộc</option><option>Tiếng Anh giao tiếp</option><option>Tiếng Anh thành thạo</option></select>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Số lượng</span>
+              <input type="number" class="in" min="1" value="2" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="skill-input" style="font-size: 14px; font-weight: 500">Kỹ năng chính <span style="font-weight: 400; color: #5F6C80">(hiện thành tag dưới tên vị trí, tối đa 6)</span></label>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 46px; padding: 6px 10px; box-sizing: border-box; border: 1px solid #DDE3EB; border-radius: 4px">
+              <sc-for list="{{skills}}" as="s" hint-placeholder-count="4">
+                <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px 4px 12px; border-radius: 999px; background: #EEF2F7; font-size: 13px">{{s.label}}<button type="button" onClick="{{s.remove}}" aria-label="Bỏ kỹ năng {{s.label}}" style="width: 22px; height: 22px; border: 0; border-radius: 999px; background: transparent; color: #556479; cursor: pointer; display: flex; align-items: center; justify-content: center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></span>
+              </sc-for>
+              <input id="skill-input" type="text" value="{{skillDraft}}" onChange="{{setSkillDraft}}" onKeyDown="{{skillKey}}" placeholder="Gõ rồi nhấn Enter" style="flex: 1 1 140px; min-width: 0; min-height: 32px; border: 0; outline: none; font: inherit; font-size: 14px; color: #0B1F3A">
+            </div>
+          </div>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+            <span>Làm việc cùng <span style="font-weight: 400; color: #5F6C80">(không bắt buộc)</span></span>
+            <input type="text" class="in" value="Đội Kinh doanh 6 người, báo cáo cho Trưởng phòng Kinh doanh" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+          </label>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 26px; border: 1px solid #E4E9F0; border-radius: 6px; background: #FFFFFF; display: flex; flex-direction: column; gap: 16px">
+          <legend style="padding: 0 8px; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Lương và hạn nộp</legend>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; align-items: end">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Lương từ (triệu)</span>
+              <input type="number" class="in" min="0" value="{{salaryFrom}}" onChange="{{setFrom}}" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Đến (triệu)</span>
+              <input type="number" class="in" min="0" value="{{salaryTo}}" onChange="{{setTo}}" style="min-height: 46px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Hạn nộp <span style="font-weight: 400; color: #5F6C80">(bắt buộc, tối đa 60 ngày)</span></span>
+              <input type="date" class="in" required min="2026-10-24" max="2026-12-22" value="{{deadline}}" onChange="{{setDeadline}}" style="min-height: 46px; padding: 0 12px; border: 1px solid {{deadlineBorder}}; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A">
+            </label>
+          </div>
+          <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px">
+            <input type="checkbox" onChange="{{toggleNegotiable}}" style="width: 18px; height: 18px; margin: 0; accent-color: #1C3F78">
+            <span>Không ghi lương, để "Thỏa thuận"</span>
+          </label>
+          <sc-if value="{{negotiable}}" hint-placeholder-val="{{false}}">
+            <div role="note" style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 4px; background: #EEF2F7; border: 1px solid #C5CFDC; font-size: 14px; line-height: 1.55; color: #0B1F3A">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 18px; margin-top: 2px"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+              <span>Khảo sát 2026 cho thấy khoảng 44% ứng viên bỏ qua tin không ghi lương. Nên ghi một khoảng lương, kể cả khoảng rộng. Tin không ghi lương sẽ không gửi mức lương lên Google.</span>
+            </div>
+          </sc-if>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 26px; border: 1px solid #E4E9F0; border-radius: 6px; background: #FFFFFF; display: flex; flex-direction: column; gap: 16px">
+          <legend style="padding: 0 8px; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Nội dung tin</legend>
+          <p style="margin: 0; font-size: 13px; color: #556479">Mỗi dòng một ý, trang ứng viên tự hiển thị thành gạch đầu dòng. Viết ngắn, 3–5 ý mỗi phần là đủ.</p>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+            <span>Về vị trí này <span style="font-weight: 400; color: #5F6C80">(2–3 câu, viết như đang nói với ứng viên)</span></span>
+            <textarea onInput="{{setBiasText}}" rows="3" class="in" placeholder="Bạn phụ trách mảng khách hàng doanh nghiệp vừa và nhỏ…" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; resize: vertical"></textarea>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+            <span>Bạn sẽ làm gì</span>
+            <textarea onInput="{{setBiasText}}" rows="4" class="in" placeholder="Tìm và tiếp cận khách hàng doanh nghiệp mới…" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; resize: vertical"></textarea>
+          </label>
+          <div class="rg1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Yêu cầu bắt buộc</span>
+              <textarea rows="4" class="in" onInput="{{setReq}}" placeholder="Từ 1 năm kinh nghiệm bán hàng…" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; resize: vertical"></textarea>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span>Điểm cộng <span style="font-weight: 400; color: #5F6C80">(không có vẫn nộp được)</span></span>
+              <textarea onInput="{{setBiasText}}" rows="4" class="in" placeholder="Đã dùng CRM, có sẵn mạng lưới khách…" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; font-weight: 400; color: #0B1F3A; resize: vertical"></textarea>
+            </label>
+          </div>
+          <sc-if value="{{biasWarn}}" hint-placeholder-val="{{false}}">
+            <div role="alert" style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 4px; background: #EEF2F7; border: 1px solid #C5CFDC; font-size: 14px; line-height: 1.55; color: #0B1F3A">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 18px; margin-top: 2px"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+              <span>Tin có chữ "<strong style="font-weight: 600">{{biasWord}}</strong>". Yêu cầu về giới tính, tuổi, ngoại hình, hôn nhân có thể bị xem là phân biệt đối xử (Bộ luật Lao động 2019). Nên ghi theo năng lực, vd "chịu được việc đi lại nhiều".</span>
+            </div>
+          </sc-if>
+          <p style="margin: 0; font-size: 12px; color: #5F6C80">Không ghi giới tính, độ tuổi, ngoại hình, tình trạng hôn nhân trừ khi công việc bắt buộc.</p>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 26px; border: 1px solid #E4E9F0; border-radius: 6px; background: #FFFFFF; display: flex; flex-direction: column; gap: 16px">
+          <legend style="padding: 0 8px; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Quyền lợi</legend>
+          <label style="display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 14px">
+            <input type="checkbox" checked style="width: 18px; height: 18px; margin: 0; accent-color: #1C3F78">
+            <span>Điền sẵn quyền lợi chung của công ty, rồi sửa riêng cho vị trí này</span>
+          </label>
+          <div class="rg1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span style="display: inline-flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 6px; border: 1px solid #D5DCE6; border-radius: 999px"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>Thu nhập</span>
+              <textarea onInput="{{setBiasText}}" rows="3" class="in" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 14px; font-weight: 400; color: #0B1F3A; resize: vertical">Hoa hồng theo doanh số, không giới hạn
+Lương tháng 13, thưởng Tết theo kết quả</textarea>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span style="display: inline-flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 6px; border: 1px solid #D5DCE6; border-radius: 999px"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"></path></svg>Bảo hiểm và sức khỏe</span>
+              <textarea onInput="{{setBiasText}}" rows="3" class="in" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 14px; font-weight: 400; color: #0B1F3A; resize: vertical">BHXH, BHYT, BHTN đóng trên lương thực nhận
+Khám sức khỏe định kỳ mỗi năm</textarea>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span style="display: inline-flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 6px; border: 1px solid #D5DCE6; border-radius: 999px"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>Thời gian nghỉ</span>
+              <textarea onInput="{{setBiasText}}" rows="3" class="in" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 14px; font-weight: 400; color: #0B1F3A; resize: vertical">12 ngày phép năm, tăng theo thâm niên
+Nghỉ thứ 7 và chủ nhật</textarea>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span style="display: inline-flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 6px; border: 1px solid #D5DCE6; border-radius: 999px"><path d="M3 17l6-6 4 4 8-8"></path><path d="M14 7h7v7"></path></svg>Phát triển</span>
+              <textarea onInput="{{setBiasText}}" rows="3" class="in" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 14px; font-weight: 400; color: #0B1F3A; resize: vertical">Đào tạo sản phẩm và kỹ năng bán hàng
+Lộ trình lên Trưởng nhóm sau 1–2 năm</textarea>
+            </label>
+            <label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500">
+              <span style="display: inline-flex; align-items: center; gap: 8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 6px; border: 1px solid #D5DCE6; border-radius: 999px"><path d="M3 20l6-12 4 7 3-4 5 9z"></path></svg>Môi trường và hoạt động</span>
+              <textarea onInput="{{setBiasText}}" rows="2" class="in" style="padding: 12px 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 14px; font-weight: 400; color: #0B1F3A; resize: vertical">Du lịch công ty hằng năm, team building mỗi quý
+Cấp laptop và điện thoại công việc</textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 26px; border: 1px solid #E4E9F0; border-radius: 6px; background: #FFFFFF; display: flex; flex-direction: column; gap: 16px">
+          <legend style="padding: 0 8px; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Lộ trình và hình ảnh</legend>
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 14px; font-weight: 500">90 ngày đầu <span style="font-weight: 400; color: #5F6C80">(không bắt buộc, nhưng ứng viên rất thích)</span></span>
+            <div style="display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; align-items: center">
+              <span style="width: 40px; height: 40px; border-radius: 999px; background: #0B1F3A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">30</span>
+              <input type="text" class="in" aria-label="Mục tiêu 30 ngày" placeholder="Làm quen: học sản phẩm, quy trình…" style="min-height: 44px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; color: #0B1F3A">
+              <span style="width: 40px; height: 40px; border-radius: 999px; background: #1C3F78; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">60</span>
+              <input type="text" class="in" aria-label="Mục tiêu 60 ngày" placeholder="Tự chủ: quản lý khách hàng riêng…" style="min-height: 44px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; color: #0B1F3A">
+              <span style="width: 40px; height: 40px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C5CFDC; background: #EEF2F7; color: #0B1F3A; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">90</span>
+              <input type="text" class="in" aria-label="Mục tiêu 90 ngày" placeholder="Về đích: đạt chỉ tiêu đầu tiên…" style="min-height: 44px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; color: #0B1F3A">
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 14px; font-weight: 500">Ảnh nơi làm việc <span style="font-weight: 400; color: #5F6C80">(tối đa 3 ảnh, để trống thì dùng ảnh chung của công ty)</span></span>
+            <div class="rg1" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+              <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 110px; border: 1.5px dashed #C5CFDC; border-radius: 6px; background: #F8FAFC; font-size: 13px; color: #556479; cursor: pointer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+                Ảnh văn phòng
+                <input type="file" accept="image/*" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">
+              </label>
+              <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 110px; border: 1.5px dashed #C5CFDC; border-radius: 6px; background: #F8FAFC; font-size: 13px; color: #556479; cursor: pointer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+                Ảnh đội nhóm
+                <input type="file" accept="image/*" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">
+              </label>
+              <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 110px; border: 1.5px dashed #C5CFDC; border-radius: 6px; background: #F8FAFC; font-size: 13px; color: #556479; cursor: pointer">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+                Ảnh hoạt động
+                <input type="file" accept="image/*" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px">
+          <button type="button" onClick="{{saveDraft}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 50px; padding: 0 22px; border-radius: 4px; border: 1px solid #C5CFDC; background: #FFFFFF; color: #0B1F3A; font: inherit; font-size: 15px; cursor: pointer">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"></path><path d="M8 3v6h8V3M8 21v-7h8v7"></path></svg>
+            Lưu nháp
+          </button>
+          <button type="button" class="btn" onClick="{{publish}}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 50px; padding: 0 28px; border: 0; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4z"></path></svg>
+            Đăng tin
+          </button>
+        </div>
+        <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}">
+          <p role="alert" style="margin: 0; padding: 14px 16px; border-radius: 4px; background: #FBEDEA; color: #A23B2A; font-size: 14px; font-weight: 500">{{message}}</p>
+        </sc-if>
+        <sc-if value="{{hasMessage}}" hint-placeholder-val="{{false}}">
+          <p role="status" style="margin: 0; display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 4px; background: #EAF4EE; color: #1F6B45; font-size: 14px; font-weight: 500">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+            {{message}}
+          </p>
+        </sc-if>
+      </form>
+
+      <aside style="flex: 1 1 300px; min-width: 0; max-width: 380px; position: sticky; top: 24px; display: flex; flex-direction: column; gap: 12px">
+        <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #556479">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          Ứng viên sẽ thấy như sau
+        </span>
+        <div style="padding: 26px 26px 22px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 16px">
+          <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #556479">
+            <span style="width: 32px; height: 32px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C5CFDC; display: inline-flex; align-items: center; justify-content: center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span>
+            {{dept}}
+          </span>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-family: 'Playfair Display', Georgia, serif; font-size: 24px; line-height: 1.15; font-weight: 500">{{previewTitle}}</span>
+            <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; color: {{salaryColor}}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>
+              {{salaryText}}
+            </span>
+          </div>
+          <div style="padding-top: 14px; border-top: 1px solid #EDF0F4; display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: #3A4A5E">
+            <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5F6C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>{{previewLocation}}</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#5F6C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{type}}</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":2200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      title: 'Nhân viên Kinh doanh B2B',
+      dept: 'Kinh doanh',
+      type: 'Toàn thời gian',
+      location: '[Địa chỉ], Quận 3, TP. HCM',
+      salaryFrom: '12',
+      salaryTo: '18',
+      negotiable: false,
+      deadline: '2026-11-30',
+      tried: false,
+      message: '',
+      skills: ['Bán hàng B2B', 'Tư vấn giải pháp', 'Đàm phán', 'CRM'],
+      skillDraft: ''
+    };
+  }
+  field(name) {
+    return (e) => this.setState({ [name]: e.target.value, message: '' });
+  }
+  renderVals() {
+    const s = this.state;
+    const hasRange = s.salaryFrom !== '' && s.salaryTo !== '';
+    const salaryText = s.negotiable ? 'Thỏa thuận' : (hasRange ? `${s.salaryFrom} – ${s.salaryTo} triệu` : 'Chưa nhập lương');
+    const biasMatch = [s.title, s.req, s.biasText].join(' ').toLowerCase().match(/(?:^|[^\p{L}])(nam giới|ưu tiên nam|tuyển nam|nữ|tuổi|ngoại hình|độc thân|chưa lập gia đình|chưa có con|cao từ)(?=$|[^\p{L}])/u);
+    return {
+      setReq: (e) => this.setState({ req: e.target.value }),
+      setBiasText: (e) => this.setState({ biasText: e.target.value }),
+      biasWarn: Boolean(biasMatch),
+      biasWord: biasMatch ? biasMatch[1] : '',
+      title: s.title,
+      dept: s.dept,
+      type: s.type,
+      location: s.location,
+      salaryFrom: s.salaryFrom,
+      salaryTo: s.salaryTo,
+      negotiable: s.negotiable,
+      salaryText,
+      salaryColor: s.negotiable || !hasRange ? '#1C3F78' : '#1C3F78',
+      previewTitle: s.title.trim() || 'Tên vị trí',
+      previewLocation: s.location.trim() || 'Địa điểm',
+      setTitle: this.field('title'),
+      setDept: this.field('dept'),
+      setType: this.field('type'),
+      setLocation: this.field('location'),
+      setFrom: this.field('salaryFrom'),
+      setTo: this.field('salaryTo'),
+      toggleNegotiable: () => this.setState({ negotiable: !s.negotiable, message: '' }),
+      saveDraft: () => this.setState({ message: 'Đã lưu nháp. Tin chưa hiển thị với ứng viên.' }),
+      deadline: s.deadline,
+      setDeadline: (e) => this.setState({ deadline: e.target.value, message: '' }),
+      deadlineBorder: s.tried && !s.deadline ? '#A23B2A' : '#DDE3EB',
+      publish: () => {
+        if (!s.title.trim() || !s.deadline) return this.setState({ tried: true, message: 'Chưa đăng được: cần nhập tên vị trí và hạn nộp.' });
+        if (s.deadline > '2026-12-22' || s.deadline < '2026-10-24') return this.setState({ tried: true, message: 'Chưa đăng được: hạn nộp phải từ ngày mai đến 22/12/2026 (tối đa 60 ngày).' });
+        this.setState({ tried: false, message: 'Đã đăng tin. Tin đang hiển thị trên trang việc làm.' });
+      },
+      hasMessage: s.message !== '' && !s.message.startsWith('Chưa'),
+      hasError: s.message.startsWith('Chưa'),
+      message: s.message,
+      skills: s.skills.map((label) => ({ label, remove: () => this.setState({ skills: this.state.skills.filter((x) => x !== label) }) })),
+      skillDraft: s.skillDraft,
+      setSkillDraft: (e) => this.setState({ skillDraft: e.target.value }),
+      skillKey: (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const value = this.state.skillDraft.trim();
+        if (value && this.state.skills.length < 6 && !this.state.skills.includes(value)) {
+          this.setState({ skills: [...this.state.skills, value], skillDraft: '' });
+        }
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

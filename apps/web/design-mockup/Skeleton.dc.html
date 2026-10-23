@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Trạng thái tải trang</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+@media (max-width: 720px){.rg1{grid-template-columns:minmax(0,1fr)!important}.rg2{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (max-width: 960px){.tblwrap{overflow-x:auto}}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.sk{background:#E9EDF3;border-radius:4px;animation:pulse 1.6s ease-in-out infinite}
+.skd{background:rgba(197,207,220,.16);border-radius:4px;animation:pulse 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){.sk,.skd{animation:none}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1240px; box-sizing: border-box; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #F5F7FA">
+  <section style="background: #0B1F3A; color: #FFFFFF">
+    <header style="max-width: 1160px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(197, 207, 220, 0.18)">
+      <span style="display: flex; align-items: center; gap: 12px">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" stroke-width="1.2"></circle><path d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+        <span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-weight: 500; font-size: 19px">[Tên công ty]</span>
+      </span>
+      <span style="display: flex; gap: 28px; font-size: 14px; color: #AEBBCC"><span>Việc làm</span><span>Về chúng tôi</span><span>Đăng nhập</span></span>
+    </header>
+    <sc-if value="{{listShell}}" hint-placeholder-val="{{true}}">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 40px 24px 56px; display: flex; flex-direction: column; gap: 16px">
+        <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 46px; line-height: 1.15; font-weight: 500; max-width: 760px">Cùng xây sự nghiệp với [Tên công ty]</h1>
+        <p style="margin: 0; font-size: 17px; font-weight: 300; color: #C5CFDC">Xem vị trí đang mở và gửi CV trong khoảng một phút.</p>
+        <div style="margin-top: 8px; height: 52px; max-width: 760px; border-radius: 6px; background: #FFFFFF"></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{isDetail}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" style="max-width: 1160px; margin: 0 auto; padding: 28px 24px 52px; display: flex; flex-direction: column; gap: 16px">
+        <span class="skd" style="width: 140px; height: 14px"></span>
+        <span class="skd" style="width: 520px; height: 44px"></span>
+        <div style="display: flex; gap: 10px"><span class="skd" style="width: 110px; height: 28px; border-radius: 999px"></span><span class="skd" style="width: 90px; height: 28px; border-radius: 999px"></span><span class="skd" style="width: 120px; height: 28px; border-radius: 999px"></span></div>
+        <div style="display: flex; gap: 12px; margin-top: 6px"><span class="skd" style="width: 180px; height: 52px"></span><span class="skd" style="width: 160px; height: 52px"></span></div>
+      </div>
+    </sc-if>
+  </section>
+
+  <main style="max-width: 1160px; margin: 0 auto; padding: 40px 24px 80px">
+    <span role="status" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Đang tải…</span>
+
+    <sc-if value="{{isList}}" hint-placeholder-val="{{true}}">
+      <div aria-hidden="true" style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: flex; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid #E4E9F0">
+          <span class="sk" style="width: 70px; height: 16px"></span><span class="sk" style="width: 90px; height: 16px"></span><span class="sk" style="width: 80px; height: 16px"></span><span class="sk" style="width: 74px; height: 16px"></span>
+        </div>
+        <div class="rg1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+          <sc-for list="{{cards}}" as="c" hint-placeholder-count="4">
+            <div style="padding: 28px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 14px">
+              <div style="display: flex; justify-content: space-between"><span class="sk" style="width: 90px; height: 13px"></span><span class="sk" style="width: 60px; height: 13px"></span></div>
+              <span class="sk" style="width: {{c.w}}; height: 26px"></span>
+              <span class="sk" style="width: 130px; height: 18px"></span>
+              <div style="display: flex; gap: 18px"><span class="sk" style="width: 110px; height: 14px"></span><span class="sk" style="width: 90px; height: 14px"></span><span class="sk" style="width: 80px; height: 14px"></span></div>
+              <div style="display: flex; gap: 8px; padding-top: 14px; border-top: 1px solid #EDF0F4"><span class="sk" style="width: 96px; height: 24px; border-radius: 999px"></span><span class="sk" style="width: 120px; height: 24px; border-radius: 999px"></span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isDetail}}" hint-placeholder-val="{{false}}">
+      <div aria-hidden="true" class="rg1" style="display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start">
+        <div style="display: flex; flex-direction: column; gap: 36px">
+          <div class="rg2" style="padding: 28px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px">
+            <sc-for list="{{facts}}" as="f" hint-placeholder-count="8">
+              <div style="display: flex; gap: 12px; align-items: center"><span class="sk" style="width: 38px; height: 38px; border-radius: 999px; flex: 0 0 38px"></span><span style="flex: 1; display: flex; flex-direction: column; gap: 6px"><span class="sk" style="width: 60%; height: 11px"></span><span class="sk" style="width: 85%; height: 14px"></span></span></div>
+            </sc-for>
+          </div>
+          <sc-for list="{{sections}}" as="s" hint-placeholder-count="3">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <span class="sk" style="width: 220px; height: 26px"></span>
+              <span class="sk" style="width: 100%; height: 14px"></span>
+              <span class="sk" style="width: 94%; height: 14px"></span>
+              <span class="sk" style="width: 70%; height: 14px"></span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="padding: 26px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 14px">
+          <span class="sk" style="width: 70%; height: 22px"></span>
+          <span class="sk" style="width: 100%; height: 14px"></span>
+          <span class="sk" style="width: 100%; height: 52px"></span>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 520px; margin: 40px auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px">
+        <span style="padding: 14px; border: 1px solid #D5DCE6; border-radius: 999px; color: #1C3F78; display: flex"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5M8.5 11h5"></path></svg></span>
+        <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 28px; font-weight: 500">Không có vị trí phù hợp</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #556479">Thử bỏ bớt bộ lọc hoặc chọn phòng ban khác.</p>
+        <div style="display: flex; gap: 10px; margin-top: 4px">
+          <button type="button" style="min-height: 48px; padding: 0 22px; border: 1px solid #C5CFDC; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 14px; color: #0B1F3A">Xóa bộ lọc</button>
+          <a href="About.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font-size: 14px; font-weight: 500; text-decoration: none">Tìm hiểu về công ty</a>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isNone}}" hint-placeholder-val="{{false}}">
+      <div style="max-width: 560px; margin: 40px auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px">
+        <span style="padding: 14px; border: 1px solid #D5DCE6; border-radius: 999px; color: #1C3F78; display: flex"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></span>
+        <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 28px; font-weight: 500">Hiện chưa có vị trí đang mở</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #556479">Để lại số Zalo để nhận tin khi công ty mở tuyển.</p>
+        <sc-if value="{{notSubscribed}}" hint-placeholder-val="{{true}}">
+          <form style="width: 100%; display: flex; flex-direction: column; gap: 10px; text-align: left">
+            <div style="display: flex; gap: 10px">
+              <label style="flex: 1; display: flex; align-items: center; padding: 0 16px; min-height: 50px; border: 1px solid #DDE3EB; border-radius: 4px; background: #FFFFFF"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Số Zalo</span><input type="tel" placeholder="Số Zalo của bạn" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 15px; background: transparent; color: #0B1F3A"></label>
+              <button type="button" onClick="{{subscribe}}" style="min-height: 50px; padding: 0 22px; border: 0; border-radius: 4px; background: #0B1F3A; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500">Nhận thông báo</button>
+            </div>
+            <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.55; color: #3A4A5E"><input type="checkbox" style="width: 18px; height: 18px; margin: 1px 0 0; flex: 0 0 18px; accent-color: #1C3F78"><span>Đồng ý để HR lưu số này và nhắn khi có việc mới. <a href="Privacy.dc.html">Chính sách</a></span></label>
+          </form>
+        </sc-if>
+        <sc-if value="{{subscribed}}" hint-placeholder-val="{{false}}"><p role="status" style="margin: 0; font-size: 15px; font-weight: 500; color: #1F6B45">Đã đăng ký nhận tin.</p></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{isError}}" hint-placeholder-val="{{false}}">
+      <div role="alert" style="max-width: 520px; margin: 40px auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px">
+        <span style="padding: 14px; border: 1px solid #D5DCE6; border-radius: 999px; color: #556479; display: flex"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M12 19h.01"></path><path d="M3 3l18 18"></path></svg></span>
+        <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 28px; font-weight: 500">Chưa tải được trang</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #556479">Mạng có thể đang chập chờn. Thử tải lại, thông tin bạn đã nhập vẫn được giữ.</p>
+        <button type="button" style="min-height: 48px; padding: 0 26px; border: 0; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500">Tải lại</button>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"state":{"editor":"enum","options":["Đang tải danh sách","Đang tải chi tiết","Không có kết quả","Chưa có vị trí nào","Lỗi mạng"],"default":"Đang tải danh sách"},"$preview":{"width":1280,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { subscribed: false };
+  }
+  renderVals() {
+    const s = this.props.state ?? 'Đang tải danh sách';
+    const listShell = s !== 'Đang tải chi tiết';
+    return {
+      isList: s === 'Đang tải danh sách',
+      isDetail: s === 'Đang tải chi tiết',
+      isEmpty: s === 'Không có kết quả',
+      isNone: s === 'Chưa có vị trí nào',
+      subscribed: this.state.subscribed,
+      notSubscribed: !this.state.subscribed,
+      subscribe: () => this.setState({ subscribed: true }),
+      isError: s === 'Lỗi mạng',
+      listShell,
+      cards: ['72%', '58%', '66%', '50%', '62%', '70%'].map((w) => ({ w })),
+      facts: Array.from({ length: 8 }, (_, i) => ({ i })),
+      sections: [1, 2, 3].map((i) => ({ i }))
+    };
+  }
+}
+</script>
+</body>
+</html>

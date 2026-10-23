@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Ảnh chia sẻ tin (Zalo / Facebook)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>body{margin:0}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}</style>
+</helmet>
+<div style="width: 1200px; height: 630px; box-sizing: border-box; position: relative; overflow: hidden; background: #0B1F3A; color: #FFFFFF; font-family: 'Be Vietnam Pro', system-ui, sans-serif; padding: 64px 72px; display: flex; flex-direction: column; justify-content: space-between">
+  <svg viewBox="0 0 1200 630" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%">
+    <path d="M0 520 C 220 470, 420 580, 640 520 S 1020 460, 1200 500" fill="none" stroke="#C5CFDC" stroke-opacity="0.35" stroke-width="1.2"></path>
+    <path d="M0 548 C 230 498, 430 608, 650 548 S 1030 488, 1200 528" fill="none" stroke="#C5CFDC" stroke-opacity="0.18" stroke-width="1.2"></path>
+  </svg>
+  <div style="position: relative; display: flex; align-items: center; justify-content: space-between">
+    <span style="display: flex; align-items: center; gap: 14px">
+      <svg width="40" height="40" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" stroke-width="1.2"></circle><path d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 28px; font-weight: 500">[Tên công ty]</span>
+    </span>
+    <span style="padding: 10px 18px; border: 1px solid rgba(197, 207, 220, 0.5); border-radius: 999px; font-size: 18px; color: #C5CFDC">Đang tuyển</span>
+  </div>
+  <div style="position: relative; display: flex; flex-direction: column; gap: 18px">
+    <span style="font-size: 22px; color: #AEBBCC">{{dept}}</span>
+    <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 72px; line-height: 1.15; font-weight: 500; max-width: 980px">{{title}}</h1>
+    <div style="display: flex; gap: 40px; font-size: 26px; color: #E4E9F0">
+      <span>{{salary}}</span><span style="color: #5F6C80">·</span><span>{{place}}</span>
+    </div>
+  </div>
+  <span style="position: relative; font-size: 20px; color: #AEBBCC">tuyendung.[tên miền].vn · Nộp CV trong 1 phút</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"title":{"editor":"text","default":"Nhân viên Kinh doanh B2B"},"salary":{"editor":"text","default":"12 – 18 triệu"},"place":{"editor":"text","default":"Quận 3, TP.HCM"},"dept":{"editor":"text","default":"Kinh doanh"},"$preview":{"width":1200,"height":630}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props;
+    return { title: p.title || 'Nhân viên Kinh doanh B2B', salary: p.salary || 'Thỏa thuận', place: p.place || 'TP.HCM', dept: p.dept || 'Kinh doanh' };
+  }
+}
+</script>
+</body>
+</html>

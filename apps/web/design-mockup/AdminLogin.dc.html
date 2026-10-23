@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>HR – Đăng nhập</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+@media (max-width: 720px){.rg1{grid-template-columns:minmax(0,1fr)!important}.rg2{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (max-width: 960px){.tblwrap{overflow-x:auto}}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}a:hover{color:#0B1F3A}
+.btn{transition:background-color .2s ease}.btn:hover{background:#F5F7FA}
+</style>
+</helmet>
+<div class="rg1" style="width: 100%; min-height: 800px; box-sizing: border-box; display: grid; grid-template-columns: 560px minmax(0, 1fr); font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #F5F7FA">
+  <section style="position: relative; overflow: hidden; background: #0B1F3A; color: #FFFFFF; padding: 56px; display: flex; flex-direction: column; justify-content: space-between">
+    <svg viewBox="0 0 560 800" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%">
+      <path d="M0 640 C 120 590, 240 700, 360 640 S 500 590, 560 610" fill="none" stroke="#C5CFDC" stroke-opacity="0.35" stroke-width="1"></path>
+      <path d="M0 662 C 130 612, 250 722, 370 662 S 510 612, 560 632" fill="none" stroke="#C5CFDC" stroke-opacity="0.18" stroke-width="1"></path>
+    </svg>
+    <a href="Main.dc.html" style="position: relative; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #FFFFFF">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" stroke-width="1.2"></circle><path d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-weight: 500; font-size: 22px">[Tên công ty]</span>
+    </a>
+    <div style="position: relative; display: flex; flex-direction: column; gap: 16px">
+      <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 46px; line-height: 1.15; font-weight: 500">Quản trị tuyển dụng</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.7; font-weight: 300; color: #C5CFDC; max-width: 400px">Đăng tin, xem hồ sơ và liên hệ ứng viên ở một chỗ.</p>
+    </div>
+    <span style="position: relative; font-size: 13px; color: #AEBBCC">Trang dành riêng cho bộ phận nhân sự.</span>
+  </section>
+
+  <section style="display: flex; align-items: center; justify-content: center; padding: 48px 24px">
+    <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 34px; line-height: 1.15; font-weight: 500">Đăng nhập</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #556479">Dùng tài khoản Google (Gmail) đã được cấp quyền HR. Không cần mật khẩu riêng.</p>
+      </div>
+
+      <sc-if value="{{showError}}" hint-placeholder-val="{{false}}">
+        <div role="alert" style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 4px; background: #EEF2F7; border: 1px solid #C5CFDC; font-size: 14px; line-height: 1.55; color: #0B1F3A">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 18px; margin-top: 2px"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+          <span>Tài khoản <strong style="font-weight: 600">ai.do@gmail.com</strong> chưa được cấp quyền HR. Đăng nhập bằng email khác, hoặc nhờ quản trị viên thêm email này.</span>
+        </div>
+      </sc-if>
+
+      <a href="AdminJobs.dc.html" class="btn" style="display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 56px; border: 1px solid #C5CFDC; border-radius: 4px; background: #FFFFFF; color: #0B1F3A; font-size: 16px; font-weight: 500; text-decoration: none">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9c-.3 1.4-1.1 2.5-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.7 3.2-8z"></path><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8C3.9 20.6 7.7 23 12 23z"></path><path fill="#FBBC05" d="M5.8 14.2c-.2-.7-.4-1.4-.4-2.2s.1-1.5.4-2.2V7H2.1C1.4 8.5 1 10.2 1 12s.4 3.5 1.1 5l3.7-2.8z"></path><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2C17.5 2.1 15 1 12 1 7.7 1 3.9 3.4 2.1 7l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"></path></svg>
+        Đăng nhập bằng Google
+      </a>
+
+      <ul style="margin: 0; padding: 18px 0 0; list-style: none; border-top: 1px solid #E4E9F0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: #556479">
+        <li style="display: flex; gap: 10px; align-items: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Chỉ email trong danh sách HR mới vào được</li>
+        <li style="display: flex; gap: 10px; align-items: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Giữ đăng nhập 7 ngày trên thiết bị này</li>
+      </ul>
+      <a href="Main.dc.html" style="font-size: 14px">Về trang việc làm</a>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"showError":{"editor":"boolean","default":false},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { showError: Boolean(this.props.showError) };
+  }
+}
+</script>
+</body>
+</html>

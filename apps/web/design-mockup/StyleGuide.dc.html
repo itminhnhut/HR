@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Hệ thống giao diện</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+.demo-btn{transition:filter .2s ease}.demo-btn:hover{filter:brightness(1.15)}
+.demo-card{transition:border-color .25s ease}.demo-card:hover{border-color:#AEBBCC}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.sk{background:#E9EDF3;border-radius:4px;animation:pulse 1.6s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="width: 1600px; box-sizing: border-box; padding: 64px 72px; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #FFFFFF; display: flex; flex-direction: column; gap: 56px">
+  <div style="display: flex; flex-direction: column; gap: 10px; max-width: 900px">
+    <span style="font-size: 14px; color: #556479">Dùng chung cho mọi màn, FE lấy đúng các giá trị này</span>
+    <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 48px; line-height: 1.15; font-weight: 500">Hệ thống giao diện</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #3A4A5E">Bính Tý 1996, mệnh Giản Hạ Thủy: xanh, navy, đen là màu bản mệnh; trắng, bạc, xám là màu tương sinh (Kim sinh Thủy). Tránh nâu đất, vàng sậm (Thổ khắc Thủy), kể cả cho cảnh báo. Đỏ trầm chỉ dùng cho chữ báo lỗi nhỏ. Xanh cũng là màu được xem là "an toàn" và tạo tin cậy nhất cho trang tuyển dụng.</p>
+  </div>
+
+  <section style="display: flex; flex-direction: column; gap: 18px">
+    <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: 1.15; font-weight: 500">Màu</h2>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+      <sc-for list="{{colors}}" as="c" hint-placeholder-count="18">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <span style="height: 72px; border-radius: 6px; background: {{c.hex}}; border: 1px solid #E4E9F0"></span>
+          <strong style="font-size: 14px; font-weight: 600">{{c.name}}</strong>
+          <span style="font-size: 12px; color: #556479">{{c.hex}} · {{c.use}}</span>
+        </div>
+      </sc-for>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #556479">Chữ phụ nhạt nhất là #5F6C80 (tương phản 5,3:1 trên nền trắng, đạt WCAG AA). Không dùng xám nhạt hơn cho chữ.</p>
+  </section>
+
+  <section style="display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 48px">
+    <div style="display: flex; flex-direction: column; gap: 18px">
+      <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: 1.15; font-weight: 500">Chữ</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #3A4A5E">Tiêu đề: <strong style="font-weight: 600">Playfair Display 500</strong>, hiện dấu tiếng Việt chuẩn (thay Cormorant Garamond vì dấu mũ ê, â bị đọc nhầm thành ể, ẩ). Nội dung: <strong style="font-weight: 600">Be Vietnam Pro</strong> 400/500/600, thiết kế riêng cho tiếng Việt. Line-height tiêu đề tối thiểu 1,15 để dấu chồng không bị cắt. Playfair là font tiêu đề, nét mảnh dễ "rung" ở cỡ nhỏ, nên chỉ dùng từ 20px trở lên (trừ logo chữ). Dưới 20px dùng Be Vietnam Pro 600.</p>
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 28px; border: 1px solid #E4E9F0; border-radius: 6px">
+        <sc-for list="{{types}}" as="t" hint-placeholder-count="8">
+          <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: baseline">
+            <span style="font-size: 12px; color: #556479">{{t.label}}</span>
+            <span style="font-family: {{t.family}}; font-size: {{t.size}}; font-weight: {{t.weight}}; line-height: 1.2; color: #0B1F3A">{{t.sample}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 18px">
+      <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 30px; line-height: 1.15; font-weight: 500">Hiệu ứng</h2>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #3A4A5E">Ít, nhanh vừa đủ để thấy (0,2–0,5s). Không nhảy, không phóng to, không vệt sáng. Máy bật "giảm chuyển động" thì tắt hết.</p>
+      <ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; line-height: 1.55; color: #2A3A50">
+        <sc-for list="{{motions}}" as="m" hint-placeholder-count="7">
+          <li style="display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; padding-bottom: 10px; border-bottom: 1px solid #EDF0F4"><strong style="font-weight: 600">{{m.name}}</strong><span>{{m.spec}}</span></li>
+        </sc-for>
+      </ul>
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+        <button type="button" class="demo-btn" style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Rê chuột thử</button>
+        <div class="demo-card" style="padding: 14px 18px; border: 1px solid #E4E9F0; border-radius: 6px; font-size: 14px">Thẻ việc làm, rê chuột thử</div>
+        <span class="sk" style="width: 160px; height: 16px"></span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px">
+    <div style="display: flex; flex-direction: column; gap: 10px"><strong style="font-size: 15px; font-weight: 600">Bo góc</strong><span style="font-size: 14px; line-height: 1.6; color: #3A4A5E">4px nút, ô nhập · 6px thẻ, khung · 999px nhãn tròn, avatar · 14px tấm trượt mobile</span></div>
+    <div style="display: flex; flex-direction: column; gap: 10px"><strong style="font-size: 15px; font-weight: 600">Icon</strong><span style="font-size: 14px; line-height: 1.6; color: #3A4A5E">Nét mảnh 1,4–1,6, không tô đặc. Icon thông tin đặt trong vòng bạc #D5DCE6. Không dùng emoji.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 10px"><strong style="font-size: 15px; font-weight: 600">Vùng bấm</strong><span style="font-size: 14px; line-height: 1.6; color: #3A4A5E">Tối thiểu 44 × 44px trên mobile (WCAG yêu cầu tối thiểu 24px, mình làm rộng hơn cho dễ bấm). Ô nhập trên mobile chữ 16px để iPhone không tự phóng to.</span></div>
+  </section>
+
+  <section style="padding: 22px 26px; background: #F5F7FA; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.6; color: #3A4A5E">
+    <strong style="font-size: 14px; font-weight: 600; color: #0B1F3A">Căn cứ</strong>
+    <span>Màu theo mệnh: VietnamWorks HR Insider · Màu cho trang tuyển dụng: Top Echelon · Dấu tiếng Việt: render thử 6 font serif, Cormorant đọc nhầm ê thành ể · Playfair chỉ hợp tiêu đề lớn: Typewolf, Made Good Designs · Be Vietnam Pro do Lâm Bảo, Tony Le, ViệtAnh Nguyễn thiết kế cho tiếng Việt · Thời lượng hiệu ứng 0,2–0,5s: Val Head, NN/g (100ms là tức thì, 1s là giới hạn mạch suy nghĩ) · Skeleton chỉ khi tải 1–10s: NN/g · Tương phản chữ 4,5:1, viền focus 3:1, vùng bấm 24px: WCAG 2.2.</span>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1600,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const colors = [
+      ['Navy', '#0B1F3A', 'nền hero, sidebar, chữ chính'], ['Xanh chủ đạo', '#1C3F78', 'nút chính, lương'], ['Link', '#23477F', 'đường dẫn'],
+      ['Mực', '#2A3A50', 'đoạn văn dài'], ['Chữ thân', '#3A4A5E', 'nội dung'], ['Chữ phụ', '#556479', 'nhãn, mô tả'],
+      ['Chữ nhạt', '#5F6C80', 'ghi chú nhỏ'], ['Bạc', '#C5CFDC', 'chữ trên navy, viền nhấn'], ['Bạc dịu', '#AEBBCC', 'chữ phụ trên navy'],
+      ['Vòng icon', '#D5DCE6', 'vòng icon'], ['Đường kẻ', '#E4E9F0', 'viền thẻ'], ['Viền ô nhập', '#DDE3EB', 'ô nhập'],
+      ['Sương', '#F5F7FA', 'nền trang'], ['Phớt xanh', '#EEF2F7', 'nhãn, hover'], ['Thành công', '#1F6B45', 'Đạt, đã gửi'],
+      ['Nhắc nhở', '#E6ECF5', 'nhãn "Còn 3 ngày", nền banner nhắc'], ['Lỗi', '#A23B2A', 'lỗi, xóa'], ['Viền focus', '#4A78C2', 'khi dùng bàn phím']
+    ].map(([name, hex, use]) => ({ name, hex, use }));
+    const serif = "'Playfair Display', Georgia, serif";
+    const sans = "'Be Vietnam Pro', sans-serif";
+    const types = [
+      ['Hero 40–46', serif, '46px', 500, 'Cùng xây sự nghiệp với [Tên công ty]'],
+      ['Tiêu đề trang 36–40', serif, '36px', 500, 'Hồ sơ ứng viên'],
+      ['Tiêu đề mục 28–30', serif, '28px', 500, 'Quyền lợi · Bạn sẽ làm gì'],
+      ['Tên vị trí 20–26', serif, '24px', 500, 'Chuyên viên Tuyển dụng'],
+      ['Lương 16–17', sans, '17px', 600, '12 – 16 triệu'],
+      ['Nội dung 15–16', sans, '15px', 400, 'Tìm và tiếp cận khách hàng doanh nghiệp mới.'],
+      ['Nhãn 13–14', sans, '13px', 500, 'Hạn nộp · Hình thức · Địa điểm'],
+      ['Ghi chú 12', sans, '12px', 400, 'Ứng viên không thấy ghi chú này.']
+    ].map(([label, family, size, weight, sample]) => ({ label, family, size, weight, sample }));
+    const motions = [
+      ['Hiện trang', 'Tiêu đề hero trồi lên 8px + hiện dần, 0,4s, một lần khi mở trang'],
+      ['Rê chuột nút', 'Sáng hơn 15%, 0,2s'],
+      ['Rê chuột thẻ', 'Viền chuyển sang bạc #AEBBCC, 0,25s. Không nhấc thẻ, không đổ bóng'],
+      ['Ô nhập', 'Viền xanh + vầng 3px mờ khi đang gõ, 0,2s'],
+      ['Popup, tấm trượt', 'Trồi 6–24px + hiện dần, 0,3–0,4s'],
+      ['Gửi thành công', 'Dấu tick tự vẽ, 0,5s'],
+      ['Đang tải', 'Khối xám mờ dần rồi đậm lại, chu kỳ 1,6s. Chỉ hiện khi tải quá 1 giây, dưới 1 giây hiện thẳng nội dung'],
+      ['Tải CV lên', 'Thanh tiến trình theo %, không dùng skeleton'],
+      ['Giới hạn chung', 'Mọi chuyển động trong khoảng 0,2–0,5s']
+    ].map(([name, spec]) => ({ name, spec }));
+    return { colors, types, motions };
+  }
+}
+</script>
+</body>
+</html>

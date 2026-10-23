@@ -1,0 +1,734 @@
+import {
+  CANDIDATE_STAGE_LABEL,
+  CV_MAX_BYTES,
+  DEPARTMENTS,
+  formatDate,
+  formatPhone,
+  formatSalary,
+  formatTimestamp,
+  type CandidateApplicationDto,
+  type CandidateMe,
+  type CandidateOverview,
+  type CandidateStage,
+  type JobCardDto,
+} from '@careers/shared';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent } from 'react';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
+import {
+  useCandidate,
+  useCandidateSignOut,
+  useSavedSlugs,
+  useToggleSaved,
+  useUpdateCandidate,
+} from '../../api/queries';
+import { usePageMeta } from '../../lib/hooks';
+import { ExpiringChip } from '../../site/JobCard';
+import { NavyHero } from '../../site/PublicLayout';
+import { Button, ButtonLink, buttonClass } from '../../ui/Button';
+import { FieldError, TextField } from '../../ui/Field';
+import { EmptyState, ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
+import { Icon } from '../../ui/icons';
+import { errorText } from './candidateUi';
+
+// ── Tabs ─────────────────────────────────────────────────────────────────
+
+type TabId = 'nop' | 'luu' | 'thong-tin';
+const TAB_IDS: TabId[] = ['nop', 'luu', 'thong-tin'];
+const isTabId = (v: string | null): v is TabId => TAB_IDS.includes(v as TabId);
+
+const TAB_LABEL: Record<TabId, { full: string; short: string }> = {
+  nop: { full: 'Hồ sơ đã nộp', short: 'Đã nộp' },
+  luu: { full: 'Việc đã lưu', short: 'Đã lưu' },
+  'thong-tin': { full: 'Thông tin & CV', short: 'Thông tin' },
+};
+
+/** Gender-marking middle names that are left out of a greeting ("Trần Thị Lan" → "Lan"). */
+const MARKER_MIDDLE_NAMES = new Set(['thị', 'văn']);
+
+/** "Trần Minh Anh" → "Minh Anh": Vietnamese greetings drop the family name. */
+function greetingName(fullName: string | null): string {
+  const words = (fullName ?? '').trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return 'bạn';
+  const given = words.slice(1);
+  if (given.length > 1 && MARKER_MIDDLE_NAMES.has(given[0].toLocaleLowerCase('vi'))) given.shift();
+  return given.length ? given.join(' ') : words[0];
+}
+
+export function CandidateAccountPage() {
+  usePageMeta('Hồ sơ của tôi');
+  const candidate = useCandidate();
+  const savedSlugs = useSavedSlugs();
+  const showSkeleton = useDelayedFlag(candidate.isPending);
+  const [params, setParams] = useSearchParams();
+  const rawTab = params.get('tab');
+  const tab: TabId = isTabId(rawTab) ? rawTab : 'nop';
+
+  /**
+   * Signing out clears the cached candidate. Keep the last overview on screen
+   * until we navigate away, instead of bouncing to /dang-nhap.
+   */
+  const [leaving, setLeaving] = useState<CandidateOverview | null>(null);
+  const [announcement, setAnnouncement] = useState('');
+
+  const data = candidate.data ?? leaving;
+
+  if (candidate.isError && !data) {
+    return (
+      <>
+        <NavyHero />
+        <main className="mx-auto w-full max-w-[1160px] px-4 py-10 sm:px-6">
+          <ErrorState onRetry={() => candidate.refetch()} />
+        </main>
+      </>
+    );
+  }
+  if (candidate.isPending) return <AccountSkeleton visible={showSkeleton} />;
+  if (!data) return <Navigate to="/dang-nhap" replace />;
+
+  const { me, applications } = data;
+  // Hide un-saved cards immediately (the saved list updates optimistically).
+  const slugs = savedSlugs.data;
+  const saved = slugs ? data.saved.filter((j) => slugs.includes(j.slug)) : data.saved;
+  const counts: Record<TabId, number | null> = { nop: applications.length, luu: saved.length, 'thong-tin': null };
+
+  const pickTab = (id: TabId) => {
+    const next = new URLSearchParams(params);
+    if (id === 'nop') next.delete('tab');
+    else next.set('tab', id);
+    setParams(next, { replace: true });
+  };
+
+  return (
+    <>
+      <NavyHero waves={false}>
+        <div className="relative mx-auto flex max-w-[1160px] flex-col gap-[18px] px-4 pt-[18px] sm:gap-[26px] sm:px-6 sm:pt-10">
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <h1 className="m-0 animate-rise font-serif text-[30px] font-medium sm:text-[42px]">
+              Chào {greetingName(me.name)}
+            </h1>
+            <span className="text-[13px] font-light text-silver sm:text-[15px]">
+              <span className="hidden sm:inline">Đăng nhập bằng </span>
+              {formatPhone(me.phone)}
+            </span>
+          </div>
+          <TabList tab={tab} counts={counts} onPick={pickTab} />
+        </div>
+      </NavyHero>
+
+      <main className="mx-auto w-full max-w-[1160px] px-4 pb-14 pt-4 sm:px-6 sm:pb-[72px] sm:pt-9">
+        <p role="status" className="sr-only">
+          {announcement}
+        </p>
+        <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} tabIndex={-1} className="outline-none">
+          {tab === 'nop' && <ApplicationsTab applications={applications} keepForOtherJobs={me.keepForOtherJobs} />}
+          {tab === 'luu' && <SavedTab jobs={saved} onAnnounce={setAnnouncement} />}
+          {tab === 'thong-tin' && <InfoTab me={me} onLeave={() => setLeaving(data)} onStay={() => setLeaving(null)} />}
+        </div>
+      </main>
+    </>
+  );
+}
+
+function TabList({
+  tab,
+  counts,
+  onPick,
+}: {
+  tab: TabId;
+  counts: Record<TabId, number | null>;
+  onPick: (id: TabId) => void;
+}) {
+  const refs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
+
+  // Arrow keys move between tabs (WAI-ARIA tabs pattern, automatic activation).
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    const edge = e.key === 'Home' ? TAB_IDS[0] : e.key === 'End' ? TAB_IDS[TAB_IDS.length - 1] : null;
+    if (!step && !edge) return;
+    e.preventDefault();
+    const target = edge ?? TAB_IDS[(TAB_IDS.indexOf(tab) + step + TAB_IDS.length) % TAB_IDS.length];
+    onPick(target);
+    refs.current[target]?.focus();
+  };
+
+  return (
+    <div role="tablist" aria-label="Hồ sơ của tôi" onKeyDown={onKeyDown} className="flex gap-5 sm:gap-7">
+      {TAB_IDS.map((id) => {
+        const on = id === tab;
+        const count = counts[id];
+        return (
+          <button
+            key={id}
+            ref={(el) => {
+              refs.current[id] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`tab-${id}`}
+            aria-selected={on}
+            aria-controls={`panel-${id}`}
+            tabIndex={on ? 0 : -1}
+            onClick={() => onPick(id)}
+            className={`min-h-11 border-0 border-b-2 bg-transparent px-0 text-sm whitespace-nowrap sm:min-h-12 sm:px-0.5 sm:text-[15px] ${
+              on ? 'border-white font-semibold text-white' : 'border-transparent text-silver-soft hover:text-white'
+            }`}
+          >
+            <span className="sm:hidden">{TAB_LABEL[id].short}</span>
+            <span className="hidden sm:inline">{TAB_LABEL[id].full}</span>
+            {count !== null && <span className={`ml-1 font-normal ${on ? 'text-silver-soft' : ''}`}>{count}</span>}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Hồ sơ đã nộp ─────────────────────────────────────────────────────────
+
+const STEP_ORDER: CandidateStage[] = ['sent', 'seen', 'interview', 'passed'];
+
+function stageNote(stage: CandidateStage, keepForOtherJobs: boolean): string {
+  switch (stage) {
+    case 'sent':
+      return 'HR đã nhận hồ sơ và sẽ xem trong vài ngày tới.';
+    case 'seen':
+      return 'Hồ sơ đang được xem xét.';
+    case 'interview':
+      return 'HR sẽ gọi hoặc nhắn Zalo để hẹn lịch.';
+    case 'passed':
+      return 'Chúc mừng bạn. HR sẽ liên hệ để trao đổi bước tiếp theo.';
+    case 'closed':
+      return keepForOtherJobs
+        ? 'Vị trí này đã đóng. Cảm ơn bạn đã quan tâm. Vì bạn chọn giữ hồ sơ, HR có thể liên hệ khi có vị trí phù hợp.'
+        : 'Vị trí này đã đóng. Cảm ơn bạn đã quan tâm.';
+  }
+}
+
+function ApplicationsTab({
+  applications,
+  keepForOtherJobs,
+}: {
+  applications: CandidateApplicationDto[];
+  keepForOtherJobs: boolean;
+}) {
+  if (applications.length === 0) {
+    return (
+      <EmptyState icon="inbox" title="Chưa có hồ sơ nào" actions={<ButtonLink to="/">Xem việc đang tuyển</ButtonLink>}>
+        Hồ sơ bạn nộp bằng số điện thoại này sẽ tự hiện ở đây.
+      </EmptyState>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-3 sm:gap-3.5">
+      {applications.map((app) => (
+        <ApplicationCard key={app.id} app={app} note={stageNote(app.stage, keepForOtherJobs)} />
+      ))}
+      <p className="m-0 mt-2 text-[13px] leading-relaxed text-muted">
+        HR liên hệ qua số điện thoại hoặc Zalo bạn đã để lại. Trạng thái ở đây chỉ để bạn tiện theo dõi.
+      </p>
+    </div>
+  );
+}
+
+function ApplicationCard({ app, note }: { app: CandidateApplicationDto; note: string }) {
+  const label = CANDIDATE_STAGE_LABEL[app.stage];
+  return (
+    <article className="card-hover grid gap-2.5 rounded-card border border-line bg-white p-[18px] sm:gap-5 sm:px-7 sm:py-[26px] md:grid-cols-[minmax(0,1fr)_300px] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <span className="text-xs text-muted sm:text-[13px]">Nộp ngày {formatTimestamp(app.createdAt)}</span>
+        <Link
+          to={`/viec-lam/${app.jobSlug}`}
+          className="font-serif text-[21px] font-medium text-navy no-underline hover:text-link sm:text-[26px]"
+        >
+          {app.jobTitle}
+        </Link>
+        <span className="hidden text-sm text-slate sm:block">
+          {app.salary} · {app.place}
+        </span>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <span className="sr-only">Trạng thái: {label}</span>
+        <StagePill stage={app.stage} label={label} />
+        <StageBar stage={app.stage} />
+        <span className="text-[13px] leading-relaxed text-body sm:text-sm">{note}</span>
+      </div>
+    </article>
+  );
+}
+
+/** Phones: one pill instead of the 4-step bar. */
+function StagePill({ stage, label }: { stage: CandidateStage; label: string }) {
+  const tone =
+    stage === 'interview' || stage === 'passed' ? 'text-accent' : stage === 'closed' ? 'text-muted' : 'text-body';
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-flex items-center gap-2 self-start rounded-full bg-tint px-3 py-1.5 text-[13px] font-medium sm:hidden ${tone}`}
+    >
+      <span className="size-[7px] rounded-full bg-current" />
+      {label}
+    </span>
+  );
+}
+
+function StageBar({ stage }: { stage: CandidateStage }) {
+  const reached = STEP_ORDER.indexOf(stage);
+  const steps =
+    stage === 'closed'
+      ? [
+          { label: CANDIDATE_STAGE_LABEL.closed, bar: 'bg-silver', text: 'text-muted' },
+          ...Array.from({ length: 3 }, () => ({ label: '', bar: 'bg-line', text: '' })),
+        ]
+      : STEP_ORDER.map((s, i) => ({
+          label: CANDIDATE_STAGE_LABEL[s],
+          bar: i <= reached ? 'bg-accent' : 'bg-line',
+          text: i <= reached ? 'text-navy' : 'text-muted',
+        }));
+  return (
+    <div aria-hidden="true" className="hidden grid-cols-4 gap-1.5 sm:grid">
+      {steps.map((s, i) => (
+        <span key={i} className={`flex flex-col gap-1.5 text-xs ${s.text}`}>
+          <span className={`h-[3px] rounded-full ${s.bar}`} />
+          {s.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// ── Việc đã lưu ──────────────────────────────────────────────────────────
+
+function SavedTab({ jobs, onAnnounce }: { jobs: JobCardDto[]; onAnnounce: (text: string) => void }) {
+  const toggleSaved = useToggleSaved();
+  if (jobs.length === 0) {
+    return (
+      <EmptyState
+        icon="bookmark"
+        title="Chưa lưu việc nào"
+        actions={<ButtonLink to="/">Xem việc đang tuyển</ButtonLink>}
+      >
+        Bấm Lưu trên tin tuyển dụng để xem lại và nộp sau.
+      </EmptyState>
+    );
+  }
+  const unsave = (job: JobCardDto) => {
+    toggleSaved.mutate(
+      { slug: job.slug, saved: false },
+      {
+        onSuccess: () => onAnnounce(`Đã bỏ lưu ${job.title}.`),
+        onError: () => onAnnounce(`Chưa bỏ lưu được ${job.title}. Thử lại sau.`),
+      },
+    );
+  };
+  return (
+    <div className="grid gap-3 md:grid-cols-2 md:gap-4">
+      {jobs.map((job) => (
+        <article
+          key={job.id}
+          className="card-hover flex flex-col gap-2.5 rounded-card border border-line bg-white p-[18px] sm:gap-3.5 sm:px-7 sm:py-[26px]"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-slate sm:text-[13px]">
+            <span className="hidden text-muted sm:inline">{job.department}</span>
+            <span className="inline-flex items-center gap-2">
+              Hạn {formatDate(job.deadline).slice(0, 5)}
+              {job.status === 'expiring' && <ExpiringChip deadline={job.deadline} />}
+            </span>
+          </div>
+          <Link
+            to={`/viec-lam/${job.slug}`}
+            className="font-serif text-[21px] font-medium text-navy no-underline hover:text-link sm:text-[26px]"
+          >
+            {job.title}
+          </Link>
+          <span className="text-sm font-medium text-accent sm:text-[15px]">{formatSalary(job)}</span>
+          <div className="mt-1 flex gap-2.5">
+            <ButtonLink
+              to={`/viec-lam/${job.slug}?ung-tuyen=1`}
+              size="sm"
+              className="min-h-12 flex-1 px-[22px] font-semibold sm:min-h-[46px] sm:flex-none"
+            >
+              Ứng tuyển
+            </ButtonLink>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => unsave(job)}
+              aria-label={`Bỏ lưu ${job.title}`}
+              className="min-h-12 border-field px-[18px] text-slate sm:min-h-[46px]"
+            >
+              Bỏ lưu
+            </Button>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+// ── Thông tin & CV ───────────────────────────────────────────────────────
+
+function formatBytes(bytes: number): string {
+  const nf = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1 });
+  return bytes >= 1024 * 1024
+    ? `${nf.format(bytes / 1024 / 1024)} MB`
+    : `${nf.format(Math.max(1, Math.round(bytes / 1024)))} KB`;
+}
+
+function cvProblem(file: File): string | null {
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+  if (!isPdf) return 'CV cần là file PDF.';
+  if (file.size > CV_MAX_BYTES) return 'File lớn hơn 4 MB. Nén lại rồi thử lại.';
+  return null;
+}
+
+function InfoTab({ me, onLeave, onStay }: { me: CandidateMe; onLeave: () => void; onStay: () => void }) {
+  return (
+    <div className="grid items-start gap-3 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <ProfileForm me={me} />
+      <aside className="flex flex-col gap-3 sm:gap-4">
+        <ConsentCard me={me} />
+        <DataCard onLeave={onLeave} onStay={onStay} />
+      </aside>
+    </div>
+  );
+}
+
+function ProfileForm({ me }: { me: CandidateMe }) {
+  const update = useUpdateCandidate();
+  const [name, setName] = useState(me.name ?? '');
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvError, setCvError] = useState('');
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const dirty = name.trim() !== (me.name ?? '') || cvFile !== null;
+
+  const onPickFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow picking the same file again
+    if (!file) return;
+    const problem = cvProblem(file);
+    setResult(null);
+    setCvError(problem ?? '');
+    setCvFile(problem ? null : file);
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setResult(null);
+    try {
+      await update.mutateAsync({ name: name.trim(), ...(cvFile ? { cvFile } : {}) });
+      setCvFile(null);
+      setResult({ ok: true, text: 'Đã lưu thay đổi.' });
+    } catch (err) {
+      const cvMessage = errorText(err, 'cv', '');
+      if (cvMessage && cvFile) setCvError(cvMessage);
+      setResult({ ok: false, text: errorText(err, null, 'Chưa lưu được. Kiểm tra mạng rồi thử lại.') });
+    }
+  };
+
+  const fileName = cvFile?.name ?? me.cvFileName;
+  const fileMeta = cvFile
+    ? `${formatBytes(cvFile.size)} · bấm Lưu để cập nhật`
+    : me.cvFileName
+      ? 'CV dùng cho lần nộp sau'
+      : 'PDF, tối đa 4 MB';
+
+  return (
+    <form
+      noValidate
+      onSubmit={onSubmit}
+      aria-labelledby="profile-title"
+      className="flex flex-col gap-3.5 rounded-card border border-line bg-white p-[18px] sm:gap-[18px] sm:px-8 sm:py-[30px]"
+    >
+      <h2 id="profile-title" className="m-0 hidden font-serif text-[26px] font-medium sm:block">
+        Thông tin để nộp nhanh
+      </h2>
+      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
+        <TextField label="Họ tên" value={name} autoComplete="name" onChange={(e) => setName(e.target.value)} />
+        <TextField
+          label="Số điện thoại (Zalo)"
+          value={formatPhone(me.phone)}
+          disabled
+          className="[&>div]:border-line [&>div]:bg-mist [&_input]:text-slate"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div
+          className={`flex items-center gap-3 rounded-control border p-3.5 sm:gap-3.5 sm:px-[18px] sm:py-4 ${cvError ? 'border-error' : 'border-line'}`}
+        >
+          <Icon name="file" size={22} stroke={1.5} className="shrink-0 text-accent" />
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <strong className="truncate text-sm font-medium sm:text-[15px]">{fileName ?? 'Chưa có CV'}</strong>
+            <span className="text-xs text-muted sm:text-[13px]">{fileMeta}</span>
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInput.current?.click()}
+            className="min-h-11 shrink-0 px-4 sm:min-h-[42px]"
+          >
+            {fileName ? 'Đổi CV' : 'Tải CV lên'}
+          </Button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/pdf,.pdf"
+            onChange={onPickFile}
+            className="hidden"
+            aria-label="Chọn file CV (PDF)"
+          />
+        </div>
+        <FieldError>{cvError}</FieldError>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <Button type="submit" disabled={!dirty || update.isPending} className="w-full px-7 sm:w-auto">
+          {update.isPending ? 'Đang lưu…' : 'Lưu thay đổi'}
+        </Button>
+        <span role="status" className={`text-sm ${result?.ok ? 'text-ok' : 'text-error'}`}>
+          {result?.text}
+        </span>
+      </div>
+    </form>
+  );
+}
+
+function ConsentCard({ me }: { me: CandidateMe }) {
+  const update = useUpdateCandidate();
+  const [keep, setKeep] = useState(me.keepForOtherJobs);
+  const [alerts, setAlerts] = useState<string[]>(me.alertDepartments);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const toggleKeep = (checked: boolean) => {
+    const before = keep;
+    setKeep(checked);
+    update.mutate(
+      { keepForOtherJobs: checked },
+      {
+        onSuccess: () =>
+          setStatus({ ok: true, text: checked ? 'Đã đồng ý giữ hồ sơ 12 tháng.' : 'Đã rút lại đồng ý giữ hồ sơ.' }),
+        onError: () => {
+          setKeep(before);
+          setStatus({ ok: false, text: 'Chưa cập nhật được. Thử lại sau.' });
+        },
+      },
+    );
+  };
+
+  const toggleDept = (dept: string, checked: boolean) => {
+    const before = alerts;
+    const next = checked ? [...alerts, dept] : alerts.filter((d) => d !== dept);
+    setAlerts(next);
+    update.mutate(
+      { alertDepartments: next },
+      {
+        onSuccess: () =>
+          setStatus({
+            ok: true,
+            text: checked ? `Đã bật tin việc mới phòng ${dept}.` : `Đã tắt tin việc mới phòng ${dept}.`,
+          }),
+        onError: () => {
+          setAlerts(before);
+          setStatus({ ok: false, text: 'Chưa cập nhật được. Thử lại sau.' });
+        },
+      },
+    );
+  };
+
+  return (
+    <section
+      aria-labelledby="consent-title"
+      className="flex flex-col gap-3 rounded-card border border-line bg-white p-[18px] sm:px-[26px] sm:py-6"
+    >
+      <h2 id="consent-title" className="m-0 font-serif text-xl font-medium">
+        Bạn đã đồng ý
+      </h2>
+      <p className="m-0 text-[13px] leading-normal text-muted">
+        Theo lựa chọn của bạn khi nộp đơn. Bỏ tick là rút lại, có hiệu lực ngay.
+      </p>
+      <ConsentToggle checked={keep} onChange={toggleKeep}>
+        Giữ hồ sơ 12 tháng để HR xét vị trí khác
+      </ConsentToggle>
+      {DEPARTMENTS.map((dept) => (
+        <ConsentToggle key={dept} checked={alerts.includes(dept)} onChange={(c) => toggleDept(dept, c)}>
+          Nhận tin việc mới phòng {dept} qua Zalo
+        </ConsentToggle>
+      ))}
+      <span role="status" className={`text-[13px] empty:hidden ${status?.ok ? 'text-ok' : 'text-error'}`}>
+        {status?.text}
+      </span>
+    </section>
+  );
+}
+
+function ConsentToggle({
+  checked,
+  onChange,
+  children,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-normal text-body max-sm:min-h-11 max-sm:items-center">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 size-[18px] shrink-0 accent-accent max-sm:size-5"
+      />
+      <span>{children}</span>
+    </label>
+  );
+}
+
+const LEAVE_DELAY_MS = 1500;
+
+function DataCard({ onLeave, onStay }: { onLeave: () => void; onStay: () => void }) {
+  const signOut = useCandidateSignOut();
+  const navigate = useNavigate();
+  const [asking, setAsking] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  const [error, setError] = useState('');
+  const keepButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (asking) keepButton.current?.focus();
+  }, [asking]);
+
+  useEffect(() => {
+    if (!deleted) return;
+    const t = setTimeout(() => navigate('/', { replace: true }), LEAVE_DELAY_MS);
+    return () => clearTimeout(t);
+  }, [deleted, navigate]);
+
+  const run = async (deleteData: boolean) => {
+    setError('');
+    onLeave();
+    try {
+      await signOut.mutateAsync({ deleteData });
+      if (deleteData) {
+        setAsking(false);
+        setDeleted(true);
+      } else {
+        navigate('/', { replace: true });
+      }
+    } catch (err) {
+      onStay();
+      setError(
+        errorText(err, null, deleteData ? 'Chưa xóa được. Thử lại sau ít phút.' : 'Chưa đăng xuất được. Thử lại sau.'),
+      );
+    }
+  };
+
+  return (
+    <>
+      <section
+        aria-labelledby="data-title"
+        className="flex flex-col gap-2.5 rounded-card border border-line bg-white p-[18px] sm:px-[26px] sm:py-6"
+      >
+        <h2 id="data-title" className="m-0 font-serif text-xl font-medium">
+          Dữ liệu của bạn
+        </h2>
+        <p className="m-0 text-sm leading-relaxed text-slate">Xóa toàn bộ hồ sơ và CV đã gửi. Không thể khôi phục.</p>
+        {asking && (
+          <div className="flex gap-2">
+            <button
+              ref={keepButton}
+              type="button"
+              onClick={() => setAsking(false)}
+              disabled={signOut.isPending}
+              className={buttonClass('outline', 'sm', 'min-h-11 flex-1 border-field text-slate')}
+            >
+              Giữ lại
+            </button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => void run(true)}
+              disabled={signOut.isPending}
+              className="min-h-11 flex-1"
+            >
+              {signOut.isPending ? 'Đang xóa…' : 'Xóa hẳn'}
+            </Button>
+          </div>
+        )}
+        <span role="status" className="text-sm leading-relaxed text-ok empty:hidden">
+          {deleted ? 'Đã xóa hồ sơ, CV và các lựa chọn nhận tin. Bạn sẽ được đăng xuất.' : ''}
+        </span>
+        {!asking && !deleted && (
+          <button
+            type="button"
+            onClick={() => setAsking(true)}
+            className="min-h-11 self-start border-0 bg-transparent p-0 text-sm text-error hover:underline"
+          >
+            Xóa dữ liệu của tôi
+          </button>
+        )}
+        <FieldError>{error}</FieldError>
+        <Link to="/chinh-sach-du-lieu" className="inline-flex min-h-11 items-center self-start text-[13px] sm:min-h-0">
+          Chính sách dữ liệu
+        </Link>
+      </section>
+      {!deleted && (
+        <button
+          type="button"
+          onClick={() => void run(false)}
+          disabled={signOut.isPending}
+          className="inline-flex min-h-11 items-center gap-2 self-start border-0 bg-transparent p-0 text-sm text-slate hover:text-navy disabled:opacity-60"
+        >
+          <Icon name="logout" size={16} />
+          Đăng xuất
+        </button>
+      )}
+    </>
+  );
+}
+
+// ── Loading ──────────────────────────────────────────────────────────────
+
+function AccountSkeleton({ visible }: { visible: boolean }) {
+  return (
+    <>
+      <NavyHero waves={false}>
+        <div className="relative mx-auto flex max-w-[1160px] flex-col gap-[18px] px-4 pb-4 pt-[18px] sm:gap-[26px] sm:px-6 sm:pt-10">
+          {visible && (
+            <>
+              <div className="flex flex-col gap-2">
+                <Sk dark h={36} w={240} />
+                <Sk dark h={16} w={160} />
+              </div>
+              <div className="flex gap-6">
+                <Sk dark h={14} w={90} />
+                <Sk dark h={14} w={80} />
+                <Sk dark h={14} w={80} />
+              </div>
+            </>
+          )}
+        </div>
+      </NavyHero>
+      <main className="mx-auto w-full max-w-[1160px] px-4 pb-14 pt-4 sm:px-6 sm:pt-9">
+        <LoadingStatus />
+        {visible && (
+          <div className="flex flex-col gap-3.5" aria-hidden="true">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-3 rounded-card border border-line bg-white p-[18px] sm:px-7 sm:py-[26px]"
+              >
+                <Sk h={12} w={110} />
+                <Sk h={26} className="w-2/3" />
+                <Sk h={14} className="w-1/2" />
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+    </>
+  );
+}
+
+export default CandidateAccountPage;

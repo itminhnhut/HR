@@ -1,0 +1,213 @@
+@import 'tailwindcss';
+
+/* Self-hosted fonts, Vietnamese + Latin subsets only. */
+@import '@fontsource/playfair-display/vietnamese-500.css';
+@import '@fontsource/playfair-display/latin-500.css';
+@import '@fontsource/playfair-display/vietnamese-600.css';
+@import '@fontsource/playfair-display/latin-600.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-300.css';
+@import '@fontsource/be-vietnam-pro/latin-300.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-400.css';
+@import '@fontsource/be-vietnam-pro/latin-400.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-500.css';
+@import '@fontsource/be-vietnam-pro/latin-500.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-600.css';
+@import '@fontsource/be-vietnam-pro/latin-600.css';
+
+/*
+ * Design tokens: the "Hệ thống giao diện" board on the canvas.
+ * Mệnh Thủy: navy/blue + white/silver/grey. No earth brown or dark yellow.
+ */
+@theme {
+  --color-navy: #0b1f3a;
+  --color-accent: #1c3f78;
+  --color-link: #23477f;
+  --color-ink: #2a3a50;
+  --color-body: #3a4a5e;
+  --color-slate: #556479;
+  --color-muted: #5f6c80;
+  --color-silver: #c5cfdc;
+  --color-silver-soft: #aebbcc;
+  --color-ring: #d5dce6;
+  --color-line: #e4e9f0;
+  --color-line-soft: #edf0f4;
+  --color-field: #dde3eb;
+  --color-mist: #f5f7fa;
+  --color-tint: #eef2f7;
+  --color-remind: #e6ecf5;
+  --color-hover: #f8fafc;
+  --color-ok: #1f6b45;
+  --color-ok-soft: #eaf4ee;
+  --color-ok-line: #b9d8c6;
+  --color-error: #a23b2a;
+  --color-error-soft: #fbedea;
+  --color-focus: #4a78c2;
+  --color-skeleton: #e9edf3;
+
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
+
+  --radius-control: 4px;
+  --radius-card: 6px;
+
+  --animate-rise: rise 0.4s ease-out both;
+  --animate-pop: pop 0.35s ease-out both;
+  --animate-sheet: sheet 0.3s ease-out both;
+  --animate-fade: fade 0.25s ease both;
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes sheet {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-mist);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Playfair needs room for stacked Vietnamese marks (ầ, ẩ, ễ). */
+  .font-serif {
+    line-height: 1.18;
+    text-wrap: balance;
+    /* Playfair defaults to old-style figures (a dropping "4", "9"); keep digits on the line. */
+    font-variant-numeric: lining-nums;
+  }
+  a {
+    color: var(--color-link);
+  }
+  a:hover {
+    color: var(--color-navy);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  dialog::backdrop {
+    background: rgb(11 31 58 / 0.55);
+  }
+  /* Inputs on phones stay at 16px so iOS does not zoom in. */
+  @media (max-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@utility card-hover {
+  transition: border-color 0.25s ease;
+  &:hover {
+    border-color: var(--color-silver-soft);
+  }
+}
+
+@utility btn-glow {
+  transition: filter 0.2s ease;
+  &:hover:not(:disabled) {
+    filter: brightness(1.15);
+  }
+}
+
+@utility field-focus {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  &:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgb(28 63 120 / 0.12);
+  }
+}
+
+@utility check-draw {
+  stroke-dasharray: 24;
+  animation: draw 0.5s 0.15s ease-out both;
+}
+
+@utility sr-only-focusable {
+  position: absolute;
+  left: -9999px;
+  &:focus {
+    left: 16px;
+    top: 16px;
+    z-index: 50;
+    padding: 10px 14px;
+    background: #fff;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

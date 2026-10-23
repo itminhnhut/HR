@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Ứng viên – Hồ sơ của tôi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+@media (max-width: 720px){.rg1{grid-template-columns:minmax(0,1fr)!important}.rg2{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media (max-width: 960px){.tblwrap{overflow-x:auto}}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}a:hover{color:#0B1F3A}
+.card{transition:border-color .2s ease}.card:hover{border-color:#C5CFDC}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1180px; box-sizing: border-box; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: #F5F7FA">
+  <section style="background: #0B1F3A; color: #FFFFFF">
+    <header style="max-width: 1160px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(197, 207, 220, 0.18)">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: #FFFFFF">
+        <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" stroke-width="1.2"></circle><path d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"></path></svg>
+        <span style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-weight: 500; font-size: 19px">[Tên công ty]</span>
+      </a>
+      <nav style="display: flex; gap: 8px; align-items: center; white-space: nowrap">
+        <a href="Main.dc.html" style="padding: 12px 14px; color: #AEBBCC; font-size: 14px; text-decoration: none">Việc làm</a>
+        <span style="display: inline-flex; align-items: center; gap: 10px; padding: 6px 14px 6px 6px; border: 1px solid rgba(197, 207, 220, 0.35); border-radius: 999px; font-size: 14px">
+          <span style="width: 30px; height: 30px; border-radius: 999px; background: #1C3F78; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 15px; font-weight: 500">A</span>
+          Minh Anh
+        </span>
+      </nav>
+    </header>
+    <div style="max-width: 1160px; margin: 0 auto; padding: 40px 24px 0; display: flex; flex-direction: column; gap: 26px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 42px; line-height: 1.15; font-weight: 500">Chào Minh Anh</h1>
+        <span style="font-size: 15px; color: #C5CFDC; font-weight: 300">Đăng nhập bằng 0912 345 128</span>
+      </div>
+      <div role="tablist" style="display: flex; gap: 28px">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+          <sc-if value="{{t.on}}" hint-placeholder-val="{{false}}">
+            <button type="button" role="tab" aria-selected="true" onClick="{{t.pick}}" style="min-height: 48px; padding: 0 2px; border: 0; border-bottom: 2px solid #FFFFFF; background: transparent; font: inherit; font-size: 15px; font-weight: 600; color: #FFFFFF; cursor: pointer">{{t.label}} <span style="color: #AEBBCC; font-weight: 400">{{t.count}}</span></button>
+          </sc-if>
+          <sc-if value="{{t.off}}" hint-placeholder-val="{{true}}">
+            <button type="button" role="tab" aria-selected="false" onClick="{{t.pick}}" style="min-height: 48px; padding: 0 2px; border: 0; border-bottom: 2px solid transparent; background: transparent; font: inherit; font-size: 15px; color: #AEBBCC; cursor: pointer">{{t.label}} <span style="font-weight: 400">{{t.count}}</span></button>
+          </sc-if>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <main style="max-width: 1160px; margin: 0 auto; padding: 36px 24px 72px">
+    <sc-if value="{{showApps}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <sc-for list="{{apps}}" as="a" hint-placeholder-count="3">
+          <article class="card rg1"  style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: center; padding: 26px 28px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <span style="font-size: 13px; color: #5F6C80">Nộp ngày {{a.date}}</span>
+              <a href="JobDetail.dc.html" style="font-family: 'Playfair Display', Georgia, serif; font-size: 26px; line-height: 1.15; font-weight: 500; color: #0B1F3A; text-decoration: none">{{a.title}}</a>
+              <span style="font-size: 14px; color: #556479">{{a.salary}} · {{a.place}}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+                <sc-for list="{{a.steps}}" as="st" hint-placeholder-count="3">
+                  <span style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: {{st.color}}">
+                    <span style="height: 3px; border-radius: 999px; background: {{st.bar}}"></span>{{st.label}}
+                  </span>
+                </sc-for>
+              </div>
+              <span style="font-size: 14px; line-height: 1.6; color: #3A4A5E">{{a.note}}</span>
+            </div>
+          </article>
+        </sc-for>
+        <p style="margin: 8px 0 0; font-size: 13px; color: #5F6C80">HR liên hệ qua số điện thoại hoặc Zalo bạn đã để lại. Trạng thái ở đây chỉ để bạn tiện theo dõi.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showSaved}}" hint-placeholder-val="{{false}}">
+      <div class="rg1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+        <sc-for list="{{saved}}" as="j" hint-placeholder-count="2">
+          <article class="card" style="display: flex; flex-direction: column; gap: 14px; padding: 26px 28px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px">
+            <div style="display: flex; justify-content: space-between; gap: 12px">
+              <span style="font-size: 13px; color: #5F6C80">{{j.dept}}</span>
+              <span style="font-size: 13px; color: {{j.dueColor}}">{{j.due}}</span>
+            </div>
+            <a href="JobDetail.dc.html" style="font-family: 'Playfair Display', Georgia, serif; font-size: 26px; line-height: 1.15; font-weight: 500; color: #0B1F3A; text-decoration: none">{{j.title}}</a>
+            <span style="font-size: 15px; font-weight: 500; color: #1C3F78">{{j.salary}}</span>
+            <div style="display: flex; gap: 10px; margin-top: 4px">
+              <a href="ApplyModal.dc.html" style="display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none">Ứng tuyển</a>
+              <button type="button" onClick="{{j.remove}}" style="min-height: 46px; padding: 0 18px; border: 1px solid #DDE3EB; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 14px; color: #556479; cursor: pointer">Bỏ lưu</button>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{showProfile}}" hint-placeholder-val="{{false}}">
+      <div class="rg1" style="display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start">
+        <section style="padding: 30px 32px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 18px">
+          <h2 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 26px; font-weight: 500">Thông tin để nộp nhanh</h2>
+          <div class="rg1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+            <label style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 14px; font-weight: 500">Họ tên</span><input value="Trần Minh Anh" style="min-height: 50px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; color: #0B1F3A"></label>
+            <label style="display: flex; flex-direction: column; gap: 8px"><span style="font-size: 14px; font-weight: 500">Số điện thoại (Zalo)</span><input value="0912 345 128" disabled style="min-height: 50px; padding: 0 14px; border: 1px solid #E4E9F0; border-radius: 4px; background: #F5F7FA; font: inherit; font-size: 15px; color: #556479"></label>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid #E4E9F0; border-radius: 4px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+            <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><strong style="font-size: 15px; font-weight: 500">CV_TranMinhAnh.pdf</strong><span style="font-size: 13px; color: #5F6C80">1,2 MB · tải lên 21/10/2026</span></span>
+            <button type="button" style="min-height: 42px; padding: 0 16px; border: 1px solid #C5CFDC; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 14px; color: #0B1F3A; cursor: pointer">Đổi CV</button>
+          </div>
+          <button type="button" style="align-self: flex-start; min-height: 48px; padding: 0 28px; border: 0; border-radius: 4px; background: #1C3F78; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Lưu thay đổi</button>
+        </section>
+        <aside style="display: flex; flex-direction: column; gap: 16px">
+          <section style="padding: 24px 26px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 12px">
+            <strong style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Bạn đã đồng ý</strong>
+            <span style="font-size: 13px; line-height: 1.55; color: #5F6C80">Theo lựa chọn của bạn khi nộp đơn. Bỏ tick là rút lại, có hiệu lực ngay.</span>
+            <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: #3A4A5E"><input type="checkbox" checked style="width: 18px; height: 18px; margin: 2px 0 0; flex: 0 0 18px; accent-color: #1C3F78"><span>Giữ hồ sơ 12 tháng để HR xét vị trí khác <span style="display: block; font-size: 12px; color: #5F6C80">Chọn ngày 21/10/2026</span></span></label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: #3A4A5E"><input type="checkbox" checked style="width: 18px; height: 18px; margin: 2px 0 0; flex: 0 0 18px; accent-color: #1C3F78"><span>Nhận tin việc mới phòng Kinh doanh qua Zalo</span></label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; color: #3A4A5E"><input type="checkbox" style="width: 18px; height: 18px; margin: 2px 0 0; flex: 0 0 18px; accent-color: #1C3F78"><span>Nhận tin việc mới phòng Marketing qua Zalo</span></label>
+          </section>
+          <section style="padding: 24px 26px; background: #FFFFFF; border: 1px solid #E4E9F0; border-radius: 6px; display: flex; flex-direction: column; gap: 10px">
+            <strong style="font-family: 'Playfair Display', Georgia, serif; line-height: 1.2; font-size: 20px; font-weight: 500">Dữ liệu của bạn</strong>
+            <span style="font-size: 14px; line-height: 1.6; color: #556479">Xóa toàn bộ hồ sơ và CV đã gửi. Không thể khôi phục.</span>
+            <sc-if value="{{askDelete}}" hint-placeholder-val="{{false}}">
+              <div style="display: flex; gap: 8px">
+                <button type="button" onClick="{{cancelDelete}}" style="flex: 1; min-height: 44px; border: 1px solid #DDE3EB; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 14px; color: #556479; cursor: pointer">Giữ lại</button>
+                <button type="button" onClick="{{confirmDelete}}" style="flex: 1; min-height: 44px; border: 0; border-radius: 4px; background: #A23B2A; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer">Xóa hẳn</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{deleted}}" hint-placeholder-val="{{false}}">
+              <span role="status" style="font-size: 14px; line-height: 1.6; color: #1F6B45">Đã xóa hồ sơ, CV và các lựa chọn nhận tin. Bạn sẽ được đăng xuất.</span>
+            </sc-if>
+            <sc-if value="{{noAsk}}" hint-placeholder-val="{{true}}">
+              <button type="button" onClick="{{startDelete}}" style="align-self: flex-start; min-height: 44px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 14px; color: #A23B2A; cursor: pointer">Xóa dữ liệu của tôi</button>
+            </sc-if>
+            <a href="Privacy.dc.html" style="font-size: 13px">Chính sách dữ liệu</a>
+          </section>
+          <a href="Main.dc.html" style="font-size: 14px; color: #556479">Đăng xuất</a>
+        </aside>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      tab: 'apps',
+      askDelete: false,
+      deleted: false,
+      saved: [
+        { id: 's1', dept: 'Marketing', title: 'Chuyên viên Marketing Nội dung', salary: '13 – 17 triệu', due: 'Hạn 25/11', dueColor: '#556479' },
+        { id: 's2', dept: 'Kinh doanh', title: 'Thực tập sinh Kinh doanh', salary: 'Hỗ trợ 4 triệu', due: 'Hạn 15/12', dueColor: '#556479' }
+      ]
+    };
+  }
+  steps(stage) {
+    const names = ['Đã gửi', 'HR đã xem', 'Mời phỏng vấn', 'Đạt'];
+    return names.map((label, i) => ({
+      label,
+      bar: i <= stage ? '#1C3F78' : '#E4E9F0',
+      color: i <= stage ? '#0B1F3A' : '#5F6C80'
+    }));
+  }
+  renderVals() {
+    const { tab, saved, askDelete } = this.state;
+    const apps = [
+      { title: 'Nhân viên Kinh doanh B2B', salary: '12 – 18 triệu', place: 'Quận 3, TP.HCM', date: '21/10/2026', stage: 2, note: 'HR sẽ gọi hoặc nhắn Zalo để hẹn lịch.' },
+      { title: 'Chuyên viên Tuyển dụng', salary: '12 – 16 triệu', place: 'Quận 3, TP.HCM', date: '15/10/2026', stage: 1, note: 'Hồ sơ đang được xem xét. Tin nhận hồ sơ đến 26/10.' },
+      { title: 'Nhân viên Hành chính', salary: '10 – 13 triệu', place: 'Quận 3, TP.HCM', date: '02/10/2026', stage: -1, closed: true, note: 'Vị trí đã tuyển đủ. Cảm ơn bạn đã quan tâm. Vì bạn chọn giữ hồ sơ, HR có thể liên hệ khi có vị trí phù hợp.' }
+    ].map((a) => ({ ...a, steps: a.closed ? [{ label: 'Đã đóng', bar: '#C5CFDC', color: '#5F6C80' }, { label: '', bar: '#E4E9F0', color: '#5F6C80' }, { label: '', bar: '#E4E9F0', color: '#5F6C80' }, { label: '', bar: '#E4E9F0', color: '#5F6C80' }] : this.steps(a.stage) }));
+    const defs = [['apps', 'Hồ sơ đã nộp', apps.length], ['saved', 'Việc đã lưu', saved.length], ['profile', 'Thông tin & CV', '']];
+    return {
+      tabs: defs.map(([id, label, count]) => ({ label, count, on: id === tab, off: id !== tab, pick: () => this.setState({ tab: id }) })),
+      showApps: tab === 'apps',
+      showSaved: tab === 'saved',
+      showProfile: tab === 'profile',
+      apps,
+      saved: saved.map((j) => ({ ...j, remove: () => this.setState({ saved: this.state.saved.filter((x) => x.id !== j.id) }) })),
+      askDelete,
+      noAsk: !askDelete && !this.state.deleted,
+      deleted: this.state.deleted,
+      confirmDelete: () => this.setState({ askDelete: false, deleted: true }),
+      startDelete: () => this.setState({ askDelete: true }),
+      cancelDelete: () => this.setState({ askDelete: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

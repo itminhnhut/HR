@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Gửi hồ sơ ứng tuyển</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a:focus-visible,button:focus-visible,summary:focus-visible,[role="tab"]:focus-visible{outline:2px solid #4A78C2;outline-offset:2px;border-radius:4px}
+a{color:#23477F}a:hover{color:#0B1F3A}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes check{from{stroke-dashoffset:24}to{stroke-dashoffset:0}}
+.pop{animation:pop .4s ease-out both}
+.check{stroke-dasharray:24;animation:check .5s .15s ease-out both}
+.btn{transition:filter .2s ease}.btn:hover{filter:brightness(1.15)}
+.field{transition:border-color .2s ease,box-shadow .2s ease}
+.field:focus-within{border-color:#1C3F78;box-shadow:0 0 0 3px rgba(28,63,120,.12)}
+.drop{transition:border-color .2s ease,background-color .2s ease}.drop:hover{border-color:#1C3F78;background:#EEF2F7}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1000px; box-sizing: border-box; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #0B1F3A; background: rgba(11, 31, 58, 0.78); display: flex; align-items: center; justify-content: center; padding: 40px">
+
+  <div role="dialog" aria-modal="true" aria-labelledby="apply-title" class="pop" style="width: 1040px; height: 760px; box-sizing: border-box; background: #FFFFFF; border-radius: 8px; display: grid; grid-template-columns: 380px minmax(0, 1fr); overflow: hidden; box-shadow: 0 40px 100px rgba(3, 10, 24, 0.45)">
+
+    <aside style="position: relative; overflow: hidden; background: #0B1F3A; color: #FFFFFF; padding: 40px 36px; display: flex; flex-direction: column; gap: 28px">
+      <svg viewBox="0 0 380 760" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%">
+        <path d="M0 640 C 80 600, 160 690, 240 640 S 340 600, 380 620" fill="none" stroke="#C5CFDC" stroke-opacity="0.3" stroke-width="1"></path>
+        <path d="M0 662 C 90 622, 170 712, 250 662 S 350 622, 380 642" fill="none" stroke="#C5CFDC" stroke-opacity="0.15" stroke-width="1"></path>
+      </svg>
+      <div style="position: relative; display: flex; flex-direction: column; gap: 12px">
+        <span style="font-size: 13px; color: #AEBBCC">Bạn đang ứng tuyển</span>
+        <span style="font-family: 'Playfair Display', Georgia, serif; font-size: 34px; line-height: 1.15; font-weight: 500">Nhân viên Kinh doanh B2B</span>
+        <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C5CFDC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.5"></circle></svg>
+          12 – 18 triệu + hoa hồng
+        </span>
+      </div>
+      <ul style="position: relative; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 14px; color: #DDE3EB">
+        <li style="display: flex; align-items: center; gap: 12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto; padding: 8px; border: 1px solid rgba(197, 207, 220, 0.4); border-radius: 999px"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Quận 3, TP. Hồ Chí Minh</li>
+        <li style="display: flex; align-items: center; gap: 12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto; padding: 8px; border: 1px solid rgba(197, 207, 220, 0.4); border-radius: 999px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Toàn thời gian, T2 – T6</li>
+        <li style="display: flex; align-items: center; gap: 12px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto; padding: 8px; border: 1px solid rgba(197, 207, 220, 0.4); border-radius: 999px"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>Hạn nộp 30/11/2026</li>
+      </ul>
+      <div style="position: relative; display: flex; flex-direction: column; gap: 14px; padding-top: 24px; border-top: 1px solid rgba(197, 207, 220, 0.2)">
+        <span style="font-size: 13px; color: #AEBBCC">Sau khi gửi hồ sơ</span>
+        <ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 14px; color: #DDE3EB">
+          <li style="display: flex; gap: 12px; align-items: center"><span style="flex: 0 0 26px; height: 26px; border-radius: 999px; border: 1px solid rgba(197, 207, 220, 0.5); display: flex; align-items: center; justify-content: center; font-size: 12px">1</span>HR xem hồ sơ của bạn</li>
+          <li style="display: flex; gap: 12px; align-items: center"><span style="flex: 0 0 26px; height: 26px; border-radius: 999px; border: 1px solid rgba(197, 207, 220, 0.5); display: flex; align-items: center; justify-content: center; font-size: 12px">2</span>Liên hệ qua Zalo hoặc điện thoại nếu phù hợp</li>
+          <li style="display: flex; gap: 12px; align-items: center"><span style="flex: 0 0 26px; height: 26px; border-radius: 999px; border: 1px solid rgba(197, 207, 220, 0.5); display: flex; align-items: center; justify-content: center; font-size: 12px">3</span>Hẹn phỏng vấn</li>
+        </ol>
+      </div>
+      <span style="position: relative; margin-top: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #AEBBCC">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+        Thông tin chỉ dùng cho mục đích tuyển dụng.
+      </span>
+    </aside>
+
+    <div style="position: relative; display: flex; flex-direction: column; min-height: 0">
+      <a href="JobDetail.dc.html" aria-label="Đóng" style="position: absolute; top: 24px; right: 24px; width: 44px; height: 44px; box-sizing: border-box; border-radius: 999px; border: 1px solid #DDE3EB; display: flex; align-items: center; justify-content: center; color: #556479; background: #FFFFFF">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </a>
+
+      <sc-if value="{{showForm}}" hint-placeholder-val="{{true}}">
+        <form style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; padding: 40px 48px 36px">
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-right: 56px">
+            <h2 id="apply-title" style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 32px; line-height: 1.15; font-weight: 500">Gửi hồ sơ</h2>
+            <span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #556479">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+              Khoảng 1 phút. Không cần tạo tài khoản.
+            </span>
+          </div>
+
+          <sc-if value="{{closedError}}" hint-placeholder-val="{{false}}">
+            <div role="alert" style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 4px; background: #EEF2F7; border: 1px solid #C5CFDC; font-size: 14px; line-height: 1.55; color: #0B1F3A">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 18px; margin-top: 2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+              <span>Vị trí này vừa ngừng nhận hồ sơ lúc 23:59 ngày 30/11. Thông tin bạn nhập vẫn được giữ nguyên. <a href="Main.dc.html" style="font-weight: 600; color: #0B1F3A">Xem vị trí tương tự</a></span>
+            </div>
+          </sc-if>
+
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label for="f-name" style="font-size: 14px; font-weight: 500">Họ và tên</label>
+              <div class="field" style="display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 54px; border: 1px solid {{nameBorder}}; border-radius: 4px">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5F6C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+                <input id="f-name" type="text" autocomplete="name" placeholder="Nguyễn Văn A" value="{{name}}" onChange="{{setName}}" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 16px; color: #0B1F3A; background: transparent">
+              </div>
+              <sc-if value="{{nameError}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #A23B2A">Nhập họ và tên.</span></sc-if>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label for="f-phone" style="font-size: 14px; font-weight: 500">Số điện thoại (Zalo)</label>
+              <div class="field" style="display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 54px; border: 1px solid {{phoneBorder}}; border-radius: 4px">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5F6C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+                <input id="f-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" value="{{phone}}" onChange="{{setPhone}}" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 16px; color: #0B1F3A; background: transparent">
+              </div>
+              <sc-if value="{{phoneError}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #A23B2A">Nhập số điện thoại để HR liên hệ.</span></sc-if>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+              <span style="font-size: 14px; font-weight: 500">CV của bạn</span>
+              <sc-if value="{{modeFile}}" hint-placeholder-val="{{true}}">
+                <button type="button" onClick="{{toLink}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 500; color: #1C3F78; cursor: pointer">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"></path><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"></path></svg>
+                  Dán link thay vì tải file
+                </button>
+              </sc-if>
+              <sc-if value="{{modeLink}}" hint-placeholder-val="{{false}}">
+                <button type="button" onClick="{{toFile}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0; border: 0; background: transparent; font: inherit; font-size: 13px; font-weight: 500; color: #1C3F78; cursor: pointer">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+                  Tải file thay vì dán link
+                </button>
+              </sc-if>
+            </div>
+
+            <sc-if value="{{showDrop}}" hint-placeholder-val="{{true}}">
+              <label class="drop" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 150px; padding: 20px; box-sizing: border-box; border: 1.5px dashed {{cvBorder}}; border-radius: 6px; background: #F8FAFC; cursor: pointer; text-align: center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="padding: 13px; border: 1px solid #D5DCE6; border-radius: 999px; background: #FFFFFF"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+                <span style="font-size: 16px; font-weight: 500">Kéo thả CV vào đây hoặc <span style="color: #1C3F78; text-decoration: underline; text-underline-offset: 4px">chọn file</span></span>
+                <span style="font-size: 13px; color: #5F6C80">PDF, tối đa 4 MB</span>
+                <input type="file" accept="application/pdf,.pdf" onChange="{{pickFile}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">
+              </label>
+            </sc-if>
+            <sc-if value="{{showFile}}" hint-placeholder-val="{{false}}">
+              <div class="pop" style="display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 14px 18px; box-sizing: border-box; border: 1px solid #C5CFDC; border-radius: 6px; background: #F8FAFC">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto; padding: 11px; border: 1px solid #D5DCE6; border-radius: 999px; background: #FFFFFF"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+                <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{fileName}}</span><span style="font-size: 12px; color: #1F6B45">Đã đính kèm</span></span>
+                <button type="button" onClick="{{clearFile}}" style="min-height: 40px; padding: 0 14px; border: 1px solid #DDE3EB; border-radius: 4px; background: #FFFFFF; font: inherit; font-size: 14px; color: #0B1F3A; cursor: pointer">Đổi file</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{modeLink}}" hint-placeholder-val="{{false}}">
+              <div class="field" style="display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 54px; border: 1px solid {{cvBorder}}; border-radius: 4px">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5F6C80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"></path><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"></path></svg>
+                <input type="url" aria-label="Link CV" placeholder="Link Google Drive, TopCV hoặc LinkedIn" value="{{cvLink}}" onChange="{{setLink}}" style="flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 16px; color: #0B1F3A; background: transparent">
+              </div>
+            </sc-if>
+            <sc-if value="{{cvError}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #A23B2A">Đính kèm file CV hoặc dán link CV.</span></sc-if>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <label for="f-msg" style="font-size: 14px; font-weight: 500">Lời nhắn đến HR <span style="font-weight: 400; color: #5F6C80">(không bắt buộc)</span></label>
+            <textarea id="f-msg" rows="3" class="field" maxlength="500" value="{{msg}}" onInput="{{setMsg}}" placeholder="Giới thiệu ngắn, thời gian có thể bắt đầu, email nếu muốn…" style="padding: 14px 16px; border: 1px solid #DDE3EB; border-radius: 4px; font: inherit; font-size: 15px; color: #0B1F3A; resize: none; outline: none"></textarea>
+            <span style="align-self: flex-end; font-size: 12px; color: #5F6C80">{{msgCount}}/500</span>
+          </div>
+
+          <div style="margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-top: 6px">
+            <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 8px">
+              <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.55; color: #3A4A5E">
+                <input type="checkbox" onChange="{{toggleConsent}}" style="width: 18px; height: 18px; margin: 1px 0 0; flex: 0 0 18px; accent-color: #1C3F78">
+                <span>Tôi đồng ý để [Tên công ty] dùng thông tin này để xét tuyển vị trí này. <a href="Privacy.dc.html">Xem chính sách</a></span>
+              </label>
+              <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.55; color: #3A4A5E">
+                <input type="checkbox" onChange="{{togglePool}}" style="width: 18px; height: 18px; margin: 1px 0 0; flex: 0 0 18px; accent-color: #1C3F78">
+                <span>Giữ hồ sơ 12 tháng để HR báo khi có vị trí khác phù hợp <span style="color: #5F6C80">(không bắt buộc)</span></span>
+              </label>
+              <sc-if value="{{consentError}}" hint-placeholder-val="{{false}}"><span role="alert" style="font-size: 13px; color: #A23B2A">Cần tích ô đồng ý đầu tiên để gửi hồ sơ.</span></sc-if>
+            </div>
+            <button type="button" class="btn" onClick="{{submit}}" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 0 36px; border: 0; border-radius: 4px; background: {{accent}}; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4z"></path></svg>
+              Gửi hồ sơ
+            </button>
+          </div>
+        </form>
+      </sc-if>
+
+      <sc-if value="{{done}}" hint-placeholder-val="{{false}}">
+        <div class="pop" role="status" style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 18px; padding: 48px 64px">
+          <span style="width: 76px; height: 76px; box-sizing: border-box; border-radius: 999px; border: 1px solid #C5CFDC; display: flex; align-items: center; justify-content: center">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1C3F78" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="check" d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          </span>
+          <h3 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 40px; line-height: 1.15; font-weight: 500">{{doneTitle}}</h3>
+          <sc-if value="{{isDuplicate}}" hint-placeholder-val="{{false}}">
+            <p style="margin: 0; padding: 12px 16px; border-left: 2px solid #C5CFDC; background: #F8FAFC; font-size: 14px; line-height: 1.6; color: #3A4A5E; max-width: 460px">Bạn đã nộp vị trí này ngày 18/10/2026. Hồ sơ cũ đã được thay bằng hồ sơ vừa gửi, HR sẽ xem bản mới nhất.</p>
+          </sc-if>
+          <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #3A4A5E; max-width: 460px">Cảm ơn {{firstName}}. HR sẽ xem hồ sơ và liên hệ qua số <strong style="color: #0B1F3A">{{phone}}</strong> nếu bạn phù hợp với vị trí này.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 8px">
+            <a href="Main.dc.html" class="btn" style="display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 26px; border-radius: 4px; background: {{accent}}; color: #FFFFFF; font-size: 15px; font-weight: 500; text-decoration: none">Xem việc làm khác</a>
+            <button type="button" onClick="{{reset}}" style="min-height: 52px; padding: 0 22px; border-radius: 4px; border: 1px solid #DDE3EB; background: #FFFFFF; color: #0B1F3A; font: inherit; font-size: 15px; cursor: pointer">Xem lại hồ sơ</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["Bình thường","Đã nộp trước đó","Tin vừa hết hạn"],"default":"Bình thường"},"accent":{"editor":"color","default":"#1C3F78","options":["#1C3F78","#0B1F3A","#24508F","#2E4A6B"]},"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { name: '', phone: '', mode: 'file', fileName: '', cvLink: '', msg: '', consent: false, pool: false, tried: false, submitted: false };
+  }
+  renderVals() {
+    const s = this.state;
+    const scenario = this.props.scenario ?? 'Bình thường';
+    const nameError = s.tried && s.name.trim() === '';
+    const phoneError = s.tried && s.phone.trim() === '';
+    const hasCv = s.mode === 'file' ? s.fileName !== '' : s.cvLink.trim() !== '';
+    const cvError = s.tried && !hasCv;
+    const consentError = s.tried && !s.consent;
+    const set = (key) => (e) => this.setState({ [key]: e.target.value });
+    return {
+      accent: this.props.accent ?? '#1C3F78',
+      showForm: !s.submitted,
+      done: s.submitted,
+      name: s.name,
+      phone: s.phone,
+      cvLink: s.cvLink,
+      fileName: s.fileName,
+      firstName: s.name.trim().split(' ').pop() || 'bạn',
+      nameError, phoneError, cvError, consentError,
+      toggleConsent: () => this.setState({ consent: !this.state.consent }),
+      togglePool: () => this.setState({ pool: !this.state.pool }),
+      nameBorder: nameError ? '#A23B2A' : '#DDE3EB',
+      phoneBorder: phoneError ? '#A23B2A' : '#DDE3EB',
+      cvBorder: cvError ? '#A23B2A' : '#C5CFDC',
+      modeFile: s.mode === 'file',
+      modeLink: s.mode === 'link',
+      showDrop: s.mode === 'file' && s.fileName === '',
+      showFile: s.mode === 'file' && s.fileName !== '',
+      setName: set('name'),
+      setPhone: set('phone'),
+      setLink: set('cvLink'),
+      setMsg: set('msg'),
+      msg: s.msg,
+      msgCount: s.msg.length,
+      toFile: () => this.setState({ mode: 'file' }),
+      toLink: () => this.setState({ mode: 'link' }),
+      pickFile: (e) => {
+        const file = e && e.target && e.target.files ? e.target.files[0] : null;
+        this.setState({ fileName: file ? file.name : 'CV_NguyenVanA.pdf' });
+      },
+      clearFile: () => this.setState({ fileName: '' }),
+      closedError: Boolean(s.closedError),
+      isDuplicate: scenario === 'Đã nộp trước đó',
+      doneTitle: scenario === 'Đã nộp trước đó' ? 'Đã cập nhật hồ sơ' : 'Đã gửi hồ sơ',
+      submit: () => {
+        if (!(s.name.trim() && s.phone.trim() && hasCv && s.consent)) return this.setState({ tried: true });
+        // Mockup only: the "Tin vừa hết hạn" scenario shows the server's refusal.
+        if (scenario === 'Tin vừa hết hạn') return this.setState({ closedError: true });
+        this.setState({ submitted: true });
+      },
+      reset: () => this.setState({ submitted: false })
+    };
+  }
+}
+</script>
+</body>
+</html>
