@@ -78,8 +78,6 @@ describe('HR sign-in with own password', () => {
 
   it('counts parallel wrong guesses against the same limit', async () => {
     await Promise.all(Array.from({ length: 8 }, () => login(HR_EMAIL, 'sai')));
-    const [user] = await t.db.select().from(hrUsers);
-    expect(user.lockedUntil).not.toBeNull();
     expect((await login(HR_EMAIL, PASSWORD)).status).toBe(429);
   });
 

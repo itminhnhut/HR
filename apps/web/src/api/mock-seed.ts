@@ -358,7 +358,9 @@ export function buildSeed(now: Date = new Date()): MockDb {
 
   return {
     version: DB_VERSION,
-    hrUsers: [{ id: 'u1', email: DEMO_HR.email, name: DEMO_HR.name, password: DEMO_HR.password, lastLoginAt: null }],
+    hrUsers: [
+      { id: 'u1', email: DEMO_HR.email, name: DEMO_HR.name, password: randomDemoPassword(), lastLoginAt: null },
+    ],
     template: null,
     jobs,
     applications,
@@ -384,6 +386,17 @@ export function buildSeed(now: Date = new Date()): MockDb {
 }
 
 /** HR emails allowed in the demo. The real allowlist lives in the BE. */
-export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự', password: 'Demo-Lee-HR-2026' };
+export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
+
+/**
+ * The demo HR password is made per browser when the demo data is created: nothing to guess from the source code.
+ * The sign-in page shows it in demo mode only.
+ */
+function randomDemoPassword(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  const bytes = crypto.getRandomValues(new Uint8Array(15));
+  const text = Array.from(bytes, (b) => chars[b % chars.length]).join('');
+  return `Demo-${text.slice(0, 5)}-${text.slice(5, 10)}-${text.slice(10)}`;
+}
 /** The demo "Google" account: Trần Minh Anh, who applied with this email. */
 export const DEMO_CANDIDATE_EMAIL = 'minhanh@email.com';

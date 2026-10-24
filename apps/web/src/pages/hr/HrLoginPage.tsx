@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { isDemo } from '../../api';
+import { demoHrPassword } from '../../api/mock';
 import { DEMO_HR } from '../../api/mock-seed';
 import { useHrMe, useHrSignIn } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
@@ -50,16 +51,12 @@ function Brand() {
   );
 }
 
-export function HrLoginPage() {
-  usePageMeta('Đăng nhập HR');
-  const me = useHrMe();
+function HrLoginForm() {
   const signIn = useHrSignIn();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  if (me.data) return <Navigate to="/hr" replace />;
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -74,6 +71,87 @@ export function HrLoginPage() {
   };
 
   return (
+    <>
+      {signIn.error && (
+        <Notice tone="error" icon="alert">
+          {errorMessage(signIn.error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
+        </Notice>
+      )}
+      <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+        <TextField
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="username"
+          inputMode="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          label="Mật khẩu"
+          type={showPassword ? 'text' : 'password'}
+          name="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          trailing={<ShowPasswordToggle shown={showPassword} onToggle={() => setShowPassword((v) => !v)} />}
+        />
+        <Button type="submit" size="lg" disabled={signIn.isPending || !email.trim() || !password}>
+          {signIn.isPending ? 'Đang đăng nhập…' : 'Đăng nhập'}
+        </Button>
+        {isDemo && (
+          <span className="text-xs text-muted">
+            Bản chạy thử: {DEMO_HR.email} / {demoHrPassword()}
+          </span>
+        )}
+      </form>
+    </>
+  );
+}
+
+function ShowPasswordToggle({ shown, onToggle }: { shown: boolean; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={shown}
+      aria-label={shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+      className="-mr-2 flex size-10 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-slate hover:bg-tint hover:text-navy"
+    >
+      <Icon name="eye" size={18} stroke={shown ? 2 : 1.4} />
+    </button>
+  );
+}
+
+function LoginNotes() {
+  return (
+    <>
+      <p className="m-0 text-sm text-slate">
+        Quên mật khẩu? Nhờ một HR khác vào <strong className="font-medium text-navy">Tài khoản HR</strong> và bấm "Đặt
+        lại mật khẩu" cho bạn.
+      </p>
+      <ul className="m-0 flex list-none flex-col gap-2.5 border-t border-line p-0 pt-[18px] text-[13px] text-slate">
+        <li className="flex items-center gap-2.5">
+          <Icon name="lock" size={16} stroke={1.5} className="text-accent" />
+          Nhập sai 5 lần, tài khoản tạm khoá 15 phút
+        </li>
+        <li className="flex items-center gap-2.5">
+          <Icon name="clock" size={16} stroke={1.5} className="text-accent" />
+          Giữ đăng nhập 7 ngày trên thiết bị này
+        </li>
+      </ul>
+    </>
+  );
+}
+
+export function HrLoginPage() {
+  usePageMeta('Đăng nhập HR');
+  const me = useHrMe();
+  if (me.data) return <Navigate to="/hr" replace />;
+
+  return (
     <div className="grid min-h-dvh grid-cols-1 bg-mist text-navy lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
       <Brand />
       <section className="flex items-center justify-center px-4 py-12 sm:px-6">
@@ -82,69 +160,8 @@ export function HrLoginPage() {
             <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[34px]">Đăng nhập</h2>
             <p className="m-0 text-[15px] leading-relaxed text-slate">Dùng tài khoản HR được cấp riêng cho bạn.</p>
           </div>
-
-          {signIn.error && (
-            <Notice tone="error" icon="alert">
-              {errorMessage(signIn.error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
-            </Notice>
-          )}
-
-          <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
-            <TextField
-              label="Email"
-              type="email"
-              name="email"
-              autoComplete="username"
-              inputMode="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label="Mật khẩu"
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              trailing={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-pressed={showPassword}
-                  aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                  className="-mr-2 flex size-10 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-slate hover:bg-tint hover:text-navy"
-                >
-                  <Icon name="eye" size={18} stroke={showPassword ? 2 : 1.4} />
-                </button>
-              }
-            />
-            <Button type="submit" size="lg" disabled={signIn.isPending || !email.trim() || !password}>
-              {signIn.isPending ? 'Đang đăng nhập…' : 'Đăng nhập'}
-            </Button>
-            {isDemo && (
-              <span className="text-xs text-muted">
-                Bản chạy thử: {DEMO_HR.email} / {DEMO_HR.password}
-              </span>
-            )}
-          </form>
-
-          <p className="m-0 text-sm text-slate">
-            Quên mật khẩu? Nhờ một HR khác vào <strong className="font-medium text-navy">Tài khoản HR</strong> và bấm
-            "Đặt lại mật khẩu" cho bạn.
-          </p>
-
-          <ul className="m-0 flex list-none flex-col gap-2.5 border-t border-line p-0 pt-[18px] text-[13px] text-slate">
-            <li className="flex items-center gap-2.5">
-              <Icon name="lock" size={16} stroke={1.5} className="text-accent" />
-              Nhập sai 5 lần, tài khoản tạm khoá 15 phút
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Icon name="clock" size={16} stroke={1.5} className="text-accent" />
-              Giữ đăng nhập 7 ngày trên thiết bị này
-            </li>
-          </ul>
+          <HrLoginForm />
+          <LoginNotes />
           <Link to="/" className="inline-flex min-h-11 w-fit items-center text-sm">
             Về trang việc làm
           </Link>

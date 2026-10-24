@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { addDays as addDaysIso } from '@careers/shared';
-import { mockApi, resetMockDb } from './mock';
+import { demoHrPassword, mockApi, resetMockDb } from './mock';
 import { DEMO_CANDIDATE_EMAIL, DEMO_HR } from './mock-seed';
 import { ApiError } from './types';
 
@@ -72,7 +72,7 @@ describe('hr', () => {
   it('signs HR in only with the right password', async () => {
     const err = await rejection(run(mockApi.hrSignIn(DEMO_HR.email, 'sai')));
     expect(err.status).toBe(401);
-    expect(await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password))).toMatchObject({ email: DEMO_HR.email });
+    expect(await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()))).toMatchObject({ email: DEMO_HR.email });
   });
 
   it('blocks HR endpoints without a session', async () => {
@@ -81,13 +81,13 @@ describe('hr', () => {
   });
 
   it('opening an application marks it seen', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const detail = await run(mockApi.hrApplication('a2'));
     expect(detail.status).toBe('seen');
   });
 
   it('will not publish a job with a deadline over 60 days (BR-01)', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const job = await run(mockApi.hrJob('j7'));
     const err = await rejection(
       run(
@@ -102,7 +102,7 @@ describe('hr', () => {
   });
 
   it('deletes drafts but never a job that was published', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const { jobs } = await run(mockApi.hrJobs());
     const draft = jobs.find((j) => j.status === 'draft')!;
     const live = jobs.find((j) => j.status === 'open')!;
@@ -123,7 +123,7 @@ describe('hr', () => {
 
 describe('editing live jobs', () => {
   it('keeps the public link when the title changes (BR-04)', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const job = await run(mockApi.hrJob('j1'));
     const saved = await run(
       mockApi.hrSaveJob('j1', { ...job, department: 'Kinh doanh', title: 'Chuyên viên Kinh doanh', intent: 'draft' }),
@@ -137,7 +137,7 @@ describe('re-applying within 30 days (BR-07)', () => {
     const [job] = (await run(mockApi.listJobs())).jobs;
     const input = { ...base, jobId: job.id, phone: '0933111222' };
     await run(mockApi.apply(input));
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const first = (await run(mockApi.hrApplications())).applications.find((a) => a.phone === '0933111222')!;
     await run(mockApi.hrUpdateApplication(first.id, { status: 'interview' }));
 
@@ -150,7 +150,7 @@ describe('re-applying within 30 days (BR-07)', () => {
 
 describe('closing and reopening jobs', () => {
   it('closes a live job and reopens it with a new deadline', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     await run(mockApi.hrJobAction('j1', 'close'));
     expect((await run(mockApi.hrJob('j1'))).status).toBe('closed');
 
@@ -160,7 +160,7 @@ describe('closing and reopening jobs', () => {
   });
 
   it('refuses a new deadline more than 60 days away', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const err = await rejection(run(mockApi.hrSetDeadline('j10', '2099-01-01')));
     expect(err.status).toBe(422);
   });
@@ -168,7 +168,7 @@ describe('closing and reopening jobs', () => {
 
 describe('deleting applications', () => {
   it('deletes only applications of jobs that ended more than 30 days ago', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const before = await run(mockApi.hrJobs());
     expect(before.dueForDeletion).toBeGreaterThan(0);
 
@@ -180,7 +180,7 @@ describe('deleting applications', () => {
   });
 
   it('deletes one application', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     await run(mockApi.hrDeleteApplication('a2'));
     expect((await run(mockApi.hrApplications())).applications.some((a) => a.id === 'a2')).toBe(false);
   });
@@ -188,7 +188,7 @@ describe('deleting applications', () => {
 
 describe('HR accounts', () => {
   it('creates an account with a one-time password that can sign in', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const { password } = await run(mockApi.hrCreateUser({ email: 'Moi@Lee-HR.com', name: 'Người mới' }));
     await run(mockApi.hrLogout());
 
@@ -196,7 +196,7 @@ describe('HR accounts', () => {
   });
 
   it('never deletes the account in use', async () => {
-    const me = await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const me = await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const err = await rejection(run(mockApi.hrDeleteUser(me.id)));
     expect(err.status).toBe(422);
   });
@@ -204,7 +204,7 @@ describe('HR accounts', () => {
 
 describe('search', () => {
   it('finds applications by name without tones or by part of the phone', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const byName = await run(mockApi.hrApplications(undefined, 'tran minh anh'));
     const byPhone = await run(mockApi.hrApplications(undefined, '345 128'));
     expect(byName.applications.every((a) => a.fullName === 'Trần Minh Anh')).toBe(true);
@@ -246,7 +246,7 @@ describe('candidate', () => {
   it('deleting data removes the applications sent with the email (BR-14)', async () => {
     await run(mockApi.googleSignIn());
     await run(mockApi.deleteCandidateData());
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     const { applications } = await run(mockApi.hrApplications());
     expect(applications.some((a) => a.fullName === 'Trần Minh Anh')).toBe(false);
     expect(await run(mockApi.candidateOverview())).toBeNull();

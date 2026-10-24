@@ -818,6 +818,11 @@ export const mockApi: Api = {
   },
 };
 
+/** Demo mode only: the per-browser HR password, shown on the HR sign-in page. */
+export function demoHrPassword(): string {
+  return load().hrUsers[0]?.password ?? '';
+}
+
 /** Test helper: start from a fresh seed. */
 export function resetMockDb(now?: Date) {
   memory = buildSeed(now);

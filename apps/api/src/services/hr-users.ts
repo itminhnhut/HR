@@ -5,6 +5,8 @@ import type { Db } from '../db/index.js';
 import { hrUsers, type HrUser } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { generatePassword, hashPassword, passwordProblem, verifyPassword } from '../lib/password.js';
+import { clearSlots } from '../lib/rate-limit.js';
+import { failureKey } from './hr-accounts.js';
 import { isUuid, normalizeEmail } from '../lib/request.js';
 
 const toDto = (user: HrUser, me: HrMe): HrUserDto => ({
@@ -57,9 +59,11 @@ export async function resetHrPassword(db: Db, id: string, me: HrMe): Promise<Tem
   const password = generatePassword();
   const [updated] = await db
     .update(hrUsers)
-    .set({ passwordHash: await hashPassword(password), failedAttempts: 0, lockedUntil: null })
+    .set({ passwordHash: await hashPassword(password) })
     .where(eq(hrUsers.id, user.id))
     .returning();
+  // A forgotten password often comes with a locked account: the new password works right away.
+  await clearSlots(db, failureKey(user.email));
   return { user: toDto(updated, me), password };
 }
 

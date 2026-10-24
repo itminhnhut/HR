@@ -20,11 +20,32 @@ export async function hashPassword(password: string): Promise<string> {
   return ['scrypt', PARAMS.N, PARAMS.r, PARAMS.p, salt.toString('base64'), key.toString('base64')].join('$');
 }
 
+/** Cost settings a stored hash may carry: anything else is treated as a wrong password, never as an error. */
+function storedParams(n: string, r: string, p: string): ScryptOptions | null {
+  const N = Number(n);
+  const R = Number(r);
+  const P = Number(p);
+  const valid =
+    Number.isInteger(N) &&
+    N >= 2 ** 10 &&
+    N <= PARAMS.N &&
+    (N & (N - 1)) === 0 &&
+    Number.isInteger(R) &&
+    R >= 1 &&
+    R <= 16 &&
+    Number.isInteger(P) &&
+    P >= 1 &&
+    P <= 4 &&
+    128 * N * R <= MAX_MEMORY;
+  return valid ? { N, r: R, p: P } : null;
+}
+
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [algo, n, r, p, salt, hash] = stored.split('$');
-  if (algo !== 'scrypt' || !salt || !hash) return false;
+  const params = storedParams(n ?? '', r ?? '', p ?? '');
+  if (algo !== 'scrypt' || !salt || !hash || !params) return false;
   const expected = Buffer.from(hash, 'base64');
-  const actual = await derive(password, Buffer.from(salt, 'base64'), { N: Number(n), r: Number(r), p: Number(p) });
+  const actual = await derive(password, Buffer.from(salt, 'base64'), params);
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 

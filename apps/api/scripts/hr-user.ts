@@ -35,7 +35,8 @@ if (values.delete) {
   console.info(removed.length ? `Deleted ${values.email}.` : `No account ${values.email}.`);
 } else {
   const password = values.password ?? generatePassword();
-  const user = await upsertHrUser(db, { email: values.email, name: values.name ?? null, password });
+  // Without --name the existing display name is kept.
+  const user = await upsertHrUser(db, { email: values.email, name: values.name, password });
   console.info(`HR account ready: ${user.email}${values.password ? '' : `\nPassword (shown once): ${password}`}`);
 }
 process.exit(0);

@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { currentHr, hrOf, requireHr } from '../lib/hr-auth.js';
 import { HttpError } from '../lib/http-error.js';
+import { clientIp } from '../lib/rate-limit.js';
 import { readJson } from '../lib/request.js';
 import { passwordFingerprint } from '../lib/password.js';
 import { clearSession, setSession } from '../lib/session.js';
@@ -17,7 +18,7 @@ export const hrRoutes = new Hono<Env>();
 /** HR accounts have their own password (scripts/hr-user.ts creates them). */
 hrRoutes.post('/auth/login', async (c) => {
   const { db, now } = c.get('deps');
-  const user = await signIn(db, await readJson(c), now());
+  const user = await signIn(db, await readJson(c), now(), clientIp(c));
   await setSession(c, 'hr', user.email, { pw: passwordFingerprint(user.passwordHash) });
   return c.json<HrMe>(toHrMe(user));
 });
