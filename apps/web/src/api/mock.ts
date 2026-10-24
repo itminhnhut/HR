@@ -1,39 +1,40 @@
 import {
+  DEFAULT_JOB_TEMPLATE,
+  DEPARTMENT_SUGGESTIONS,
   acceptsApplications,
   addDays,
   applicationFieldsSchema,
   CV_MAX_BYTES,
   candidateStage,
   daysBetween,
+  endedOn,
+  jobTemplateSchema,
+  matchesQuery,
   effectiveStatus,
-  extendTarget,
   fieldErrors,
   foldVietnamese,
-  formatDate,
-  MAX_OPEN_DAYS,
   formatSalary,
   isListed,
   jobInputSchema,
-  locationLabel,
+  placeLabel,
   normalizeVietnamPhone,
   POLICY_VERSION,
-  subscribeSchema,
   todayInVietnam,
   toLines,
   validateDeadline,
   type ApplicationDetailDto,
+  type HrMe,
+  type HrUserDto,
   type ApplicationRowDto,
-  type ApplicationStatus,
   type CandidateMe,
   type HrJobDto,
   type JobCardDto,
   type JobDetailDto,
 } from '@careers/shared';
-import { buildSeed, DB_VERSION, DEMO_HR, DEMO_OTP, type MockDb, type MockJob } from './mock-seed';
+import { buildSeed, DB_VERSION, DEMO_CANDIDATE_EMAIL, type MockDb, type MockHrUser, type MockJob } from './mock-seed';
 import { ApiError, type Api } from './types';
 
 const STORAGE_KEY = 'careers-demo-db';
-const GRACE_MS = 60 * 60 * 1000;
 const DEDUPE_DAYS = 30; // BR-07
 
 function safeStorage(): Storage | null {
@@ -102,15 +103,13 @@ function toCard(job: MockJob): JobCardDto {
     title: job.title,
     department: job.department,
     employmentType: job.employmentType,
-    remote: job.remote,
-    city: job.city,
+    place: placeLabel(job.address),
     deadline: job.deadline,
     status: statusOf(job),
     publishedAt: job.publishedOn ? `${job.publishedOn}T02:00:00.000Z` : null,
-    perks: job.perks,
+    perks: job.benefits.slice(0, 2).join(', '),
     salaryMin: job.salaryMin,
     salaryMax: job.salaryMax,
-    salaryNote: job.salaryNote,
   };
 }
 
@@ -119,30 +118,17 @@ function toDetail(job: MockJob): JobDetailDto {
     ...toCard(job),
     address: job.address,
     workingHours: job.workingHours,
-    level: job.level,
     experience: job.experience,
     education: job.education,
-    language: job.language,
-    headcount: job.headcount,
-    skills: job.skills,
-    summary: job.summary,
-    teamNote: job.teamNote,
     responsibilities: toLines(job.responsibilities),
     requirements: toLines(job.requirements),
-    niceToHave: toLines(job.niceToHave),
-    benefits: {
-      income: toLines(job.benefitIncome),
-      insurance: toLines(job.benefitInsurance),
-      timeOff: toLines(job.benefitTimeOff),
-      growth: toLines(job.benefitGrowth),
-      environment: toLines(job.benefitEnvironment),
-    },
-    plan: { day30: job.plan30, day60: job.plan60, day90: job.plan90 },
+    benefits: job.benefits,
+    roadmap: job.roadmap,
   };
 }
 
 function toHrJob(job: MockJob): HrJobDto {
-  const { perks: _perks, publishedOn: _p, createdAt: _c, ...rest } = job;
+  const { publishedOn: _p, createdAt: _c, ...rest } = job;
   return { ...rest, status: statusOf(job) };
 }
 
@@ -156,25 +142,34 @@ function slugify(title: string, db: MockDb, selfId: string | null): string {
   return slug;
 }
 
-function candidateFor(db: MockDb, phone: string): CandidateMe {
-  const c = findOrCreateCandidate(db, phone);
-  // Subscriptions made on closed-job pages count as alerts too (BR-10).
-  c.alertDepartments = [...new Set(db.subscribers.filter((s) => s.phone === phone).map((s) => s.department))];
-  return c;
+const sameEmail = (a: string | null | undefined, b: string) => !!a && a.trim().toLowerCase() === b;
+
+function candidateFor(db: MockDb, email: string): CandidateMe {
+  const c = findOrCreateCandidate(db, email);
+  // Alerts live with the phone, including sign-ups from closed-job pages (BR-10).
+  // Only alerts this account turned on: its phone is not verified (same rule as the BE).
+  const alertDepartments = db.subscribers.filter((s) => s.candidateEmail === email).map((s) => s.department);
+  return {
+    email: c.email,
+    phone: c.phone,
+    name: c.name,
+    cvFileName: c.cvFileName,
+    alertDepartments,
+  };
 }
 
-function findOrCreateCandidate(db: MockDb, phone: string): MockDb['candidates'][number] {
-  let c = db.candidates.find((x) => x.phone === phone);
+/** Like the BE: the account is created at first Google sign-in, pre-filled from the latest application. */
+function findOrCreateCandidate(db: MockDb, email: string): MockDb['candidates'][number] {
+  let c = db.candidates.find((x) => x.email === email);
   if (!c) {
     const lastApp = db.applications
-      .filter((a) => a.phone === phone)
+      .filter((a) => sameEmail(a.email, email))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
     c = {
-      phone,
+      email,
+      phone: lastApp?.phone ?? null,
       name: lastApp?.fullName ?? null,
-      email: lastApp?.email ?? null,
       cvFileName: lastApp?.cvFileName ?? null,
-      keepForOtherJobs: lastApp?.keepForOtherJobs ?? false,
       alertDepartments: [],
     };
     db.candidates.push(c);
@@ -182,9 +177,53 @@ function findOrCreateCandidate(db: MockDb, phone: string): MockDb['candidates'][
   return c;
 }
 
-function requireHr(db: MockDb) {
-  if (!db.session.hr) throw new ApiError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
+const NEEDS_PHONE = 'Nhập số điện thoại (Zalo) để nhận báo việc mới.';
+const DELETE_AFTER_DAYS = 30;
+
+const DEADLINE_MESSAGE = {
+  missing: 'Chọn hạn nộp.',
+  past: 'Hạn nộp không được ở quá khứ.',
+  too_far: 'Hạn nộp tối đa 60 ngày từ hôm nay.',
+} as const;
+
+function requireHr(db: MockDb): MockHrUser {
+  const me = db.hrUsers.find((u) => u.id === db.session.hr);
+  if (!me) throw new ApiError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
+  return me;
 }
+
+const toHrMe = (u: MockHrUser): HrMe => ({ id: u.id, email: u.email, name: u.name });
+const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
+  id: u.id,
+  email: u.email,
+  name: u.name,
+  lastLoginAt: u.lastLoginAt,
+  isMe: u.id === me.id,
+});
+
+/** Like the BE's generatePassword: three groups of five letters and digits. */
+function tempPassword(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const group = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  return `${group()}-${group()}-${group()}`;
+}
+
+/** Jobs that ended more than 30 days ago: their applications are due for deletion (same rule as the BE). */
+function dueJobIds(db: MockDb, now = new Date()): string[] {
+  const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
+  return db.jobs
+    .filter((j) => {
+      const ended = endedOn(j, now);
+      return ended !== null && ended < cutoff;
+    })
+    .map((j) => j.id);
+}
+
+const firstLine = (text: string | null) =>
+  text
+    ?.split('\n')
+    .find((l) => l.trim())
+    ?.trim() ?? null;
 
 function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDto {
   return {
@@ -195,6 +234,9 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     phone: a.phone,
     status: a.status,
     createdAt: a.createdAt,
+    hasCv: !!(a.cvFileName || a.cvLink),
+    noteLine: firstLine(a.note),
+    interviewAt: a.interviewAt,
   };
 }
 
@@ -206,8 +248,17 @@ function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDe
     cvFileName: a.cvFileName,
     cvLink: a.cvLink,
     note: a.note,
-    keepForOtherJobs: a.keepForOtherJobs,
-    thankedAt: a.thankedAt,
+    noteUpdatedAt: a.noteUpdatedAt,
+    noteUpdatedBy: a.noteUpdatedBy,
+    otherApplications: db.applications
+      .filter((o) => o.phone === a.phone && o.id !== a.id)
+      .sort((x, y) => y.createdAt.localeCompare(x.createdAt))
+      .map((o) => ({
+        id: o.id,
+        jobTitle: db.jobs.find((j) => j.id === o.jobId)?.title ?? '—',
+        status: o.status,
+        createdAt: o.createdAt,
+      })),
   };
 }
 
@@ -218,8 +269,7 @@ export const mockApi: Api = {
       .filter((j) => isListed(statusOf(j)))
       .sort((a, b) => (b.publishedOn ?? '').localeCompare(a.publishedOn ?? ''))
       .map(toCard);
-    const cities = [...new Set(jobs.map((j) => j.city))];
-    return delay({ jobs, cities });
+    return delay({ jobs });
   },
 
   async getJob(slug) {
@@ -227,10 +277,10 @@ export const mockApi: Api = {
     const job = db.jobs.find((j) => j.slug === slug);
     if (!job || job.state === 'draft') return fail(404, 'Không tìm thấy tin tuyển dụng.');
     const listed = db.jobs.filter((j) => j.id !== job.id && isListed(statusOf(j)));
-    // BR-05: up to 3, same department first, then same city.
+    // BR-05: up to 3, same department first.
     const similar = [
       ...listed.filter((j) => j.department === job.department),
-      ...listed.filter((j) => j.department !== job.department && j.city === job.city),
+      ...listed.filter((j) => j.department !== job.department),
     ]
       .slice(0, 3)
       .map(toCard);
@@ -241,7 +291,10 @@ export const mockApi: Api = {
     const db = load();
     const parsed = applicationFieldsSchema.safeParse(input);
     const errors = parsed.success ? {} : fieldErrors(parsed.error);
-    if (!input.cvFile && !input.cvLink?.trim()) errors.cv = 'Đính kèm file CV hoặc dán link CV.';
+    const account = db.session.candidateEmail ? db.candidates.find((c) => c.email === db.session.candidateEmail) : null;
+    const savedCv = input.useSavedCv && account?.cvFileName ? account.cvFileName : null;
+    if (input.useSavedCv && !savedCv) errors.cv = 'Tài khoản chưa có CV đã lưu. Tải file hoặc dán link CV.';
+    else if (!savedCv && !input.cvFile && !input.cvLink?.trim()) errors.cv = 'Đính kèm file CV hoặc dán link CV.';
     if (input.cvFile) {
       if (!/\.pdf$/i.test(input.cvFile.name) && input.cvFile.type !== 'application/pdf')
         errors.cv = 'CV cần là file PDF.';
@@ -254,11 +307,7 @@ export const mockApi: Api = {
     const job = db.jobs.find((j) => j.id === parsed.data.jobId);
     if (!job) return fail(404, 'Không tìm thấy tin tuyển dụng.');
     const now = new Date();
-    const status = statusOf(job, now);
-    const deadlineEnd = new Date(`${job.deadline}T23:59:59.999+07:00`).getTime();
-    const inGrace =
-      status === 'expired' && parsed.data.formOpenedAt <= deadlineEnd && now.getTime() <= deadlineEnd + GRACE_MS;
-    if (!acceptsApplications(status) && !inGrace) {
+    if (!acceptsApplications(statusOf(job, now))) {
       return fail(
         409,
         'Vị trí này vừa ngừng nhận hồ sơ. Thông tin bạn nhập vẫn còn, xem vị trí tương tự bên dưới.',
@@ -277,25 +326,27 @@ export const mockApi: Api = {
     const record = {
       fullName: d.fullName,
       phone: d.phone,
-      email: d.email,
+      email: db.session.candidateEmail ?? d.email,
       message: d.message,
-      cvFileName: input.cvFile?.name ?? null,
+      cvFileName: input.cvFile?.name ?? savedCv,
       cvLink: d.cvLink,
-      keepForOtherJobs: d.keepForOtherJobs,
       consentAt: now.toISOString(),
       policyVersion: POLICY_VERSION,
     };
     let previousDate: string | null = null;
     if (existing) {
       previousDate = existing.createdAt;
-      Object.assign(existing, record, { status: 'new' as ApplicationStatus, createdAt: now.toISOString() });
+      // Same as the BE: content replaced, HR's status and note kept, moved to the top of HR's list.
+      Object.assign(existing, record, { createdAt: now.toISOString() });
     } else {
       db.applications.push({
         id: uid('a'),
         jobId: job.id,
         status: 'new',
         note: null,
-        thankedAt: null,
+        noteUpdatedAt: null,
+        noteUpdatedBy: null,
+        interviewAt: null,
         createdAt: now.toISOString(),
         ...record,
       });
@@ -310,160 +361,141 @@ export const mockApi: Api = {
     });
   },
 
-  async subscribe(input) {
-    const db = load();
-    const parsed = subscribeSchema.safeParse(input);
-    if (!parsed.success) return fail(422, 'Kiểm tra lại thông tin.', fieldErrors(parsed.error));
-    const { phone, department, fromJobId } = parsed.data;
-    if (!db.subscribers.some((s) => s.phone === phone && s.department === department)) {
-      const now = new Date().toISOString();
-      db.subscribers.push({
-        id: uid('s'),
-        phone,
-        department,
-        fromJobId: fromJobId ?? null,
-        consentAt: now,
-        policyVersion: POLICY_VERSION,
-        createdAt: now,
-      });
-      save();
-    }
-    return delay({ ok: true as const });
-  },
-
-  async requestOtp(phone) {
-    if (!normalizeVietnamPhone(phone))
-      return fail(422, 'Số điện thoại chưa đúng.', { phone: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
-    return delay({ ok: true as const, devCode: DEMO_OTP });
-  },
-
-  async verifyOtp(phone, code) {
+  async lookupApplications(phone) {
     const db = load();
     const normalized = normalizeVietnamPhone(phone);
-    if (!normalized) return fail(422, 'Số điện thoại chưa đúng.');
-    if (code.trim() !== DEMO_OTP)
-      return fail(422, 'Mã chưa đúng hoặc đã hết hạn.', { code: 'Mã chưa đúng hoặc đã hết hạn.' });
-    const me = candidateFor(db, normalized);
-    db.session.candidatePhone = normalized;
-    save();
-    return delay(me);
+    if (!normalized) {
+      return fail(422, 'Số điện thoại chưa đúng.', { phone: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
+    }
+    const since = Date.now() - 90 * 24 * 60 * 60 * 1000;
+    const applications = db.applications
+      .filter((a) => a.phone === normalized && new Date(a.createdAt).getTime() >= since)
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .flatMap((a) => {
+        const job = db.jobs.find((j) => j.id === a.jobId);
+        if (!job) return [];
+        return [
+          {
+            jobTitle: job.title,
+            jobSlug: job.slug,
+            appliedOn: todayInVietnam(new Date(a.createdAt)),
+            stage: candidateStage(a.status, !acceptsApplications(statusOf(job))),
+          },
+        ];
+      });
+    return delay({ applications });
   },
 
   async googleSignIn() {
-    return delay({ email: 'minhanh@gmail.com', needsPhone: true });
+    const db = load();
+    db.session.candidateEmail = DEMO_CANDIDATE_EMAIL;
+    const me = candidateFor(db, DEMO_CANDIDATE_EMAIL);
+    save();
+    return delay(me);
   },
 
   async candidateOverview() {
     const db = load();
-    const phone = db.session.candidatePhone;
-    if (!phone) return delay(null);
-    const me = candidateFor(db, phone);
+    const email = db.session.candidateEmail;
+    if (!email) return delay(null);
+    const me = candidateFor(db, email);
     const applications = db.applications
-      .filter((a) => a.phone === phone)
+      .filter((a) => sameEmail(a.email, email))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      .map((a) => {
-        const job = db.jobs.find((j) => j.id === a.jobId)!;
-        const closed = !acceptsApplications(statusOf(job)) && statusOf(job) !== 'paused';
-        return {
-          id: a.id,
-          jobSlug: job.slug,
-          jobTitle: job.title,
-          salary: formatSalary(job),
-          place: locationLabel(job),
-          createdAt: a.createdAt,
-          stage: candidateStage(a.status, closed),
-        };
+      .flatMap((a) => {
+        const job = db.jobs.find((j) => j.id === a.jobId);
+        if (!job) return [];
+        return [
+          {
+            id: a.id,
+            jobSlug: job.slug,
+            jobTitle: job.title,
+            salary: formatSalary(job),
+            place: placeLabel(job.address),
+            createdAt: a.createdAt,
+            stage: candidateStage(a.status, !acceptsApplications(statusOf(job))),
+          },
+        ];
       });
-    const saved = db.saved
-      .map((slug) => db.jobs.find((j) => j.slug === slug))
-      .filter((j): j is MockJob => !!j && isListed(statusOf(j)))
-      .map(toCard);
-    return delay({ me, applications, saved });
+    return delay({ me, applications });
   },
 
   async updateCandidate(patch) {
     const db = load();
-    if (!db.session.candidatePhone) return fail(401, 'Đăng nhập lại để tiếp tục.');
-    const me = candidateFor(db, db.session.candidatePhone);
-    if (patch.name !== undefined) me.name = patch.name.trim() || null;
-    if (patch.keepForOtherJobs !== undefined) {
-      me.keepForOtherJobs = patch.keepForOtherJobs;
-      // Withdrawing consent applies to every application right away (BR-14).
-      for (const a of db.applications) if (a.phone === me.phone) a.keepForOtherJobs = patch.keepForOtherJobs;
-    }
-    if (patch.alertDepartments) {
-      me.alertDepartments = patch.alertDepartments;
-      db.subscribers = db.subscribers.filter(
-        (s) => s.phone !== me.phone || patch.alertDepartments!.includes(s.department),
-      );
-      const now = new Date().toISOString();
-      for (const dep of patch.alertDepartments) {
-        if (!db.subscribers.some((s) => s.phone === me.phone && s.department === dep)) {
-          db.subscribers.push({
-            id: uid('s'),
-            phone: me.phone,
-            department: dep,
-            fromJobId: null,
-            consentAt: now,
-            policyVersion: POLICY_VERSION,
-            createdAt: now,
-          });
-        }
+    const email = db.session.candidateEmail;
+    if (!email) return fail(401, 'Đăng nhập lại để tiếp tục.');
+    const me = findOrCreateCandidate(db, email);
+    let phone = me.phone;
+    if (patch.phone !== undefined) {
+      phone = patch.phone.trim() ? normalizeVietnamPhone(patch.phone) : null;
+      if (patch.phone.trim() && !phone) {
+        return fail(422, 'Số điện thoại chưa đúng.', { phone: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
       }
     }
-    if (patch.cvFile) {
-      if (patch.cvFile.size > CV_MAX_BYTES) return fail(422, 'File lớn hơn 4 MB.', { cv: 'File lớn hơn 4 MB.' });
-      me.cvFileName = patch.cvFile.name;
+    const own = db.subscribers.filter((s) => s.candidateEmail === email);
+    const departments = patch.alertDepartments ?? own.map((s) => s.department);
+    if (departments.length > 0 && !phone) return fail(422, NEEDS_PHONE, { alertDepartments: NEEDS_PHONE });
+    if (patch.cvFile && patch.cvFile.size > CV_MAX_BYTES) {
+      return fail(422, 'File lớn hơn 4 MB.', { cv: 'File lớn hơn 4 MB.' });
     }
+    if (patch.name !== undefined) me.name = patch.name.trim() || null;
+    if (patch.alertDepartments || phone !== me.phone) {
+      const consentedAt = new Map(own.map((s) => [s.department, s.consentAt]));
+      db.subscribers = db.subscribers.filter((s) => s.candidateEmail !== email);
+      const now = new Date().toISOString();
+      for (const dep of phone ? departments : []) {
+        db.subscribers.push({
+          id: uid('s'),
+          phone: phone ?? '',
+          department: dep,
+          fromJobId: null,
+          candidateEmail: email,
+          consentAt: consentedAt.get(dep) ?? now,
+          policyVersion: POLICY_VERSION,
+          createdAt: now,
+        });
+      }
+    }
+    me.phone = phone;
+    if (patch.cvFile) me.cvFileName = patch.cvFile.name;
     save();
-    return delay(me);
-  },
-
-  async setSavedJob(slug, saved) {
-    const db = load();
-    db.saved = saved ? [...new Set([...db.saved, slug])] : db.saved.filter((s) => s !== slug);
-    save();
-    return delay(db.saved);
-  },
-
-  async savedJobSlugs() {
-    return delay(load().saved);
+    return delay(candidateFor(db, email));
   },
 
   async deleteCandidateData() {
     const db = load();
-    const phone = db.session.candidatePhone;
-    if (phone) {
-      db.applications = db.applications.filter((a) => a.phone !== phone);
-      db.subscribers = db.subscribers.filter((s) => s.phone !== phone);
-      db.candidates = db.candidates.filter((c) => c.phone !== phone);
+    const email = db.session.candidateEmail;
+    if (email) {
+      db.applications = db.applications.filter((a) => !sameEmail(a.email, email));
+      db.subscribers = db.subscribers.filter((s) => s.candidateEmail !== email);
+      db.candidates = db.candidates.filter((c) => c.email !== email);
     }
-    db.saved = [];
-    db.session.candidatePhone = null;
+    db.session.candidateEmail = null;
     save();
     return delay({ ok: true as const });
   },
 
   async candidateLogout() {
     const db = load();
-    db.session.candidatePhone = null;
+    db.session.candidateEmail = null;
     save();
     return delay({ ok: true as const });
   },
 
   async hrMe() {
     const db = load();
-    return delay(db.session.hr ? { email: db.session.hr, name: DEMO_HR.name } : null);
+    const me = db.hrUsers.find((u) => u.id === db.session.hr);
+    return delay(me ? toHrMe(me) : null);
   },
 
   async hrSignIn(email, password) {
     const db = load();
-    if (email.trim().toLowerCase() !== DEMO_HR.email || password !== DEMO_HR.password) {
-      return fail(401, 'Email hoặc mật khẩu chưa đúng.');
-    }
-    db.session.hr = DEMO_HR.email;
+    const user = db.hrUsers.find((u) => u.email === email.trim().toLowerCase());
+    if (!user || user.password !== password) return fail(401, 'Email hoặc mật khẩu chưa đúng.');
+    db.session.hr = user.id;
+    user.lastLoginAt = new Date().toISOString();
     save();
-    return delay({ email: DEMO_HR.email, name: DEMO_HR.name });
+    return delay(toHrMe(user));
   },
 
   async hrLogout() {
@@ -473,11 +505,57 @@ export const mockApi: Api = {
     return delay({ ok: true as const });
   },
 
+  async hrDashboard() {
+    const db = load();
+    requireHr(db);
+    const now = new Date();
+    const today = todayInVietnam(now);
+    const days = Array.from({ length: 30 }, (_, i) => addDays(today, i - 29));
+    const index = new Map(days.map((d, i) => [d, i]));
+    const perDay = days.map((day) => ({ day, count: 0 }));
+    const perJob = new Map<string, number[]>();
+    for (const a of db.applications) {
+      const i = index.get(todayInVietnam(new Date(a.createdAt)));
+      if (i === undefined) continue;
+      perDay[i].count += 1;
+      const counts = perJob.get(a.jobId) ?? Array<number>(30).fill(0);
+      counts[i] += 1;
+      perJob.set(a.jobId, counts);
+    }
+    const title = (id: string) => db.jobs.find((j) => j.id === id)?.title ?? '—';
+    const fresh = db.applications.filter((a) => a.status === 'new');
+    const waitSince = `${addDays(today, -3)}T00:00:00.000+07:00`;
+    const due = dueJobIds(db, now);
+    return delay({
+      newApplications: fresh.length,
+      waitingOver3Days: fresh.filter((a) => new Date(a.createdAt) < new Date(waitSince)).length,
+      perDay,
+      perJobPerDay: [...perJob.entries()].map(([jobId, counts]) => ({ jobId, jobTitle: title(jobId), counts })),
+      interviews: db.applications
+        .filter((a) => a.status === 'interview')
+        .sort((a, b) => (a.interviewAt ?? '9999').localeCompare(b.interviewAt ?? '9999'))
+        .slice(0, 8)
+        .map((a) => ({
+          id: a.id,
+          fullName: a.fullName,
+          jobTitle: title(a.jobId),
+          interviewAt: a.interviewAt,
+          noteLine: firstLine(a.note),
+        })),
+      endingJobs: db.jobs
+        .map((j) => ({ j, status: statusOf(j, now) }))
+        .filter(({ j, status }) => status === 'expiring' || (status === 'expired' && j.deadline >= addDays(today, -14)))
+        .sort((a, b) => a.j.deadline.localeCompare(b.j.deadline))
+        .map(({ j, status }) => ({ id: j.id, title: j.title, deadline: j.deadline, status })),
+      dueForDeletion: db.applications.filter((a) => due.includes(a.jobId)).length,
+    });
+  },
+
   async hrJobs() {
     const db = load();
     requireHr(db);
     const now = new Date();
-    const order = { expiring: 0, open: 1, paused: 2, draft: 3, expired: 4, filled: 5 } as const;
+    const order = { expiring: 0, open: 1, draft: 2, expired: 3, closed: 4 } as const;
     const jobs = db.jobs
       .map((j) => {
         const status = statusOf(j, now);
@@ -493,12 +571,37 @@ export const mockApi: Api = {
           newApplications: apps.filter((a) => a.status === 'new').length,
           salaryMin: j.salaryMin,
           salaryMax: j.salaryMax,
-          salaryNote: j.salaryNote,
-          extendTo: status === 'expiring' || status === 'expired' ? extendTarget(j.deadline, j.publishedOn, now) : null,
         };
       })
       .sort((a, b) => order[a.status] - order[b.status]);
-    return delay({ jobs, newApplications: db.applications.filter((a) => a.status === 'new').length });
+    const due = dueJobIds(db, now);
+    return delay({
+      jobs,
+      newApplications: db.applications.filter((a) => a.status === 'new').length,
+      dueForDeletion: db.applications.filter((a) => due.includes(a.jobId)).length,
+    });
+  },
+
+  async hrJobTemplate() {
+    const db = load();
+    requireHr(db);
+    const template = db.template ?? DEFAULT_JOB_TEMPLATE;
+    const known = new Set(template.benefits.map((b) => b.label));
+    return delay({
+      template,
+      departments: [...new Set([...DEPARTMENT_SUGGESTIONS, ...db.jobs.map((j) => j.department)])],
+      extraBenefits: [...new Set(db.jobs.flatMap((j) => j.benefits))].filter((b) => !known.has(b)).slice(0, 8),
+    });
+  },
+
+  async hrSaveJobTemplate(input) {
+    const db = load();
+    requireHr(db);
+    const parsed = jobTemplateSchema.safeParse(input);
+    if (!parsed.success) return fail(422, 'Chưa lưu được, kiểm tra các ô được đánh dấu.', fieldErrors(parsed.error));
+    db.template = parsed.data;
+    save();
+    return mockApi.hrJobTemplate();
   },
 
   async hrJob(id) {
@@ -516,33 +619,22 @@ export const mockApi: Api = {
     const errors = parsed.success ? {} : fieldErrors(parsed.error);
     const existing = id ? db.jobs.find((j) => j.id === id) : null;
     if (id && !existing) return fail(404, 'Không tìm thấy tin.');
-    // Live and paused jobs are validated like a publish, so an edit cannot dodge BR-01/BR-18.
-    const goesLive = input.intent === 'publish' || (existing != null && existing.state !== 'draft');
-    if (goesLive) {
-      const problem = validateDeadline(input.deadline);
-      if (problem) {
-        errors.deadline = {
-          missing: 'Chọn hạn nộp.',
-          past: 'Hạn nộp không được ở quá khứ.',
-          too_far: 'Hạn nộp tối đa 60 ngày từ hôm nay.',
-        }[problem];
-      } else if (existing?.publishedOn && daysBetween(existing.publishedOn, input.deadline) > MAX_OPEN_DAYS) {
-        errors.deadline = `Tin đăng ngày ${formatDate(existing.publishedOn)} chỉ nhận hồ sơ tối đa 60 ngày. Muốn tuyển tiếp hãy "Đăng lại".`;
-      }
-    }
+    // A published job is validated like a publish, so an edit cannot dodge BR-01.
+    const goesLive = input.intent === 'publish' || existing?.state === 'published';
+    const problem = goesLive ? validateDeadline(input.deadline) : null;
+    if (problem) errors.deadline = DEADLINE_MESSAGE[problem];
     if (!parsed.success || Object.keys(errors).length)
       return fail(422, 'Chưa lưu được, kiểm tra các ô được đánh dấu.', errors);
     const { intent, ...data } = parsed.data;
     const today = todayInVietnam();
-    const firstBenefit = toLines(data.benefitIncome)[0] ?? toLines(data.benefitEnvironment)[0] ?? '';
     const base: Omit<MockJob, 'id' | 'createdAt'> = {
       ...data,
       // A published link never changes (BR-04/BR-05).
       slug: existing?.publishedOn ? existing.slug : slugify(data.title, db, id),
-      perks: firstBenefit,
       deadline: data.deadline || existing?.deadline || addDays(today, 30),
       state: intent === 'publish' ? 'published' : (existing?.state ?? 'draft'),
       publishedOn: intent === 'publish' ? (existing?.publishedOn ?? today) : (existing?.publishedOn ?? null),
+      closedOn: existing?.closedOn ?? null,
     };
     let saved: MockJob;
     if (existing) saved = Object.assign(existing, base);
@@ -556,34 +648,30 @@ export const mockApi: Api = {
     requireHr(db);
     const job = db.jobs.find((j) => j.id === id);
     if (!job) return fail(404, 'Không tìm thấy tin.');
-    const status = statusOf(job);
     const today = todayInVietnam();
-    switch (action) {
-      case 'publish': {
-        if (validateDeadline(job.deadline)) return fail(422, 'Hạn nộp chưa hợp lệ. Mở tin để sửa hạn nộp rồi đăng.');
-        job.state = 'published';
-        job.publishedOn ??= today;
-        break;
-      }
-      case 'extend': {
-        const target = extendTarget(job.deadline, job.publishedOn);
-        if (!target) return fail(422, 'Tin đã mở đủ 60 ngày. Dùng "Đăng lại" để tuyển đợt mới.');
-        job.deadline = target;
-        job.state = 'published';
-        break;
-      }
-      case 'pause':
-        if (!acceptsApplications(status)) return fail(422, 'Chỉ tạm dừng được tin đang tuyển.');
-        job.state = 'paused';
-        break;
-      case 'resume':
-        if (status !== 'paused') return fail(422, 'Tin này không ở trạng thái tạm dừng.');
-        job.state = 'published';
-        break;
-      case 'fill':
-        job.state = 'filled';
-        break;
+    if (action === 'publish') {
+      if (job.state !== 'draft') return fail(422, 'Tin này đã được đăng.');
+      if (validateDeadline(job.deadline)) return fail(422, 'Hạn nộp chưa hợp lệ. Mở tin để sửa hạn nộp rồi đăng.');
+      job.state = 'published';
+      job.publishedOn ??= today;
+    } else {
+      if (job.state !== 'published') return fail(422, 'Chỉ đóng được tin đang đăng.');
+      job.closedOn = statusOf(job) === 'expired' ? job.deadline : today;
+      job.state = 'closed';
     }
+    save();
+    return delay({ ok: true as const });
+  },
+
+  async hrSetDeadline(id, deadline) {
+    const db = load();
+    requireHr(db);
+    const job = db.jobs.find((j) => j.id === id);
+    if (!job) return fail(404, 'Không tìm thấy tin.');
+    if (job.state === 'draft') return fail(422, 'Bản nháp: mở tin để chọn hạn nộp rồi đăng.');
+    const problem = validateDeadline(deadline);
+    if (problem) return fail(422, DEADLINE_MESSAGE[problem], { deadline: DEADLINE_MESSAGE[problem] });
+    Object.assign(job, { deadline, state: 'published', closedOn: null });
     save();
     return delay({ ok: true as const });
   },
@@ -603,14 +691,16 @@ export const mockApi: Api = {
     return null;
   },
 
-  async hrApplications(jobId) {
+  async hrApplications(jobId, q = '') {
     const db = load();
     requireHr(db);
+    const digits = q.replace(/\D/g, '');
     const all = db.applications
       .filter((a) => !jobId || a.jobId === jobId)
+      .filter((a) => matchesQuery(`${a.fullName} ${a.phone}`, q) || (digits.length >= 3 && a.phone.includes(digits)))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .map((a) => appRow(db, a));
-    const counts = { all: all.length, new: 0, seen: 0, interview: 0, passed: 0, rejected: 0 };
+    const counts = { all: all.length, new: 0, seen: 0, interview: 0, rejected: 0 };
     for (const a of all) counts[a.status]++;
     const jobIds = [...new Set(db.applications.map((a) => a.jobId))];
     const jobs = db.jobs.filter((j) => jobIds.includes(j.id)).map((j) => ({ id: j.id, title: j.title }));
@@ -631,39 +721,100 @@ export const mockApi: Api = {
 
   async hrUpdateApplication(id, patch) {
     const db = load();
-    requireHr(db);
+    const me = requireHr(db);
     const a = db.applications.find((x) => x.id === id);
     if (!a) return fail(404, 'Không tìm thấy hồ sơ.');
-    if (patch.status) a.status = patch.status;
-    if (patch.note !== undefined) a.note = patch.note;
-    if (patch.thanked) a.thankedAt = new Date().toISOString();
+    if (patch.interviewAt && (patch.status ?? a.status) !== 'interview') {
+      return fail(422, 'Chỉ hồ sơ "Hẹn phỏng vấn" mới có giờ phỏng vấn.', {
+        interviewAt: 'Chọn "Hẹn phỏng vấn" trước.',
+      });
+    }
+    if (patch.status) {
+      a.status = patch.status;
+      if (patch.status !== 'interview') a.interviewAt = null;
+    }
+    if (patch.interviewAt !== undefined) a.interviewAt = patch.interviewAt;
+    const note = patch.note === undefined ? undefined : patch.note?.trim() || null;
+    if (note !== undefined && note !== a.note) {
+      a.note = note;
+      a.noteUpdatedAt = new Date().toISOString();
+      a.noteUpdatedBy = me.name || me.email;
+    }
     save();
     return delay(appDetail(db, a));
   },
 
-  async hrSubscribers() {
+  async hrDeleteApplication(id) {
     const db = load();
     requireHr(db);
-    return delay(
-      db.subscribers
-        .slice()
-        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-        .map((s) => ({
-          id: s.id,
-          phone: s.phone,
-          department: s.department,
-          fromJobTitle: db.jobs.find((j) => j.id === s.fromJobId)?.title ?? null,
-          createdAt: s.createdAt,
-        })),
-    );
-  },
-
-  async hrDeleteSubscriber(id) {
-    const db = load();
-    requireHr(db);
-    db.subscribers = db.subscribers.filter((s) => s.id !== id);
+    if (!db.applications.some((a) => a.id === id)) return fail(404, 'Không tìm thấy hồ sơ.');
+    db.applications = db.applications.filter((a) => a.id !== id);
     save();
     return delay({ ok: true as const });
+  },
+
+  async hrDeleteDueApplications() {
+    const db = load();
+    requireHr(db);
+    const due = dueJobIds(db);
+    const before = db.applications.length;
+    db.applications = db.applications.filter((a) => !due.includes(a.jobId));
+    save();
+    return delay({ deleted: before - db.applications.length });
+  },
+
+  async hrUsers() {
+    const db = load();
+    const me = requireHr(db);
+    return delay(db.hrUsers.map((u) => toUserDto(u, me)));
+  },
+
+  async hrCreateUser({ email, name }) {
+    const db = load();
+    const me = requireHr(db);
+    const clean = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return fail(422, 'Email chưa đúng.', { email: 'Email chưa đúng.' });
+    if (db.hrUsers.some((u) => u.email === clean)) {
+      return fail(422, 'Email này đã có tài khoản.', { email: 'Email này đã có tài khoản.' });
+    }
+    const user = { id: uid('u'), email: clean, name: name.trim() || null, password: tempPassword(), lastLoginAt: null };
+    db.hrUsers.push(user);
+    save();
+    return delay({ user: toUserDto(user, me), password: user.password });
+  },
+
+  async hrResetPassword(id) {
+    const db = load();
+    const me = requireHr(db);
+    const user = db.hrUsers.find((u) => u.id === id);
+    if (!user) return fail(404, 'Không tìm thấy tài khoản.');
+    if (user.id === me.id) return fail(422, 'Đổi mật khẩu của bạn ở mục "Đổi mật khẩu".');
+    user.password = tempPassword();
+    save();
+    return delay({ user: toUserDto(user, me), password: user.password });
+  },
+
+  async hrDeleteUser(id) {
+    const db = load();
+    const me = requireHr(db);
+    if (id === me.id) return fail(422, 'Không xoá được tài khoản bạn đang dùng.');
+    if (db.hrUsers.length <= 1) return fail(422, 'Phải còn ít nhất một tài khoản HR.');
+    db.hrUsers = db.hrUsers.filter((u) => u.id !== id);
+    save();
+    return delay({ ok: true as const });
+  },
+
+  async hrChangePassword(current, next) {
+    const db = load();
+    const me = requireHr(db);
+    if (me.password !== current) {
+      return fail(422, 'Mật khẩu hiện tại chưa đúng.', { current: 'Mật khẩu hiện tại chưa đúng.' });
+    }
+    if (next.length < 12)
+      return fail(422, 'Mật khẩu cần ít nhất 12 ký tự.', { next: 'Mật khẩu cần ít nhất 12 ký tự.' });
+    me.password = next;
+    save();
+    return delay(toHrMe(me));
   },
 };
 

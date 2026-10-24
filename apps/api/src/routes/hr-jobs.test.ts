@@ -1,4 +1,12 @@
-import type { HrJobDto, HrJobsResponse, JobPageResponse } from '@careers/shared';
+import {
+  DEFAULT_JOB_TEMPLATE,
+  DEPARTMENT_SUGGESTIONS,
+  type HrJobDto,
+  type HrJobsResponse,
+  type JobPageResponse,
+  type JobTemplate,
+  type JobTemplateResponse,
+} from '@careers/shared';
 import { eq } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { applications, jobs } from '../db/schema.js';
@@ -24,7 +32,8 @@ describe('HR job list', () => {
     const open = await insertJob(t, { title: 'Đang tuyển' });
     await insertJob(t, { title: 'Sắp hết', deadline: '2026-10-22' });
     await insertJob(t, { title: 'Nháp', state: 'draft', publishedOn: null });
-    await insertJob(t, { title: 'Đủ người', state: 'filled' });
+    await insertJob(t, { title: 'Đã đóng', state: 'closed', closedOn: '2026-10-19' });
+    await insertJob(t, { title: 'Hết hạn', deadline: '2026-10-19' });
     const base = { fullName: 'A', consentAt: t.clock.now, policyVersion: 'v', jobId: open.id };
     await t.db.insert(applications).values([
       { ...base, phone: '0912000001' },
@@ -33,19 +42,33 @@ describe('HR job list', () => {
 
     const body = await json<HrJobsResponse>(await hr('GET', '/jobs'));
 
-    expect(body.jobs.map((j) => j.title)).toEqual(['Sắp hết', 'Đang tuyển', 'Nháp', 'Đủ người']);
-    expect(body.jobs[1]).toMatchObject({ totalApplications: 2, newApplications: 1, extendTo: null });
+    expect(body.jobs.map((j) => j.title)).toEqual(['Sắp hết', 'Đang tuyển', 'Nháp', 'Hết hạn', 'Đã đóng']);
+    expect(body.jobs[1]).toMatchObject({ totalApplications: 2, newApplications: 1, status: 'open' });
     expect(body.newApplications).toBe(1);
   });
 
-  it('offers an extension only for expiring and expired jobs, capped at 60 days (BR-18)', async () => {
-    await insertJob(t, { title: 'Sắp hết', deadline: '2026-10-22', publishedOn: '2026-10-01' });
-    await insertJob(t, { title: 'Hết 60 ngày', deadline: '2026-10-19', publishedOn: '2026-08-20' });
+  it('counts applications of jobs that ended more than 30 days ago as due for deletion', async () => {
+    const jobsWithApplications = await Promise.all([
+      insertJob(t, { title: 'Đóng 31 ngày', state: 'closed', closedOn: '2026-09-19', deadline: '2026-09-30' }),
+      insertJob(t, { title: 'Hết hạn 31 ngày', deadline: '2026-09-19', publishedOn: '2026-09-01' }),
+      insertJob(t, { title: 'Đóng đúng 30 ngày', state: 'closed', closedOn: '2026-09-20', deadline: '2026-09-30' }),
+      insertJob(t, { title: 'Đang tuyển' }),
+    ]);
+    await t.db.insert(applications).values(
+      jobsWithApplications.flatMap((job, i) =>
+        [1, 2].map((k) => ({
+          jobId: job.id,
+          fullName: 'A',
+          phone: `09120000${i}${k}`,
+          consentAt: t.clock.now,
+          policyVersion: 'v',
+        })),
+      ),
+    );
 
-    const { jobs: rows } = await json<HrJobsResponse>(await hr('GET', '/jobs'));
+    const body = await json<HrJobsResponse>(await hr('GET', '/jobs'));
 
-    expect(rows.find((j) => j.title === 'Sắp hết')?.extendTo).toBe('2026-11-05');
-    expect(rows.find((j) => j.title === 'Hết 60 ngày')?.extendTo).toBeNull();
+    expect(body.dueForDeletion).toBe(4);
   });
 });
 
@@ -89,9 +112,13 @@ describe('saving jobs', () => {
     expect((await hr('POST', '/jobs', jobInput({ intent: 'draft', deadline: '2026-13-01' }))).status).toBe(422);
   });
 
-  it('requires the duties to publish', async () => {
-    const res = await hr('POST', '/jobs', jobInput({ responsibilities: '' }));
+  it('requires the duties and the requirements to publish', async () => {
+    const res = await hr('POST', '/jobs', jobInput({ responsibilities: '', requirements: '' }));
     expect(res.status).toBe(422);
+    expect(Object.keys((await json<{ fieldErrors: Record<string, string> }>(res)).fieldErrors).sort()).toEqual([
+      'requirements',
+      'responsibilities',
+    ]);
   });
 
   it('keeps the public link when the title of a published job changes (BR-04)', async () => {
@@ -115,19 +142,20 @@ describe('saving jobs', () => {
     expect(again.slug).toBe(draft.slug);
   });
 
-  it('cannot push the deadline past 60 days from publishing by editing (BR-18)', async () => {
+  it('lets a live job move its deadline up to 60 days from today, not from its publish date', async () => {
     const job = await saveNew({ deadline: '2026-11-19' });
     t.clock.now = new Date('2026-11-10T03:00:00.000Z');
     cookie = await loginHr(t);
 
-    const tooFar = await hr('PUT', `/jobs/${job.id}`, jobInput({ deadline: '2026-12-25', intent: 'draft' }));
+    const tooFar = await hr('PUT', `/jobs/${job.id}`, jobInput({ deadline: '2027-01-10', intent: 'draft' }));
     expect(tooFar.status).toBe(422);
-    expect((await json<{ fieldErrors: Record<string, string> }>(tooFar)).fieldErrors.deadline).toMatch(
-      /20\/10\/2026.*60 ngày/,
+    expect((await json<{ fieldErrors: Record<string, string> }>(tooFar)).fieldErrors.deadline).toBe(
+      'Hạn nộp tối đa 60 ngày từ hôm nay.',
     );
-    expect((await hr('PUT', `/jobs/${job.id}`, jobInput({ deadline: '2026-12-19', intent: 'draft' }))).status).toBe(
-      200,
-    );
+
+    const saved = await hr('PUT', `/jobs/${job.id}`, jobInput({ deadline: '2027-01-09', intent: 'draft' }));
+    expect(saved.status).toBe(200);
+    expect((await dbJob(job.id)).deadline).toBe('2027-01-09');
   });
 
   it('keeps the publish date when a live job is saved again', async () => {
@@ -150,92 +178,41 @@ describe('saving jobs', () => {
   });
 
   it('returns field errors from the shared schema', async () => {
-    const res = await hr('POST', '/jobs', jobInput({ title: 'A', salaryMin: 30, salaryMax: 10 }));
+    const res = await hr('POST', '/jobs', jobInput({ title: 'A', salaryMin: 30_000_000, salaryMax: 10_000_000 }));
     const body = await json<{ fieldErrors: Record<string, string> }>(res);
     expect(res.status).toBe(422);
     expect(Object.keys(body.fieldErrors).sort()).toEqual(['salaryMax', 'title']);
   });
 });
 
-describe('"Đăng lại" (BR-04)', () => {
-  it('creates a new job with a new link while old applications stay on the old job', async () => {
-    const old = await insertJob(t, { title: 'Kỹ sư phần mềm', slug: 'ky-su-phan-mem', state: 'filled' });
-    await t.db
-      .insert(applications)
-      .values({ jobId: old.id, fullName: 'A', phone: '0912000001', consentAt: t.clock.now, policyVersion: 'v' });
-
-    const fresh = await saveNew({ title: 'Kỹ sư phần mềm' });
-
-    expect(fresh.id).not.toBe(old.id);
-    expect(fresh.slug).toBe('ky-su-phan-mem-2');
-    const apps = await t.db.select().from(applications);
-    expect(apps.map((a) => a.jobId)).toEqual([old.id]);
-    expect((await json<JobPageResponse>(await t.request('/api/jobs/ky-su-phan-mem'))).job.status).toBe('filled');
-  });
-});
-
 describe('job actions', () => {
   const act = (id: string, action: string) => hr('POST', `/jobs/${id}/${action}`);
 
-  it('extends an expiring job by 14 days, keeping the link (BR-04)', async () => {
-    const job = await insertJob(t, { deadline: '2026-10-22', publishedOn: '2026-10-01' });
-    expect(await (await act(job.id, 'extend')).json()).toEqual({ ok: true });
-    expect(await dbJob(job.id)).toMatchObject({ deadline: '2026-11-05', slug: job.slug, state: 'published' });
-  });
-
-  it('reopens an expired job by extending from today', async () => {
-    const job = await insertJob(t, { deadline: '2026-10-15', publishedOn: '2026-10-01' });
-    await act(job.id, 'extend');
-    expect((await dbJob(job.id)).deadline).toBe('2026-11-03');
-  });
-
-  it('caps an extension at 60 days from publishing and then refuses (BR-18)', async () => {
-    const job = await insertJob(t, { deadline: '2026-10-22', publishedOn: '2026-08-25' });
-    await act(job.id, 'extend');
-    expect((await dbJob(job.id)).deadline).toBe('2026-10-24');
-    t.clock.now = new Date('2026-10-22T03:00:00.000Z'); // expiring again
-    const again = await act(job.id, 'extend');
-    expect(again.status).toBe(422);
-    expect(await again.json()).toMatchObject({ error: expect.stringMatching(/Đăng lại/) });
-  });
-
-  it('does not extend a job that is comfortably open, a draft or a filled one', async () => {
-    for (const overrides of [{}, { state: 'draft' as const, publishedOn: null }, { state: 'filled' as const }]) {
-      const job = await insertJob(t, overrides);
-      expect((await act(job.id, 'extend')).status).toBe(422);
-    }
-  });
-
-  it('pauses an open job and resumes it', async () => {
+  it('closes an open job before its deadline, recording today as the end day (BR-06)', async () => {
     const job = await insertJob(t);
-    await act(job.id, 'pause');
-    expect((await dbJob(job.id)).state).toBe('paused');
-    expect((await t.request('/api/jobs')).ok).toBe(true);
-    await act(job.id, 'resume');
-    expect((await dbJob(job.id)).state).toBe('published');
-  });
 
-  it('cannot pause a job that is not taking applications', async () => {
-    const job = await insertJob(t, { state: 'filled' });
-    expect((await act(job.id, 'pause')).status).toBe(422);
-  });
+    expect(await (await act(job.id, 'close')).json()).toEqual({ ok: true });
 
-  it('cannot resume a paused job whose deadline has passed (BR-19)', async () => {
-    const job = await insertJob(t, { state: 'paused', deadline: '2026-10-19', publishedOn: '2026-10-01' });
-    expect((await act(job.id, 'resume')).status).toBe(422);
-    expect((await dbJob(job.id)).state).toBe('paused');
-  });
-
-  it('closes a job as filled right away, before its deadline (BR-06)', async () => {
-    const job = await insertJob(t);
-    await act(job.id, 'fill');
+    expect(await dbJob(job.id)).toMatchObject({ state: 'closed', closedOn: '2026-10-20', slug: job.slug });
     const page = await json<JobPageResponse>(await t.request(`/api/jobs/${job.slug}`));
-    expect(page.job.status).toBe('filled');
+    expect(page.job.status).toBe('closed');
   });
 
-  it('cannot mark a draft as filled', async () => {
-    const job = await insertJob(t, { state: 'draft', publishedOn: null });
-    expect((await act(job.id, 'fill')).status).toBe(422);
+  it('keeps the deadline as the end day when closing a job that already expired', async () => {
+    const job = await insertJob(t, { deadline: '2026-10-10', publishedOn: '2026-09-15' });
+
+    await act(job.id, 'close');
+
+    expect(await dbJob(job.id)).toMatchObject({ state: 'closed', closedOn: '2026-10-10' });
+  });
+
+  it('refuses to close a draft or a job that is already closed', async () => {
+    const draft = await insertJob(t, { state: 'draft', publishedOn: null });
+    const closed = await insertJob(t, { state: 'closed', closedOn: '2026-10-01' });
+
+    expect((await act(draft.id, 'close')).status).toBe(422);
+    expect((await act(closed.id, 'close')).status).toBe(422);
+    expect((await dbJob(closed.id)).closedOn).toBe('2026-10-01');
   });
 
   it('publishes a valid draft and sets its publish date once', async () => {
@@ -249,9 +226,149 @@ describe('job actions', () => {
     expect((await act(job.id, 'publish')).status).toBe(422);
   });
 
-  it('answers 404 for unknown actions', async () => {
+  it('refuses to publish a draft without requirements', async () => {
+    const job = await insertJob(t, { state: 'draft', publishedOn: null, requirements: '  ' });
+
+    const res = await act(job.id, 'publish');
+
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ error: expect.stringMatching(/Yêu cầu/) });
+    expect((await dbJob(job.id)).state).toBe('draft');
+  });
+
+  it('refuses to publish a job that is not a draft', async () => {
+    const closed = await insertJob(t, { state: 'closed', closedOn: '2026-10-19' });
+    expect((await act(closed.id, 'publish')).status).toBe(422);
+    expect((await dbJob(closed.id)).state).toBe('closed');
+  });
+
+  it('answers 404 for removed or unknown actions', async () => {
     const job = await insertJob(t);
-    expect((await act(job.id, 'delete')).status).toBe(404);
+    for (const action of ['extend', 'pause', 'resume', 'fill', 'delete']) {
+      expect((await act(job.id, action)).status, action).toBe(404);
+    }
+  });
+});
+
+describe('"Sửa hạn nộp"', () => {
+  const setDeadline = (id: string, deadline: unknown) => hr('POST', `/jobs/${id}/deadline`, { deadline });
+
+  it('reopens a closed job with the new deadline, keeping its link', async () => {
+    const job = await insertJob(t, { state: 'closed', closedOn: '2026-10-15', deadline: '2026-10-30' });
+
+    expect(await (await setDeadline(job.id, '2026-11-30')).json()).toEqual({ ok: true });
+
+    expect(await dbJob(job.id)).toMatchObject({
+      state: 'published',
+      closedOn: null,
+      deadline: '2026-11-30',
+      slug: job.slug,
+    });
+    expect((await json<JobPageResponse>(await t.request(`/api/jobs/${job.slug}`))).job.status).toBe('open');
+  });
+
+  it('reopens an expired job', async () => {
+    const job = await insertJob(t, { deadline: '2026-10-10', publishedOn: '2026-08-01' });
+
+    await setDeadline(job.id, '2026-12-19');
+
+    expect(await dbJob(job.id)).toMatchObject({ state: 'published', deadline: '2026-12-19' });
+  });
+
+  it('moves the deadline of a job that is still open, even to an earlier day', async () => {
+    const job = await insertJob(t);
+    await setDeadline(job.id, '2026-10-25');
+    expect((await dbJob(job.id)).deadline).toBe('2026-10-25');
+  });
+
+  it('allows at most 60 days from today, whenever the job was first published', async () => {
+    const job = await insertJob(t, { deadline: '2026-10-10', publishedOn: '2026-06-01' });
+
+    const res = await setDeadline(job.id, '2026-12-20');
+
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ fieldErrors: { deadline: 'Hạn nộp tối đa 60 ngày từ hôm nay.' } });
+    expect((await setDeadline(job.id, '2026-12-19')).status).toBe(200);
+  });
+
+  it('refuses a missing, past or impossible date and leaves the job as it was', async () => {
+    const job = await insertJob(t, { state: 'closed', closedOn: '2026-10-15' });
+    for (const deadline of [undefined, '', '2026-10-19', '2026-11-31', '30/11/2026', 20261130]) {
+      expect((await setDeadline(job.id, deadline)).status, String(deadline)).toBe(422);
+    }
+    expect(await dbJob(job.id)).toMatchObject({ state: 'closed', closedOn: '2026-10-15' });
+  });
+
+  it('refuses a draft: it gets its deadline from the form when published', async () => {
+    const job = await insertJob(t, { state: 'draft', publishedOn: null });
+
+    expect((await setDeadline(job.id, '2026-11-30')).status).toBe(422);
+
+    expect((await dbJob(job.id)).state).toBe('draft');
+  });
+
+  it('answers 404 for an unknown job', async () => {
+    expect((await setDeadline('00000000-0000-0000-0000-000000000000', '2026-11-30')).status).toBe(404);
+  });
+});
+
+describe('"Mẫu tin" job template', () => {
+  const customTemplate = (overrides: Partial<JobTemplate> = {}): JobTemplate => ({
+    workDays: 'Thứ 2 – Thứ 6',
+    startTime: '09:00',
+    endTime: '18:00',
+    benefits: [
+      { label: 'Lương tháng 13', standard: true },
+      { label: 'Phụ cấp ăn trưa', standard: false },
+    ],
+    roadmap: ['a', 'b', 'c', 'd', 'e'],
+    ...overrides,
+  });
+
+  it('starts from the default template, with departments and hand-typed benefits from earlier jobs', async () => {
+    await insertJob(t, { department: 'Kho vận', benefits: ['Lương tháng 13', 'Xe đưa đón'] });
+    await insertJob(t, { department: 'Kỹ thuật', benefits: ['Xe đưa đón', 'Gym miễn phí'] });
+
+    const body = await json<JobTemplateResponse>(await hr('GET', '/jobs/template'));
+
+    expect(body.template).toEqual(DEFAULT_JOB_TEMPLATE);
+    expect(body.departments).toEqual([...DEPARTMENT_SUGGESTIONS, 'Kho vận']);
+    expect(body.extraBenefits).toEqual(['Xe đưa đón', 'Gym miễn phí']);
+  });
+
+  it('saves a new template that later reads return', async () => {
+    const res = await hr('PUT', '/jobs/template', customTemplate());
+
+    expect(res.status).toBe(200);
+    expect((await json<JobTemplateResponse>(res)).template).toEqual(customTemplate());
+    expect((await json<JobTemplateResponse>(await hr('GET', '/jobs/template'))).template).toEqual(customTemplate());
+  });
+
+  it('stops suggesting a hand-typed benefit once the template has it', async () => {
+    await insertJob(t, { benefits: ['Phụ cấp ăn trưa', 'Xe đưa đón'] });
+
+    const body = await json<JobTemplateResponse>(await hr('PUT', '/jobs/template', customTemplate()));
+
+    expect(body.extraBenefits).toEqual(['Xe đưa đón']);
+  });
+
+  it('refuses an invalid template and keeps the stored one', async () => {
+    await hr('PUT', '/jobs/template', customTemplate());
+    const invalidTemplates = [
+      customTemplate({ startTime: '25:00' }),
+      customTemplate({ workDays: ' ' }),
+      customTemplate({ roadmap: ['chỉ một mốc'] }),
+      customTemplate({ benefits: [{ label: 'x'.repeat(81), standard: true }] }),
+      {},
+    ];
+
+    for (const body of invalidTemplates) {
+      const res = await hr('PUT', '/jobs/template', body);
+      expect(res.status).toBe(422);
+      const { fieldErrors } = await json<{ fieldErrors: Record<string, string> }>(res);
+      expect(Object.keys(fieldErrors).length).toBeGreaterThan(0);
+    }
+    expect((await json<JobTemplateResponse>(await hr('GET', '/jobs/template'))).template).toEqual(customTemplate());
   });
 });
 
@@ -263,8 +380,8 @@ describe('deleting jobs', () => {
   });
 
   it('refuses to delete anything that was published', async () => {
-    for (const state of ['published', 'paused', 'filled'] as const) {
-      const job = await insertJob(t, { state });
+    for (const overrides of [{ state: 'published' as const }, { state: 'closed' as const, closedOn: '2026-10-19' }]) {
+      const job = await insertJob(t, overrides);
       expect((await hr('DELETE', `/jobs/${job.id}`)).status).toBe(422);
       expect(await dbJob(job.id)).toBeDefined();
     }

@@ -2,10 +2,12 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
+import { and, eq, isNull } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/pglite';
 import { migrate } from 'drizzle-orm/pglite/migrator';
 import type { Db } from './db/index.js';
 import * as schema from './db/schema.js';
+import { sampleCvPdf } from './db/sample-cv.js';
 import { seedDemoData } from './db/seed.js';
 import { findHrUser, upsertHrUser } from './services/hr-accounts.js';
 import type { CvStore } from './lib/cv-store.js';
@@ -22,17 +24,34 @@ const MIGRATIONS = fileURLToPath(new URL('../drizzle', import.meta.url));
 const LOCAL_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
 const LOCAL_HR_FILE = join(DATA_DIR, 'hr-login.txt');
 
-async function localDb(): Promise<Db> {
+async function localDb(cvStore: CvStore | undefined): Promise<Db> {
   await mkdir(DATA_DIR, { recursive: true });
   const db = drizzle({ client: new PGlite(join(DATA_DIR, 'db')), schema });
   await migrate(db, { migrationsFolder: MIGRATIONS });
   const empty = (await db.select({ id: schema.jobs.id }).from(schema.jobs).limit(1)).length === 0;
   if (empty) {
     const seeded = await seedDemoData(db, new Date());
+    if (cvStore) await attachSampleCvs(db, cvStore);
     console.info(`Local database seeded with ${seeded.jobs} demo jobs.`);
   }
   await ensureLocalHr(db);
   return db;
+}
+
+/** Demo applications without a CV get a small real PDF, so "Xem CV" can be tried locally. */
+async function attachSampleCvs(db: Db, cvStore: CvStore): Promise<void> {
+  const rows = await db
+    .select()
+    .from(schema.applications)
+    .where(and(isNull(schema.applications.cvPathname), isNull(schema.applications.cvLink)));
+  for (const app of rows) {
+    const fileName = `CV_${app.fullName.split(' ').pop() ?? 'mau'}.pdf`;
+    const pathname = await cvStore.put(app.jobId, new File([sampleCvPdf(app.fullName)], fileName));
+    await db
+      .update(schema.applications)
+      .set({ cvPathname: pathname, cvFileName: fileName })
+      .where(eq(schema.applications.id, app.id));
+  }
 }
 
 /** Creates the local HR account with a fresh random password the first time (or after the file is deleted). */
@@ -74,8 +93,9 @@ function localCvStore(): CvStore {
 
 /** Uses the local stand-ins only for what is not configured in apps/api/.env. */
 export async function localDevOverrides(): Promise<LocalOverrides> {
+  const cvStore = process.env.BLOB_READ_WRITE_TOKEN ? undefined : localCvStore();
   return {
-    ...(process.env.DATABASE_URL ? {} : { db: await localDb() }),
-    ...(process.env.BLOB_READ_WRITE_TOKEN ? {} : { cvStore: localCvStore() }),
+    ...(process.env.DATABASE_URL ? {} : { db: await localDb(cvStore) }),
+    ...(cvStore ? { cvStore } : {}),
   };
 }

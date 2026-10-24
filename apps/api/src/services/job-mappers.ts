@@ -1,10 +1,12 @@
-import { effectiveStatus, toLines, type HrJobDto, type JobCardDto, type JobDetailDto } from '@careers/shared';
+import {
+  effectiveStatus,
+  placeLabel,
+  toLines,
+  type HrJobDto,
+  type JobCardDto,
+  type JobDetailDto,
+} from '@careers/shared';
 import type { Job } from '../db/schema.js';
-
-/** Card line under the title: first income perk, else first environment perk. */
-export function perksLine(job: Pick<Job, 'benefitIncome' | 'benefitEnvironment'>): string {
-  return toLines(job.benefitIncome)[0] ?? toLines(job.benefitEnvironment)[0] ?? '';
-}
 
 /** Only the publish date is stored; 09:00 Vietnam time stands in for the hour. */
 export function publishedAtIso(publishedOn: string | null): string | null {
@@ -18,15 +20,13 @@ export function toCard(job: Job, now: Date): JobCardDto {
     title: job.title,
     department: job.department,
     employmentType: job.employmentType,
-    remote: job.remote,
-    city: job.city,
+    place: placeLabel(job.address),
     deadline: job.deadline,
     status: effectiveStatus(job, now),
     publishedAt: publishedAtIso(job.publishedOn),
-    perks: perksLine(job),
+    perks: job.benefits.slice(0, 2).join(', '),
     salaryMin: job.salaryMin,
     salaryMax: job.salaryMax,
-    salaryNote: job.salaryNote,
   };
 }
 
@@ -35,25 +35,12 @@ export function toDetail(job: Job, now: Date): JobDetailDto {
     ...toCard(job, now),
     address: job.address,
     workingHours: job.workingHours,
-    level: job.level,
     experience: job.experience,
     education: job.education,
-    language: job.language,
-    headcount: job.headcount,
-    skills: job.skills,
-    summary: job.summary,
-    teamNote: job.teamNote,
     responsibilities: toLines(job.responsibilities),
     requirements: toLines(job.requirements),
-    niceToHave: toLines(job.niceToHave),
-    benefits: {
-      income: toLines(job.benefitIncome),
-      insurance: toLines(job.benefitInsurance),
-      timeOff: toLines(job.benefitTimeOff),
-      growth: toLines(job.benefitGrowth),
-      environment: toLines(job.benefitEnvironment),
-    },
-    plan: { day30: job.plan30, day60: job.plan60, day90: job.plan90 },
+    benefits: job.benefits,
+    roadmap: job.roadmap,
   };
 }
 

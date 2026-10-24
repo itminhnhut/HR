@@ -9,10 +9,15 @@ import type {
   HrJobDto,
   HrJobsResponse,
   HrMe,
+  HrUserDto,
+  JobTemplate,
+  DashboardDto,
   JobInput,
   JobListResponse,
   JobPageResponse,
-  SubscriberDto,
+  JobTemplateResponse,
+  LookupResponse,
+  TempPasswordResponse,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -27,23 +32,19 @@ export class ApiError extends Error {
   }
 }
 
-export type JobAction = 'publish' | 'extend' | 'pause' | 'resume' | 'fill';
+export type JobAction = 'publish' | 'close';
 
 export interface ApplyInput extends Omit<ApplicationFields, 'phone'> {
   phone: string;
   cvFile: File | null;
-}
-
-export interface SubscribeInput {
-  phone: string;
-  department: string;
-  fromJobId?: string | null;
-  consent: boolean;
+  /** Signed in only: reuse the CV saved in the account (the BE keeps a copy per application). */
+  useSavedCv?: boolean;
 }
 
 export interface CandidatePatch {
   name?: string;
-  keepForOtherJobs?: boolean;
+  /** Unverified; empty string removes it. Pre-fills the application form. */
+  phone?: string;
   alertDepartments?: string[];
   cvFile?: File;
 }
@@ -51,7 +52,8 @@ export interface CandidatePatch {
 export interface ApplicationPatch {
   status?: ApplicationStatus;
   note?: string | null;
-  thanked?: boolean;
+  /** ISO time; null clears it. */
+  interviewAt?: string | null;
 }
 
 /**
@@ -63,16 +65,14 @@ export interface Api {
   listJobs(): Promise<JobListResponse>;
   getJob(slug: string): Promise<JobPageResponse>;
   apply(input: ApplyInput): Promise<ApplyResponse>;
-  subscribe(input: SubscribeInput): Promise<{ ok: true }>;
+  /** Public lookup by phone: job, date and stage only (last 90 days). 429 when looked up too often. */
+  lookupApplications(phone: string): Promise<LookupResponse>;
 
   // Candidate account (optional, never needed to apply)
-  requestOtp(phone: string, channel: 'zalo' | 'sms'): Promise<{ ok: true; devCode?: string }>;
-  verifyOtp(phone: string, code: string): Promise<CandidateMe>;
-  googleSignIn(): Promise<{ email: string; needsPhone: boolean }>;
+  /** Google is the only candidate sign-in. The account sees applications sent with its email. */
+  googleSignIn(): Promise<CandidateMe>;
   candidateOverview(): Promise<CandidateOverview | null>;
   updateCandidate(patch: CandidatePatch): Promise<CandidateMe>;
-  setSavedJob(slug: string, saved: boolean): Promise<string[]>;
-  savedJobSlugs(): Promise<string[]>;
   deleteCandidateData(): Promise<{ ok: true }>;
   candidateLogout(): Promise<{ ok: true }>;
 
@@ -82,16 +82,26 @@ export interface Api {
   hrSignIn(email: string, password: string): Promise<HrMe>;
   hrLogout(): Promise<{ ok: true }>;
   hrJobs(): Promise<HrJobsResponse>;
+  hrDashboard(): Promise<DashboardDto>;
+  hrJobTemplate(): Promise<JobTemplateResponse>;
+  hrSaveJobTemplate(template: JobTemplate): Promise<JobTemplateResponse>;
   hrJob(id: string): Promise<HrJobDto>;
   hrSaveJob(id: string | null, input: JobInput): Promise<HrJobDto>;
   hrJobAction(id: string, action: JobAction): Promise<{ ok: true }>;
+  /** "Sửa hạn nộp": reopens an ended job. */
+  hrSetDeadline(id: string, deadline: string): Promise<{ ok: true }>;
   /** Only drafts can be deleted. */
   hrDeleteJob(id: string): Promise<{ ok: true }>;
-  hrApplications(jobId?: string): Promise<ApplicationsResponse>;
+  hrApplications(jobId?: string, q?: string): Promise<ApplicationsResponse>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
+  hrDeleteApplication(id: string): Promise<{ ok: true }>;
+  hrDeleteDueApplications(): Promise<{ deleted: number }>;
   /** Link that opens an uploaded CV for HR, or null where files are not stored (demo). */
   hrCvUrl(applicationId: string): string | null;
-  hrSubscribers(): Promise<SubscriberDto[]>;
-  hrDeleteSubscriber(id: string): Promise<{ ok: true }>;
+  hrUsers(): Promise<HrUserDto[]>;
+  hrCreateUser(input: { email: string; name: string }): Promise<TempPasswordResponse>;
+  hrResetPassword(id: string): Promise<TempPasswordResponse>;
+  hrDeleteUser(id: string): Promise<{ ok: true }>;
+  hrChangePassword(current: string, next: string): Promise<HrMe>;
 }

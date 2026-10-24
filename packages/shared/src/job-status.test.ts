@@ -1,13 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  addDays,
-  canSubmit,
-  deadlineEnd,
-  effectiveStatus,
-  extendedDeadline,
-  todayInVietnam,
-  validateDeadline,
-} from './job-status.js';
+import { addDays, deadlineEnd, effectiveStatus, endedOn, todayInVietnam, validateDeadline } from './job-status.js';
 
 const at = (iso: string) => new Date(iso);
 const published = (deadline: string) => ({ state: 'published' as const, deadline });
@@ -28,8 +20,7 @@ describe('todayInVietnam', () => {
 describe('effectiveStatus', () => {
   it('passes non-published states through', () => {
     expect(effectiveStatus({ state: 'draft', deadline: '2020-01-01' })).toBe('draft');
-    expect(effectiveStatus({ state: 'paused', deadline: '2099-01-01' })).toBe('paused');
-    expect(effectiveStatus({ state: 'filled', deadline: '2099-01-01' })).toBe('filled');
+    expect(effectiveStatus({ state: 'closed', deadline: '2099-01-01' })).toBe('closed');
   });
 
   it('is open more than 3 days before the deadline', () => {
@@ -49,39 +40,15 @@ describe('effectiveStatus', () => {
   });
 });
 
-describe('canSubmit (grace period)', () => {
-  const job = published('2026-11-30');
-
-  it('accepts while open', () => {
-    expect(canSubmit(job, at('2026-11-29T10:00:00+07:00'), at('2026-11-29T10:05:00+07:00'))).toBe(true);
+describe('endedOn', () => {
+  const now = at('2026-12-10T09:00:00+07:00');
+  it('is the close day for a closed job and the deadline for an expired one', () => {
+    expect(endedOn({ state: 'closed', deadline: '2026-12-30', closedOn: '2026-12-05' }, now)).toBe('2026-12-05');
+    expect(endedOn({ state: 'published', deadline: '2026-11-30', closedOn: null }, now)).toBe('2026-11-30');
   });
-
-  it('accepts within 60 min if the form was opened before expiry', () => {
-    expect(canSubmit(job, at('2026-11-30T23:50:00+07:00'), at('2026-12-01T00:30:00+07:00'))).toBe(true);
-  });
-
-  it('rejects after the grace period', () => {
-    expect(canSubmit(job, at('2026-11-30T23:50:00+07:00'), at('2026-12-01T01:01:00+07:00'))).toBe(false);
-  });
-
-  it('rejects a form opened after expiry', () => {
-    expect(canSubmit(job, at('2026-12-01T00:10:00+07:00'), at('2026-12-01T00:20:00+07:00'))).toBe(false);
-  });
-
-  it('rejects paused and filled jobs', () => {
-    const now = at('2026-11-20T10:00:00+07:00');
-    expect(canSubmit({ state: 'paused', deadline: '2026-11-30' }, now, now)).toBe(false);
-    expect(canSubmit({ state: 'filled', deadline: '2026-11-30' }, now, now)).toBe(false);
-  });
-});
-
-describe('extendedDeadline', () => {
-  it('adds 14 days to a future deadline', () => {
-    expect(extendedDeadline('2026-11-30', at('2026-11-28T10:00:00+07:00'))).toBe('2026-12-14');
-  });
-
-  it('adds 14 days from today when already expired', () => {
-    expect(extendedDeadline('2026-10-01', at('2026-10-22T10:00:00+07:00'))).toBe('2026-11-05');
+  it('is null while the job still takes applications', () => {
+    expect(endedOn({ state: 'published', deadline: '2026-12-30', closedOn: null }, now)).toBeNull();
+    expect(endedOn({ state: 'draft', deadline: '2026-11-01', closedOn: null }, now)).toBeNull();
   });
 });
 

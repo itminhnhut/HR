@@ -2,7 +2,6 @@ import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { vercelBlobCvStore, type CvStore } from './lib/cv-store.js';
 import { googleVerifier, type GoogleVerifier } from './lib/google.js';
-import { consoleOtpSender } from './lib/otp.js';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -45,15 +44,13 @@ export function createProductionApp(local: LocalOverrides = {}) {
     db: useLocal.db ?? createNeonDb(requireEnv('DATABASE_URL')),
     config: {
       siteUrl: (process.env.SITE_URL ?? 'http://localhost:3344').replace(/\/$/, ''),
-      companyName: process.env.COMPANY_NAME ?? 'Tên công ty',
+      companyName: process.env.COMPANY_NAME ?? 'TOP FLOW',
       isProduction: process.env.VERCEL_ENV === 'production',
       sessionSecret: sessionSecret(),
       secureCookies: onVercel,
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
     verifyGoogleToken: googleSignIn(),
-    // No SMS/Zalo provider yet (BR-17): local dev prints codes, deployments refuse phone sign-in.
-    otpSender: onVercel ? null : consoleOtpSender,
     now: () => new Date(),
   });
 }

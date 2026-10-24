@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { Db } from '../db/index.js';
 import { hrUsers, type HrUser } from '../db/schema.js';
 import { HttpError } from '../lib/http-error.js';
+import { normalizeEmail } from '../lib/request.js';
 import { dummyHash, hashPassword, needsRehash, passwordProblem, verifyPassword } from '../lib/password.js';
 
 export const MAX_FAILED_LOGINS = 5;
@@ -12,14 +13,14 @@ export const LOCK_MINUTES = 15;
 const loginSchema = z.object({ email: z.string().trim().min(1).max(200), password: z.string().min(1).max(200) });
 const WRONG = 'Email hoặc mật khẩu chưa đúng.';
 
-export const normalizeEmail = (email: string) => email.trim().toLowerCase();
-
 export const findHrUser = (db: Db, email: string): Promise<HrUser | undefined> =>
   db.query.hrUsers.findFirst({ where: eq(hrUsers.email, normalizeEmail(email)) });
 
+const CLOCK = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' });
+
 function lockedMessage(until: Date, now: Date) {
   const minutes = Math.max(1, Math.ceil((until.getTime() - now.getTime()) / 60_000));
-  return `Đăng nhập sai nhiều lần. Thử lại sau ${minutes} phút.`;
+  return `Đăng nhập sai nhiều lần. Thử lại sau ${minutes} phút (lúc ${CLOCK.format(until)}), hoặc nhờ HR khác đặt lại mật khẩu.`;
 }
 
 /** Counts a failed attempt atomically; the 5th failure locks the account for 15 minutes. */
@@ -51,18 +52,15 @@ export async function signIn(db: Db, raw: unknown, now: Date): Promise<HrUser> {
     throw new HttpError(401, WRONG);
   }
   const upgrade = needsRehash(user.passwordHash) ? { passwordHash: await hashPassword(parsed.data.password) } : {};
-  if (user.failedAttempts > 0 || user.lockedUntil || upgrade.passwordHash) {
-    const [fresh] = await db
-      .update(hrUsers)
-      .set({ failedAttempts: 0, lockedUntil: null, ...upgrade })
-      .where(eq(hrUsers.id, user.id))
-      .returning();
-    return fresh ?? user;
-  }
-  return user;
+  const [fresh] = await db
+    .update(hrUsers)
+    .set({ failedAttempts: 0, lockedUntil: null, lastLoginAt: now, ...upgrade })
+    .where(eq(hrUsers.id, user.id))
+    .returning();
+  return fresh ?? user;
 }
 
-export const toHrMe = (user: HrUser): HrMe => ({ email: user.email, name: user.name });
+export const toHrMe = (user: HrUser): HrMe => ({ id: user.id, email: user.email, name: user.name });
 
 /** Creates the account, or sets a new password (and name) for an existing one. Used by scripts/hr-user.ts. */
 export async function upsertHrUser(db: Db, input: { email: string; name: string | null; password: string }) {

@@ -1,14 +1,10 @@
 import {
-  acceptsApplications,
   addDays,
-  daysBetween,
   effectiveStatus,
-  extendTarget,
   fieldErrors,
   foldVietnamese,
-  formatDate,
+  hasEnded,
   jobInputSchema,
-  MAX_OPEN_DAYS,
   todayInVietnam,
   validateDeadline,
   type EffectiveStatus,
@@ -22,15 +18,14 @@ import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { toHrJob } from './job-mappers.js';
 
-export type JobAction = 'publish' | 'extend' | 'pause' | 'resume' | 'fill';
+export type JobAction = 'publish' | 'close';
 
 const LIST_ORDER: Record<EffectiveStatus, number> = {
   expiring: 0,
   open: 1,
-  paused: 2,
-  draft: 3,
-  expired: 4,
-  filled: 5,
+  draft: 2,
+  expired: 3,
+  closed: 4,
 };
 
 const DEADLINE_MESSAGE = {
@@ -72,17 +67,17 @@ export async function listHrJobs(db: Db, now: Date): Promise<HrJobsResponse> {
         newApplications: byJob.get(job.id)?.fresh ?? 0,
         salaryMin: job.salaryMin,
         salaryMax: job.salaryMax,
-        salaryNote: job.salaryNote,
-        extendTo: canExtend(status) ? extendTarget(job.deadline, job.publishedOn, now) : null,
         createdAt: job.createdAt.getTime(),
       };
     })
     .sort((a, b) => LIST_ORDER[a.status] - LIST_ORDER[b.status] || b.createdAt - a.createdAt)
     .map(({ createdAt: _c, ...row }) => row);
-  return { jobs: list, newApplications: counts.reduce((sum, c) => sum + c.fresh, 0) };
+  return {
+    jobs: list,
+    newApplications: counts.reduce((sum, c) => sum + c.fresh, 0),
+    dueForDeletion: dueJobIds(rows, now).reduce((sum, id) => sum + (byJob.get(id)?.total ?? 0), 0),
+  };
 }
-
-const canExtend = (status: EffectiveStatus) => status === 'expiring' || status === 'expired';
 
 /** A real calendar date, so Postgres never sees "2026-02-30". */
 function isIsoDate(value: string): boolean {
@@ -107,19 +102,12 @@ async function uniqueSlug(db: Db, title: string, selfId: string | null): Promise
   return slug;
 }
 
-function deadlineErrors(existing: Job | null, deadline: string, goesLive: boolean, now: Date): Record<string, string> {
+function deadlineErrors(deadline: string, goesLive: boolean, now: Date): Record<string, string> {
   if (!goesLive) {
     return deadline && !isIsoDate(deadline) ? { deadline: 'Ngày chưa đúng.' } : {};
   }
   const problem = validateDeadline(deadline, now) ?? (isIsoDate(deadline) ? null : 'missing');
-  if (problem) return { deadline: DEADLINE_MESSAGE[problem] };
-  // BR-18: editing a live job cannot stretch it past 60 days from its first publish.
-  if (existing?.publishedOn && daysBetween(existing.publishedOn, deadline) > MAX_OPEN_DAYS) {
-    return {
-      deadline: `Tin đăng ngày ${formatDate(existing.publishedOn)} chỉ nhận hồ sơ tối đa 60 ngày. Muốn tuyển tiếp hãy "Đăng lại".`,
-    };
-  }
-  return {};
+  return problem ? { deadline: DEADLINE_MESSAGE[problem] } : {};
 }
 
 /** Create (id = null) or update a job from the HR form. */
@@ -127,12 +115,12 @@ export async function saveJob(db: Db, id: string | null, raw: unknown, now: Date
   const existing = id ? await findJob(db, id) : null;
   const parsed = jobInputSchema.safeParse(raw);
   const input = (raw ?? {}) as { intent?: unknown; deadline?: unknown };
-  // Live and paused jobs are validated like a publish, so an edit cannot dodge BR-01/BR-18.
-  const goesLive = input.intent === 'publish' || (existing !== null && existing.state !== 'draft');
+  // A published job is validated like a publish, so an edit cannot dodge BR-01.
+  const goesLive = input.intent === 'publish' || existing?.state === 'published';
   const deadline = typeof input.deadline === 'string' ? input.deadline.trim() : '';
   const errors = {
     ...(parsed.success ? {} : fieldErrors(parsed.error)),
-    ...deadlineErrors(existing, deadline, goesLive, now),
+    ...deadlineErrors(deadline, goesLive, now),
   };
   if (!parsed.success || Object.keys(errors).length > 0) {
     throw invalid('Chưa lưu được, kiểm tra các ô được đánh dấu.', errors);
@@ -162,24 +150,14 @@ function nextState(job: Job, action: JobAction, now: Date): Partial<NewJob> {
     case 'publish':
       if (job.state !== 'draft') throw ruleBroken('Tin này đã được đăng.');
       if (validateDeadline(job.deadline, now)) throw ruleBroken('Hạn nộp chưa hợp lệ. Mở tin để sửa hạn nộp rồi đăng.');
-      if (!job.responsibilities.trim()) throw ruleBroken('Nhập ít nhất một ý cho "Bạn sẽ làm gì" rồi đăng.');
+      if (!job.responsibilities.trim() || !job.requirements.trim()) {
+        throw ruleBroken('Nhập "Mô tả công việc" và "Yêu cầu" rồi đăng.');
+      }
       return { state: 'published', publishedOn: job.publishedOn ?? todayInVietnam(now) };
-    case 'extend': {
-      if (!canExtend(status)) throw ruleBroken('Chỉ gia hạn được tin sắp hết hạn hoặc đã hết hạn.');
-      const target = extendTarget(job.deadline, job.publishedOn, now);
-      if (!target) throw ruleBroken('Tin đã mở đủ 60 ngày. Dùng "Đăng lại" để tuyển đợt mới.');
-      return { deadline: target, state: 'published' };
-    }
-    case 'pause':
-      if (!acceptsApplications(status)) throw ruleBroken('Chỉ tạm dừng được tin đang tuyển.');
-      return { state: 'paused' };
-    case 'resume':
-      // BR-19: a paused job past its deadline is expired and cannot simply reopen.
-      if (status !== 'paused') throw ruleBroken('Tin này không ở trạng thái tạm dừng.');
-      return { state: 'published' };
-    case 'fill':
-      if (status === 'draft' || status === 'filled') throw ruleBroken('Chỉ đóng được tin đã đăng.');
-      return { state: 'filled' };
+    case 'close':
+      if (job.state !== 'published') throw ruleBroken('Chỉ đóng được tin đang đăng.');
+      // An expired job keeps its deadline as the end day.
+      return { state: 'closed', closedOn: status === 'expired' ? job.deadline : todayInVietnam(now) };
   }
 }
 
@@ -190,6 +168,38 @@ export async function runJobAction(db: Db, id: string, action: JobAction, now: D
     .set(nextState(job, action, now))
     .where(eq(jobs.id, job.id));
   return { ok: true };
+}
+
+/**
+ * "Sửa hạn nộp": any job that was published (open, expired or closed) gets a new deadline,
+ * at most 60 days from today, and takes applications again.
+ */
+export async function setDeadline(db: Db, id: string, raw: unknown, now: Date): Promise<{ ok: true }> {
+  const job = await findJob(db, id);
+  if (job.state === 'draft') throw ruleBroken('Bản nháp: mở tin để chọn hạn nộp rồi đăng.');
+  const deadline =
+    typeof (raw as { deadline?: unknown } | null)?.deadline === 'string'
+      ? (raw as { deadline: string }).deadline.trim()
+      : '';
+  const errors = deadlineErrors(deadline, true, now);
+  if (errors.deadline) throw invalid(errors.deadline, errors);
+  await db.update(jobs).set({ deadline, state: 'published', closedOn: null }).where(eq(jobs.id, job.id));
+  return { ok: true };
+}
+
+const DELETE_AFTER_DAYS = 30;
+
+/** Jobs whose applications are due for deletion: ended (closed or expired) more than 30 days ago. */
+export function dueJobIds(rows: Job[], now: Date): string[] {
+  const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
+  return rows
+    .filter((job) => {
+      const status = effectiveStatus(job, now);
+      if (!hasEnded(status)) return false;
+      const ended = status === 'closed' ? (job.closedOn ?? job.deadline) : job.deadline;
+      return ended < cutoff;
+    })
+    .map((job) => job.id);
 }
 
 /** Only drafts can be deleted; anything that was public keeps its link and applications. */

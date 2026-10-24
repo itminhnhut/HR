@@ -12,10 +12,7 @@ const SECTIONS: [string, string[]][] = [
       'Vị trí bạn ứng tuyển và thời điểm nộp.',
     ],
   ],
-  [
-    'Dùng để làm gì',
-    ['Xem hồ sơ và liên hệ bạn về vị trí đã nộp.', 'Báo bạn khi có vị trí mới, nếu bạn đăng ký nhận tin.'],
-  ],
+  ['Dùng để làm gì', ['Xem hồ sơ và liên hệ bạn về vị trí đã nộp.']],
   [
     'Ai được xem',
     ['Chỉ bộ phận nhân sự và người phỏng vấn của vị trí đó.', 'Không bán, không chia sẻ cho công ty khác.'],
@@ -24,7 +21,6 @@ const SECTIONS: [string, string[]][] = [
     'Lưu trong bao lâu',
     [
       'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng.',
-      'Nếu bạn tick "Giữ hồ sơ": giữ 12 tháng để báo vị trí khác, rồi tự xóa.',
       'CV được lưu riêng tư, không có đường link công khai.',
     ],
   ],
@@ -33,10 +29,21 @@ const SECTIONS: [string, string[]][] = [
     [
       'Xem lại, sửa hoặc xóa hồ sơ bất cứ lúc nào, kể cả rút lại sự đồng ý.',
       'Tự xóa trong trang Hồ sơ của tôi thì xóa ngay; gửi yêu cầu qua HR thì xử lý xong trong 20 ngày.',
-      'Hủy nhận tin việc làm mới bằng một lần bấm.',
     ],
   ],
-  ['Liên hệ', [`${SITE.company} · [địa chỉ]`, `Email: ${SITE.hrEmail}${SITE.hrZalo ? ` · Zalo: ${SITE.hrZalo}` : ''}`]],
+  [
+    'Liên hệ',
+    [
+      `${SITE.legalName} · Trụ sở: ${SITE.headOffice}`,
+      ...(SITE.hrEmail || SITE.hrZalo
+        ? [
+            [SITE.hrEmail && `Email: ${SITE.hrEmail}`, SITE.hrZalo && `Zalo: ${SITE.hrZalo}`]
+              .filter(Boolean)
+              .join(' · '),
+          ]
+        : []),
+    ],
+  ],
 ];
 
 export default function PrivacyPage() {
@@ -76,9 +83,10 @@ export default function PrivacyPage() {
         <div className="flex flex-col gap-2 rounded-card border border-line bg-white px-7 py-6">
           <strong className="font-serif text-[22px] font-medium">Muốn xem, sửa hoặc xóa hồ sơ?</strong>
           <span className="text-[15px] leading-relaxed text-body">
-            Đăng nhập bằng số điện thoại đã nộp để tự xóa, hoặc nhắn HR qua email {SITE.hrEmail}.
+            Đăng nhập bằng Google (email bạn đã ghi khi nộp) để xem, sửa hoặc tự xóa ngay.{' '}
+            {SITE.hrEmail && <>Hoặc nhắn HR qua email {SITE.hrEmail}.</>}
           </span>
-          <Link to="/dang-nhap" className="text-[15px] font-medium">
+          <Link to="/ho-so-cua-toi" className="text-[15px] font-medium">
             Đăng nhập để quản lý hồ sơ
           </Link>
         </div>

@@ -6,8 +6,6 @@ import type { Env } from '../app.js';
 export const COOKIES = {
   hr: { name: 'hr_session', maxAge: 7 * 24 * 60 * 60 },
   candidate: { name: 'candidate_session', maxAge: 30 * 24 * 60 * 60 },
-  /** Google email waiting for the one-time phone check (BR-22). */
-  pendingGoogle: { name: 'candidate_google', maxAge: 10 * 60 },
 } as const;
 
 type CookieKind = keyof typeof COOKIES;

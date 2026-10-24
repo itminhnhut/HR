@@ -5,7 +5,8 @@ import { Icon } from './icons';
  * Native <dialog>: focus trap, Esc to close and inert background for free.
  * `variant="sheet"` slides up from the bottom on phones (and stays a
  * centered panel on wide screens); `variant="panel"` is the big two-column
- * apply modal that turns full-screen on phones.
+ * apply modal that turns full-screen on phones; `variant="drawer"` is the
+ * full-screen menu that slides in from the left.
  */
 export function Dialog({
   open,
@@ -20,7 +21,7 @@ export function Dialog({
   onClose: () => void;
   label: string;
   children: ReactNode;
-  variant?: 'sheet' | 'panel';
+  variant?: 'sheet' | 'panel' | 'drawer';
   className?: string;
   /** Keep children (and their state) alive while closed. */
   keepMounted?: boolean;
@@ -30,7 +31,12 @@ export function Dialog({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (open && !el.open) el.showModal();
+    if (open && !el.open) {
+      el.showModal();
+      // The browser focuses the first button (the close X), which shows a focus ring on every open.
+      // Focus the dialog itself instead: screen readers announce its label, Tab still reaches the X.
+      el.focus();
+    }
     if (!open && el.open) el.close();
   }, [open]);
 
@@ -43,14 +49,19 @@ export function Dialog({
     };
   }, [open]);
 
-  const shape =
-    variant === 'panel'
-      ? 'm-0 h-dvh max-h-none w-full max-w-none rounded-none sm:m-auto sm:h-auto sm:max-h-[calc(100dvh-48px)] sm:w-[min(1040px,calc(100vw-48px))] sm:rounded-[10px]'
-      : 'mb-0 mt-auto w-full max-w-none rounded-t-[14px] sm:m-auto sm:w-[min(480px,calc(100vw-32px))] sm:rounded-[10px]';
+  const shape = {
+    panel:
+      'm-0 h-dvh max-h-none w-full max-w-none rounded-none sm:m-auto sm:h-auto sm:max-h-[calc(100dvh-48px)] sm:w-[min(1040px,calc(100vw-48px))] sm:rounded-[10px]',
+    sheet:
+      'mb-0 mt-auto w-full max-w-none rounded-t-[14px] sm:m-auto sm:w-[min(480px,calc(100vw-32px))] sm:rounded-[10px]',
+    drawer: 'm-0 h-dvh max-h-none w-full max-w-none rounded-none',
+  }[variant];
+  const motion = { panel: 'animate-pop', sheet: 'animate-sheet', drawer: 'animate-drawer' }[variant];
 
   return (
     <dialog
       ref={ref}
+      tabIndex={-1}
       aria-label={label}
       onCancel={(e) => {
         e.preventDefault();
@@ -59,7 +70,7 @@ export function Dialog({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`overflow-hidden border-0 bg-white p-0 text-navy shadow-[0_30px_80px_rgba(3,10,24,0.45)] ${variant === 'panel' ? 'animate-pop' : 'animate-sheet'} ${shape} ${className}`}
+      className={`overflow-hidden border-0 bg-white p-0 outline-none text-navy shadow-[0_30px_80px_rgba(3,10,24,0.45)] ${motion} ${shape} ${className}`}
     >
       {(open || keepMounted) && children}
     </dialog>

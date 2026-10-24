@@ -1,6 +1,6 @@
 import { Link, Outlet, ScrollRestoration } from 'react-router';
 import { formatPhone } from '@careers/shared';
-import { SITE } from '../lib/site';
+import { SITE, telLink } from '../lib/site';
 import { Icon } from '../ui/icons';
 import { SiteHeader } from './SiteHeader';
 
@@ -51,22 +51,35 @@ export function NavyHero({
 }
 
 export function SiteFooter() {
-  const phone = /\d/.test(SITE.hrPhone) ? formatPhone(SITE.hrPhone) : SITE.hrPhone;
+  const phone = SITE.hrPhone ? formatPhone(SITE.hrPhone) : '';
   return (
     <footer className="bg-navy text-silver-soft">
       <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-between gap-x-7 gap-y-3 px-5 py-9 text-sm sm:px-6">
         <span className="font-serif text-xl text-white">{SITE.company}</span>
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          <span className="inline-flex items-center gap-2">
-            <Icon name="mail" size={16} />
-            {SITE.hrEmail}
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <Icon name="phone" size={16} />
-            {phone}
-          </span>
+          {SITE.hrEmail && (
+            <a
+              href={`mailto:${SITE.hrEmail}`}
+              className="inline-flex items-center gap-2 text-silver-soft no-underline hover:text-white"
+            >
+              <Icon name="mail" size={16} />
+              {SITE.hrEmail}
+            </a>
+          )}
+          {phone && (
+            <a
+              href={telLink(SITE.hrPhone)}
+              className="inline-flex items-center gap-2 text-silver-soft no-underline hover:text-white"
+            >
+              <Icon name="phone" size={16} />
+              {phone}
+            </a>
+          )}
           <Link to="/gioi-thieu" className="text-silver-soft no-underline hover:text-white">
             Về chúng tôi
+          </Link>
+          <Link to="/tra-cuu-ho-so" className="text-silver-soft no-underline hover:text-white">
+            Tra cứu hồ sơ
           </Link>
           <Link to="/chinh-sach-du-lieu" className="text-silver-soft no-underline hover:text-white">
             Chính sách dữ liệu

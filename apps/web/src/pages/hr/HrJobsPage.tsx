@@ -1,5 +1,6 @@
 import {
   daysLeft,
+  hasEnded,
   formatDate,
   formatSalary,
   hasSalary,
@@ -14,25 +15,25 @@ import { useDeleteJob, useHrJobs, useJobAction } from '../../api/queries';
 import { copyText, useFlash, usePageMeta } from '../../lib/hooks';
 import { jobUrl } from '../../lib/site';
 import { ButtonLink } from '../../ui/Button';
+import { DueForDeletionBanner } from './DueForDeletionBanner';
+import { JobDeadlineDialog } from './JobDeadlineDialog';
 import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
 import { apiMessage, errorMessage, FilterTabs, MenuItem, PageHeading, PopupMenu, type TabItem } from './parts';
 
-type TabKey = 'all' | 'live' | 'paused' | 'ended' | 'draft';
+type TabKey = 'all' | 'live' | 'ended' | 'draft';
 
 const TAB_GROUPS: Record<TabKey, EffectiveStatus[] | null> = {
   all: null,
   live: ['open', 'expiring'],
-  paused: ['paused'],
-  ended: ['expired', 'filled'],
+  ended: ['expired', 'closed'],
   draft: ['draft'],
 };
 
 const TAB_LABELS: [TabKey, string][] = [
   ['all', 'Tất cả'],
   ['live', 'Đang tuyển'],
-  ['paused', 'Tạm dừng'],
-  ['ended', 'Đã kết thúc'],
+  ['ended', 'Đã đóng'],
   ['draft', 'Bản nháp'],
 ];
 
@@ -40,29 +41,21 @@ const TAB_LABELS: [TabKey, string][] = [
 const STATUS_TONE: Record<EffectiveStatus, { text: string; dot: string }> = {
   open: { text: 'text-ok', dot: 'bg-ok border-ok' },
   expiring: { text: 'text-accent', dot: 'bg-focus border-accent' },
-  paused: { text: 'text-body', dot: 'bg-transparent border-body' },
   expired: { text: 'text-muted', dot: 'bg-silver-soft border-muted' },
-  filled: { text: 'text-accent', dot: 'bg-accent border-accent' },
+  closed: { text: 'text-body', dot: 'bg-transparent border-body' },
   draft: { text: 'text-accent', dot: 'bg-transparent border-accent' },
 };
 
 const inTab = (row: HrJobRowDto, tab: TabKey) => TAB_GROUPS[tab]?.includes(row.status) ?? true;
-const isEnded = (s: EffectiveStatus) => s === 'expired' || s === 'filled';
+const isEnded = hasEnded;
 const isLive = (s: EffectiveStatus) => s === 'open' || s === 'expiring';
-const shortDate = (iso: string) => formatDate(iso).slice(0, 5);
 /** A draft has no real deadline until it is published (mockup shows "—"). */
 const deadlineText = (row: HrJobRowDto) => (row.status === 'draft' ? '—' : formatDate(row.deadline));
-
-interface FilledNote {
-  id: string;
-  title: string;
-  total: number;
-}
 
 interface RowHandlers {
   busy: boolean;
   run: (action: JobAction) => void;
-  onFilled: () => void;
+  onDeadline: () => void;
   onDelete: () => void;
 }
 
@@ -79,9 +72,9 @@ function StatusBadge({ status }: { status: EffectiveStatus }) {
 }
 
 function SalaryCell({ row }: { row: HrJobRowDto }) {
-  if (hasSalary(row)) return <span>{formatSalary(row)}</span>;
+  if (hasSalary(row)) return <span className="text-balance">{formatSalary(row)}</span>;
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-accent">
+    <span className="inline-flex items-start gap-1.5 text-xs font-medium leading-snug text-accent">
       <Icon name="alert" size={14} stroke={1.7} />
       Chưa ghi lương
     </span>
@@ -95,7 +88,7 @@ function ApplicationsCell({ row }: { row: HrJobRowDto }) {
       {row.newApplications > 0 && (
         <Link
           to={`/hr/ho-so?tin=${row.id}`}
-          className="ml-1.5 text-xs font-medium text-accent no-underline hover:underline"
+          className="ml-2 inline-flex items-center rounded-full bg-tint px-2 py-0.5 text-xs font-medium text-accent no-underline hover:underline"
         >
           {row.newApplications} mới
         </Link>
@@ -145,17 +138,14 @@ function ActLink({
   );
 }
 
-function JobActions({ row, busy, run, onFilled, onDelete }: { row: HrJobRowDto } & RowHandlers) {
-  const navigate = useNavigate();
+function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto } & RowHandlers) {
   const [copied, flashCopied] = useFlash();
-  const [confirmFill, setConfirmFill] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const { status } = row;
-  const canEdit = status === 'draft' || isLive(status) || status === 'paused';
-  const canMore = isLive(status) || status === 'paused';
 
   return (
-    <div className="flex flex-wrap items-center gap-1 xl:flex-nowrap xl:justify-end">
+    <div className="flex flex-wrap items-center gap-1 xl:justify-end">
       {status === 'draft' && (
         <ActLink icon="send" to={`/hr/tin/${row.id}`}>
           Đăng
@@ -177,32 +167,18 @@ function JobActions({ row, busy, run, onFilled, onDelete }: { row: HrJobRowDto }
           {confirmDelete ? 'Bấm lần nữa để xóa' : 'Xóa'}
         </button>
       )}
-      {row.extendTo && (
-        <ActButton icon="calendar" onClick={() => run('extend')} disabled={busy}>
-          Gia hạn
-        </ActButton>
-      )}
       {isEnded(status) && (
-        <button
-          type="button"
-          onClick={() => navigate(`/hr/tin/moi?tu=${row.id}`)}
-          className={`${actClass} font-medium text-link`}
-        >
-          <Icon name="copy" size={16} stroke={1.5} />
-          Đăng lại
-        </button>
-      )}
-      {status === 'paused' && (
-        <ActButton icon="play" onClick={() => run('resume')} disabled={busy}>
-          Mở lại
+        <ActButton icon="calendar" onClick={onDeadline} disabled={busy}>
+          Sửa hạn nộp
         </ActButton>
       )}
       {row.totalApplications > 0 && (
         <ActLink icon="inbox" to={`/hr/ho-so?tin=${row.id}`}>
-          Hồ sơ
+          {/* Desktop table: icon only to keep each row on one line; the label stays for screen readers. */}
+          <span className="xl:sr-only">Hồ sơ</span>
         </ActLink>
       )}
-      {canEdit && (
+      {
         <Link
           to={`/hr/tin/${row.id}`}
           aria-label={`Sửa tin ${row.title}`}
@@ -210,44 +186,36 @@ function JobActions({ row, busy, run, onFilled, onDelete }: { row: HrJobRowDto }
         >
           <Icon name="pencil" size={17} stroke={1.5} />
         </Link>
-      )}
-      {canMore && (
+      }
+      {isLive(status) && (
         <PopupMenu label={`Thao tác khác cho ${row.title}`}>
           {(close) => (
             <>
-              {isLive(status) && (
-                <MenuItem onClick={() => copyText(jobUrl(row.slug)).then((ok) => ok && flashCopied())}>
-                  <Icon name={copied ? 'check' : 'link'} size={16} stroke={1.5} className="text-slate" />
-                  {copied ? 'Đã chép' : 'Sao chép link'}
-                </MenuItem>
-              )}
-              {isLive(status) && (
-                <MenuItem
-                  onClick={() => {
-                    close();
-                    run('pause');
-                  }}
-                >
-                  <Icon name="pause" size={16} stroke={1.5} className="text-slate" />
-                  Tạm dừng nhận hồ sơ
-                </MenuItem>
-              )}
+              <MenuItem onClick={() => copyText(jobUrl(row.slug)).then((ok) => ok && flashCopied())}>
+                <Icon name={copied ? 'check' : 'link'} size={16} stroke={1.5} className="text-slate" />
+                {copied ? 'Đã chép' : 'Sao chép link'}
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  close();
+                  onDeadline();
+                }}
+              >
+                <Icon name="calendar" size={16} stroke={1.5} className="text-slate" />
+                Sửa hạn nộp
+              </MenuItem>
               <MenuItem
                 divided
                 onClick={() => {
-                  // Closing is final for candidates, so it takes a second tap.
-                  if (!confirmFill) return setConfirmFill(true);
-                  setConfirmFill(false);
+                  // Candidates can no longer apply once closed, so it takes a second tap.
+                  if (!confirmClose) return setConfirmClose(true);
+                  setConfirmClose(false);
                   close();
-                  onFilled();
+                  run('close');
                 }}
               >
-                <Icon name="checkSquare" size={16} stroke={1.5} className={confirmFill ? 'text-error' : 'text-slate'} />
-                {confirmFill ? (
-                  <span className="font-medium text-error">Bấm lần nữa để đóng tin</span>
-                ) : (
-                  'Đã tuyển đủ, đóng tin'
-                )}
+                <Icon name="x" size={16} stroke={1.5} className={confirmClose ? 'text-error' : 'text-slate'} />
+                {confirmClose ? <span className="font-medium text-error">Bấm lần nữa để đóng tin</span> : 'Đóng tin'}
               </MenuItem>
             </>
           )}
@@ -276,7 +244,15 @@ const td = 'border-b border-line-soft px-4 py-4 align-middle';
 function JobsTable({ rows, handlers }: { rows: HrJobRowDto[]; handlers: (row: HrJobRowDto) => RowHandlers }) {
   return (
     <div className="hidden overflow-x-auto xl:block">
-      <table className="w-full min-w-[820px] border-collapse text-sm">
+      <table className="w-full table-fixed border-collapse text-sm">
+        <colgroup>
+          <col className="w-[25%]" />
+          <col className="w-[13%]" />
+          <col className="w-[10%]" />
+          <col className="w-[12%]" />
+          <col className="w-[10%]" />
+          <col className="w-[30%]" />
+        </colgroup>
         <thead>
           <tr className="text-left text-xs text-muted">
             <th scope="col" className={`${th} pl-[22px]`}>
@@ -400,7 +376,7 @@ function JobsSkeleton() {
 
 // ── Banners ─────────────────────────────────────────────────────────────
 
-function ExpiringBanner({ row, busy, onExtend }: { row: HrJobRowDto; busy: boolean; onExtend: () => void }) {
+function ExpiringBanner({ row, busy, onDeadline }: { row: HrJobRowDto; busy: boolean; onDeadline: () => void }) {
   const left = Math.max(daysLeft(row.deadline), 0);
   const when = left === 0 ? 'hết hạn hôm nay' : `hết hạn trong ${left} ngày nữa`;
   return (
@@ -412,42 +388,16 @@ function ExpiringBanner({ row, busy, onExtend }: { row: HrJobRowDto; busy: boole
         <Icon name="clock" size={18} stroke={1.5} />
       </span>
       <span className="min-w-0 flex-[1_1_260px] leading-relaxed">
-        <strong className="font-semibold">{row.title}</strong> {when} ({formatDate(row.deadline)}). Gia hạn nếu vẫn cần
-        tuyển, hoặc để tin tự đóng.
+        <strong className="font-semibold">{row.title}</strong> {when} ({formatDate(row.deadline)}). Sửa hạn nộp nếu vẫn
+        cần tuyển, hoặc để tin tự đóng.
       </span>
-      {row.extendTo && (
-        <button
-          type="button"
-          onClick={onExtend}
-          disabled={busy}
-          className="min-h-11 rounded-control border border-silver-soft bg-white px-4 text-sm font-medium text-navy transition-colors hover:bg-mist disabled:opacity-60 lg:min-h-10"
-        >
-          Gia hạn đến {shortDate(row.extendTo)}
-        </button>
-      )}
-    </div>
-  );
-}
-
-function FilledBanner({ note, onDismiss }: { note: FilledNote; onDismiss: () => void }) {
-  return (
-    <div
-      role="status"
-      className="flex flex-wrap items-center gap-x-[18px] gap-y-3 rounded-card border border-ring bg-tint px-5 py-4 text-sm leading-relaxed text-accent"
-    >
-      <span className="min-w-0 flex-[1_1_300px]">
-        Đã đóng tin <strong className="font-semibold">{note.title}</strong>. Tin có {note.total} hồ sơ, nhớ gửi lời cảm
-        ơn cho những người chưa được chọn.
-      </span>
-      <ButtonLink to={`/hr/ho-so?tin=${note.id}`} size="sm" className="font-medium hover:text-white">
-        Xem hồ sơ
-      </ButtonLink>
       <button
         type="button"
-        onClick={onDismiss}
-        className="min-h-10 border-0 bg-transparent px-3 text-sm text-slate hover:text-navy"
+        onClick={onDeadline}
+        disabled={busy}
+        className="min-h-11 rounded-control border border-silver-soft bg-white px-4 text-sm font-medium text-navy transition-colors hover:bg-mist disabled:opacity-60 lg:min-h-10"
       >
-        Để sau
+        Sửa hạn nộp
       </button>
     </div>
   );
@@ -464,7 +414,7 @@ export function HrJobsPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<TabKey>('all');
   const [actionError, setActionError] = useState<string | null>(null);
-  const [filled, setFilled] = useState<FilledNote | null>(null);
+  const [deadlineFor, setDeadlineFor] = useState<HrJobRowDto | null>(null);
   const showSkeleton = useDelayedFlag(jobs.isPending);
 
   const flash = (location.state as { notice?: string } | null)?.notice;
@@ -477,15 +427,15 @@ export function HrJobsPage() {
     count: rows.filter((r) => inTab(r, key)).length,
   }));
 
-  const run = (row: HrJobRowDto, kind: JobAction, onDone?: () => void) => {
+  const run = (row: HrJobRowDto, kind: JobAction) => {
     setActionError(null);
-    action.mutate({ id: row.id, action: kind }, { onSuccess: onDone, onError: (e) => setActionError(errorMessage(e)) });
+    action.mutate({ id: row.id, action: kind }, { onError: (e) => setActionError(errorMessage(e)) });
   };
 
   const handlers = (row: HrJobRowDto): RowHandlers => ({
     busy: (action.isPending && action.variables?.id === row.id) || (remove.isPending && remove.variables === row.id),
     run: (kind) => run(row, kind),
-    onFilled: () => run(row, 'fill', () => setFilled({ id: row.id, title: row.title, total: row.totalApplications })),
+    onDeadline: () => setDeadlineFor(row),
     onDelete: () => {
       setActionError(null);
       remove.mutate(row.id, { onError: (e) => setActionError(errorMessage(e)) });
@@ -527,10 +477,11 @@ export function HrJobsPage() {
           <span role="alert">{actionError}</span>
         </Notice>
       )}
-      {filled && <FilledBanner note={filled} onDismiss={() => setFilled(null)} />}
+      <DueForDeletionBanner count={jobs.data?.dueForDeletion ?? 0} />
       {expiring.map((row) => (
-        <ExpiringBanner key={row.id} row={row} busy={handlers(row).busy} onExtend={() => run(row, 'extend')} />
+        <ExpiringBanner key={row.id} row={row} busy={handlers(row).busy} onDeadline={() => setDeadlineFor(row)} />
       ))}
+      <JobDeadlineDialog job={deadlineFor} onClose={() => setDeadlineFor(null)} />
 
       <div className="rounded-card border border-line bg-white">
         <FilterTabs

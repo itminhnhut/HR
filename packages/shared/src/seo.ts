@@ -1,11 +1,11 @@
 import { hasSalary } from './format.js';
+import { OFFICE } from './job-template.js';
 import type { JobDetailDto } from './types.js';
 
 const GOOGLE_EMPLOYMENT_TYPE = {
   full_time: 'FULL_TIME',
   part_time: 'PART_TIME',
   internship: 'INTERN',
-  contract: 'CONTRACTOR',
 } as const;
 
 /**
@@ -17,7 +17,7 @@ export function jobPostingData(job: JobDetailDto, org: { name: string; url: stri
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     title: job.title,
-    description: [job.summary, ...job.responsibilities, ...job.requirements].filter(Boolean).join('\n'),
+    description: [...job.responsibilities, ...job.requirements].join('\n'),
     datePosted: job.publishedAt?.slice(0, 10),
     validThrough: `${job.deadline}T23:59:59+07:00`,
     employmentType: GOOGLE_EMPLOYMENT_TYPE[job.employmentType],
@@ -27,13 +27,13 @@ export function jobPostingData(job: JobDetailDto, org: { name: string; url: stri
       address: {
         '@type': 'PostalAddress',
         streetAddress: job.address ?? undefined,
-        addressLocality: job.city,
+        addressLocality: job.address ? undefined : OFFICE.district,
+        addressRegion: OFFICE.city,
         addressCountry: 'VN',
       },
     },
     directApply: true,
   };
-  if (job.remote) data.jobLocationType = 'TELECOMMUTE';
   // BR-08: no salary in the structured data when the job does not state one.
   const min = job.salaryMin ?? job.salaryMax;
   const max = job.salaryMax ?? job.salaryMin;
@@ -41,7 +41,7 @@ export function jobPostingData(job: JobDetailDto, org: { name: string; url: stri
     data.baseSalary = {
       '@type': 'MonetaryAmount',
       currency: 'VND',
-      value: { '@type': 'QuantitativeValue', minValue: min * 1e6, maxValue: max * 1e6, unitText: 'MONTH' },
+      value: { '@type': 'QuantitativeValue', minValue: min, maxValue: max, unitText: 'MONTH' },
     };
   }
   return data;

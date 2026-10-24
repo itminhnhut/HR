@@ -2,8 +2,11 @@ import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { notFound } from '../lib/http-error.js';
 import { readJson } from '../lib/request.js';
+import { hrOf } from '../lib/hr-auth.js';
 import {
   cvOf,
+  deleteApplication,
+  deleteDueApplications,
   deleteSubscriber,
   listApplications,
   listSubscribers,
@@ -15,8 +18,17 @@ import {
 export const hrApplicationRoutes = new Hono<Env>();
 
 hrApplicationRoutes.get('/applications', async (c) => {
-  return c.json(await listApplications(c.get('deps').db, c.req.query('jobId') || undefined));
+  return c.json(
+    await listApplications(c.get('deps').db, c.req.query('jobId') || undefined, c.req.query('q')?.slice(0, 100)),
+  );
 });
+
+/** Registered before /applications/:id so "due" is not read as an id. */
+hrApplicationRoutes.delete('/applications/due', async (c) => c.json(await deleteDueApplications(c.get('deps'))));
+
+hrApplicationRoutes.delete('/applications/:id', async (c) =>
+  c.json(await deleteApplication(c.get('deps'), c.req.param('id'))),
+);
 
 hrApplicationRoutes.get('/applications/:id', async (c) => {
   return c.json(await openApplication(c.get('deps').db, c.req.param('id')));
@@ -24,7 +36,7 @@ hrApplicationRoutes.get('/applications/:id', async (c) => {
 
 hrApplicationRoutes.patch('/applications/:id', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await updateApplication(db, c.req.param('id'), await readJson(c), now()));
+  return c.json(await updateApplication(db, c.req.param('id'), await readJson(c), now(), hrOf(c)));
 });
 
 /** Streams the CV from the PRIVATE blob store; the URL only works with an HR session. */

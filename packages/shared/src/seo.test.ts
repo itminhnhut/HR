@@ -8,30 +8,21 @@ const job: JobDetailDto = {
   title: 'Kỹ sư',
   department: 'Kỹ thuật',
   employmentType: 'internship',
-  remote: false,
-  city: 'Hà Nội',
+  place: 'Gò Vấp, TP. HCM',
   deadline: '2026-11-30',
   status: 'open',
   publishedAt: '2026-10-20T02:00:00.000Z',
   perks: '',
   salaryMin: null,
   salaryMax: null,
-  salaryNote: null,
   address: null,
   workingHours: null,
-  level: null,
   experience: null,
   education: null,
-  language: null,
-  headcount: null,
-  skills: [],
-  summary: 'Tóm tắt',
-  teamNote: null,
   responsibilities: ['Viết API'],
   requirements: ['Biết SQL'],
-  niceToHave: [],
-  benefits: { income: [], insurance: [], timeOff: [], growth: [], environment: [] },
-  plan: { day30: null, day60: null, day90: null },
+  benefits: [],
+  roadmap: [],
 };
 const org = { name: 'Công ty', url: 'https://x.vn' };
 
@@ -40,7 +31,7 @@ describe('jobPostingData', () => {
     expect(jobPostingData(job, org)).toMatchObject({
       '@type': 'JobPosting',
       title: 'Kỹ sư',
-      description: 'Tóm tắt\nViết API\nBiết SQL',
+      description: 'Viết API\nBiết SQL',
       datePosted: '2026-10-20',
       validThrough: '2026-11-30T23:59:59+07:00',
       employmentType: 'INTERN',
@@ -53,11 +44,13 @@ describe('jobPostingData', () => {
   });
 
   it('uses one bound for both ends when only one is given', () => {
-    const data = jobPostingData({ ...job, salaryMin: 15 }, org);
+    const data = jobPostingData({ ...job, salaryMin: 15_000_000 }, org);
     expect(data.baseSalary).toMatchObject({ value: { minValue: 15e6, maxValue: 15e6, unitText: 'MONTH' } });
   });
 
-  it('marks remote jobs as telecommute', () => {
-    expect(jobPostingData({ ...job, remote: true }, org).jobLocationType).toBe('TELECOMMUTE');
+  it('places jobs without their own address at the office', () => {
+    expect(jobPostingData(job, org).jobLocation).toMatchObject({
+      address: { addressLocality: 'Gò Vấp', addressRegion: 'TP. Hồ Chí Minh', addressCountry: 'VN' },
+    });
   });
 });

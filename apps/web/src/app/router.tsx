@@ -1,4 +1,4 @@
-import { createBrowserRouter, createHashRouter, type RouteObject } from 'react-router';
+import { createBrowserRouter, createHashRouter, Navigate, useLocation, type RouteObject } from 'react-router';
 import { PublicLayout } from '../site/PublicLayout';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { JobsPage } from '../pages/JobsPage';
@@ -9,6 +9,12 @@ const lazy = (load: () => Promise<{ default: React.ComponentType }>) => async ()
   Component: (await load()).default,
 });
 
+/** Keeps "?tiep=" so a sign-in started elsewhere still comes back there. */
+function ToAccount() {
+  const { search } = useLocation();
+  return <Navigate to={`/ho-so-cua-toi${search}`} replace />;
+}
+
 const routes: RouteObject[] = [
   {
     element: <PublicLayout />,
@@ -17,7 +23,9 @@ const routes: RouteObject[] = [
       { path: 'viec-lam/:slug', element: <JobPage /> },
       { path: 'gioi-thieu', lazy: lazy(() => import('../pages/AboutPage')) },
       { path: 'chinh-sach-du-lieu', lazy: lazy(() => import('../pages/PrivacyPage')) },
-      { path: 'dang-nhap', lazy: lazy(() => import('../pages/candidate/CandidateLoginPage')) },
+      { path: 'tra-cuu-ho-so', lazy: lazy(() => import('../pages/LookupPage')) },
+      // Old link: signing in now happens on "Hồ sơ của tôi" itself.
+      { path: 'dang-nhap', element: <ToAccount /> },
       { path: 'ho-so-cua-toi', lazy: lazy(() => import('../pages/candidate/CandidateAccountPage')) },
       { path: '*', element: <NotFoundPage /> },
     ],
@@ -27,11 +35,13 @@ const routes: RouteObject[] = [
     path: 'hr',
     lazy: lazy(() => import('../pages/hr/HrLayout')),
     children: [
-      { index: true, lazy: lazy(() => import('../pages/hr/HrJobsPage')) },
+      { index: true, lazy: lazy(() => import('../pages/hr/HrDashboardPage')) },
+      { path: 'tin', lazy: lazy(() => import('../pages/hr/HrJobsPage')) },
       { path: 'tin/moi', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'tin/:id', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'ho-so', lazy: lazy(() => import('../pages/hr/HrApplicantsPage')) },
-      { path: 'nguoi-cho-tin', lazy: lazy(() => import('../pages/hr/HrSubscribersPage')) },
+      { path: 'mau-tin', lazy: lazy(() => import('../pages/hr/HrTemplatePage')) },
+      { path: 'tai-khoan', lazy: lazy(() => import('../pages/hr/HrAccountsPage')) },
     ],
   },
 ];

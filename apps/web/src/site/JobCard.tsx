@@ -4,7 +4,6 @@ import {
   formatDate,
   formatSalary,
   isRecentlyPublished,
-  locationLabel,
   type JobCardDto,
 } from '@careers/shared';
 import { Link } from 'react-router';
@@ -68,7 +67,7 @@ export function JobCard({ job }: { job: JobCardDto }) {
       </div>
       <dl className="m-0 flex flex-wrap gap-x-6 gap-y-3 border-t border-line-soft pt-4 sm:grid sm:grid-cols-3 sm:gap-3">
         <Fact icon="pin" label="Địa điểm">
-          {locationLabel(job)}
+          {job.place}
         </Fact>
         <Fact icon="clock" label="Hình thức">
           {EMPLOYMENT_TYPE_LABEL[job.employmentType]}
@@ -111,7 +110,7 @@ export function MiniJobCard({ job }: { job: JobCardDto }) {
       </span>
       <span className="inline-flex items-center gap-2 text-[13px] text-slate">
         <Icon name="pin" size={14} />
-        {locationLabel(job)}, hạn {formatDate(job.deadline).slice(0, 5)}
+        {job.place}, hạn {formatDate(job.deadline).slice(0, 5)}
       </span>
     </Link>
   );

@@ -15,7 +15,7 @@ npm run dev          # build @careers/shared rồi mở http://localhost:5173
 Không đặt `VITE_API_URL` thì app dùng **dữ liệu giả trong trình duyệt** (`src/api/mock.ts`, lưu ở localStorage):
 
 - HR: vào `/hr`, đăng nhập `hr@congty.vn` / `Demo-Lee-HR-2026` (chỉ bản dữ liệu giả).
-- Ứng viên: `/dang-nhap`, số bất kỳ, mã OTP `123456`. Số `0912 345 128` có sẵn hồ sơ mẫu.
+- Ứng viên: `/dang-nhap`, bấm "Tiếp tục với Google" là vào tài khoản mẫu `minhanh@email.com` (có sẵn 3 hồ sơ).
 - Thêm `?slow` vào URL để xem skeleton (mạng chậm), `?reset` để xóa dữ liệu demo.
 
 ## Nối BE thật

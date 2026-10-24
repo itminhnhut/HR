@@ -27,18 +27,27 @@ export const vercelBlobCvStore: CvStore = {
   },
 };
 
-export type CvProblem = 'too_large' | 'not_pdf';
+export type CvProblem = 'too_large' | 'not_pdf' | 'broken_pdf';
 
 export const CV_PROBLEM_MESSAGE: Record<CvProblem, string> = {
   too_large: 'File lớn hơn 4 MB. Nén lại hoặc dán link CV.',
   not_pdf: 'CV cần là file PDF.',
+  broken_pdf: 'File PDF bị lỗi hoặc chưa tải hết. Lưu lại file rồi thử lại, hoặc dán link CV.',
 };
 
-/** Checks size and the PDF magic bytes, not just the browser-supplied name or MIME type. */
+/** How far from the end a real PDF writes its "%%EOF" marker (some writers add a few bytes after it). */
+const EOF_WINDOW = 1024;
+
+/**
+ * Checks size, the PDF header and the end-of-file marker, not just the browser-supplied name or MIME type.
+ * A file cut off mid-upload, or a renamed non-PDF, would only show HR "Failed to load PDF document".
+ */
 export async function checkCvFile(file: File): Promise<CvProblem | null> {
   if (file.size > CV_MAX_BYTES) return 'too_large';
   const head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
-  return String.fromCharCode(...head) === '%PDF-' ? null : 'not_pdf';
+  if (String.fromCharCode(...head) !== '%PDF-') return 'not_pdf';
+  const tail = new TextDecoder('latin1').decode(await file.slice(Math.max(0, file.size - EOF_WINDOW)).arrayBuffer());
+  return tail.includes('%%EOF') ? null : 'broken_pdf';
 }
 
 export const cvFileName = (file: File) => file.name.slice(0, 200) || 'CV.pdf';

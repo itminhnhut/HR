@@ -6,22 +6,23 @@ import {
   formatSalary,
   hasSalary,
   jobPostingData,
+  NO_REQUIREMENT,
+  ROADMAP_MILESTONES,
   todayInVietnam,
   type JobCardDto,
   type JobDetailDto,
 } from '@careers/shared';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
-import { ApiError, isDemo } from '../api';
-import { useCandidate, useJob, useSavedSlugs, useToggleSaved } from '../api/queries';
-import { copyText, useFlash, usePageMeta } from '../lib/hooks';
-import { jobUrl, SITE } from '../lib/site';
+import { ApiError } from '../api';
+import { useJob } from '../api/queries';
+import { useFlash, usePageMeta } from '../lib/hooks';
+import { SITE } from '../lib/site';
 import { zaloLink } from '@careers/shared';
 import { ApplyDialog } from '../site/ApplyDialog';
 import { ExpiringChip, MiniJobCard } from '../site/JobCard';
 import { NavyHero } from '../site/PublicLayout';
-import { ShareDialog, shareNative } from '../site/ShareDialog';
-import { SubscribeBox } from '../site/SubscribeBox';
+import { shareJob } from '../site/share';
 import { Button, ButtonAnchor, ButtonLink } from '../ui/Button';
 import { EmptyState, ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../ui/feedback';
 import { Icon, IconRing, type IconName } from '../ui/icons';
@@ -33,7 +34,7 @@ export function JobPage() {
   const job = query.data?.job;
   usePageMeta(
     job?.title ?? (query.isError ? 'Không tìm thấy tin' : undefined),
-    job ? `${job.title} · ${formatSalary(job)} · ${job.city}` : undefined,
+    job ? `${job.title} · ${formatSalary(job)} · ${job.place}` : undefined,
   );
 
   if (query.isPending) {
@@ -108,25 +109,13 @@ function publishedLabel(publishedAt: string | null): string | null {
 
 function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] }) {
   const [applyOpen, setApplyOpen] = useApplyParam();
-  const [shareOpen, setShareOpen] = useState(false);
   const [copied, flash] = useFlash();
-  const saved = useSavedSlugs();
-  const toggle = useToggleSaved();
-  const candidate = useCandidate();
-  const navigate = useNavigate();
-  // The real BE keeps saved jobs per account; the demo keeps them in the browser.
-  const onToggleSave = () => {
-    if (!isDemo && !candidate.data) return navigate(`/dang-nhap?tiep=${encodeURIComponent(`/viec-lam/${job.slug}`)}`);
-    toggle.mutate({ slug: job.slug, saved: !isSaved });
-  };
-  const isSaved = saved.data?.includes(job.slug) ?? false;
   const fresh = publishedLabel(job.publishedAt);
 
   useJobPostingJsonLd(job);
 
   const onShare = async () => {
-    if (window.matchMedia('(max-width: 767px)').matches && (await shareNative(job))) return;
-    setShareOpen(true);
+    if ((await shareJob(job)) === 'copied') flash();
   };
 
   return (
@@ -160,34 +149,19 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
             <Icon name="money" size={20} stroke={1.6} />
             {hasSalary(job) ? formatSalary(job).replace(' triệu', ' triệu/tháng') : 'Thỏa thuận'}
           </span>
-          {job.skills.length > 0 && (
-            <ul aria-label="Kỹ năng" className="m-0 flex list-none flex-wrap gap-2 p-0">
-              {job.skills.map((s) => (
-                <li key={s} className="rounded-full border border-silver/40 px-3 py-1 text-[13px] text-silver">
-                  {s}
-                </li>
-              ))}
-            </ul>
-          )}
           <div className="mt-3 grid grid-cols-2 gap-2.5 whitespace-nowrap sm:flex sm:flex-wrap">
-            <Button variant="light" size="lg" icon="send" onClick={() => setApplyOpen(true)} className="col-span-2">
+            <Button variant="light" size="lg" icon="send" onClick={() => setApplyOpen(true)}>
               Ứng tuyển ngay
-            </Button>
-            <Button variant="outlineLight" size="lg" aria-pressed={isSaved} onClick={onToggleSave} className="px-4">
-              <Icon name="bookmark" size={18} fill={isSaved ? 'currentColor' : 'none'} />
-              {isSaved ? 'Đã lưu' : 'Lưu việc'}
-            </Button>
-            <Button variant="outlineLight" size="lg" icon="share" onClick={onShare} className="px-4">
-              Chia sẻ
             </Button>
             <Button
               variant="outlineLight"
               size="lg"
-              icon={copied ? 'check' : 'link'}
-              onClick={() => copyText(jobUrl(job.slug)).then((ok) => ok && flash())}
-              className="max-sm:hidden"
+              icon={copied ? 'check' : 'share'}
+              onClick={onShare}
+              aria-live="polite"
+              className="px-4"
             >
-              {copied ? 'Đã sao chép' : 'Sao chép link'}
+              {copied ? 'Đã sao chép link' : 'Chia sẻ'}
             </Button>
           </div>
         </div>
@@ -198,118 +172,47 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
 
         <div className="mt-12 flex flex-wrap items-start gap-10 lg:gap-12">
           <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-14">
-            {job.summary && (
-              <Section icon="info" title="Về vị trí này">
-                <p className="m-0 text-base leading-[1.75] text-body">{job.summary}</p>
-                {job.teamNote && (
-                  <div className="mt-5 flex items-start gap-3.5 rounded-card border border-line bg-white px-5 py-4 text-sm leading-relaxed text-body">
-                    <IconRing name="users" size={16} />
-                    <span>
-                      <span className="text-slate">Làm việc cùng: </span>
-                      <strong className="font-medium text-navy">{job.teamNote}</strong>
-                    </span>
-                  </div>
-                )}
-              </Section>
-            )}
-
             {job.responsibilities.length > 0 && (
-              <Section icon="checkSquare" title="Bạn sẽ làm gì">
+              <Section icon="checkSquare" title="Mô tả công việc">
                 <Bullets items={job.responsibilities} />
               </Section>
             )}
 
-            {(job.requirements.length > 0 || job.niceToHave.length > 0) && (
-              <Section icon="user" title="Chúng tôi cần ở bạn">
-                <div className="grid gap-4 md:grid-cols-2">
-                  {job.requirements.length > 0 && (
-                    <div className="rounded-card border border-line bg-white p-6">
-                      <h3 className="m-0 mb-3 text-[15px] font-semibold">Bắt buộc</h3>
-                      <Bullets items={job.requirements} small />
-                    </div>
-                  )}
-                  {job.niceToHave.length > 0 && (
-                    <div className="rounded-card border border-dashed border-silver bg-white p-6">
-                      <h3 className="m-0 mb-3 text-[15px] font-semibold">
-                        Điểm cộng <span className="font-normal text-muted">(không có vẫn nộp được)</span>
-                      </h3>
-                      <Bullets items={job.niceToHave} small />
-                    </div>
-                  )}
-                </div>
+            {job.requirements.length > 0 && (
+              <Section icon="user" title="Yêu cầu">
+                <Bullets items={job.requirements} />
               </Section>
             )}
 
             <Benefits job={job} />
 
-            {(job.plan.day30 || job.plan.day60 || job.plan.day90) && (
-              <Section icon="trend" title="90 ngày đầu của bạn">
-                <ol className="m-0 flex list-none flex-col p-0">
-                  {(
-                    [
-                      ['30', 'Làm quen', job.plan.day30, 'bg-navy text-white'],
-                      ['60', 'Tự chủ', job.plan.day60, 'bg-accent text-white'],
-                      ['90', 'Về đích', job.plan.day90, 'border border-ring bg-white text-navy'],
-                    ] as const
-                  )
-                    .filter(([, , text]) => text)
-                    .map(([n, title, text, dot], i, arr) => (
-                      <li key={n} className="grid grid-cols-[52px_minmax(0,1fr)] gap-4">
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={`flex size-11 items-center justify-center rounded-full text-[13px] font-semibold ${dot}`}
-                          >
-                            {n}
-                          </span>
-                          {i < arr.length - 1 && <span className="w-px flex-1 bg-ring" />}
-                        </div>
-                        <div className="pb-7">
-                          <h3 className="m-0 mt-2.5 text-[15px] font-semibold">{title}</h3>
-                          <p className="m-0 mt-1 text-[15px] leading-relaxed text-body">{text}</p>
-                        </div>
-                      </li>
-                    ))}
-                </ol>
-              </Section>
-            )}
+            <Roadmap items={job.roadmap} />
 
             <Section icon="image" title="Nơi bạn sẽ làm việc">
               <div className="grid grid-cols-2 gap-2.5 md:grid-cols-[2fr_1fr] md:grid-rows-[150px_150px]">
-                {['Ảnh văn phòng', `Ảnh đội ${job.department}`, 'Ảnh hoạt động'].map((alt, i) => (
-                  <div
-                    key={alt}
-                    role="img"
-                    aria-label={alt}
-                    className={`flex items-center justify-center rounded-card border border-ring bg-line text-[13px] text-slate ${i === 0 ? 'col-span-2 h-[180px] md:col-span-1 md:row-span-2 md:h-auto' : 'h-[110px] md:h-auto'}`}
-                  >
-                    [{alt}]
-                  </div>
+                {WORKPLACE_PHOTOS.map(([src, alt], i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={alt}
+                    loading="lazy"
+                    decoding="async"
+                    className={`w-full rounded-card border border-ring bg-line object-cover ${i === 0 ? 'col-span-2 h-[180px] md:col-span-1 md:row-span-2 md:h-full' : 'h-[110px] md:h-full'}`}
+                  />
                 ))}
               </div>
+              {job.address ? <AddressCard address={job.address} /> : <OfficeMap />}
             </Section>
           </div>
 
           <aside className="flex w-full flex-[1_1_300px] flex-col gap-4 lg:sticky lg:top-6">
-            <div className="rounded-card border border-line bg-white p-6">
-              <h2 className="m-0 font-serif text-[24px] font-medium">Nộp đơn trong 1 phút</h2>
-              <ul className="m-0 my-4 flex list-none flex-col gap-2.5 p-0 text-sm text-body">
-                {[
-                  'Chỉ cần tên, số điện thoại và CV',
-                  'Không cần tạo tài khoản',
-                  'HR liên hệ qua Zalo hoặc điện thoại nếu phù hợp',
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2.5">
-                    <Icon name="check" size={16} className="mt-0.5 shrink-0 text-accent" />
-                    {t}
-                  </li>
-                ))}
-              </ul>
+            <div className="flex flex-col gap-3 rounded-card border border-line bg-white p-6 max-lg:hidden">
+              <span className="text-sm text-slate">Hạn nộp {formatDate(job.deadline)}</span>
               <Button size="lg" icon="send" className="w-full" onClick={() => setApplyOpen(true)}>
                 Ứng tuyển ngay
               </Button>
             </div>
             <CompanyCard />
-            <ProcessCard />
             <AskHrCard />
           </aside>
         </div>
@@ -319,22 +222,23 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
 
       {/* Phones: apply stays one tap away. */}
       <div className="fixed inset-x-0 bottom-0 z-10 flex gap-2.5 border-t border-line bg-white px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 lg:hidden">
-        <ButtonAnchor
-          variant="outline"
-          size="lg"
-          href={SITE.hrZalo ? zaloLink(SITE.hrZalo) : `mailto:${SITE.hrEmail}`}
-          aria-label="Hỏi HR"
-          className="px-4"
-        >
-          <Icon name="chat" size={20} />
-        </ButtonAnchor>
+        {(SITE.hrZalo || SITE.hrEmail) && (
+          <ButtonAnchor
+            variant="outline"
+            size="lg"
+            href={SITE.hrZalo ? zaloLink(SITE.hrZalo) : `mailto:${SITE.hrEmail}`}
+            aria-label={SITE.hrZalo ? 'Nhắn Zalo cho HR' : 'Gửi email cho HR'}
+            className="px-4"
+          >
+            <Icon name="chat" size={20} />
+          </ButtonAnchor>
+        )}
         <Button size="lg" icon="send" className="flex-1" onClick={() => setApplyOpen(true)}>
           Ứng tuyển ngay
         </Button>
       </div>
 
       <ApplyDialog job={job} open={applyOpen} onClose={() => setApplyOpen(false)} />
-      <ShareDialog job={job} open={shareOpen} onClose={() => setShareOpen(false)} />
     </>
   );
 }
@@ -366,12 +270,9 @@ function Bullets({ items, small }: { items: string[]; small?: boolean }) {
 function FactsCard({ job }: { job: JobDetailDto }) {
   const facts: [IconName, string, string | null][] = [
     ['money', 'Mức lương', formatSalary(job)],
-    ['layers', 'Cấp bậc', job.level],
     ['bars', 'Kinh nghiệm', job.experience],
     ['briefcase', 'Hình thức', EMPLOYMENT_TYPE_LABEL[job.employmentType]],
-    ['users', 'Số lượng', job.headcount ? `${job.headcount} người` : null],
-    ['cap', 'Học vấn', job.education],
-    ['globe', 'Ngoại ngữ', job.language],
+    ['cap', 'Học vấn', job.education === NO_REQUIREMENT ? null : job.education],
     ['calendar', 'Hạn nộp', formatDate(job.deadline)],
   ];
   return (
@@ -389,71 +290,69 @@ function FactsCard({ job }: { job: JobDetailDto }) {
             </div>
           ))}
       </dl>
-      {(job.address || job.workingHours) && (
-        <div className="flex flex-col gap-3 border-t border-line-soft px-5 py-4 text-sm sm:flex-row sm:justify-between sm:px-7">
-          {job.address && (
-            <span className="flex items-start gap-2.5">
-              <Icon name="pin" size={16} className="mt-0.5 shrink-0 text-accent" />
-              <span>
-                <span className="text-slate">Nơi làm việc: </span>
-                <span className="font-medium">{job.address}</span> ·{' '}
-                <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(job.address)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Xem bản đồ
-                </a>
-              </span>
+      <div className="flex flex-col gap-3 border-t border-line-soft px-5 py-4 text-sm sm:flex-row sm:justify-between sm:px-7">
+        <span className="flex items-start gap-2.5">
+          <Icon name="pin" size={16} className="mt-0.5 shrink-0 text-accent" />
+          <span>
+            <span className="text-slate">Nơi làm việc: </span>
+            <span className="font-medium">{job.address ?? SITE.officeAddress}</span>
+          </span>
+        </span>
+        {job.workingHours && (
+          <span className="flex items-start gap-2.5">
+            <Icon name="clock" size={16} className="mt-0.5 shrink-0 text-accent" />
+            <span>
+              <span className="text-slate">Giờ làm: </span>
+              <span className="font-medium">{job.workingHours}</span>
             </span>
-          )}
-          {job.workingHours && (
-            <span className="flex items-start gap-2.5">
-              <Icon name="clock" size={16} className="mt-0.5 shrink-0 text-accent" />
-              <span>
-                <span className="text-slate">Giờ làm: </span>
-                <span className="font-medium">{job.workingHours}</span>
-              </span>
-            </span>
-          )}
-        </div>
-      )}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
 
 function Benefits({ job }: { job: JobDetailDto }) {
-  const groups: [IconName, string, string[]][] = [
-    ['money', 'Thu nhập', job.benefits.income],
-    ['shield', 'Bảo hiểm và sức khỏe', job.benefits.insurance],
-    ['calendar', 'Thời gian nghỉ', job.benefits.timeOff],
-    ['trend', 'Phát triển', job.benefits.growth],
-    ['mountain', 'Môi trường và hoạt động', job.benefits.environment],
-  ];
-  const shown = groups.filter(([, , items]) => items.length > 0);
-  if (!shown.length) return null;
+  if (job.benefits.length === 0) return null;
   return (
     <Section icon="gift" title="Quyền lợi">
-      <div className="grid gap-4 md:grid-cols-2">
-        {shown.map(([icon, title, items], i) => (
-          <div
-            key={title}
-            className={`flex gap-4 rounded-card border border-line bg-white p-6 ${i === shown.length - 1 && shown.length % 2 === 1 ? 'md:col-span-2' : ''}`}
-          >
-            <IconRing name={icon} size={16} />
-            <div className="min-w-0">
-              <h3 className="m-0 mb-2.5 text-[15px] font-semibold">{title}</h3>
-              <ul
-                className={`m-0 list-disc gap-x-8 gap-y-1.5 pl-4 marker:text-silver-soft text-sm leading-relaxed text-body ${i === shown.length - 1 && shown.length % 2 === 1 ? 'grid md:grid-cols-2' : 'flex flex-col'}`}
-              >
-                {items.map((t) => (
-                  <li key={t}>{t}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
+      <ul className="m-0 grid list-none gap-x-8 gap-y-3 rounded-card border border-line bg-white p-6 sm:grid-cols-2">
+        {job.benefits.map((b) => (
+          <li key={b} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-body">
+            <Icon name="check" size={17} stroke={2} className="mt-1 shrink-0 text-ok" />
+            {b}
+          </li>
         ))}
-      </div>
+      </ul>
+    </Section>
+  );
+}
+
+/** "Lộ trình 2 tháng thử việc": one step per milestone that has text. */
+function Roadmap({ items }: { items: string[] }) {
+  const steps = ROADMAP_MILESTONES.map((when, i) => [when, items[i] ?? ''] as const).filter(([, text]) => text);
+  if (steps.length === 0) return null;
+  return (
+    <Section icon="trend" title="Lộ trình 2 tháng thử việc">
+      <ol className="m-0 flex list-none flex-col p-0">
+        {steps.map(([when, text], i) => {
+          const last = i === steps.length - 1;
+          return (
+            <li key={when} className="grid grid-cols-[28px_minmax(0,1fr)] gap-4">
+              <div className="flex flex-col items-center">
+                <span
+                  className={`mt-1 flex size-[18px] shrink-0 rounded-full border-2 ${last ? 'border-ok bg-ok' : i === 0 ? 'border-navy bg-navy' : 'border-accent bg-white'}`}
+                />
+                {!last && <span className="w-px flex-1 bg-ring" />}
+              </div>
+              <div className={last ? '' : 'pb-6'}>
+                <h3 className="m-0 text-[15px] font-semibold">{when}</h3>
+                <p className="m-0 mt-1 text-[15px] leading-relaxed text-body">{text}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </Section>
   );
 }
@@ -479,20 +378,20 @@ function CompanyCard() {
           <span className="text-[13px] text-slate">{SITE.industry}</span>
         </div>
       </div>
-      <dl className="m-0 mt-4 flex flex-col gap-2 text-sm">
+      <dl className="m-0 mt-5 flex flex-col gap-3.5 border-t border-line pt-5">
         {(
           [
             ['users', 'Quy mô', SITE.size],
-            ['calendar', 'Thành lập', SITE.founded],
+            ['calendar', 'Hoạt động', SITE.founded],
             ['pin', 'Văn phòng', SITE.office],
           ] as const
         ).map(([icon, k, v]) => (
-          <div key={k} className="flex items-center justify-between gap-3">
-            <dt className="inline-flex items-center gap-2 text-slate">
-              <Icon name={icon} size={15} />
-              {k}
-            </dt>
-            <dd className="m-0 font-medium">{v}</dd>
+          <div key={k} className="flex items-start gap-3">
+            <IconRing name={icon} size={14} className="p-[7px]" />
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <dt className="text-xs text-muted">{k}</dt>
+              <dd className="m-0 text-sm font-medium leading-snug text-navy">{v}</dd>
+            </div>
           </div>
         ))}
       </dl>
@@ -504,38 +403,16 @@ function CompanyCard() {
   );
 }
 
-function ProcessCard() {
-  const steps: [string, string][] = [
-    ['Nộp đơn', ', khoảng 1 phút'],
-    ['HR xem hồ sơ', ', liên hệ nếu phù hợp'],
-    ['Phỏng vấn', ' với HR và trưởng bộ phận'],
-    ['Nhận offer', ', thống nhất ngày bắt đầu'],
-  ];
-  return (
-    <div className="rounded-card border border-line bg-white p-6">
-      <h2 className="m-0 mb-4 text-[15px] font-semibold">Quy trình tuyển dụng</h2>
-      <ol className="m-0 flex list-none flex-col gap-3.5 p-0">
-        {steps.map(([b, rest], i) => (
-          <li key={b} className="flex items-start gap-3 text-sm text-body">
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full border border-ring text-xs text-navy">
-              {i + 1}
-            </span>
-            <span>
-              <strong className="font-semibold text-navy">{b}</strong>
-              {rest}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-}
-
 function AskHrCard() {
+  if (!SITE.hrZalo && !SITE.hrEmail) return null;
   return (
     <div className="rounded-card bg-tint p-6">
       <h2 className="m-0 text-[15px] font-semibold">Có câu hỏi? Hỏi HR</h2>
-      <p className="m-0 mt-1.5 text-[13px] leading-relaxed text-slate">{SITE.hrContactName}, chuyên viên tuyển dụng</p>
+      {SITE.hrContactName && (
+        <p className="m-0 mt-1.5 text-[13px] leading-relaxed text-slate">
+          {SITE.hrContactName}, chuyên viên tuyển dụng
+        </p>
+      )}
       <div className="mt-4 flex flex-wrap gap-2">
         {SITE.hrZalo && (
           <ButtonAnchor
@@ -549,17 +426,19 @@ function AskHrCard() {
             Nhắn Zalo
           </ButtonAnchor>
         )}
-        <ButtonAnchor variant="outline" size="sm" icon="mail" href={`mailto:${SITE.hrEmail}`}>
-          Gửi email
-        </ButtonAnchor>
+        {SITE.hrEmail && (
+          <ButtonAnchor variant="outline" size="sm" icon="mail" href={`mailto:${SITE.hrEmail}`}>
+            Gửi email
+          </ButtonAnchor>
+        )}
       </div>
     </div>
   );
 }
 
-function SimilarJobs({ jobs, title }: { jobs: JobCardDto[]; title: string }) {
+function SimilarJobs({ jobs, title, className = 'mt-16' }: { jobs: JobCardDto[]; title: string; className?: string }) {
   return (
-    <section className="mt-16">
+    <section className={className}>
       <h2 className="m-0 mb-5 font-serif text-[28px] font-medium sm:text-[32px]">{title}</h2>
       <div className="grid gap-4 md:grid-cols-3">
         {jobs.map((j) => (
@@ -567,6 +446,69 @@ function SimilarJobs({ jobs, title }: { jobs: JobCardDto[]; title: string }) {
         ))}
       </div>
     </section>
+  );
+}
+
+/** Photos from topflow.vn (the company's own site). Same for every job until HR can upload per job. */
+const WORKPLACE_PHOTOS: [string, string][] = [
+  ['/images/company/team-expo.jpg', 'Đội ngũ TOP FLOW tại gian hàng triển lãm'],
+  ['/images/company/team-charity.jpg', 'TOP FLOW trong chương trình từ thiện tại Vĩnh Hy'],
+  ['/images/company/team-community.jpg', 'TOP FLOW trong chương trình "Phát triển để phụng sự"'],
+];
+
+/** Where the office is, with an embedded map and a "directions from where I am" link. */
+function OfficeMap() {
+  const at = SITE.officeLatLng;
+  return (
+    <div className="mt-4 overflow-hidden rounded-card border border-line">
+      <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <IconRing name="pin" size={14} className="p-[7px]" />
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <span className="text-sm font-medium leading-snug text-navy">{SITE.officeAddress}</span>
+            <span className="text-xs text-muted">Giờ làm việc: {SITE.officeHours}</span>
+            <span className="text-xs text-muted">Trụ sở đăng ký: {SITE.headOffice}</span>
+          </div>
+        </div>
+        <a
+          href={`https://www.google.com/maps/dir/?api=1&destination=${at}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control border border-silver px-4 text-sm font-medium text-navy no-underline hover:bg-mist hover:text-navy"
+        >
+          <Icon name="send" size={16} />
+          Chỉ đường
+        </a>
+      </div>
+      <iframe
+        title={`Bản đồ văn phòng ${SITE.company}`}
+        src={`https://www.google.com/maps?q=${at}&hl=vi&z=16&output=embed`}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        className="block h-[240px] w-full border-0 border-t border-line sm:h-[300px]"
+      />
+    </div>
+  );
+}
+
+/** A job away from the office: its own address, with directions found by text. */
+function AddressCard({ address }: { address: string }) {
+  return (
+    <div className="mt-4 flex flex-col gap-3 rounded-card border border-line p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex min-w-0 items-start gap-3">
+        <IconRing name="pin" size={14} className="p-[7px]" />
+        <span className="text-sm font-medium leading-snug text-navy">{address}</span>
+      </div>
+      <a
+        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control border border-silver px-4 text-sm font-medium text-navy no-underline hover:bg-mist hover:text-navy"
+      >
+        <Icon name="send" size={16} />
+        Chỉ đường
+      </a>
+    </div>
   );
 }
 
@@ -584,24 +526,7 @@ function useJobPostingJsonLd(job: JobDetailDto) {
 
 // ── Closed job (BR-05: never an error page) ──────────────────────────────
 
-const CLOSED_COPY = {
-  expired: [
-    'Vị trí này đã ngừng nhận hồ sơ',
-    (d: string) => `Hạn nộp hồ sơ đã kết thúc ngày ${d}. Bạn có thể xem các vị trí khác đang tuyển bên dưới.`,
-  ],
-  filled: [
-    'Vị trí này đã tuyển đủ người',
-    () => 'Cảm ơn bạn đã quan tâm. Bạn có thể xem các vị trí khác đang tuyển bên dưới.',
-  ],
-  paused: [
-    'Vị trí này tạm ngừng nhận hồ sơ',
-    () => 'HR đang xét các hồ sơ đã nhận. Để lại số Zalo bên dưới để được báo khi mở lại.',
-  ],
-} as const;
-
 function ClosedJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] }) {
-  const reason = job.status === 'filled' ? 'filled' : job.status === 'paused' ? 'paused' : 'expired';
-  const [title, text] = CLOSED_COPY[reason];
   return (
     <>
       <NavyHero waves={false}>
@@ -618,39 +543,26 @@ function ClosedJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] 
           className="-mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 rounded-card border border-l-[3px] border-line border-l-navy bg-white px-6 py-6 sm:px-8"
         >
           <span className="flex shrink-0 rounded-full border border-silver p-2.5">
-            <Icon name={reason === 'filled' ? 'checkSquare' : 'clock'} size={20} stroke={1.4} />
+            <Icon name="clock" size={20} stroke={1.4} />
           </span>
-          <div className="flex min-w-[240px] flex-1 flex-col gap-1">
-            <h2 className="m-0 font-serif text-[24px] font-medium sm:text-[28px]">{title}</h2>
-            <p className="m-0 text-[15px] leading-relaxed text-body">{text(formatDate(job.deadline))}</p>
+          <div className="flex min-w-[min(100%,420px)] flex-1 flex-col gap-1">
+            <h2 className="m-0 font-serif text-[24px] font-medium sm:text-[28px]">Vị trí này đã ngừng nhận hồ sơ</h2>
+            <p className="m-0 text-[15px] leading-relaxed text-body">
+              Cảm ơn bạn đã quan tâm. Bạn có thể xem các vị trí khác đang tuyển bên dưới.
+            </p>
           </div>
           <ButtonLink to="/" icon="briefcase">
             Xem vị trí đang mở
           </ButtonLink>
         </div>
 
-        {similar.length > 0 && <SimilarJobs jobs={similar} title="Vị trí tương tự đang tuyển" />}
-
-        <section className="flex flex-wrap items-center gap-x-10 gap-y-6 rounded-card border border-line bg-white px-6 py-8 sm:px-10">
-          <div className="flex min-w-[260px] flex-1 flex-col gap-1.5">
-            <h2 className="m-0 font-serif text-[24px] font-medium sm:text-[26px]">
-              Muốn được báo khi có vị trí {job.department} mới?
-            </h2>
-            <p className="m-0 text-sm leading-relaxed text-slate">
-              Để lại số Zalo để nhận tin khi có vị trí mới. Không gửi tin quảng cáo.
-            </p>
-          </div>
-          <div className="min-w-[280px] flex-1">
-            <SubscribeBox department={job.department} fromJobId={job.id} />
-          </div>
-        </section>
+        {similar.length > 0 && <SimilarJobs jobs={similar} title="Vị trí tương tự đang tuyển" className="" />}
 
         <details className="text-[15px] text-slate">
           <summary className="flex min-h-11 cursor-pointer items-center gap-2 font-medium text-body">
             Xem lại mô tả công việc cũ
           </summary>
           <div className="flex flex-col gap-4 pt-2 leading-relaxed">
-            {job.summary && <p className="m-0">{job.summary}</p>}
             {job.responsibilities.length > 0 && <Bullets items={job.responsibilities} small />}
           </div>
         </details>

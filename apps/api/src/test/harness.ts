@@ -8,7 +8,7 @@ import { createApp } from '../app.js';
 import type { Db } from '../db/index.js';
 import * as schema from '../db/schema.js';
 import type { Deps } from '../deps.js';
-import { fakeGoogle, MemoryCvStore, RecordingOtpSender } from './fakes.js';
+import { fakeGoogle, MemoryCvStore } from './fakes.js';
 
 const MIGRATIONS = fileURLToPath(new URL('../../drizzle', import.meta.url));
 const TABLES = Object.values(schema)
@@ -25,7 +25,6 @@ export interface TestContext {
   db: Db;
   clock: { now: Date };
   cvStore: MemoryCvStore;
-  otp: RecordingOtpSender;
   deps: Deps;
   request(path: string, init?: RequestInit): Promise<Response>;
   /** JSON request with the CSRF header the FE always sends. */
@@ -41,7 +40,6 @@ export async function createTestContext(): Promise<TestContext> {
 
   const clock = { now: DEFAULT_NOW };
   const cvStore = new MemoryCvStore();
-  const otp = new RecordingOtpSender();
   const deps: Deps = {
     db,
     config: {
@@ -53,7 +51,6 @@ export async function createTestContext(): Promise<TestContext> {
     },
     cvStore,
     verifyGoogleToken: fakeGoogle,
-    otpSender: otp,
     now: () => clock.now,
   };
   const app = createApp(deps);
@@ -63,7 +60,6 @@ export async function createTestContext(): Promise<TestContext> {
     db,
     clock,
     cvStore,
-    otp,
     deps,
     request,
     send: (method, path, body, headers = {}) =>
@@ -75,8 +71,8 @@ export async function createTestContext(): Promise<TestContext> {
     async reset() {
       clock.now = DEFAULT_NOW;
       cvStore.clear();
-      otp.sent.length = 0;
-      deps.otpSender = otp;
+      deps.cvStore = cvStore;
+      deps.verifyGoogleToken = fakeGoogle;
       await db.execute(sql.raw(`TRUNCATE ${TABLES} CASCADE`));
     },
   };

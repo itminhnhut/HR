@@ -5,14 +5,12 @@
 
 export const VIETNAM_OFFSET = '+07:00'; // Vietnam has no DST.
 export const EXPIRING_WINDOW_DAYS = 3; // BR-03
-export const GRACE_MINUTES = 60; // edge case: form opened before expiry
 export const MAX_OPEN_DAYS = 60; // BR-01
-export const EXTEND_DAYS = 14; // BR-04
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export type StoredState = 'draft' | 'published' | 'paused' | 'filled';
-export type EffectiveStatus = 'draft' | 'open' | 'expiring' | 'paused' | 'expired' | 'filled';
+export type StoredState = 'draft' | 'published' | 'closed';
+export type EffectiveStatus = 'draft' | 'open' | 'expiring' | 'expired' | 'closed';
 
 interface JobLike {
   state: StoredState;
@@ -44,8 +42,6 @@ export function daysBetween(fromIso: string, toIso: string): number {
 
 export function effectiveStatus(job: JobLike, now: Date = new Date()): EffectiveStatus {
   const remainingMs = deadlineEnd(job.deadline).getTime() - now.getTime();
-  // BR-19: a paused job whose deadline passes becomes expired.
-  if (job.state === 'paused') return remainingMs < 0 ? 'expired' : 'paused';
   if (job.state !== 'published') return job.state;
   if (remainingMs < 0) return 'expired';
   // BR-03 counts calendar days in Vietnam: deadline 26/10 is "còn 3 ngày" on 23/10.
@@ -60,39 +56,6 @@ export function acceptsApplications(status: EffectiveStatus): boolean {
 /** Listed on the public job board and in the sitemap. */
 export function isListed(status: EffectiveStatus): boolean {
   return acceptsApplications(status);
-}
-
-/**
- * A candidate who opened the form before the deadline may still submit
- * within GRACE_MINUTES after it passes.
- */
-export function canSubmit(job: JobLike, formOpenedAt: Date, now: Date = new Date()): boolean {
-  const status = effectiveStatus(job, now);
-  if (acceptsApplications(status)) return true;
-  if (status !== 'expired') return false;
-  const end = deadlineEnd(job.deadline).getTime();
-  return formOpenedAt.getTime() <= end && now.getTime() <= end + GRACE_MINUTES * 60 * 1000;
-}
-
-/** BR-04: extend from whichever is later, the old deadline or today. */
-export function extendedDeadline(deadline: string, now: Date = new Date()): string {
-  const today = todayInVietnam(now);
-  const base = deadline > today ? deadline : today;
-  return addDays(base, EXTEND_DAYS);
-}
-
-/**
- * BR-18: one extension adds EXTEND_DAYS, but the job may not take applications
- * for more than MAX_OPEN_DAYS after it was published. Returns null when no
- * extension is possible (HR must "Đăng lại" instead).
- */
-export function extendTarget(deadline: string, publishedOn: string | null, now: Date = new Date()): string | null {
-  const wanted = extendedDeadline(deadline, now);
-  if (!publishedOn) return wanted;
-  const cap = addDays(publishedOn, MAX_OPEN_DAYS);
-  const target = wanted > cap ? cap : wanted;
-  const today = todayInVietnam(now);
-  return target > deadline && target > today ? target : null;
 }
 
 export function daysLeft(deadline: string, now: Date = new Date()): number {
@@ -114,7 +77,18 @@ export const STATUS_LABEL: Record<EffectiveStatus, string> = {
   draft: 'Bản nháp',
   open: 'Đang tuyển',
   expiring: 'Sắp hết hạn',
-  paused: 'Tạm dừng',
   expired: 'Hết hạn',
-  filled: 'Đã tuyển đủ',
+  closed: 'Đã đóng',
 };
+
+/** Taking no applications any more: past the deadline or closed by HR. */
+export function hasEnded(status: EffectiveStatus): boolean {
+  return status === 'expired' || status === 'closed';
+}
+
+/** Day the job stopped taking applications, or null while it still does (or never did). */
+export function endedOn(job: JobLike & { closedOn: string | null }, now: Date = new Date()): string | null {
+  const status = effectiveStatus(job, now);
+  if (status === 'closed') return job.closedOn;
+  return status === 'expired' ? job.deadline : null;
+}

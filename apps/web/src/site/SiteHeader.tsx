@@ -28,9 +28,8 @@ function useNavItems(): NavItem[] {
   return [
     { to: '/', label: 'Việc làm', icon: 'briefcase', end: true },
     { to: '/gioi-thieu', label: 'Về chúng tôi', icon: 'building' },
-    candidate
-      ? { to: '/ho-so-cua-toi', label: 'Hồ sơ của tôi', icon: 'user' }
-      : { to: '/dang-nhap', label: 'Đăng nhập', icon: 'user' },
+    { to: '/tra-cuu-ho-so', label: 'Tra cứu hồ sơ', icon: 'search' },
+    ...(candidate ? [{ to: '/ho-so-cua-toi', label: 'Hồ sơ của tôi', icon: 'user' } as const] : []),
   ];
 }
 
@@ -44,7 +43,7 @@ export function SiteHeader() {
   return (
     <header className="relative mx-auto flex max-w-[1160px] items-center justify-between gap-3 border-b border-silver/20 px-5 py-3.5 sm:px-6">
       <Wordmark />
-      <nav aria-label="Điều hướng chính" className="hidden items-center gap-2 md:flex">
+      <nav aria-label="Điều hướng chính" className="hidden items-center gap-1 lg:flex">
         {items.map((item) => (
           <NavLink
             key={item.to}
@@ -75,38 +74,55 @@ export function SiteHeader() {
         aria-label="Mở menu"
         aria-expanded={menu}
         onClick={() => setMenu(true)}
-        className="flex size-11 items-center justify-center rounded-control border border-silver/45 bg-transparent text-white md:hidden"
+        className="flex size-11 items-center justify-center rounded-control border border-silver/45 bg-transparent text-white lg:hidden"
       >
         <Icon name="menu" size={20} stroke={1.8} />
       </button>
 
-      <Dialog open={menu} onClose={() => setMenu(false)} label="Menu" className="md:hidden">
-        <nav aria-label="Menu" className="flex flex-col bg-navy px-5 pb-8 pt-3 text-white">
-          <div className="flex items-center justify-between pb-2">
-            <span className="font-serif text-lg font-medium">{SITE.company}</span>
+      <Dialog open={menu} onClose={() => setMenu(false)} label="Menu" variant="drawer" className="bg-navy lg:hidden">
+        <nav aria-label="Menu" className="flex h-full flex-col overflow-y-auto bg-navy px-5 pb-8 pt-3.5 text-white">
+          <div className="flex items-center justify-between gap-3 border-b border-silver/20 pb-3.5">
+            <Wordmark />
             <button
               type="button"
               onClick={() => setMenu(false)}
               aria-label="Đóng menu"
-              className="flex size-11 items-center justify-center rounded-control border border-silver/45 bg-transparent text-white"
+              className="flex size-11 shrink-0 items-center justify-center rounded-control border border-silver/45 bg-transparent text-white"
             >
               <Icon name="x" size={18} />
             </button>
           </div>
-          {[
-            ...items,
-            { to: '/chinh-sach-du-lieu', label: 'Chính sách dữ liệu', icon: 'shield' as IconName },
-            { to: '/hr', label: 'Dành cho HR', icon: 'lock' as IconName },
-          ].map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="flex min-h-[52px] items-center gap-3 border-b border-silver/20 text-base text-silver no-underline hover:text-white"
-            >
-              <Icon name={item.icon} size={18} />
-              {item.label}
-            </Link>
-          ))}
+          <div className="flex flex-col pt-2">
+            {[...items, { to: '/chinh-sach-du-lieu', label: 'Chính sách dữ liệu', icon: 'shield' as IconName }].map(
+              (item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `flex min-h-[56px] items-center gap-3.5 border-b border-silver/15 text-[17px] no-underline ${
+                      isActive ? 'font-medium text-white hover:text-white' : 'text-silver hover:text-white'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon name={item.icon} size={20} className={isActive ? 'text-white' : 'text-silver-soft'} />
+                      {item.label}
+                      {isActive && <span aria-hidden="true" className="ml-auto size-1.5 rounded-full bg-white" />}
+                    </>
+                  )}
+                </NavLink>
+              ),
+            )}
+          </div>
+          <Link
+            to="/hr"
+            className="mt-auto inline-flex min-h-[52px] items-center justify-center gap-2 rounded-control border border-silver/45 text-[15px] text-white no-underline hover:bg-white/10 hover:text-white"
+          >
+            <Icon name="lock" size={18} />
+            Dành cho HR
+          </Link>
         </nav>
       </Dialog>
     </header>

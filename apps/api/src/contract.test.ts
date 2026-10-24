@@ -107,42 +107,84 @@ describe('public pages through the FE client', () => {
     expect([closed.status, closed.code]).toEqual([409, 'job_closed']);
   });
 
-  it('subscribes to alerts', async () => {
-    expect(await api.subscribe({ phone: '0912000111', department: 'Kỹ thuật', consent: true })).toEqual({ ok: true });
+  it('looks applications up by phone, without personal data', async () => {
+    const { applications } = await api.lookupApplications('0912 345 128');
+    expect(applications.length).toBe(3);
+    expect(Object.keys(applications[0]).sort()).toEqual(['appliedOn', 'jobSlug', 'jobTitle', 'stage']);
+    expect((await failure(api.lookupApplications('12'))).status).toBe(422);
   });
 });
 
 describe('candidate account through the FE client', () => {
-  it('signs in by OTP, edits the profile, saves a job, signs out', async () => {
+  // Like local dev: the FE sends "dev:<email>" instead of a Google ID token, the BE accepts it.
+  beforeEach(() => {
+    vi.stubEnv('VITE_DEV_GOOGLE_EMAIL', 'minhanh@email.com');
+    t.deps.verifyGoogleToken = async (token) =>
+      token.startsWith('dev:') ? { email: token.slice(4), name: 'Minh Anh (Google)' } : null;
+  });
+
+  it('signs in with Google, edits the profile, signs out', async () => {
     expect(await api.candidateOverview()).toBeNull();
-    await api.requestOtp('0912 345 128', 'zalo');
-    const me = await api.verifyOtp('0912345128', t.otp.lastCode('0912345128'));
-    expect(me.name).toBe('Trần Minh Anh');
+    const me = await api.googleSignIn();
+    expect(me).toMatchObject({ email: 'minhanh@email.com', name: 'Trần Minh Anh' });
 
     const overview = (await api.candidateOverview()) as CandidateOverview;
     expect(overview.applications.length).toBe(3);
 
     const updated = await api.updateCandidate({
       name: 'Minh Anh',
-      keepForOtherJobs: false,
+      phone: '0912 345 128',
       alertDepartments: ['Kỹ thuật'],
       cvFile: pdfFile('MinhAnh.pdf'),
     });
-    expect(updated).toMatchObject({ name: 'Minh Anh', keepForOtherJobs: false, alertDepartments: ['Kỹ thuật'] });
-    expect(updated.cvFileName).toBe('MinhAnh.pdf');
-
-    const [job] = (await api.listJobs()).jobs;
-    expect(await api.setSavedJob(job.slug, true)).toContain(job.slug);
-    expect(await api.savedJobSlugs()).toContain(job.slug);
+    expect(updated).toMatchObject({
+      name: 'Minh Anh',
+      phone: '0912345128',
+      alertDepartments: ['Kỹ thuật'],
+      cvFileName: 'MinhAnh.pdf',
+    });
 
     await api.candidateLogout();
     expect(await api.candidateOverview()).toBeNull();
-    expect(await api.savedJobSlugs()).toEqual([]);
+  });
+
+  it('files an application under the Google email when signed in', async () => {
+    await api.googleSignIn();
+    const [job] = (await api.listJobs()).jobs;
+    await api.apply({
+      jobId: job.id,
+      fullName: 'Trần Minh Anh',
+      phone: '0912345128',
+      email: 'khac@yahoo.com',
+      cvLink: 'https://drive.google.com/x',
+      cvFile: null,
+      consent: true,
+      formOpenedAt: t.clock.now.getTime(),
+    });
+    const overview = (await api.candidateOverview()) as CandidateOverview;
+    expect(overview.applications.some((a) => a.jobSlug === job.slug)).toBe(true);
+  });
+
+  it('applies with the CV saved in the account', async () => {
+    await api.googleSignIn();
+    await api.updateCandidate({ cvFile: pdfFile('CV-luu.pdf') });
+    const [job] = (await api.listJobs()).jobs;
+    const res = await api.apply({
+      jobId: job.id,
+      fullName: 'Trần Minh Anh',
+      phone: '0912345128',
+      cvFile: null,
+      useSavedCv: true,
+      consent: true,
+      formOpenedAt: t.clock.now.getTime(),
+    });
+    expect(res.ok).toBe(true);
+    const saved = (await api.candidateOverview()) as CandidateOverview;
+    expect(saved.applications.some((a) => a.jobSlug === job.slug)).toBe(true);
   });
 
   it('deletes all own data (BR-14)', async () => {
-    await api.requestOtp('0912345128', 'sms');
-    await api.verifyOtp('0912345128', t.otp.lastCode('0912345128'));
+    await api.googleSignIn();
     expect(await api.deleteCandidateData()).toEqual({ ok: true });
     expect(await api.candidateOverview()).toBeNull();
   });
@@ -154,7 +196,7 @@ describe('HR through the FE client', () => {
     expect((await failure(api.hrJobs())).status).toBe(401);
     const wrong = await failure(api.hrSignIn('hr@lee-hr.com', 'sai'));
     expect(wrong.status).toBe(401);
-    expect(await signInHr()).toEqual({ email: 'hr@lee-hr.com', name: 'HR' });
+    expect(await signInHr()).toMatchObject({ email: 'hr@lee-hr.com', name: 'HR' });
     expect(await api.hrMe()).toMatchObject({ email: 'hr@lee-hr.com' });
 
     const { jobs } = await api.hrJobs();
@@ -171,19 +213,33 @@ describe('HR through the FE client', () => {
     expect(await api.hrDeleteJob(saved.id)).toEqual({ ok: true });
 
     const open = jobs.find((j) => j.status === 'open');
-    expect(await api.hrJobAction(open?.id ?? '', 'pause')).toEqual({ ok: true });
+    expect(await api.hrJobAction(open?.id ?? '', 'close')).toEqual({ ok: true });
+    expect(await api.hrSetDeadline(open?.id ?? '', '2026-11-30')).toEqual({ ok: true });
+    expect((await api.hrJob(open?.id ?? '')).status).toBe('open');
+
+    const template = await api.hrJobTemplate();
+    expect(template.template.roadmap).toHaveLength(5);
+    const dashboard = await api.hrDashboard();
+    expect(dashboard.perDay).toHaveLength(30);
 
     const apps = await api.hrApplications();
     const fresh = apps.applications.find((a) => a.status === 'new');
     const detail = await api.hrApplication(fresh?.id ?? '');
     expect(detail.status).toBe('seen');
-    const patched = await api.hrUpdateApplication(detail.id, { status: 'interview', note: 'Hẹn thứ 5', thanked: true });
-    expect(patched).toMatchObject({ status: 'interview', note: 'Hẹn thứ 5' });
-    expect(patched.thankedAt).not.toBeNull();
+    const patched = await api.hrUpdateApplication(detail.id, {
+      status: 'interview',
+      interviewAt: '2026-10-29T09:00:00+07:00',
+      note: 'Hẹn thứ 5',
+    });
+    expect(patched).toMatchObject({ status: 'interview', note: 'Hẹn thứ 5', noteUpdatedBy: 'HR' });
+    expect(patched.interviewAt).toBe('2026-10-29T02:00:00.000Z');
+    expect((await api.hrApplications(undefined, patched.fullName)).applications.map((a) => a.id)).toContain(patched.id);
+    expect(await api.hrDeleteApplication(patched.id)).toEqual({ ok: true });
 
-    const subs = await api.hrSubscribers();
-    expect(await api.hrDeleteSubscriber(subs[0].id)).toEqual({ ok: true });
-    expect((await api.hrSubscribers()).length).toBe(subs.length - 1);
+    const created = await api.hrCreateUser({ email: 'moi@lee-hr.com', name: 'Người mới' });
+    expect(created.password.length).toBeGreaterThan(12);
+    expect((await api.hrUsers()).map((u) => u.email)).toContain('moi@lee-hr.com');
+    expect(await api.hrDeleteUser(created.user.id)).toEqual({ ok: true });
 
     await api.hrLogout();
     expect(await api.hrMe()).toBeNull();
@@ -197,7 +253,6 @@ describe('HR through the FE client', () => {
       phone: '0933000111',
       cvFile: pdfFile('Binh.pdf'),
       consent: true,
-      keepForOtherJobs: false,
       formOpenedAt: t.clock.now.getTime(),
     });
     await signInHr();

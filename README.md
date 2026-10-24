@@ -34,7 +34,7 @@ Thiếu gì trong `apps/api/.env` thì BE ở máy tự thay bằng bản local:
 - Không có `GOOGLE_CLIENT_ID`: nút Google của ứng viên đăng nhập bằng `VITE_DEV_GOOGLE_EMAIL`.
 - Tài khoản HR ở máy: `hr@congty.vn`, mật khẩu ngẫu nhiên tạo lần đầu, xem `apps/api/.data/hr-login.txt`. Xoá file
   đó rồi chạy lại `dev:api` để đổi mật khẩu.
-- OTP: mã in ra ở terminal chạy `dev:api`.
+- Ứng viên chỉ đăng nhập bằng Google; tài khoản theo email, hồ sơ nộp bằng email đó hiện trong "Hồ sơ của tôi".
 
 Những thay thế này chỉ có ở máy; trên Vercel BE bắt buộc có Neon, Blob và Google. Dùng Neon thật ở máy thì điền
 `DATABASE_URL` rồi chạy `npm run db:migrate -w @careers/api` và `npm run db:seed -w @careers/api`.
@@ -60,7 +60,7 @@ npm run typecheck
 npm run format:check
 ```
 
-Test API gọi qua HTTP (`app.request`) trên Postgres thật với migration thật; chỉ Vercel Blob, OTP, Google và đồng hồ
+Test API gọi qua HTTP (`app.request`) trên Postgres thật với migration thật; chỉ Vercel Blob, Google và đồng hồ
 là bản giả.
 
 ## Deploy Vercel

@@ -10,7 +10,8 @@ import { createNeonDb, type Db } from '../src/db/index.js';
 import { hrUsers } from '../src/db/schema.js';
 import { generatePassword } from '../src/lib/password.js';
 import { localDevOverrides } from '../src/local-dev.js';
-import { normalizeEmail, upsertHrUser } from '../src/services/hr-accounts.js';
+import { normalizeEmail } from '../src/lib/request.js';
+import { upsertHrUser } from '../src/services/hr-accounts.js';
 
 const { values } = parseArgs({
   options: {

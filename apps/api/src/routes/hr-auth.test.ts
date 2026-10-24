@@ -26,16 +26,18 @@ const later = (ms: number) => {
 };
 
 describe('HR sign-in with own password', () => {
-  it('signs in with the right password and keeps the session', async () => {
+  it('signs in with the right password, records the time and keeps the session', async () => {
     const res = await login('  HR@congty.vn ', PASSWORD);
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ email: HR_EMAIL, name: 'Phòng Nhân sự' });
+    const [user] = await t.db.select().from(hrUsers);
+    expect(await res.json()).toEqual({ id: user.id, email: HR_EMAIL, name: 'Phòng Nhân sự' });
+    expect(user.lastLoginAt).toEqual(t.clock.now);
     const setCookie = res.headers.getSetCookie()[0];
     expect(setCookie).toMatch(/^hr_session=.*HttpOnly/i);
     expect(setCookie).toMatch(/SameSite=Lax/i);
 
     const me = await t.request('/api/hr/me', { headers: { cookie: cookiesFrom(res) } });
-    expect(await me.json()).toEqual({ email: HR_EMAIL, name: 'Phòng Nhân sự' });
+    expect(await me.json()).toEqual({ id: user.id, email: HR_EMAIL, name: 'Phòng Nhân sự' });
   });
 
   it('gives the same answer for a wrong password and an unknown email', async () => {
@@ -55,7 +57,9 @@ describe('HR sign-in with own password', () => {
     for (let i = 0; i < 4; i++) expect((await login(HR_EMAIL, 'sai')).status).toBe(401);
     const fifth = await login(HR_EMAIL, 'sai');
     expect(fifth.status).toBe(429);
-    expect(await fifth.json()).toMatchObject({ error: 'Đăng nhập sai nhiều lần. Thử lại sau 15 phút.' });
+    expect(((await fifth.json()) as { error: string }).error).toMatch(
+      /^Đăng nhập sai nhiều lần\. Thử lại sau 15 phút \(lúc \d{2}:\d{2}\), hoặc nhờ HR khác đặt lại mật khẩu\.$/,
+    );
 
     later(10 * MINUTE);
     const stillLocked = await login(HR_EMAIL, PASSWORD);
@@ -117,9 +121,17 @@ describe('HR sign-in with own password', () => {
       t.send('POST', '/api/hr/jobs', jobInput()),
       t.send('PUT', `/api/hr/jobs/${job.id}`, jobInput()),
       t.send('DELETE', `/api/hr/jobs/${job.id}`),
-      t.send('POST', `/api/hr/jobs/${job.id}/pause`),
+      t.send('POST', `/api/hr/jobs/${job.id}/close`),
+      t.send('POST', `/api/hr/jobs/${job.id}/deadline`, { deadline: '2026-11-30' }),
+      t.request('/api/hr/jobs/template'),
+      t.send('PUT', '/api/hr/jobs/template', {}),
+      t.request('/api/hr/dashboard'),
       t.request('/api/hr/applications'),
+      t.send('DELETE', '/api/hr/applications/due'),
       t.request('/api/hr/subscribers'),
+      t.request('/api/hr/users'),
+      t.send('POST', '/api/hr/users', { email: 'moi@congty.vn' }),
+      t.send('POST', '/api/hr/me/password', { current: PASSWORD, next: 'Moi-Doi-Test-2026' }),
     ];
     for (const res of await Promise.all(calls)) expect(res.status).toBe(401);
   });

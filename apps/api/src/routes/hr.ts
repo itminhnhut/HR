@@ -1,12 +1,14 @@
 import type { HrMe } from '@careers/shared';
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
-import { currentHr, requireHr } from '../lib/hr-auth.js';
+import { currentHr, hrOf, requireHr } from '../lib/hr-auth.js';
 import { HttpError } from '../lib/http-error.js';
 import { readJson } from '../lib/request.js';
 import { passwordFingerprint } from '../lib/password.js';
 import { clearSession, setSession } from '../lib/session.js';
+import { dashboard } from '../services/dashboard.js';
 import { signIn, toHrMe } from '../services/hr-accounts.js';
+import { changeOwnPassword, createHrUser, deleteHrUser, listHrUsers, resetHrPassword } from '../services/hr-users.js';
 import { hrApplicationRoutes } from './hr-applications.js';
 import { hrJobRoutes } from './hr-jobs.js';
 
@@ -35,5 +37,23 @@ hrRoutes.post('/logout', (c) => {
 const signedIn = new Hono<Env>();
 signedIn.use(requireHr);
 signedIn.route('/jobs', hrJobRoutes);
+signedIn.get('/dashboard', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await dashboard(db, now()));
+});
+
+/** "Tài khoản HR": every HR account has full rights, so any of them manages the others. */
+signedIn.get('/users', async (c) => c.json(await listHrUsers(c.get('deps').db, hrOf(c))));
+signedIn.post('/users', async (c) => c.json(await createHrUser(c.get('deps').db, await readJson(c), hrOf(c))));
+signedIn.post('/users/:id/reset-password', async (c) =>
+  c.json(await resetHrPassword(c.get('deps').db, c.req.param('id'), hrOf(c))),
+);
+signedIn.delete('/users/:id', async (c) => c.json(await deleteHrUser(c.get('deps').db, c.req.param('id'), hrOf(c))));
+signedIn.post('/me/password', async (c) => {
+  const user = await changeOwnPassword(c.get('deps').db, await readJson(c), hrOf(c));
+  // The old cookie carries the old password fingerprint; keep this browser signed in.
+  await setSession(c, 'hr', user.email, { pw: passwordFingerprint(user.passwordHash) });
+  return c.json<HrMe>(toHrMe(user));
+});
 signedIn.route('/', hrApplicationRoutes);
 hrRoutes.route('/', signedIn);

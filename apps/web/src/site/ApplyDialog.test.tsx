@@ -12,30 +12,21 @@ const job: JobDetailDto = {
   title: 'Nhân viên Kinh doanh B2B',
   department: 'Kinh doanh',
   employmentType: 'full_time',
-  remote: false,
-  city: 'TP. HCM',
+  place: 'Gò Vấp, TP. HCM',
   deadline: '2099-12-31',
   status: 'open',
   publishedAt: null,
   perks: '',
-  salaryMin: 12,
-  salaryMax: 18,
-  salaryNote: null,
+  salaryMin: 12_000_000,
+  salaryMax: 18_000_000,
   address: null,
   workingHours: null,
-  level: null,
   experience: null,
   education: null,
-  language: null,
-  headcount: null,
-  skills: [],
-  summary: null,
-  teamNote: null,
   responsibilities: [],
   requirements: [],
-  niceToHave: [],
-  benefits: { income: [], insurance: [], timeOff: [], growth: [], environment: [] },
-  plan: { day30: null, day60: null, day90: null },
+  benefits: [],
+  roadmap: [],
 };
 
 beforeAll(() => {
@@ -60,11 +51,25 @@ function setup() {
 }
 
 describe('ApplyDialog', () => {
-  it('starts with both consent boxes unticked (BR-11)', async () => {
+  it('opens the form straight away, with an optional Google sign-in shortcut', async () => {
+    setup();
+    expect(await screen.findByRole('button', { name: /Gửi hồ sơ/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Đăng nhập Google/ })).toBeTruthy();
+  });
+
+  it('starts with the consent box unticked and no "keep 12 months" box (BR-11)', async () => {
     setup();
     const boxes = await screen.findAllByRole('checkbox');
-    expect(boxes).toHaveLength(2);
-    for (const box of boxes) expect((box as HTMLInputElement).checked).toBe(false);
+    expect(boxes).toHaveLength(1);
+    expect((boxes[0] as HTMLInputElement).checked).toBe(false);
+    expect(screen.queryByText(/Giữ hồ sơ 12 tháng/)).toBeNull();
+  });
+
+  it('formats the phone number while it is typed', async () => {
+    setup();
+    const phone = await screen.findByLabelText(/Số điện thoại/);
+    await userEvent.type(phone, '+84912345678');
+    expect((phone as HTMLInputElement).value).toBe('0912 345 678');
   });
 
   it('will not send without name, phone, CV and consent', async () => {

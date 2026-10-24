@@ -7,7 +7,7 @@ import { IconRing, type IconName } from '../ui/icons';
 const BENEFITS: [IconName, string, string][] = [
   ['money', 'Lương tháng 13', 'Cộng thưởng theo kết quả công việc.'],
   ['shield', 'Bảo hiểm đầy đủ', 'BHXH, BHYT, BHTN theo luật.'],
-  ['calendar', '[Số] ngày phép năm', 'Tăng thêm theo thâm niên.'],
+  ['calendar', 'Nghỉ phép năm', 'Theo Luật Lao động, tăng thêm theo thâm niên.'],
   ['cap', 'Đào tạo', 'Khóa học nội bộ và bên ngoài.'],
   ['mountain', 'Du lịch hằng năm', 'Cùng cả công ty.'],
   ['checkSquare', 'Khám sức khỏe định kỳ', 'Mỗi năm một lần.'],
@@ -30,7 +30,8 @@ export default function AboutPage() {
             Làm việc tại {SITE.company}
           </h1>
           <p className="m-0 max-w-[560px] text-base font-light leading-relaxed text-silver sm:text-[17px]">
-            [Một câu sứ mệnh ngắn: công ty làm gì và vì sao điều đó quan trọng.]
+            “Phát triển để phụng sự”: hợp sức kiến tạo nền móng hạ tầng bền vững cho các công trình, nhà máy và thành
+            phố Việt Nam.
           </p>
           <ButtonLink to="/" variant="light" size="lg" icon="briefcase" className="mt-3 w-fit">
             Xem vị trí đang mở
@@ -43,17 +44,22 @@ export default function AboutPage() {
           <div className="flex flex-col gap-4">
             <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[36px]">Chúng tôi là ai</h2>
             <p className="m-0 text-base leading-[1.75] text-body">
-              [2–3 câu giới thiệu: lĩnh vực, năm thành lập, quy mô đội ngũ, khách hàng chính.]
+              {SITE.legalName} cung cấp giải pháp đường ống và điều khiển lưu chất cho các công trình hạ tầng, nhà máy,
+              cấp nước, PCCC, HVAC và trung tâm dữ liệu. Chúng tôi là đại diện chính hãng của nhiều thương hiệu van,
+              đồng hồ nước, khớp nối và thiết bị lọc quốc tế.
             </p>
-            <p className="m-0 text-base leading-[1.75] text-body">[Một ngày làm việc ở đây trông như thế nào.]</p>
+            <p className="m-0 text-base leading-[1.75] text-body">
+              Sau hơn 10 năm, đội ngũ 50+ nhân sự đã cùng khách hàng làm hơn 100 dự án ở hơn 20 tỉnh thành. Văn phòng
+              làm việc ở {SITE.office}, {SITE.officeHours}.
+            </p>
           </div>
-          <div
-            role="img"
-            aria-label="Ảnh văn phòng và đội ngũ"
-            className="flex h-[280px] items-center justify-center rounded-card border border-ring bg-line text-[13px] text-slate"
-          >
-            [Ảnh văn phòng / đội ngũ]
-          </div>
+          <img
+            src="/images/company/team-expo.jpg"
+            alt="Đội ngũ TOP FLOW tại gian hàng triển lãm"
+            loading="lazy"
+            decoding="async"
+            className="h-[280px] w-full rounded-card border border-ring bg-line object-cover"
+          />
         </section>
 
         <section className="flex flex-col gap-7">

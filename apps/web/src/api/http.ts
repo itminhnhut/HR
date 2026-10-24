@@ -6,30 +6,33 @@ import { ApiError, type Api } from './types';
  *   GET    /jobs                        → JobListResponse
  *   GET    /jobs/:slug                  → JobPageResponse
  *   POST   /applications   (multipart)  → ApplyResponse     409 { code: "job_closed" }
- *   POST   /subscribers                 → { ok }
- *   POST   /candidate/otp               { phone, channel } → { ok }
- *   POST   /candidate/otp/verify        { phone, code }    → CandidateMe
- *   POST   /candidate/google            { idToken }        → { email, needsPhone }
+ *   POST   /applications/lookup         { phone } → LookupResponse   (no sign-in; 429 when rate-limited)
+ *   POST   /candidate/google            { idToken }        → CandidateMe   (only candidate sign-in)
  *   GET    /candidate/me                → CandidateOverview | 401
  *   PATCH  /candidate/me   (multipart)  → CandidateMe
- *   GET    /candidate/saved             → string[]
- *   PUT    /candidate/saved/:slug       { saved } → string[]
  *   DELETE /candidate/me                → { ok }
  *   POST   /candidate/logout            → { ok }
  *   GET    /hr/me                       → HrMe | 401
  *   POST   /hr/auth/login               { email, password } → HrMe   401 wrong, 429 locked 15 min
  *   POST   /hr/logout                   → { ok }
+ *   GET    /hr/dashboard                → DashboardDto
  *   GET    /hr/jobs                     → HrJobsResponse
+ *   GET    /hr/jobs/template  |  PUT    JobTemplate → JobTemplateResponse
  *   GET    /hr/jobs/:id                 → HrJobDto
  *   POST   /hr/jobs  |  PUT /hr/jobs/:id  JobInput → HrJobDto
- *   POST   /hr/jobs/:id/:action         (publish|extend|pause|resume|fill) → { ok }
+ *   POST   /hr/jobs/:id/(publish|close) → { ok }
+ *   POST   /hr/jobs/:id/deadline        { deadline } → { ok }   reopens an ended job
  *   DELETE /hr/jobs/:id                 → { ok }   drafts only, else 422
- *   GET    /hr/applications?jobId=      → ApplicationsResponse
+ *   GET    /hr/applications?jobId=&q=   → ApplicationsResponse
  *   GET    /hr/applications/:id         → ApplicationDetailDto (marks "seen")
- *   PATCH  /hr/applications/:id         { status?, note?, thanked? } → ApplicationDetailDto
+ *   PATCH  /hr/applications/:id         { status?, note?, interviewAt? } → ApplicationDetailDto
+ *   DELETE /hr/applications/:id         → { ok }   CV file included
+ *   DELETE /hr/applications/due         → { deleted }   jobs ended more than 30 days ago
  *   GET    /hr/applications/:id/cv      → the uploaded PDF (inline)
- *   GET    /hr/subscribers              → SubscriberDto[]
- *   DELETE /hr/subscribers/:id          → { ok }
+ *   GET    /hr/users  |  POST { email, name } → TempPasswordResponse
+ *   POST   /hr/users/:id/reset-password → TempPasswordResponse
+ *   DELETE /hr/users/:id                → { ok }
+ *   POST   /hr/me/password              { current, next } → HrMe
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -113,22 +116,18 @@ export const httpApi: Api = {
     if (cvFile) form.append('cv', cvFile);
     return request('/applications', { method: 'POST', body: form });
   },
-  subscribe: (input) => request('/subscribers', json('POST', input)),
+  lookupApplications: (phone) => request('/applications/lookup', json('POST', { phone })),
 
-  requestOtp: (phone, channel) => request('/candidate/otp', json('POST', { phone, channel })),
-  verifyOtp: (phone, code) => request('/candidate/otp/verify', json('POST', { phone, code })),
   googleSignIn: async () => request('/candidate/google', json('POST', { idToken: await googleIdToken() })),
   candidateOverview: () => request('/candidate/me', {}, true),
   updateCandidate: (patch) => {
     const form = new FormData();
     if (patch.name !== undefined) form.append('name', patch.name);
-    if (patch.keepForOtherJobs !== undefined) form.append('keepForOtherJobs', String(patch.keepForOtherJobs));
+    if (patch.phone !== undefined) form.append('phone', patch.phone);
     if (patch.alertDepartments) form.append('alertDepartments', JSON.stringify(patch.alertDepartments));
     if (patch.cvFile) form.append('cv', patch.cvFile);
     return request('/candidate/me', { method: 'PATCH', body: form });
   },
-  setSavedJob: (slug, saved) => request(`/candidate/saved/${encodeURIComponent(slug)}`, json('PUT', { saved })),
-  savedJobSlugs: () => request('/candidate/saved'),
   deleteCandidateData: () => request('/candidate/me', { method: 'DELETE' }),
   candidateLogout: () => request('/candidate/logout', { method: 'POST' }),
 
@@ -136,15 +135,30 @@ export const httpApi: Api = {
   hrSignIn: (email, password) => request('/hr/auth/login', json('POST', { email, password })),
   hrLogout: () => request('/hr/logout', { method: 'POST' }),
   hrJobs: () => request('/hr/jobs'),
+  hrDashboard: () => request('/hr/dashboard'),
+  hrJobTemplate: () => request('/hr/jobs/template'),
+  hrSaveJobTemplate: (template) => request('/hr/jobs/template', json('PUT', template)),
   hrJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`),
   hrSaveJob: (id, input) =>
     id ? request(`/hr/jobs/${encodeURIComponent(id)}`, json('PUT', input)) : request('/hr/jobs', json('POST', input)),
   hrJobAction: (id, action) => request(`/hr/jobs/${encodeURIComponent(id)}/${action}`, { method: 'POST' }),
+  hrSetDeadline: (id, deadline) => request(`/hr/jobs/${encodeURIComponent(id)}/deadline`, json('POST', { deadline })),
   hrDeleteJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  hrApplications: (jobId) => request(`/hr/applications${jobId ? `?jobId=${encodeURIComponent(jobId)}` : ''}`),
+  hrApplications: (jobId, q) => {
+    const params = new URLSearchParams();
+    if (jobId) params.set('jobId', jobId);
+    if (q?.trim()) params.set('q', q.trim());
+    const query = params.toString();
+    return request(`/hr/applications${query ? `?${query}` : ''}`);
+  },
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
+  hrDeleteApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrDeleteDueApplications: () => request('/hr/applications/due', { method: 'DELETE' }),
   hrCvUrl: (id) => `${BASE}/hr/applications/${encodeURIComponent(id)}/cv`,
-  hrSubscribers: () => request('/hr/subscribers'),
-  hrDeleteSubscriber: (id) => request(`/hr/subscribers/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrUsers: () => request('/hr/users'),
+  hrCreateUser: (input) => request('/hr/users', json('POST', input)),
+  hrResetPassword: (id) => request(`/hr/users/${encodeURIComponent(id)}/reset-password`, { method: 'POST' }),
+  hrDeleteUser: (id) => request(`/hr/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrChangePassword: (current, next) => request('/hr/me/password', json('POST', { current, next })),
 };

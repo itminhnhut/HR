@@ -19,7 +19,7 @@ export async function listedJobs(db: Db, now: Date): Promise<Job[]> {
 
 export async function listJobs(db: Db, now: Date): Promise<JobListResponse> {
   const cards = (await listedJobs(db, now)).map((job) => toCard(job, now));
-  return { jobs: cards, cities: [...new Set(cards.map((job) => job.city))] };
+  return { jobs: cards };
 }
 
 /** BR-05: a closed job still renders (200) with up to 3 similar open jobs. Only drafts are hidden. */
@@ -30,7 +30,7 @@ export async function getJobPage(db: Db, slug: string, now: Date): Promise<JobPa
   const others = (await listedJobs(db, now)).filter((other) => other.id !== job.id);
   const similar = [
     ...others.filter((other) => other.department === job.department),
-    ...others.filter((other) => other.department !== job.department && other.city === job.city),
+    ...others.filter((other) => other.department !== job.department),
   ]
     .slice(0, SIMILAR_MAX)
     .map((other) => toCard(other, now));

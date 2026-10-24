@@ -1,7 +1,7 @@
 // The demo data the FE mock uses, so local BE and mock show the same jobs and people.
 import { buildSeed } from '../../../web/src/api/mock-seed.js';
 import type { Db } from './index.js';
-import { applications, candidates, jobs, savedJobs, subscribers } from './schema.js';
+import { applications, candidates, jobs, subscribers } from './schema.js';
 
 /** Fills an EMPTY database with demo data. Refuses when jobs already exist. */
 export async function seedDemoData(db: Db, now: Date): Promise<{ jobs: number; applications: number }> {
@@ -20,9 +20,13 @@ export async function seedDemoData(db: Db, now: Date): Promise<{ jobs: number; a
   await db.transaction(async (tx) => {
     await tx.insert(jobs).values(rows.jobs);
     await tx.insert(applications).values(rows.applications);
-    await tx.insert(subscribers).values(rows.subscribers);
-    await tx.insert(candidates).values(rows.candidates);
-    if (rows.savedJobs.length > 0) await tx.insert(savedJobs).values(rows.savedJobs);
+    const people = await tx.insert(candidates).values(rows.candidates).returning();
+    const accountId = (email: string | null | undefined) => people.find((p) => p.email === email)?.id ?? null;
+    await tx
+      .insert(subscribers)
+      .values(
+        rows.subscribers.map(({ candidateEmail, ...sub }) => ({ ...sub, candidateId: accountId(candidateEmail) })),
+      );
   });
   return { jobs: seed.jobs.length, applications: seed.applications.length };
 }
@@ -31,21 +35,21 @@ type Seed = ReturnType<typeof buildSeed>;
 
 /** Mock rows → table rows: real uuids, Date objects, and no fake CV files. */
 function toRows(seed: Seed, jobId: (mockId: string) => string) {
-  const owner = seed.candidates[0]?.phone;
   return {
-    jobs: seed.jobs.map(({ id, perks: _perks, createdAt, ...job }) => ({
+    jobs: seed.jobs.map(({ id, createdAt, ...job }) => ({
       ...job,
       id: jobId(id),
       createdAt: new Date(createdAt),
     })),
     applications: seed.applications.map(
-      ({ id: _id, jobId: mockJobId, cvFileName: _cv, consentAt, thankedAt, createdAt, ...a }) => ({
+      ({ id: _id, jobId: mockJobId, consentAt, createdAt, interviewAt, noteUpdatedAt, ...a }) => ({
         ...a,
         jobId: jobId(mockJobId),
         // Demo rows have no real file behind them, so they show as "no CV" instead of a broken download.
         cvFileName: null,
         consentAt: new Date(consentAt),
-        thankedAt: thankedAt ? new Date(thankedAt) : null,
+        interviewAt: interviewAt ? new Date(interviewAt) : null,
+        noteUpdatedAt: noteUpdatedAt ? new Date(noteUpdatedAt) : null,
         createdAt: new Date(createdAt),
       }),
     ),
@@ -56,9 +60,13 @@ function toRows(seed: Seed, jobId: (mockId: string) => string) {
       policyVersion: policyVersion ?? '2026-10',
       createdAt: new Date(createdAt),
     })),
-    candidates: seed.candidates.map(({ alertDepartments: _a, cvFileName: _cv, ...c }) => ({ ...c, cvFileName: null })),
-    savedJobs: owner
-      ? seed.jobs.filter((job) => seed.saved.includes(job.slug)).map((job) => ({ phone: owner, jobId: jobId(job.id) }))
-      : [],
+    // Accounts are Google-only now: demo people without an email cannot have one.
+    candidates: seed.candidates
+      .filter((c): c is typeof c & { email: string } => !!c.email)
+      .map(({ alertDepartments: _a, cvFileName: _cv, email, ...c }) => ({
+        ...c,
+        email: email.toLowerCase(),
+        cvFileName: null,
+      })),
   };
 }

@@ -1,7 +1,8 @@
 import type { CandidateOverview, HrJobsResponse, JobListResponse } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { seedDemoData } from '../db/seed.js';
-import { applications, candidates, savedJobs, subscribers } from '../db/schema.js';
+import { applications, candidates, subscribers } from '../db/schema.js';
+import { googleToken } from '../test/fakes.js';
 import { insertJob, json, loginHr } from '../test/fixtures.js';
 import { createTestContext, type TestContext } from '../test/harness.js';
 
@@ -13,7 +14,7 @@ beforeEach(() => t.reset());
 
 describe('GET /share/jobs/:slug', () => {
   it('renders link-preview tags and JobPosting data for an open job', async () => {
-    await insertJob(t, { slug: 'ky-su', title: 'Kỹ sư <Backend>', salaryMin: 20, salaryMax: 30 });
+    await insertJob(t, { slug: 'ky-su', title: 'Kỹ sư <Backend>', salaryMin: 20_000_000, salaryMax: 30_000_000 });
 
     const res = await t.request('/share/jobs/ky-su');
     const html = await res.text();
@@ -29,7 +30,7 @@ describe('GET /share/jobs/:slug', () => {
   });
 
   it('keeps a closed job page but drops it from Google (BR-05, BR-16)', async () => {
-    await insertJob(t, { slug: 'du', state: 'filled' });
+    await insertJob(t, { slug: 'du', state: 'closed', closedOn: '2026-10-19' });
     const html = await (await t.request('/share/jobs/du')).text();
     expect(html).toContain('Vị trí này đã ngừng nhận hồ sơ');
     expect(html).toContain('<meta name="robots" content="noindex">');
@@ -59,7 +60,7 @@ describe('GET /share/jobs/:slug', () => {
 describe('GET /sitemap.xml', () => {
   it('lists the home pages and only jobs taking applications (BR-16)', async () => {
     await insertJob(t, { slug: 'mo' });
-    await insertJob(t, { slug: 'dong', state: 'filled' });
+    await insertJob(t, { slug: 'dong', state: 'closed', closedOn: '2026-10-19' });
     await insertJob(t, { slug: 'nhap', state: 'draft' });
 
     const res = await t.request('/sitemap.xml');
@@ -91,8 +92,10 @@ describe('demo seed', () => {
     expect(board.jobs.length).toBeGreaterThan(0);
     expect(await t.db.select().from(applications)).toHaveLength(result.applications);
     expect((await t.db.select().from(subscribers)).length).toBeGreaterThan(0);
-    expect((await t.db.select().from(candidates))[0].phone).toBe('0912345128');
-    expect((await t.db.select().from(savedJobs)).length).toBeGreaterThan(0);
+    expect((await t.db.select().from(candidates))[0]).toMatchObject({
+      email: 'minhanh@email.com',
+      phone: '0912345128',
+    });
 
     const cookie = await loginHr(t);
     const hr = await json<HrJobsResponse>(await t.request('/api/hr/jobs', { headers: { cookie } }));
@@ -101,11 +104,7 @@ describe('demo seed', () => {
 
   it('lets the demo candidate see their applications after signing in', async () => {
     await seedDemoData(t.db, t.clock.now);
-    await t.send('POST', '/api/candidate/otp', { phone: '0912345128', channel: 'zalo' });
-    const res = await t.send('POST', '/api/candidate/otp/verify', {
-      phone: '0912345128',
-      code: t.otp.lastCode('0912345128'),
-    });
+    const res = await t.send('POST', '/api/candidate/google', { idToken: googleToken('minhanh@email.com') });
     const cookie = res.headers.getSetCookie()[0].split(';')[0];
     const me = await json<CandidateOverview>(await t.request('/api/candidate/me', { headers: { cookie } }));
     expect(me.me.name).toBe('Trần Minh Anh');

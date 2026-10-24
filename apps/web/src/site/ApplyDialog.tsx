@@ -11,13 +11,17 @@ import {
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { ApiError } from '../api';
-import { useApply, useCandidate } from '../api/queries';
+import { useApply, useCandidate, useGoogleSignIn } from '../api/queries';
 import { SITE } from '../lib/site';
 import { Button, ButtonLink } from '../ui/Button';
 import { CloseButton, Dialog } from '../ui/Dialog';
 import { Checkbox, FieldError, TextArea, TextField } from '../ui/Field';
 import { Notice } from '../ui/feedback';
 import { Icon } from '../ui/icons';
+import { PhoneField } from '../ui/PhoneField';
+
+/** saved = the CV stored in the signed-in account (one CV per account). */
+type CvMode = 'saved' | 'file' | 'link';
 
 type Errors = Partial<Record<'fullName' | 'phone' | 'email' | 'cv' | 'cvLink' | 'consent' | 'message', string>>;
 
@@ -27,7 +31,7 @@ function validate(f: {
   email: string;
   cvFile: File | null;
   cvLink: string;
-  mode: 'file' | 'link';
+  mode: CvMode;
   consent: boolean;
 }): Errors {
   const e: Errors = {};
@@ -67,21 +71,24 @@ export function ApplyDialog({ job, open, onClose }: { job: JobDetailDto; open: b
 }
 
 function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () => void; onSent: () => void }) {
-  const { data: candidate } = useCandidate();
+  const { data: candidate, isPending: checkingAccount } = useCandidate();
   const apply = useApply();
+
   const openedAt = useRef(Date.now());
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName] = useState(candidate?.me.name ?? '');
-  const [phone, setPhone] = useState(candidate ? formatPhone(candidate.me.phone) : '');
+  const [phone, setPhone] = useState(candidate?.me.phone ? formatPhone(candidate.me.phone) : '');
   const [email, setEmail] = useState(candidate?.me.email ?? '');
   const [showEmail, setShowEmail] = useState(false);
-  const [mode, setMode] = useState<'file' | 'link'>('file');
+  /** Signed in: the BE files the application under this Google email, so the field is fixed. */
+  const accountEmail = candidate?.me.email ?? null;
+  const savedCvName = candidate?.me.cvFileName ?? null;
+  const [mode, setMode] = useState<CvMode>(savedCvName ? 'saved' : 'file');
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvLink, setCvLink] = useState('');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false); // BR-11: never pre-ticked
-  const [keep, setKeep] = useState(false);
   const [website, setWebsite] = useState(''); // honeypot
   const [errors, setErrors] = useState<Errors>({});
   const [dragging, setDragging] = useState(false);
@@ -93,8 +100,9 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
     if (!candidate || prefilled.current) return;
     prefilled.current = true;
     setFullName((v) => v || candidate.me.name || '');
-    setPhone((v) => v || formatPhone(candidate.me.phone));
-    setEmail((v) => v || candidate.me.email || '');
+    setPhone((v) => v || (candidate.me.phone ? formatPhone(candidate.me.phone) : ''));
+    setEmail(candidate.me.email);
+    if (candidate.me.cvFileName) setMode((m) => (m === 'file' ? 'saved' : m));
   }, [candidate]);
 
   // Move focus to the first problem after the errors render.
@@ -136,8 +144,9 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
         message,
         cvLink: mode === 'link' ? cvLink.trim() : '',
         cvFile: mode === 'file' ? cvFile : null,
+        useSavedCv: mode === 'saved',
         consent: true,
-        keepForOtherJobs: keep,
+        // The "keep 12 months for other jobs" option was dropped by the product owner (2026-10-24).
         formOpenedAt: openedAt.current,
         website,
       },
@@ -153,6 +162,15 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
       },
     );
   };
+
+  if (checkingAccount) {
+    // Wait for the sign-in check so neither the form nor the choice flashes up and then swaps.
+    return (
+      <div role="status" className="flex min-h-[320px] items-center justify-center text-sm text-muted">
+        Đang tải…
+      </div>
+    );
+  }
 
   if (apply.isSuccess) {
     const r = apply.data;
@@ -194,11 +212,9 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
           <ButtonLink to="/" onClick={onClose}>
             Xem việc làm khác
           </ButtonLink>
-          {!candidate && (
-            <ButtonLink to="/dang-nhap" variant="outline" onClick={onClose}>
-              Theo dõi hồ sơ
-            </ButtonLink>
-          )}
+          <ButtonLink to={candidate ? '/ho-so-cua-toi' : '/tra-cuu-ho-so'} variant="outline" onClick={onClose}>
+            Xem lại hồ sơ
+          </ButtonLink>
         </div>
       </div>
     );
@@ -217,7 +233,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
         </div>
         <ul className="m-0 flex list-none flex-col gap-3.5 p-0 text-[15px] text-silver">
           {[
-            ['pin', job.address ?? job.city],
+            ['pin', job.place],
             [
               'clock',
               `${EMPLOYMENT_TYPE_LABEL[job.employmentType]}${job.workingHours ? `, ${job.workingHours.split(',')[0]}` : ''}`,
@@ -252,7 +268,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
       <form
         onSubmit={onSubmit}
         noValidate
-        className="flex max-h-dvh flex-col overflow-y-auto sm:max-h-[calc(100dvh-48px)]"
+        className="flex max-h-dvh scroll-pb-24 flex-col overflow-y-auto sm:max-h-[calc(100dvh-48px)]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 lg:border-0 lg:px-12 lg:pb-2 lg:pt-10">
           <div className="flex flex-col gap-1">
@@ -263,13 +279,14 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
             </h2>
             <span className="inline-flex items-center gap-2 text-[13px] text-slate">
               <Icon name="clock" size={14} />
-              Khoảng 1 phút. Không cần tạo tài khoản.
+              Khoảng 1 phút. Không cần tài khoản.
             </span>
           </div>
           <CloseButton onClick={onClose} />
         </div>
 
         <div className="flex flex-col gap-5 px-5 py-5 lg:px-12">
+          {!candidate && <GoogleShortcut />}
           {closedMessage && (
             <Notice
               tone="error"
@@ -300,15 +317,10 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
               onChange={(e) => setFullName(e.target.value)}
               error={errors.fullName}
             />
-            <TextField
+            <PhoneField
               label="Số điện thoại (Zalo)"
-              icon="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder="09xx xxx xxx"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={setPhone}
               error={errors.phone}
               hint="HR dùng số này để liên hệ nếu bạn phù hợp."
             />
@@ -317,16 +329,48 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
           <fieldset className="m-0 flex flex-col gap-2.5 border-0 p-0">
             <div className="flex items-center justify-between gap-3">
               <legend className="text-sm font-medium">CV của bạn</legend>
-              <button
-                type="button"
-                onClick={() => setMode(mode === 'file' ? 'link' : 'file')}
-                className="inline-flex min-h-11 items-center gap-1.5 border-0 bg-transparent text-[13px] font-medium text-link"
-              >
-                <Icon name={mode === 'file' ? 'link' : 'upload'} size={14} />
-                {mode === 'file' ? 'Dán link thay vì tải file' : 'Tải file PDF thay vì link'}
-              </button>
+              {mode === 'saved' ? (
+                <button
+                  type="button"
+                  onClick={() => setMode('file')}
+                  className="inline-flex min-h-11 items-center gap-1.5 border-0 bg-transparent text-[13px] font-medium text-link"
+                >
+                  <Icon name="upload" size={14} />
+                  Dùng file khác
+                </button>
+              ) : (
+                <span className="flex flex-wrap items-center justify-end gap-x-4">
+                  {savedCvName && (
+                    <button
+                      type="button"
+                      onClick={() => setMode('saved')}
+                      className="inline-flex min-h-11 items-center gap-1.5 border-0 bg-transparent text-[13px] font-medium text-link"
+                    >
+                      <Icon name="file" size={14} />
+                      Dùng CV đã lưu
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setMode(mode === 'file' ? 'link' : 'file')}
+                    className="inline-flex min-h-11 items-center gap-1.5 border-0 bg-transparent text-[13px] font-medium text-link"
+                  >
+                    <Icon name={mode === 'file' ? 'link' : 'upload'} size={14} />
+                    {mode === 'file' ? 'Dán link thay vì tải file' : 'Tải file PDF thay vì link'}
+                  </button>
+                </span>
+              )}
             </div>
-            {mode === 'file' ? (
+            {mode === 'saved' && savedCvName ? (
+              <div className="flex items-center gap-3 rounded-card border border-silver bg-white px-4 py-3.5">
+                <Icon name="file" size={20} className="text-accent" />
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <strong className="truncate text-sm font-medium">{savedCvName}</strong>
+                  <span className="text-xs text-muted">CV đã lưu trong tài khoản của bạn</span>
+                </span>
+                <Icon name="check" size={18} stroke={1.8} className="text-ok" />
+              </div>
+            ) : mode === 'file' ? (
               cvFile ? (
                 <div className="flex items-center gap-3 rounded-card border border-silver bg-white px-4 py-3.5">
                   <Icon name="file" size={20} className="text-accent" />
@@ -407,7 +451,17 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
             counter={{ value: message.length, max: MESSAGE_MAX }}
             error={errors.message}
           />
-          {showEmail ? (
+          {accountEmail ? (
+            <TextField
+              label="Email"
+              icon="mail"
+              type="email"
+              value={accountEmail}
+              readOnly
+              hint="Email tài khoản Google của bạn: hồ sơ sẽ hiện trong “Hồ sơ của tôi”."
+              className="[&>div]:border-line [&>div]:bg-mist [&_input]:text-slate"
+            />
+          ) : showEmail ? (
             <TextField
               label="Email"
               optional
@@ -449,19 +503,49 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
                 Xem chính sách
               </Link>
             </Checkbox>
-            <Checkbox checked={keep} onChange={(e) => setKeep(e.target.checked)}>
-              Giữ hồ sơ 12 tháng để HR báo khi có vị trí khác phù hợp{' '}
-              <span className="text-muted">(không bắt buộc)</span>
-            </Checkbox>
+            <span className="text-xs leading-relaxed text-muted">
+              Bạn có thể tra cứu trạng thái hồ sơ bằng số điện thoại này ở trang Tra cứu hồ sơ.
+            </span>
           </div>
         </div>
 
-        <div className="sticky bottom-0 mt-auto border-t border-line bg-white px-5 py-3 lg:border-0 lg:px-12 lg:pb-10 lg:pt-2">
+        <div className="sticky bottom-0 mt-auto border-t border-line bg-white px-5 py-3 shadow-[0_-6px_16px_rgba(11,31,58,0.06)] lg:static lg:border-0 lg:px-12 lg:pb-10 lg:pt-2 lg:shadow-none">
           <Button type="submit" size="lg" icon="send" disabled={apply.isPending} className="w-full lg:w-auto">
             {apply.isPending ? 'Đang gửi…' : 'Gửi hồ sơ'}
           </Button>
         </div>
       </form>
+    </div>
+  );
+}
+
+/** Optional, inside the form: signing in fills the form in and lets the candidate reuse the saved CV and track it. */
+function GoogleShortcut() {
+  const google = useGoogleSignIn();
+  const [error, setError] = useState('');
+  const signIn = async () => {
+    setError('');
+    try {
+      await google.mutateAsync();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Chưa đăng nhập được bằng Google. Bạn vẫn nộp được bình thường.');
+    }
+  };
+  return (
+    <div className="flex flex-col gap-1.5 rounded-control bg-tint px-4 py-3">
+      <span className="text-sm leading-relaxed text-body">
+        Có Gmail?{' '}
+        <button
+          type="button"
+          onClick={() => void signIn()}
+          disabled={google.isPending}
+          className="border-0 bg-transparent p-0 font-medium text-link underline disabled:opacity-60"
+        >
+          {google.isPending ? 'Đang mở Google…' : 'Đăng nhập Google'}
+        </button>{' '}
+        để điền sẵn thông tin và theo dõi hồ sơ. Không bắt buộc.
+      </span>
+      <FieldError>{error}</FieldError>
     </div>
   );
 }

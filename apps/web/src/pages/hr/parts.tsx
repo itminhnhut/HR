@@ -64,7 +64,11 @@ export function FilterTabs<K extends string>({
   className?: string;
 }) {
   return (
-    <div role="group" aria-label={label} className={`flex gap-x-6 overflow-x-auto whitespace-nowrap ${className}`}>
+    <div
+      role="group"
+      aria-label={label}
+      className={`scroll-fade-x flex gap-x-6 overflow-x-auto whitespace-nowrap ${className}`}
+    >
       {items.map((item) => {
         const on = item.key === value;
         const tone = on
@@ -95,15 +99,20 @@ export function FilterTabs<K extends string>({
  * "⋯" popup menu. Positioned `fixed` from the trigger so it is never clipped
  * by a scrolling table box; closes on outside click, Esc, scroll or resize.
  */
+const MENU_WIDTH = 230;
+
 export function PopupMenu({ label, children }: { label: string; children: (close: () => void) => ReactNode }) {
   const [style, setStyle] = useState<CSSProperties | null>(null);
+  /** Only keyboard users get focus moved into the menu; a tap should not light up a focus ring. */
+  const byKeyboard = useRef(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setStyle(null), []);
 
   useEffect(() => {
     if (!style) return;
-    menu.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus({ preventScroll: true });
+    if (byKeyboard.current)
+      menu.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus({ preventScroll: true });
     const onPointer = (e: PointerEvent) => {
       const target = e.target as Node;
       if (!menu.current?.contains(target) && !trigger.current?.contains(target)) close();
@@ -125,10 +134,12 @@ export function PopupMenu({ label, children }: { label: string; children: (close
     };
   }, [style, close]);
 
-  const toggle = () => {
+  const toggle = (e: React.MouseEvent) => {
     if (style || !trigger.current) return close();
+    byKeyboard.current = e.detail === 0; // Enter/Space on a button fires click with detail 0
     const r = trigger.current.getBoundingClientRect();
-    const right = Math.max(window.innerWidth - r.right, 8);
+    // Align to the trigger's right edge, but never let the menu leave the screen on either side.
+    const right = Math.min(Math.max(window.innerWidth - r.right, 8), window.innerWidth - MENU_WIDTH - 8);
     const opensUp = r.bottom + 170 > window.innerHeight;
     setStyle(opensUp ? { right, bottom: window.innerHeight - r.top + 4 } : { right, top: r.bottom + 4 });
   };
@@ -156,7 +167,7 @@ export function PopupMenu({ label, children }: { label: string; children: (close
           role="menu"
           aria-label={label}
           style={style}
-          className="fixed z-30 flex w-[230px] animate-fade flex-col rounded-card border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
+          className="fixed z-30 flex w-[min(230px,calc(100vw-16px))] animate-fade flex-col rounded-card border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
         >
           {children(close)}
         </div>

@@ -1,7 +1,6 @@
 import type { Db } from './db/index.js';
 import type { CvStore } from './lib/cv-store.js';
 import type { GoogleVerifier } from './lib/google.js';
-import type { OtpSender } from './lib/otp.js';
 
 export interface AppConfig {
   /** Public FRONTEND origin, used in share pages and the sitemap. */
@@ -23,7 +22,5 @@ export interface Deps {
   config: AppConfig;
   cvStore: CvStore;
   verifyGoogleToken: GoogleVerifier;
-  /** null when no provider is configured: phone sign-in answers 503. */
-  otpSender: OtpSender | null;
   now: () => Date;
 }

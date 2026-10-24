@@ -23,6 +23,8 @@ interface FieldShell {
   error?: string;
   icon?: IconName;
   className?: string;
+  /** Shown at the end of the box, e.g. a check mark when the value is valid. */
+  trailing?: ReactNode;
 }
 
 const boxBase = 'field-focus flex items-center gap-3 rounded-control border bg-white px-4';
@@ -34,6 +36,7 @@ export function TextField({
   error,
   icon,
   className = '',
+  trailing,
   ...input
 }: FieldShell & InputHTMLAttributes<HTMLInputElement>) {
   const id = useId();
@@ -55,6 +58,7 @@ export function TextField({
           className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-navy outline-none placeholder:text-muted"
           {...input}
         />
+        {trailing}
       </div>
       {hint && !error && <span className="text-xs text-muted">{hint}</span>}
       <FieldError id={errId}>{error}</FieldError>

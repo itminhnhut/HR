@@ -1,96 +1,40 @@
-import { formatPhone, normalizeVietnamPhone } from '@careers/shared';
-import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { isDemo } from '../../api';
-import { useCandidate, useGoogleSignIn, useRequestOtp, useVerifyOtp } from '../../api/queries';
+import { DEMO_CANDIDATE_EMAIL } from '../../api/mock-seed';
+import { useCandidate, useGoogleSignIn } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { NavyHero } from '../../site/PublicLayout';
-import { Button } from '../../ui/Button';
-import { FieldError, TextField } from '../../ui/Field';
+import { FieldError } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
-import { ACCOUNT_PATH, errorText, safeNextPath } from './candidateUi';
+import { errorText, safeNextPath } from './candidateUi';
 
-const PERKS = ['Xem trạng thái mọi hồ sơ đã nộp', 'Lưu việc để nộp sau', 'Nộp lần sau không cần nhập lại'];
-const CODE_LENGTH = 6;
-const RESEND_SECONDS = 45;
-const DEMO_CODE = '123456';
-
-type Step = 'phone' | 'verify' | 'otp';
-type Channel = 'zalo' | 'sms';
-
-const emptyCode = () => Array.from({ length: CODE_LENGTH }, () => '');
+const PERKS = ['Xem trạng thái mọi hồ sơ đã nộp', 'Lưu CV, lần sau nộp không cần nhập lại', 'Tự xoá dữ liệu của mình'];
 
 export function CandidateLoginPage() {
   usePageMeta(
-    'Đăng nhập',
-    'Đăng nhập bằng số điện thoại đã nộp hồ sơ để theo dõi trạng thái. Không bắt buộc khi ứng tuyển.',
+    'Hồ sơ của tôi',
+    'Đăng nhập bằng Google để theo dõi hồ sơ đã nộp bằng email đó. Không bắt buộc khi ứng tuyển.',
   );
   const candidate = useCandidate();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = safeNextPath(params.get('tiep'));
-
-  const requestOtp = useRequestOtp();
-  const verifyOtp = useVerifyOtp();
   const googleSignIn = useGoogleSignIn();
-
-  const [step, setStep] = useState<Step>('phone');
-  /** Where "Đổi số" returns to: the plain phone step or the Google verify step. */
-  const [phoneStep, setPhoneStep] = useState<'phone' | 'verify'>('phone');
-  const [phone, setPhone] = useState('');
-  const [phoneError, setPhoneError] = useState('');
-  const [channel, setChannel] = useState<Channel>('zalo');
-  const [googleEmail, setGoogleEmail] = useState<string | null>(null);
-  const [googleError, setGoogleError] = useState('');
-  const [devCode, setDevCode] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   // Already signed in (or just finished signing in): go straight on.
   if (candidate.data) return <Navigate to={next} replace />;
 
-  /** Sends a code and moves to the OTP step. Returns the error text, or null on success. */
-  const sendCode = async (via: Channel): Promise<string | null> => {
-    const normalized = normalizeVietnamPhone(phone);
-    if (!normalized) {
-      const message = 'Số điện thoại chưa đúng, ví dụ 0912 345 678.';
-      setPhoneError(message);
-      return message;
-    }
-    setPhoneError('');
-    try {
-      const res = await requestOtp.mutateAsync({ phone: normalized, channel: via });
-      setPhone(normalized);
-      setChannel(via);
-      setDevCode(res.devCode ?? null);
-      setStep('otp');
-      return null;
-    } catch (e) {
-      const message = errorText(e, 'phone', 'Chưa gửi được mã. Kiểm tra mạng rồi thử lại.');
-      setPhoneError(message);
-      return message;
-    }
-  };
-
   const startGoogle = async () => {
-    setGoogleError('');
-    setPhoneError('');
+    setError('');
     try {
-      const res = await googleSignIn.mutateAsync();
-      setGoogleEmail(res.email);
-      if (res.needsPhone) {
-        setPhoneStep('verify');
-        setStep('verify');
-        return;
-      }
+      await googleSignIn.mutateAsync();
       await candidate.refetch();
       navigate(next, { replace: true });
     } catch (e) {
-      setGoogleError(errorText(e, null, 'Chưa đăng nhập được bằng Google. Thử lại sau ít phút.'));
+      setError(errorText(e, null, 'Chưa đăng nhập được bằng Google. Thử lại sau ít phút.'));
     }
-  };
-
-  const onPhoneSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    void sendCode('zalo');
   };
 
   return (
@@ -118,85 +62,25 @@ export function CandidateLoginPage() {
 
         <section className="relative flex items-center justify-center bg-mist px-4 py-10 text-navy sm:px-6 md:py-12">
           <div className="flex w-full max-w-[420px] flex-col gap-[22px]">
-            {step === 'phone' && (
-              <>
-                <StepHeading title="Đăng nhập">
-                  Dùng số điện thoại bạn đã nộp hồ sơ, hồ sơ cũ sẽ tự hiện ra.
-                </StepHeading>
-                <PhoneForm
-                  label="Số điện thoại"
-                  phone={phone}
-                  error={phoneError}
-                  busy={requestOtp.isPending}
-                  onChange={setPhone}
-                  onSubmit={onPhoneSubmit}
-                  onSms={() => void sendCode('sms')}
-                />
-                <div className="flex items-center gap-3 text-[13px] text-muted">
-                  <span className="h-px flex-1 bg-line" />
-                  hoặc
-                  <span className="h-px flex-1 bg-line" />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void startGoogle()}
-                  disabled={googleSignIn.isPending}
-                  className="flex min-h-[54px] items-center justify-center gap-3 rounded-control border border-silver bg-white text-[15px] font-medium text-navy transition-colors hover:bg-hover disabled:opacity-60"
-                >
-                  <GoogleMark />
-                  {googleSignIn.isPending ? 'Đang mở Google…' : 'Tiếp tục với Google'}
-                </button>
-                <FieldError>{googleError}</FieldError>
-              </>
+            <div className="flex flex-col gap-2">
+              <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[34px]">Đăng nhập</h2>
+              <p className="m-0 text-[15px] leading-relaxed text-slate">
+                Dùng tài khoản Google có email bạn đã ghi khi nộp hồ sơ, các hồ sơ đó sẽ tự hiện ra.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void startGoogle()}
+              disabled={googleSignIn.isPending}
+              className="flex min-h-[54px] items-center justify-center gap-3 rounded-control border border-silver bg-white text-[15px] font-medium text-navy transition-colors hover:bg-hover disabled:opacity-60"
+            >
+              <GoogleMark />
+              {googleSignIn.isPending ? 'Đang mở Google…' : 'Tiếp tục với Google'}
+            </button>
+            <FieldError>{error}</FieldError>
+            {isDemo && (
+              <span className="text-xs text-muted">Bản chạy thử: vào tài khoản mẫu {DEMO_CANDIDATE_EMAIL}.</span>
             )}
-
-            {step === 'verify' && (
-              <>
-                <div className="flex flex-col gap-2">
-                  {googleEmail && (
-                    <span className="inline-flex items-center gap-2 text-[13px] text-ok">
-                      <Icon name="check" size={16} stroke={1.8} className="shrink-0" />
-                      <span className="min-w-0 break-all">Đã đăng nhập Google: {googleEmail}</span>
-                    </span>
-                  )}
-                  <StepHeading title="Xác minh số điện thoại">
-                    Chỉ cần một lần, để nối với các hồ sơ bạn đã nộp bằng số này.
-                  </StepHeading>
-                </div>
-                <PhoneForm
-                  label="Số điện thoại đã dùng khi nộp hồ sơ"
-                  phone={phone}
-                  error={phoneError}
-                  busy={requestOtp.isPending}
-                  onChange={setPhone}
-                  onSubmit={onPhoneSubmit}
-                  onSms={() => void sendCode('sms')}
-                />
-                <Link
-                  to={candidate.data ? ACCOUNT_PATH : '/'}
-                  className="inline-flex min-h-11 items-center justify-center text-sm"
-                >
-                  Để sau, tôi chưa nộp hồ sơ nào
-                </Link>
-              </>
-            )}
-
-            {step === 'otp' && (
-              <OtpStep
-                phone={phone}
-                channel={channel}
-                devCode={isDemo ? (devCode ?? DEMO_CODE) : null}
-                verifying={verifyOtp.isPending}
-                resending={requestOtp.isPending}
-                onBack={() => setStep(phoneStep)}
-                onResend={() => sendCode(channel)}
-                onVerify={async (code) => {
-                  await verifyOtp.mutateAsync({ phone, code });
-                  navigate(next, { replace: true });
-                }}
-              />
-            )}
-
             <Link to="/" className="inline-flex min-h-11 items-center self-start text-sm">
               Về trang việc làm
             </Link>
@@ -204,257 +88,6 @@ export function CandidateLoginPage() {
         </section>
       </div>
     </NavyHero>
-  );
-}
-
-function StepHeading({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[34px]">{title}</h2>
-      <p className="m-0 text-[15px] leading-relaxed text-slate">{children}</p>
-    </div>
-  );
-}
-
-function PhoneForm({
-  label,
-  phone,
-  error,
-  busy,
-  onChange,
-  onSubmit,
-  onSms,
-}: {
-  label: string;
-  phone: string;
-  error: string;
-  busy: boolean;
-  onChange: (value: string) => void;
-  onSubmit: (e: FormEvent) => void;
-  onSms: () => void;
-}) {
-  return (
-    <form noValidate onSubmit={onSubmit} className="flex flex-col gap-[22px]">
-      <TextField
-        label={label}
-        type="tel"
-        inputMode="tel"
-        autoComplete="tel-national"
-        placeholder="0912 345 678"
-        value={phone}
-        error={error}
-        onChange={(e) => onChange(e.target.value)}
-        className="[&_input]:text-base"
-      />
-      <Button type="submit" size="lg" disabled={busy} className="min-h-14 w-full">
-        {busy ? 'Đang gửi mã…' : 'Nhận mã qua Zalo'}
-      </Button>
-      <span className="-mt-2 text-center text-[13px] text-muted">
-        Không có Zalo?{' '}
-        <button
-          type="button"
-          onClick={onSms}
-          disabled={busy}
-          className="min-h-11 border-0 bg-transparent p-0 text-[13px] text-link underline hover:text-navy disabled:opacity-60"
-        >
-          Gửi mã bằng SMS
-        </button>
-      </span>
-    </form>
-  );
-}
-
-function OtpStep({
-  phone,
-  channel,
-  devCode,
-  verifying,
-  resending,
-  onBack,
-  onResend,
-  onVerify,
-}: {
-  phone: string;
-  channel: Channel;
-  devCode: string | null;
-  verifying: boolean;
-  resending: boolean;
-  onBack: () => void;
-  onResend: () => Promise<string | null>;
-  onVerify: (code: string) => Promise<void>;
-}) {
-  const [digits, setDigits] = useState<string[]>(emptyCode);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('');
-  const [secondsLeft, setSecondsLeft] = useState(RESEND_SECONDS);
-  const boxes = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    boxes.current[0]?.focus();
-  }, []);
-
-  useEffect(() => {
-    if (secondsLeft <= 0) return;
-    const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [secondsLeft]);
-
-  const focusBox = (i: number) => {
-    const box = boxes.current[Math.max(0, Math.min(CODE_LENGTH - 1, i))];
-    box?.focus();
-    box?.select();
-  };
-
-  /** Writes `chars` starting at box `start` (typing, paste or SMS autofill). */
-  const fillFrom = (start: number, chars: string) => {
-    const next = [...digits];
-    const usable = chars.slice(0, CODE_LENGTH - start);
-    [...usable].forEach((d, k) => (next[start + k] = d));
-    setDigits(next);
-    setError('');
-    focusBox(start + usable.length);
-  };
-
-  const onBoxChange = (i: number, raw: string) => {
-    let typed = raw.replace(/\D/g, '');
-    if (!typed) {
-      const next = [...digits];
-      next[i] = '';
-      setDigits(next);
-      return;
-    }
-    // Typing into a filled box without selecting it: keep only the new digit.
-    if (typed.length === 2 && digits[i]) typed = typed.startsWith(digits[i]) ? typed.slice(1) : typed.slice(0, 1);
-    fillFrom(i, typed);
-  };
-
-  const onBoxKeyDown = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !digits[i] && i > 0) {
-      e.preventDefault();
-      const next = [...digits];
-      next[i - 1] = '';
-      setDigits(next);
-      focusBox(i - 1);
-    } else if (e.key === 'ArrowLeft' && i > 0) {
-      e.preventDefault();
-      focusBox(i - 1);
-    } else if (e.key === 'ArrowRight' && i < CODE_LENGTH - 1) {
-      e.preventDefault();
-      focusBox(i + 1);
-    }
-  };
-
-  const onBoxPaste = (i: number, e: ClipboardEvent<HTMLInputElement>) => {
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '');
-    if (!pasted) return;
-    e.preventDefault();
-    fillFrom(pasted.length >= CODE_LENGTH ? 0 : i, pasted);
-  };
-
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    const code = digits.join('');
-    if (code.length < CODE_LENGTH) {
-      setError('Nhập đủ 6 số trong tin nhắn.');
-      focusBox(digits.findIndex((d) => !d));
-      return;
-    }
-    try {
-      await onVerify(code);
-    } catch (err) {
-      setError(errorText(err, 'code', 'Chưa xác nhận được. Kiểm tra mạng rồi thử lại.'));
-      setDigits(emptyCode());
-      focusBox(0);
-    }
-  };
-
-  const resend = async () => {
-    setError('');
-    setStatus('');
-    const failure = await onResend();
-    if (failure) {
-      setError(failure);
-      return;
-    }
-    setDigits(emptyCode());
-    setSecondsLeft(RESEND_SECONDS);
-    setStatus(`Đã gửi lại mã qua ${channel === 'sms' ? 'SMS' : 'Zalo'}.`);
-    focusBox(0);
-  };
-
-  const errId = 'otp-error';
-  const clock = `0:${String(secondsLeft).padStart(2, '0')}`;
-
-  return (
-    <form noValidate onSubmit={submit} className="flex flex-col gap-[22px]">
-      <StepHeading title="Nhập mã 6 số">
-        Đã gửi qua {channel === 'sms' ? 'SMS' : 'Zalo'} đến{' '}
-        <strong className="font-semibold text-navy">{formatPhone(phone)}</strong>.{' '}
-        <button
-          type="button"
-          onClick={onBack}
-          className="border-0 bg-transparent p-0 text-[15px] text-link underline hover:text-navy"
-        >
-          Đổi số
-        </button>
-      </StepHeading>
-
-      <div role="group" aria-label="Mã xác nhận 6 số" className="flex flex-col gap-2">
-        <div className="grid grid-cols-6 gap-2 sm:gap-2.5">
-          {digits.map((d, i) => (
-            <input
-              key={i}
-              ref={(el) => {
-                boxes.current[i] = el;
-                // Phones force inputs to 16px (anti-zoom); digits here are larger anyway.
-                el?.style.setProperty('font-size', '28px', 'important');
-              }}
-              value={d}
-              inputMode="numeric"
-              pattern="[0-9]*"
-              autoComplete={i === 0 ? 'one-time-code' : 'off'}
-              aria-label={`Chữ số ${i + 1} trên 6`}
-              aria-invalid={error ? true : undefined}
-              aria-describedby={error ? errId : undefined}
-              onFocus={(e) => e.target.select()}
-              onChange={(e) => onBoxChange(i, e.target.value)}
-              onKeyDown={(e) => onBoxKeyDown(i, e)}
-              onPaste={(e) => onBoxPaste(i, e)}
-              className={`field-focus h-[60px] w-full min-w-0 rounded-control border bg-white text-center font-sans font-semibold tabular-nums text-navy outline-none ${
-                error ? 'border-error' : 'border-field'
-              }`}
-            />
-          ))}
-        </div>
-        <FieldError id={errId}>{error}</FieldError>
-      </div>
-
-      <Button type="submit" size="lg" disabled={verifying} className="min-h-14 w-full">
-        {verifying ? 'Đang xác nhận…' : 'Xác nhận'}
-      </Button>
-
-      <div className="-mt-2 flex flex-col items-center gap-1 text-center text-[13px] text-muted">
-        {secondsLeft > 0 ? (
-          <span className="flex min-h-11 items-center">Chưa nhận được? Gửi lại sau {clock}</span>
-        ) : (
-          <span>
-            Chưa nhận được?{' '}
-            <button
-              type="button"
-              onClick={() => void resend()}
-              disabled={resending}
-              className="min-h-11 border-0 bg-transparent p-0 text-[13px] text-link underline hover:text-navy disabled:opacity-60"
-            >
-              {resending ? 'Đang gửi…' : 'Gửi lại mã'}
-            </button>
-          </span>
-        )}
-        <span role="status" className="text-ok empty:hidden">
-          {status}
-        </span>
-        {devCode && <span className="text-xs text-muted">Bản chạy thử: mã là {devCode}</span>}
-      </div>
-    </form>
   );
 }
 

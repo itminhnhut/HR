@@ -18,8 +18,7 @@ describe('GET /api/jobs', () => {
     await insertJob(t, { slug: 'moi', publishedOn: '2026-10-19' });
     await insertJob(t, { slug: 'sap-het', deadline: addDays(TODAY, 2) });
     await insertJob(t, { slug: 'nhap', state: 'draft', publishedOn: null });
-    await insertJob(t, { slug: 'tam-dung', state: 'paused' });
-    await insertJob(t, { slug: 'du-nguoi', state: 'filled' });
+    await insertJob(t, { slug: 'da-dong', state: 'closed', closedOn: '2026-10-19' });
     await insertJob(t, { slug: 'het-han', deadline: '2026-10-19', publishedOn: '2026-09-01' });
 
     const body = await json<JobListResponse>(await t.request('/api/jobs'));
@@ -37,24 +36,25 @@ describe('GET /api/jobs', () => {
     expect((await json<JobListResponse>(await t.request('/api/jobs'))).jobs).toHaveLength(0);
   });
 
-  it('returns the distinct cities of listed jobs', async () => {
-    await insertJob(t, { city: 'Hà Nội' });
-    await insertJob(t, { city: 'Đà Nẵng' });
-    await insertJob(t, { city: 'Hà Nội' });
-    await insertJob(t, { city: 'Cần Thơ', state: 'draft' });
-
-    const body = await json<JobListResponse>(await t.request('/api/jobs'));
-
-    expect(body.cities.sort()).toEqual(['Hà Nội', 'Đà Nẵng'].sort());
-  });
-
-  it('builds the card perk line from the first income benefit', async () => {
-    await insertJob(t, { benefitIncome: '- Thưởng quý\n- Lương 13', benefitEnvironment: 'Văn phòng đẹp' });
-    await insertJob(t, { benefitIncome: '', benefitEnvironment: 'Làm việc linh hoạt' });
+  it('places jobs without their own address at the office', async () => {
+    await insertJob(t, { slug: 'vp' });
+    await insertJob(t, { slug: 'kho', address: 'Kho Bình Dương' });
 
     const { jobs } = await json<JobListResponse>(await t.request('/api/jobs'));
 
-    expect(jobs.map((j) => j.perks).sort()).toEqual(['Làm việc linh hoạt', 'Thưởng quý']);
+    expect(Object.fromEntries(jobs.map((j) => [j.slug, j.place]))).toEqual({
+      vp: 'Gò Vấp, TP. HCM',
+      kho: 'Kho Bình Dương',
+    });
+  });
+
+  it('builds the card perk line from the first two benefits', async () => {
+    await insertJob(t, { benefits: ['Thưởng quý', 'Lương 13', 'Văn phòng đẹp'] });
+    await insertJob(t, { benefits: [] });
+
+    const { jobs } = await json<JobListResponse>(await t.request('/api/jobs'));
+
+    expect(jobs.map((j) => j.perks).sort()).toEqual(['', 'Thưởng quý, Lương 13']);
   });
 });
 
@@ -63,8 +63,7 @@ describe('GET /api/jobs/:slug', () => {
     await insertJob(t, {
       slug: 'ky-su',
       responsibilities: '- Viết API\n\n• Review code',
-      skills: ['TypeScript', 'SQL'],
-      plan30: 'Làm quen',
+      roadmap: ['a', 'b', 'c', 'd', 'e'],
     });
 
     const res = await t.request('/api/jobs/ky-su');
@@ -75,9 +74,11 @@ describe('GET /api/jobs/:slug', () => {
       slug: 'ky-su',
       status: 'open',
       responsibilities: ['Viết API', 'Review code'],
-      skills: ['TypeScript', 'SQL'],
-      plan: { day30: 'Làm quen', day60: null, day90: null },
-      benefits: { income: ['Lương tháng 13'], insurance: [] },
+      requirements: ['Biết SQL'],
+      roadmap: ['a', 'b', 'c', 'd', 'e'],
+      benefits: ['Lương tháng 13'],
+      address: null,
+      place: 'Gò Vấp, TP. HCM',
       publishedAt: `${TODAY}T02:00:00.000Z`,
     });
   });
@@ -89,11 +90,11 @@ describe('GET /api/jobs/:slug', () => {
     expect((await json<JobPageResponse>(res)).job.status).toBe('expired');
   });
 
-  it('still shows filled and paused jobs (BR-05, BR-06)', async () => {
-    await insertJob(t, { slug: 'du', state: 'filled' });
-    await insertJob(t, { slug: 'dung', state: 'paused' });
-    expect((await json<JobPageResponse>(await t.request('/api/jobs/du'))).job.status).toBe('filled');
-    expect((await json<JobPageResponse>(await t.request('/api/jobs/dung'))).job.status).toBe('paused');
+  it('still shows a job HR closed (BR-05, BR-06)', async () => {
+    await insertJob(t, { slug: 'dong', state: 'closed', closedOn: '2026-10-19' });
+    const res = await t.request('/api/jobs/dong');
+    expect(res.status).toBe(200);
+    expect((await json<JobPageResponse>(res)).job.status).toBe('closed');
   });
 
   it('hides drafts and unknown slugs with 404', async () => {
@@ -104,14 +105,13 @@ describe('GET /api/jobs/:slug', () => {
     expect(await res.json()).toMatchObject({ error: 'Không tìm thấy tin tuyển dụng.' });
   });
 
-  it('suggests up to 3 open jobs, same department first, then same city (BR-05)', async () => {
-    await insertJob(t, { slug: 'goc', department: 'Kỹ thuật', city: 'Hà Nội', state: 'filled' });
-    await insertJob(t, { slug: 'kt-1', department: 'Kỹ thuật', city: 'Huế' });
-    await insertJob(t, { slug: 'kt-2', department: 'Kỹ thuật', city: 'Huế' });
-    await insertJob(t, { slug: 'mkt-hn', department: 'Marketing', city: 'Hà Nội' });
-    await insertJob(t, { slug: 'mkt-hn-2', department: 'Marketing', city: 'Hà Nội' });
-    await insertJob(t, { slug: 'mkt-hue', department: 'Marketing', city: 'Huế' });
-    await insertJob(t, { slug: 'kt-dong', department: 'Kỹ thuật', state: 'paused' });
+  it('suggests up to 3 open jobs, same department first (BR-05)', async () => {
+    await insertJob(t, { slug: 'goc', department: 'Kỹ thuật', state: 'closed', closedOn: '2026-10-19' });
+    await insertJob(t, { slug: 'kt-1', department: 'Kỹ thuật' });
+    await insertJob(t, { slug: 'kt-2', department: 'Kỹ thuật' });
+    await insertJob(t, { slug: 'mkt-hn', department: 'Marketing' });
+    await insertJob(t, { slug: 'mkt-hn-2', department: 'Marketing' });
+    await insertJob(t, { slug: 'kt-dong', department: 'Kỹ thuật', state: 'closed', closedOn: '2026-10-19' });
 
     const { similar } = await json<JobPageResponse>(await t.request('/api/jobs/goc'));
     const slugs = similar.map((j) => j.slug);

@@ -1,3 +1,4 @@
+import { DEFAULT_JOB_TEMPLATE } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import * as schema from './db/schema.js';
 import { createTestContext, DEFAULT_NOW, type TestContext } from './test/harness.js';
@@ -57,12 +58,11 @@ describe('test harness', () => {
         title: 'A',
         department: 'Kỹ thuật',
         employmentType: 'full_time',
-        city: 'HN',
         deadline: '2026-11-01',
       })
       .returning();
     const now = new Date();
-    await t.db.insert(schema.candidates).values({ phone: '0912345678' });
+    await t.db.insert(schema.candidates).values({ email: 'an@gmail.com' });
     await t.db.insert(schema.applications).values({
       jobId: job.id,
       fullName: 'Nguyễn An',
@@ -73,8 +73,8 @@ describe('test harness', () => {
     await t.db
       .insert(schema.subscribers)
       .values({ phone: '0912345678', department: 'Kỹ thuật', consentAt: now, policyVersion: 'v' });
-    await t.db.insert(schema.savedJobs).values({ phone: '0912345678', jobId: job.id });
-    await t.db.insert(schema.otpCodes).values({ phone: '0912345678', codeHash: 'h', expiresAt: now, sentAt: now });
+    await t.db.insert(schema.jobTemplates).values({ id: 1, data: DEFAULT_JOB_TEMPLATE });
+    await t.db.insert(schema.hrUsers).values({ email: 'hr@x.vn', passwordHash: 'h' });
     t.clock.now = new Date('2030-01-01T00:00:00Z');
 
     await t.reset();
@@ -84,8 +84,8 @@ describe('test harness', () => {
       schema.applications,
       schema.subscribers,
       schema.candidates,
-      schema.savedJobs,
-      schema.otpCodes,
+      schema.hrUsers,
+      schema.jobTemplates,
     ]) {
       expect(await t.db.select().from(table)).toEqual([]);
     }
@@ -100,11 +100,10 @@ describe('test harness', () => {
         title: 'B',
         department: 'Kỹ thuật',
         employmentType: 'full_time',
-        city: 'HN',
         deadline: '2026-11-01',
       })
       .returning();
-    expect(job).toMatchObject({ state: 'draft', remote: false, skills: [], responsibilities: '', publishedOn: null });
+    expect(job).toMatchObject({ state: 'draft', benefits: [], roadmap: [], responsibilities: '', publishedOn: null });
     expect(job.id).toMatch(/^[0-9a-f-]{36}$/);
   });
 
@@ -116,7 +115,6 @@ describe('test harness', () => {
         title: 'C',
         department: 'Kỹ thuật',
         employmentType: 'full_time',
-        city: 'HN',
         deadline: '2026-11-01',
       })
       .returning();

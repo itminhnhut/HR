@@ -11,7 +11,11 @@ export default defineConfig(({ mode }) => ({
   // With VITE_API_URL=/api in .env.local, `npm run dev:api` (port 8787) answers these paths.
   server: {
     proxy: Object.fromEntries(
-      ['/api', '/share', '/sitemap.xml', '/robots.txt'].map((path) => [path, 'http://localhost:8787']),
+      // xfwd: pass the visitor's IP on, so per-IP limits (phone lookup) work for phones on the same wifi.
+      ['/api', '/share', '/sitemap.xml', '/robots.txt'].map((path) => [
+        path,
+        { target: 'http://localhost:8787', xfwd: true },
+      ]),
     ),
   },
   test: {

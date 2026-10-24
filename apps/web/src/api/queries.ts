@@ -1,19 +1,20 @@
-import type { JobInput } from '@careers/shared';
+import type { JobInput, JobTemplate } from '@careers/shared';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from './index';
-import type { ApplicationPatch, ApplyInput, CandidatePatch, JobAction, SubscribeInput } from './types';
+import type { ApplicationPatch, ApplyInput, CandidatePatch, JobAction } from './types';
 
 export const keys = {
   jobs: ['jobs'] as const,
   job: (slug: string) => ['job', slug] as const,
-  saved: ['saved'] as const,
   candidate: ['candidate'] as const,
   hrMe: ['hr', 'me'] as const,
   hrJobs: ['hr', 'jobs'] as const,
   hrJob: (id: string) => ['hr', 'job', id] as const,
-  hrApps: (jobId?: string) => ['hr', 'apps', jobId ?? 'all'] as const,
+  hrJobTemplate: ['hr', 'job-template'] as const,
+  hrDashboard: ['hr', 'dashboard'] as const,
+  hrUsers: ['hr', 'users'] as const,
+  hrApps: (jobId?: string, q = '') => ['hr', 'apps', jobId ?? 'all', q] as const,
   hrApp: (id: string) => ['hr', 'app', id] as const,
-  hrSubs: ['hr', 'subs'] as const,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────
@@ -40,49 +41,21 @@ export function useApply() {
   });
 }
 
-export const useSubscribe = () => useMutation({ mutationFn: (input: SubscribeInput) => api.subscribe(input) });
-
-export const useSavedSlugs = () => useQuery({ queryKey: keys.saved, queryFn: api.savedJobSlugs, staleTime: Infinity });
-
-export function useToggleSaved() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ slug, saved }: { slug: string; saved: boolean }) => api.setSavedJob(slug, saved),
-    onMutate: async ({ slug, saved }) => {
-      await qc.cancelQueries({ queryKey: keys.saved });
-      const prev = qc.getQueryData<string[]>(keys.saved) ?? [];
-      qc.setQueryData(keys.saved, saved ? [...new Set([...prev, slug])] : prev.filter((s) => s !== slug));
-      return { prev };
-    },
-    onError: (_e, _v, ctx) => ctx && qc.setQueryData(keys.saved, ctx.prev),
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: keys.saved });
-      qc.invalidateQueries({ queryKey: keys.candidate });
-    },
-  });
-}
+export const useLookup = () => useMutation({ mutationFn: (phone: string) => api.lookupApplications(phone) });
 
 // ── Candidate account ────────────────────────────────────────────────────
 
 export const useCandidate = () => useQuery({ queryKey: keys.candidate, queryFn: api.candidateOverview });
 
-export const useRequestOtp = () =>
-  useMutation({
-    mutationFn: ({ phone, channel }: { phone: string; channel: 'zalo' | 'sms' }) => api.requestOtp(phone, channel),
-  });
-
-export function useVerifyOtp() {
+export function useGoogleSignIn() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ phone, code }: { phone: string; code: string }) => api.verifyOtp(phone, code),
+    mutationFn: () => api.googleSignIn(),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: keys.candidate });
-      qc.invalidateQueries({ queryKey: keys.saved });
     },
   });
 }
-
-export const useGoogleSignIn = () => useMutation({ mutationFn: () => api.googleSignIn() });
 
 export function useUpdateCandidate() {
   const qc = useQueryClient();
@@ -99,7 +72,6 @@ export function useCandidateSignOut() {
       opts.deleteData ? api.deleteCandidateData() : api.candidateLogout(),
     onSuccess: () => {
       qc.setQueryData(keys.candidate, null);
-      qc.invalidateQueries({ queryKey: keys.saved });
     },
   });
 }
@@ -128,6 +100,9 @@ export function useHrSignOut() {
 }
 
 export const useHrJobs = () => useQuery({ queryKey: keys.hrJobs, queryFn: api.hrJobs });
+
+export const useJobTemplate = () =>
+  useQuery({ queryKey: keys.hrJobTemplate, queryFn: api.hrJobTemplate, staleTime: 5 * 60_000 });
 
 export const useHrJob = (id: string | undefined) =>
   useQuery({ queryKey: keys.hrJob(id ?? 'new'), queryFn: () => api.hrJob(id!), enabled: !!id });
@@ -165,10 +140,10 @@ export function useDeleteJob() {
   });
 }
 
-export const useApplications = (jobId?: string) =>
+export const useApplications = (jobId?: string, q = '') =>
   useQuery({
-    queryKey: keys.hrApps(jobId),
-    queryFn: () => api.hrApplications(jobId),
+    queryKey: keys.hrApps(jobId, q),
+    queryFn: () => api.hrApplications(jobId, q),
     placeholderData: keepPreviousData,
   });
 
@@ -193,18 +168,78 @@ export function useUpdateApplication() {
     mutationFn: ({ id, patch }: { id: string; patch: ApplicationPatch }) => api.hrUpdateApplication(id, patch),
     onSuccess: (detail) => {
       qc.setQueryData(keys.hrApp(detail.id), detail);
-      qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
-      qc.invalidateQueries({ queryKey: keys.hrJobs });
+      refreshApplications(qc);
     },
   });
 }
 
-export const useSubscribers = () => useQuery({ queryKey: keys.hrSubs, queryFn: api.hrSubscribers });
+/** Everything that shows application counts. */
+function refreshApplications(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+  qc.invalidateQueries({ queryKey: keys.hrJobs });
+  qc.invalidateQueries({ queryKey: keys.hrDashboard });
+}
 
-export function useDeleteSubscriber() {
+export function useDeleteApplication() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.hrDeleteSubscriber(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: keys.hrSubs }),
+    mutationFn: (id: string) => api.hrDeleteApplication(id),
+    onSuccess: (_r, id) => {
+      qc.removeQueries({ queryKey: keys.hrApp(id) });
+      refreshApplications(qc);
+    },
+  });
+}
+
+export function useDeleteDueApplications() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.hrDeleteDueApplications(),
+    onSuccess: () => refreshApplications(qc),
+  });
+}
+
+export function useSetDeadline() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, deadline }: { id: string; deadline: string }) => api.hrSetDeadline(id, deadline),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: keys.hrJobs });
+      qc.invalidateQueries({ queryKey: keys.hrDashboard });
+      qc.invalidateQueries({ queryKey: keys.jobs });
+      qc.invalidateQueries({ queryKey: ['job'] });
+    },
+  });
+}
+
+export const useDashboard = () => useQuery({ queryKey: keys.hrDashboard, queryFn: api.hrDashboard });
+
+export function useSaveJobTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (template: JobTemplate) => api.hrSaveJobTemplate(template),
+    onSuccess: (data) => qc.setQueryData(keys.hrJobTemplate, data),
+  });
+}
+
+// ── HR accounts ──────────────────────────────────────────────────────────
+
+export const useHrUsers = () => useQuery({ queryKey: keys.hrUsers, queryFn: api.hrUsers });
+
+export function useHrUserAction() {
+  const qc = useQueryClient();
+  const done = () => qc.invalidateQueries({ queryKey: keys.hrUsers });
+  return {
+    create: useMutation({ mutationFn: api.hrCreateUser, onSuccess: done }),
+    reset: useMutation({ mutationFn: api.hrResetPassword, onSuccess: done }),
+    remove: useMutation({ mutationFn: api.hrDeleteUser, onSuccess: done }),
+  };
+}
+
+export function useChangePassword() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ current, next }: { current: string; next: string }) => api.hrChangePassword(current, next),
+    onSuccess: (me) => qc.setQueryData(keys.hrMe, me),
   });
 }

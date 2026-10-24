@@ -53,6 +53,7 @@
   --animate-rise: rise 0.4s ease-out both;
   --animate-pop: pop 0.35s ease-out both;
   --animate-sheet: sheet 0.3s ease-out both;
+  --animate-drawer: drawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade: fade 0.25s ease both;
   --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
 
@@ -83,6 +84,14 @@
     }
     to {
       opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes drawer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
       transform: none;
     }
   }
@@ -172,6 +181,14 @@
   transition: filter 0.2s ease;
   &:hover:not(:disabled) {
     filter: brightness(1.15);
+  }
+}
+
+/* Horizontal tab rows on small screens: fade the right edge so it is clear more tabs scroll in. */
+@utility scroll-fade-x {
+  @media (max-width: 1023px) {
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+    padding-right: 24px;
   }
 }
 

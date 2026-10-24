@@ -15,6 +15,41 @@
       "when": 1792749952412,
       "tag": "0001_hr_users",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792751645379,
+      "tag": "0002_candidates_by_email",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792856117322,
+      "tag": "0003_subscriber_owner",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792856642537,
+      "tag": "0004_lookup_and_reapply",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792860420475,
+      "tag": "0005_lean_jobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792861277921,
+      "tag": "0006_lean_rest",
+      "breakpoints": true
     }
   ]
 }

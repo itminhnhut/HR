@@ -30,7 +30,6 @@ const fields = (jobId: string, overrides: Fields = {}): Fields => ({
   message: '',
   cvLink: 'https://drive.google.com/cv',
   consent: true,
-  keepForOtherJobs: false,
   formOpenedAt: t.clock.now.getTime(),
   ...overrides,
 });
@@ -39,7 +38,7 @@ describe('POST /api/applications', () => {
   it('stores an application with consent evidence (BR-12)', async () => {
     const job = await insertJob(t);
 
-    const res = await applyForm(fields(job.id, { keepForOtherJobs: true }));
+    const res = await applyForm(fields(job.id));
 
     expect(res.status).toBe(200);
     expect(await json<ApplyResponse>(res)).toEqual({
@@ -56,7 +55,6 @@ describe('POST /api/applications', () => {
       status: 'new',
       email: null,
       cvLink: 'https://drive.google.com/cv',
-      keepForOtherJobs: true,
       policyVersion: '2026-10',
     });
     expect(row.consentAt).toEqual(t.clock.now);
@@ -107,6 +105,22 @@ describe('POST /api/applications', () => {
     expect((await json<{ fieldErrors: Record<string, string> }>(res)).fieldErrors.cv).toBe('CV cần là file PDF.');
   });
 
+  it('rejects a PDF that was cut off before its %%EOF marker', async () => {
+    const job = await insertJob(t);
+    const truncated = new File([new TextEncoder().encode('%PDF-1.7\n'), new Uint8Array(2000)], 'cv.pdf', {
+      type: 'application/pdf',
+    });
+
+    const res = await applyForm(fields(job.id, { cvLink: '' }), truncated);
+
+    expect(res.status).toBe(422);
+    expect((await json<{ fieldErrors: Record<string, string> }>(res)).fieldErrors.cv).toMatch(
+      /^File PDF bị lỗi hoặc chưa tải hết/,
+    );
+    expect(await t.db.select().from(applications)).toEqual([]);
+    expect(t.cvStore.files.size).toBe(0);
+  });
+
   it('rejects an invalid phone number', async () => {
     const job = await insertJob(t);
     const res = await applyForm(fields(job.id, { phone: '12345' }));
@@ -130,12 +144,17 @@ describe('POST /api/applications', () => {
     expect(rows[0].createdAt).toEqual(t.clock.now);
   });
 
-  it('puts a re-applied application back to "new" for HR', async () => {
+  it('keeps the status and note HR set when the candidate re-applies, moving it to the top (BR-07)', async () => {
     const job = await insertJob(t);
-    await applyForm(fields(job.id));
-    await t.db.update(applications).set({ status: 'rejected' });
-    await applyForm(fields(job.id));
-    expect((await t.db.select().from(applications))[0].status).toBe('new');
+    await applyForm(fields(job.id, { message: 'Bản đầu' }));
+    await t.db.update(applications).set({ status: 'interview', note: 'Hẹn thứ 5' });
+    t.clock.now = new Date(t.clock.now.getTime() + 2 * 24 * 60 * 60 * 1000);
+
+    await applyForm(fields(job.id, { message: 'Bản mới' }));
+
+    const [row] = await t.db.select().from(applications);
+    expect(row).toMatchObject({ status: 'interview', note: 'Hẹn thứ 5', message: 'Bản mới' });
+    expect(row.createdAt).toEqual(t.clock.now);
   });
 
   it('counts the 30 days in Vietnam calendar days', async () => {
@@ -173,10 +192,10 @@ describe('POST /api/applications', () => {
   });
 
   it('refuses closed jobs with code job_closed', async () => {
-    const filled = await insertJob(t, { state: 'filled' });
-    const paused = await insertJob(t, { state: 'paused' });
+    const closed = await insertJob(t, { state: 'closed', closedOn: '2026-10-19' });
+    const expired = await insertJob(t, { deadline: '2026-10-19' });
     const draft = await insertJob(t, { state: 'draft' });
-    for (const job of [filled, paused, draft]) {
+    for (const job of [closed, expired, draft]) {
       const res = await applyForm(fields(job.id));
       expect(res.status).toBe(409);
       expect(await res.json()).toMatchObject({ code: 'job_closed' });
@@ -184,20 +203,22 @@ describe('POST /api/applications', () => {
     expect(await t.db.select().from(applications)).toEqual([]);
   });
 
-  it('accepts a form opened before the deadline for 60 more minutes', async () => {
+  it('accepts applications until 23:59 Vietnam time on the deadline day', async () => {
     const job = await insertJob(t, { deadline: '2026-10-20' });
-    const openedAt = new Date('2026-10-20T16:50:00.000Z').getTime(); // 23:50 Vietnam
-    t.clock.now = new Date('2026-10-20T17:30:00.000Z'); // 00:30 next day
-    expect((await applyForm(fields(job.id, { formOpenedAt: openedAt }))).status).toBe(200);
-    t.clock.now = new Date('2026-10-20T18:01:00.000Z'); // 01:01 next day
-    expect((await applyForm(fields(job.id, { formOpenedAt: openedAt }))).status).toBe(409);
+    t.clock.now = new Date('2026-10-20T16:59:00.000Z'); // 23:59 Vietnam
+    expect((await applyForm(fields(job.id))).status).toBe(200);
   });
 
-  it('does not give the grace period to a form opened after the deadline', async () => {
+  it('refuses an application sent after the deadline, even from a form opened before it', async () => {
     const job = await insertJob(t, { deadline: '2026-10-20' });
-    t.clock.now = new Date('2026-10-20T17:10:00.000Z');
-    const res = await applyForm(fields(job.id, { formOpenedAt: t.clock.now.getTime() }));
+    const openedAt = new Date('2026-10-20T16:50:00.000Z').getTime(); // 23:50 Vietnam
+    t.clock.now = new Date('2026-10-20T17:01:00.000Z'); // 00:01 next day
+
+    const res = await applyForm(fields(job.id, { formOpenedAt: openedAt }));
+
     expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ code: 'job_closed' });
+    expect(await t.db.select().from(applications)).toEqual([]);
   });
 
   it('answers 404 for an unknown or malformed job id', async () => {
@@ -267,8 +288,8 @@ describe('POST /api/subscribers', () => {
     expect((await t.db.select().from(subscribers))[0].fromJobId).toBeNull();
   });
 
-  it('rejects departments outside the list', async () => {
-    const res = await subscribe({ phone: '0912000111', department: 'Bếp', consent: true });
+  it('rejects an empty department', async () => {
+    const res = await subscribe({ phone: '0912000111', department: ' ', consent: true });
     expect(res.status).toBe(422);
   });
 

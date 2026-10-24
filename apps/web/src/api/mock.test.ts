@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { addDays as addDaysIso } from '@careers/shared';
 import { mockApi, resetMockDb } from './mock';
-import { DEMO_HR } from './mock-seed';
+import { DEMO_CANDIDATE_EMAIL, DEMO_HR } from './mock-seed';
 import { ApiError } from './types';
 
 const base = {
@@ -13,7 +13,6 @@ const base = {
   cvLink: 'https://drive.google.com/cv',
   cvFile: null,
   consent: true,
-  keepForOtherJobs: false,
   formOpenedAt: Date.now(),
 } as const;
 
@@ -69,15 +68,6 @@ describe('apply', () => {
   });
 });
 
-describe('subscribe', () => {
-  it('needs its own consent (BR-10)', async () => {
-    const err = await rejection(
-      run(mockApi.subscribe({ phone: '0912000111', department: 'Kinh doanh', consent: false })),
-    );
-    expect(err.status).toBe(422);
-  });
-});
-
 describe('hr', () => {
   it('signs HR in only with the right password', async () => {
     const err = await rejection(run(mockApi.hrSignIn(DEMO_HR.email, 'sai')));
@@ -88,15 +78,6 @@ describe('hr', () => {
   it('blocks HR endpoints without a session', async () => {
     const err = await rejection(run(mockApi.hrJobs()));
     expect(err.status).toBe(401);
-  });
-
-  it('lists jobs with an extension target only when allowed', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
-    const { jobs } = await run(mockApi.hrJobs());
-    const expiring = jobs.find((j) => j.id === 'j3')!;
-    expect(expiring.status).toBe('expiring');
-    expect(expiring.extendTo).toBeTruthy();
-    expect(jobs.find((j) => j.id === 'j1')!.extendTo).toBeNull();
   });
 
   it('opening an application marks it seen', async () => {
@@ -112,7 +93,6 @@ describe('hr', () => {
       run(
         mockApi.hrSaveJob('j7', {
           ...job,
-          department: job.department as 'Vận hành',
           deadline: '2099-01-01',
           intent: 'publish',
         }),
@@ -150,37 +130,125 @@ describe('editing live jobs', () => {
     );
     expect(saved.slug).toBe(job.slug);
   });
+});
 
-  it('cannot push the deadline past 60 days from publishing by editing (BR-18)', async () => {
+describe('re-applying within 30 days (BR-07)', () => {
+  it('keeps the HR status and moves the application to the top', async () => {
+    const [job] = (await run(mockApi.listJobs())).jobs;
+    const input = { ...base, jobId: job.id, phone: '0933111222' };
+    await run(mockApi.apply(input));
     await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
-    const job = await run(mockApi.hrJob('j3')); // published 20 days ago
-    const err = await rejection(
-      run(
-        mockApi.hrSaveJob('j3', {
-          ...job,
-          department: 'Nhân sự',
-          deadline: addDaysIso(job.deadline, 45),
-          intent: 'draft',
-        }),
-      ),
-    );
-    expect(err.fieldErrors.deadline).toBeTruthy();
+    const first = (await run(mockApi.hrApplications())).applications.find((a) => a.phone === '0933111222')!;
+    await run(mockApi.hrUpdateApplication(first.id, { status: 'interview' }));
+
+    await run(mockApi.apply(input));
+
+    const [top] = (await run(mockApi.hrApplications())).applications;
+    expect(top).toMatchObject({ id: first.id, status: 'interview' });
+  });
+});
+
+describe('closing and reopening jobs', () => {
+  it('closes a live job and reopens it with a new deadline', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrJobAction('j1', 'close'));
+    expect((await run(mockApi.hrJob('j1'))).status).toBe('closed');
+
+    await run(mockApi.hrSetDeadline('j1', addDaysIso(new Date().toISOString().slice(0, 10), 20)));
+
+    expect((await run(mockApi.hrJob('j1'))).status).toBe('open');
+  });
+
+  it('refuses a new deadline more than 60 days away', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const err = await rejection(run(mockApi.hrSetDeadline('j10', '2099-01-01')));
+    expect(err.status).toBe(422);
+  });
+});
+
+describe('deleting applications', () => {
+  it('deletes only applications of jobs that ended more than 30 days ago', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const before = await run(mockApi.hrJobs());
+    expect(before.dueForDeletion).toBeGreaterThan(0);
+
+    const { deleted } = await run(mockApi.hrDeleteDueApplications());
+
+    expect(deleted).toBe(before.dueForDeletion);
+    expect((await run(mockApi.hrJobs())).dueForDeletion).toBe(0);
+    expect((await run(mockApi.hrApplications())).applications.some((a) => a.id === 'a1')).toBe(true);
+  });
+
+  it('deletes one application', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    await run(mockApi.hrDeleteApplication('a2'));
+    expect((await run(mockApi.hrApplications())).applications.some((a) => a.id === 'a2')).toBe(false);
+  });
+});
+
+describe('HR accounts', () => {
+  it('creates an account with a one-time password that can sign in', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const { password } = await run(mockApi.hrCreateUser({ email: 'Moi@Lee-HR.com', name: 'Người mới' }));
+    await run(mockApi.hrLogout());
+
+    expect(await run(mockApi.hrSignIn('moi@lee-hr.com', password))).toMatchObject({ email: 'moi@lee-hr.com' });
+  });
+
+  it('never deletes the account in use', async () => {
+    const me = await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const err = await rejection(run(mockApi.hrDeleteUser(me.id)));
+    expect(err.status).toBe(422);
+  });
+});
+
+describe('search', () => {
+  it('finds applications by name without tones or by part of the phone', async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
+    const byName = await run(mockApi.hrApplications(undefined, 'tran minh anh'));
+    const byPhone = await run(mockApi.hrApplications(undefined, '345 128'));
+    expect(byName.applications.every((a) => a.fullName === 'Trần Minh Anh')).toBe(true);
+    expect(byName.applications.length).toBeGreaterThan(0);
+    expect(byPhone.applications.map((a) => a.id).sort()).toEqual(byName.applications.map((a) => a.id).sort());
+  });
+});
+
+describe('lookup by phone', () => {
+  it('lists job, date and stage for the number, without personal data', async () => {
+    const { applications } = await run(mockApi.lookupApplications('0912 345 128'));
+    expect(applications.length).toBeGreaterThan(0);
+    expect(Object.keys(applications[0]).sort()).toEqual(['appliedOn', 'jobSlug', 'jobTitle', 'stage']);
+  });
+
+  it('rejects an invalid number', async () => {
+    expect((await rejection(run(mockApi.lookupApplications('12')))).status).toBe(422);
   });
 });
 
 describe('candidate', () => {
-  it('signs in with the demo OTP and sees own applications', async () => {
-    await run(mockApi.verifyOtp('0912 345 128', '123456'));
+  it('signs in with Google and sees the applications sent with that email', async () => {
+    const me = await run(mockApi.googleSignIn());
+    expect(me.email).toBe(DEMO_CANDIDATE_EMAIL);
     const overview = await run(mockApi.candidateOverview());
-    expect(overview?.applications.length).toBeGreaterThan(0);
+    expect(overview?.applications).toHaveLength(3);
     expect(overview?.applications.every((a) => a.stage !== ('rejected' as never))).toBe(true);
   });
 
-  it('deleting data removes applications (BR-14)', async () => {
-    await run(mockApi.verifyOtp('0912345128', '123456'));
+  it('needs a phone before turning job alerts on (BR-10)', async () => {
+    await run(mockApi.googleSignIn());
+    await run(mockApi.updateCandidate({ phone: '', alertDepartments: [] }));
+    const err = await rejection(run(mockApi.updateCandidate({ alertDepartments: ['Kỹ thuật'] })));
+    expect(err.fieldErrors.alertDepartments).toBeTruthy();
+    const me = await run(mockApi.updateCandidate({ phone: '0912 345 128', alertDepartments: ['Kỹ thuật'] }));
+    expect(me.alertDepartments).toEqual(['Kỹ thuật']);
+  });
+
+  it('deleting data removes the applications sent with the email (BR-14)', async () => {
+    await run(mockApi.googleSignIn());
     await run(mockApi.deleteCandidateData());
     await run(mockApi.hrSignIn(DEMO_HR.email, DEMO_HR.password));
     const { applications } = await run(mockApi.hrApplications());
-    expect(applications.some((a) => a.phone === '0912345128')).toBe(false);
+    expect(applications.some((a) => a.fullName === 'Trần Minh Anh')).toBe(false);
+    expect(await run(mockApi.candidateOverview())).toBeNull();
   });
 });

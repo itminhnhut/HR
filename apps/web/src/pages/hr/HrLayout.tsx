@@ -17,21 +17,22 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { to: '/hr', label: 'Tin tuyển dụng', icon: 'briefcase' },
+  { to: '/hr', label: 'Tổng quan', icon: 'bars', end: true },
+  { to: '/hr/tin', label: 'Tin tuyển dụng', icon: 'briefcase' },
   { to: '/hr/ho-so', label: 'Hồ sơ ứng viên', icon: 'inbox', badge: true },
-  { to: '/hr/nguoi-cho-tin', label: 'Người chờ tin', icon: 'bell' },
+  { to: '/hr/mau-tin', label: 'Mẫu tin', icon: 'file' },
+  { to: '/hr/tai-khoan', label: 'Tài khoản HR', icon: 'users' },
 ];
 
 /** Title for the phone top bar, from the current section. */
 function sectionTitle(pathname: string): string {
-  if (pathname.startsWith('/hr/ho-so')) return 'Hồ sơ ứng viên';
-  if (pathname.startsWith('/hr/nguoi-cho-tin')) return 'Người chờ tin';
-  return 'Tin tuyển dụng';
+  const match = [...NAV].reverse().find((item) => isActive(item, pathname));
+  return match?.label ?? 'Tổng quan';
 }
 
 /** "Tin tuyển dụng" stays active while editing a job under /hr/tin/…. */
 function isActive(item: NavItem, pathname: string): boolean {
-  if (item.to === '/hr') return pathname === '/hr' || pathname === '/hr/' || pathname.startsWith('/hr/tin');
+  if (item.end) return pathname === item.to || pathname === `${item.to}/`;
   return pathname.startsWith(item.to);
 }
 

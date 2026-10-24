@@ -1,11 +1,4 @@
-import {
-  EMPLOYMENT_TYPE_LABEL,
-  formatDate,
-  formatSalary,
-  isListed,
-  jobPostingData,
-  locationLabel,
-} from '@careers/shared';
+import { placeLabel, EMPLOYMENT_TYPE_LABEL, formatDate, formatSalary, isListed, jobPostingData } from '@careers/shared';
 import { eq } from 'drizzle-orm';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../app.js';
@@ -46,7 +39,7 @@ async function sharePage(c: Context<Env>, slug: string) {
   const listed = isListed(job.status);
   const url = `${config.siteUrl}/viec-lam/${job.slug}`;
   const title = `${job.title} – ${config.companyName}`;
-  const summary = `${formatSalary(job)} · ${locationLabel(job)} · ${EMPLOYMENT_TYPE_LABEL[job.employmentType]} · Hạn nộp ${formatDate(job.deadline)}`;
+  const summary = `${formatSalary(job)} · ${placeLabel(job.address)} · ${EMPLOYMENT_TYPE_LABEL[job.employmentType]} · Hạn nộp ${formatDate(job.deadline)}`;
   // BR-05: a closed job keeps its page; BR-16: but drops out of Google for Jobs.
   const description = listed ? summary : `Vị trí này đã ngừng nhận hồ sơ. ${summary}`;
   // "</" inside JSON would end the script tag early.
@@ -108,6 +101,7 @@ shareRoutes.get('/robots.txt', (c) => {
       'Disallow: /api',
       'Disallow: /ho-so-cua-toi',
       'Disallow: /dang-nhap',
+      'Disallow: /tra-cuu-ho-so',
       `Sitemap: ${config.siteUrl}/sitemap.xml`,
       '',
     ].join('\n'),

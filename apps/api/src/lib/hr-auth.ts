@@ -19,6 +19,15 @@ export async function currentHr(c: Context<Env>): Promise<HrMe | null> {
 }
 
 export const requireHr: MiddlewareHandler<Env> = async (c, next) => {
-  if (!(await currentHr(c))) throw new HttpError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
+  const me = await currentHr(c);
+  if (!me) throw new HttpError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
+  c.set('hr', me);
   await next();
 };
+
+/** The HR account of a request that passed requireHr. */
+export function hrOf(c: Context<Env>): HrMe {
+  const me = c.get('hr');
+  if (!me) throw new HttpError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
+  return me;
+}

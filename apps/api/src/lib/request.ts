@@ -3,6 +3,9 @@ import { HttpError } from './http-error.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** Emails are compared lowercase and trimmed everywhere (HR logins, Google accounts, applications). */
+export const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
 /** Ids from the URL or body are checked before they reach Postgres, which rejects malformed uuids loudly. */
 export const isUuid = (value: unknown): value is string => typeof value === 'string' && UUID.test(value);
 
