@@ -5,3 +5,5 @@ dist
 .vercel
 .data
 .env.vercel
+.env.*
+!.env.example
