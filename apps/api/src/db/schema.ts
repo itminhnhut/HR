@@ -159,8 +159,6 @@ export const hrUsers = pgTable(
     name: text('name'),
     /** scrypt, see lib/password.ts. */
     passwordHash: text('password_hash').notNull(),
-    failedAttempts: integer('failed_attempts').notNull().default(0),
-    lockedUntil: tz('locked_until'),
     lastLoginAt: tz('last_login_at'),
     /** Filled into message templates as {SĐT HR}. */
     phone: text('phone'),

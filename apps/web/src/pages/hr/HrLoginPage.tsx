@@ -1,8 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
-import { isDemo } from '../../api';
-import { demoHrPassword } from '../../api/mock';
-import { DEMO_HR } from '../../api/mock-seed';
+import { demoHrSignIn } from '../../api';
 import { useHrMe, useHrSignIn } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { SITE } from '../../lib/site';
@@ -51,12 +49,46 @@ function Brand() {
   );
 }
 
+function SignInError({ error }: { error: unknown }) {
+  return (
+    <Notice tone="error" icon="alert">
+      {errorMessage(error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
+    </Notice>
+  );
+}
+
+/** Demo mode only: the demo account, read once rather than on every keystroke. */
+function DemoHint() {
+  const [demo] = useState(demoHrSignIn);
+  if (!demo) return null;
+  return (
+    <span className="text-xs text-muted">
+      Bản chạy thử: {demo.email} / {demo.password}
+    </span>
+  );
+}
+
+function PasswordField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <TextField
+      label="Mật khẩu"
+      type={shown ? 'text' : 'password'}
+      name="password"
+      autoComplete="current-password"
+      required
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      trailing={<ShowPasswordToggle shown={shown} onToggle={() => setShown((v) => !v)} />}
+    />
+  );
+}
+
 function HrLoginForm() {
   const signIn = useHrSignIn();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -72,11 +104,7 @@ function HrLoginForm() {
 
   return (
     <>
-      {signIn.error && (
-        <Notice tone="error" icon="alert">
-          {errorMessage(signIn.error, 'Chưa đăng nhập được, thử lại sau ít phút.')}
-        </Notice>
-      )}
+      {signIn.error && <SignInError error={signIn.error} />}
       <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
         <TextField
           label="Email"
@@ -88,24 +116,11 @@ function HrLoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <TextField
-          label="Mật khẩu"
-          type={showPassword ? 'text' : 'password'}
-          name="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          trailing={<ShowPasswordToggle shown={showPassword} onToggle={() => setShowPassword((v) => !v)} />}
-        />
+        <PasswordField value={password} onChange={setPassword} />
         <Button type="submit" size="lg" disabled={signIn.isPending || !email.trim() || !password}>
           {signIn.isPending ? 'Đang đăng nhập…' : 'Đăng nhập'}
         </Button>
-        {isDemo && (
-          <span className="text-xs text-muted">
-            Bản chạy thử: {DEMO_HR.email} / {demoHrPassword()}
-          </span>
-        )}
+        <DemoHint />
       </form>
     </>
   );

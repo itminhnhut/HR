@@ -35,7 +35,16 @@ import {
   type JobCardDto,
   type JobDetailDto,
 } from '@careers/shared';
-import { buildSeed, DB_VERSION, DEMO_CANDIDATE_EMAIL, type MockDb, type MockHrUser, type MockJob } from './mock-seed';
+import {
+  buildSeed,
+  DB_VERSION,
+  DEMO_CANDIDATE_EMAIL,
+  DEMO_HR,
+  randomPassword,
+  type MockDb,
+  type MockHrUser,
+  type MockJob,
+} from './mock-seed';
 import { ApiError, type Api } from './types';
 
 const STORAGE_KEY = 'careers-demo-db';
@@ -214,12 +223,6 @@ const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
 });
 
 /** Like the BE's generatePassword: three groups of five letters and digits. */
-function tempPassword(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
-  const group = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  return `${group()}-${group()}-${group()}`;
-}
-
 /** Jobs that ended more than 30 days ago: their applications are due for deletion (same rule as the BE). */
 function dueJobIds(db: MockDb, now = new Date()): string[] {
   const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
@@ -841,7 +844,7 @@ export const mockApi: Api = {
       id: uid('u'),
       email: clean,
       name: name.trim() || null,
-      password: tempPassword(),
+      password: randomPassword(),
       lastLoginAt: null,
       phone: null,
       contactEmail: null,
@@ -857,7 +860,7 @@ export const mockApi: Api = {
     const user = db.hrUsers.find((u) => u.id === id);
     if (!user) return fail(404, 'Không tìm thấy tài khoản.');
     if (user.id === me.id) return fail(422, 'Đổi mật khẩu của bạn ở mục "Đổi mật khẩu".');
-    user.password = tempPassword();
+    user.password = randomPassword();
     save();
     return delay({ user: toUserDto(user, me), password: user.password });
   },
@@ -942,9 +945,9 @@ function messageTemplatesOf(db: MockDb) {
   };
 }
 
-/** Demo mode only: the per-browser HR password, shown on the HR sign-in page. */
+/** Demo mode only: the per-browser password of the demo HR account; '' once that account is deleted. */
 export function demoHrPassword(): string {
-  return load().hrUsers[0]?.password ?? '';
+  return load().hrUsers.find((u) => u.email === DEMO_HR.email)?.password ?? '';
 }
 
 /** Test helper: start from a fresh seed. */

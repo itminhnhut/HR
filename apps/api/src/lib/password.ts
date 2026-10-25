@@ -20,6 +20,9 @@ export async function hashPassword(password: string): Promise<string> {
   return ['scrypt', PARAMS.N, PARAMS.r, PARAMS.p, salt.toString('base64'), key.toString('base64')].join('$');
 }
 
+/** Bytes scrypt allocates, as OpenSSL counts them against `maxmem`: V (128·r·(N+2)) plus B (128·r·p). */
+const scryptMemory = (N: number, r: number, p: number) => 128 * r * (N + 2) + 128 * r * p;
+
 /** Cost settings a stored hash may carry: anything else is treated as a wrong password, never as an error. */
 function storedParams(n: string, r: string, p: string): ScryptOptions | null {
   const N = Number(n);
@@ -36,7 +39,7 @@ function storedParams(n: string, r: string, p: string): ScryptOptions | null {
     Number.isInteger(P) &&
     P >= 1 &&
     P <= 4 &&
-    128 * N * R <= MAX_MEMORY;
+    scryptMemory(N, R, P) <= MAX_MEMORY;
   return valid ? { N, r: R, p: P } : null;
 }
 

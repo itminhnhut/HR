@@ -64,6 +64,13 @@
       "when": 1792936777460,
       "tag": "0008_cv_scores",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792939711345,
+      "tag": "0009_drop_hr_lock_columns",
+      "breakpoints": true
     }
   ]
 }

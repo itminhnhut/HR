@@ -15,7 +15,7 @@ const DAY = 24 * 60 * 60 * 1000;
 let ip = 0;
 /** A fresh IP per call unless given, so per-IP limits only matter where a test means them to. */
 const lookup = (phone: string, from = `10.0.0.${++ip}`) =>
-  t.send('POST', '/api/applications/lookup', { phone }, { 'x-forwarded-for': `${from}, 10.0.0.254` });
+  t.send('POST', '/api/applications/lookup', { phone }, { 'x-forwarded-for': `198.51.100.250, ${from}` });
 
 async function applied(job: Job, overrides: Partial<typeof applications.$inferInsert> = {}) {
   await t.db.insert(applications).values({

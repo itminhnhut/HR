@@ -76,6 +76,38 @@ describe('hr', () => {
     expect(await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()))).toMatchObject({ email: DEMO_HR.email });
   });
 
+  it("should never show another account's password as the demo sign-in", async () => {
+    // Arrange: a second HR account signs in and deletes the demo account.
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
+    const other = await run(mockApi.hrCreateUser({ email: 'ban@congty.vn', name: 'Bạn' }));
+    await run(mockApi.hrSignIn('ban@congty.vn', other.password));
+    const demo = (await run(mockApi.hrUsers())).find((u) => u.email === DEMO_HR.email);
+    await run(mockApi.hrDeleteUser(demo?.id ?? ''));
+
+    // Act
+    const shown = demoHrPassword();
+
+    // Assert
+    expect(shown).not.toBe(other.password);
+    expect(shown).toBe('');
+  });
+
+  it('should replace demo data saved by an older version, so its public demo password stops working', async () => {
+    // Arrange: what browsers kept from the version that shipped a fixed password.
+    localStorage.setItem(
+      'careers-demo-db',
+      JSON.stringify({ version: 7, hrUsers: [{ email: DEMO_HR.email, password: 'Demo-Lee-HR-2026' }] }),
+    );
+    vi.resetModules();
+
+    // Act
+    const fresh = await import('./mock');
+
+    // Assert
+    expect(fresh.demoHrPassword()).not.toBe('Demo-Lee-HR-2026');
+    expect(fresh.demoHrPassword()).toMatch(/^Demo-/);
+  });
+
   it('blocks HR endpoints without a session', async () => {
     const err = await rejection(run(mockApi.hrJobs()));
     expect(err.status).toBe(401);

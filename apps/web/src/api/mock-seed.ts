@@ -416,10 +416,22 @@ export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
  * The sign-in page shows it in demo mode only.
  */
 function randomDemoPassword(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-  const bytes = crypto.getRandomValues(new Uint8Array(15));
-  const text = Array.from(bytes, (b) => chars[b % chars.length]).join('');
-  return `Demo-${text.slice(0, 5)}-${text.slice(5, 10)}-${text.slice(10)}`;
+  return `Demo-${randomPassword()}`;
+}
+
+const PASSWORD_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+
+/** 3 groups of 5 characters without look-alikes, from crypto randomness with no character more likely. */
+export function randomPassword(): string {
+  // Bytes at or above the largest multiple of the alphabet size are skipped, so `b % size` stays uniform.
+  const limit = 256 - (256 % PASSWORD_CHARS.length);
+  const chars: string[] = [];
+  while (chars.length < 15) {
+    for (const b of crypto.getRandomValues(new Uint8Array(32))) {
+      if (b < limit && chars.length < 15) chars.push(PASSWORD_CHARS[b % PASSWORD_CHARS.length]);
+    }
+  }
+  return [0, 5, 10].map((i) => chars.slice(i, i + 5).join('')).join('-');
 }
 /** The demo "Google" account: Trần Minh Anh, who applied with this email. */
 export const DEMO_CANDIDATE_EMAIL = 'minhanh@email.com';

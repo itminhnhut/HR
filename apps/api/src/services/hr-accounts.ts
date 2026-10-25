@@ -4,7 +4,7 @@ import { z } from 'zod';
 import type { Db } from '../db/index.js';
 import { hrUsers, type HrUser } from '../db/schema.js';
 import { HttpError } from '../lib/http-error.js';
-import { clearSlots, enforceLimits, takeSlot } from '../lib/rate-limit.js';
+import { clearKey, clearSlots, releaseSlot, takeSlots, UNKNOWN_IP, type Limit } from '../lib/rate-limit.js';
 import { normalizeEmail } from '../lib/request.js';
 import { dummyHash, hashPassword, needsRehash, passwordProblem, verifyPassword } from '../lib/password.js';
 
@@ -41,25 +41,50 @@ function locked(until: Date, now: Date): HttpError {
   );
 }
 
+/** Lifts every sign-in lock on this email (a new password should work straight away). */
+export async function unlockHrSignIn(db: Db, email: string): Promise<void> {
+  await clearSlots(db, `${failureKey(email)}:`);
+}
+
 /**
- * Every attempt first takes a per-device slot and a per-email failure slot (atomically), so parallel guesses
- * cannot check more than 5 passwords per account in 15 minutes. A success gives the failure slots back.
+ * Takes this attempt's slots in one transaction before any password is checked, so parallel guesses cannot
+ * check more than 5 passwords per account and device. The 5th wrong one locks that device for 15 minutes.
+ * A refused attempt takes nothing. Returns the device count and a way to give the slots back after a success.
  */
+async function takeLoginSlots(db: Db, email: string, ip: string, now: Date) {
+  const overallKey = `${failureKey(email)}:all`;
+  const deviceKey = deviceFailureKey(email, ip);
+  const ipKey = `hr-login:ip:${ip}`;
+  // Every password check costs CPU, so a device has a budget whatever email it tries. Without an address
+  // all clients would share it, and anyone could block every HR: then only the per-email limits apply.
+  const perIp: Limit[] = ip === UNKNOWN_IP ? [] : [{ key: ipKey, max: MAX_ATTEMPTS_PER_IP, windowMs: LOCK_MS }];
+  const slots = await takeSlots(
+    db,
+    [
+      { key: overallKey, max: MAX_FAILED_PER_EMAIL, windowMs: EMAIL_WINDOW_MS },
+      { key: deviceKey, max: MAX_FAILED_LOGINS, windowMs: LOCK_MS, lockout: true },
+      ...perIp,
+    ],
+    now,
+  );
+  if (!slots.ok) throw slots.key === ipKey ? new HttpError(429, TOO_MANY_FROM_DEVICE) : locked(slots.freeAt, now);
+  return {
+    /** True when this attempt was the last allowed one: a wrong password now locks the device. */
+    isLast: (slots.used[deviceKey] ?? 0) >= MAX_FAILED_LOGINS,
+    /** After a success: this attempt is not a failure, and the HR's own device starts afresh. */
+    succeeded: async () => {
+      await releaseSlot(db, overallKey, now);
+      if (perIp.length) await releaseSlot(db, ipKey, now);
+      await clearKey(db, deviceKey);
+    },
+  };
+}
+
 export async function signIn(db: Db, raw: unknown, now: Date, ip: string): Promise<HrUser> {
   const parsed = loginSchema.safeParse(raw);
   if (!parsed.success) throw new HttpError(422, 'Nhập email và mật khẩu.');
   const { email, password } = parsed.data;
-  await enforceLimits(
-    db,
-    [{ key: `hr-login:ip:${ip}`, max: MAX_ATTEMPTS_PER_IP, windowMs: LOCK_MS }],
-    now,
-    TOO_MANY_FROM_DEVICE,
-  );
-  const key = failureKey(email);
-  const overall = await takeSlot(db, `${key}:all`, MAX_FAILED_PER_EMAIL, EMAIL_WINDOW_MS, now);
-  if (!overall.ok) throw locked(overall.freeAt, now);
-  const slot = await takeSlot(db, deviceFailureKey(email, ip), MAX_FAILED_LOGINS, LOCK_MS, now);
-  if (!slot.ok) throw locked(slot.freeAt, now);
+  const slots = await takeLoginSlots(db, email, ip, now);
 
   const user = await findHrUser(db, email);
   // Unknown emails do the same work as a real check, so response time does not reveal which emails exist.
@@ -67,11 +92,11 @@ export async function signIn(db: Db, raw: unknown, now: Date, ip: string): Promi
     ? await verifyPassword(password, user.passwordHash)
     : (await verifyPassword(password, await dummyHash()), false);
   if (!user || !valid) {
-    if (slot.used >= MAX_FAILED_LOGINS) throw locked(new Date(slot.oldestAt.getTime() + LOCK_MS), now);
+    if (slots.isLast) throw locked(new Date(now.getTime() + LOCK_MS), now);
     throw new HttpError(401, WRONG);
   }
 
-  await clearSlots(db, `${key}:`);
+  await slots.succeeded();
   const upgrade = needsRehash(user.passwordHash) ? { passwordHash: await hashPassword(password) } : {};
   const [fresh] = await db
     .update(hrUsers)
@@ -98,14 +123,16 @@ export async function upsertHrUser(db: Db, input: { email: string; name?: string
   if (problem) throw new Error(problem);
   const email = normalizeEmail(input.email);
   const passwordHash = await hashPassword(input.password);
+  // "--name ''" means no name: the UI then shows the email.
+  const name = input.name?.trim() || null;
   const [user] = await db
     .insert(hrUsers)
-    .values({ email, name: input.name ?? null, passwordHash })
+    .values({ email, name, passwordHash })
     .onConflictDoUpdate({
       target: hrUsers.email,
-      set: { passwordHash, ...(input.name !== undefined ? { name: input.name } : {}) },
+      set: { passwordHash, ...(input.name !== undefined ? { name } : {}) },
     })
     .returning();
-  await clearSlots(db, `${failureKey(email)}:`);
+  await unlockHrSignIn(db, email);
   return user;
 }
