@@ -1,0 +1,13 @@
+{
+  "id": "c17-cv-without-diacritics",
+  "notes": "Whole CV typed without Vietnamese diacritics; requirements have diacritics. Matching must be accent-insensitive. 05/2022 - nay = 4y5m sales.",
+  "cvText": "TRAN THI HONG NHUNG\nNhan vien ban hang\nSDT: 0915 222 777 - Email: hongnhung.tran@example.com\n\nKINH NGHIEM LAM VIEC\n05/2022 - nay: Nhan vien ban hang - Cua hang Dien thoai Minh Khoa\n  - Tu van ban hang dien thoai, phu kien\n  - Dat top 3 doanh so cua hang nam 2024\n\nHOC VAN\nCao dang Su pham Trung uong - Quan tri van phong (2018 - 2021)\n\nKY NANG\nTin hoc van phong: Word, Excel\nTieng Anh giao tiep co ban\n",
+  "requirements": [
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Học vấn: Cao đẳng trở lên",
+    "Thành thạo tin học văn phòng (Word, Excel)",
+    "Trung thực, cẩn thận"
+  ],
+  "expected": ["met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

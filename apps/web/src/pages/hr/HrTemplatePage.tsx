@@ -23,6 +23,69 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   );
 }
 
+/** Editable list of choices: remove with ×, add by typing. */
+function ChoiceList({
+  label,
+  items,
+  max = 60,
+  onChange,
+}: {
+  label: string;
+  items: string[];
+  max?: number;
+  onChange: (items: string[]) => void;
+}) {
+  const [draft, setDraft] = useState('');
+  const add = () => {
+    const value = draft.trim().slice(0, max);
+    if (!value || items.includes(value)) return;
+    onChange([...items, value]);
+    setDraft('');
+  };
+  return (
+    <div className="flex flex-col gap-2.5">
+      <span className="text-sm font-medium text-navy">{label}</span>
+      <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
+        {items.map((item) => (
+          <li
+            key={item}
+            className="inline-flex items-center gap-1 rounded-full bg-tint py-1 pl-3 pr-1 text-[13px] text-navy"
+          >
+            {item}
+            <button
+              type="button"
+              aria-label={`Bỏ ${item}`}
+              onClick={() => onChange(items.filter((x) => x !== item))}
+              className="flex size-7 items-center justify-center rounded-full border-0 bg-transparent text-slate hover:bg-white hover:text-error"
+            >
+              <Icon name="x" size={13} stroke={1.8} />
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="flex gap-2">
+        <input
+          aria-label={`Thêm vào ${label.toLowerCase()}`}
+          placeholder="Gõ rồi bấm Thêm"
+          maxLength={max}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              add();
+            }
+          }}
+          className="field-focus min-h-11 min-w-0 flex-1 rounded-control border border-field bg-white px-3.5 text-sm text-navy outline-none"
+        />
+        <Button variant="outline" icon="plus" disabled={!draft.trim()} onClick={add}>
+          Thêm
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function TemplateForm({ initial }: { initial: JobTemplate }) {
   const save = useSaveJobTemplate();
   const [template, setTemplate] = useState(initial);
@@ -129,6 +192,25 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
             Thêm
           </Button>
         </div>
+      </Section>
+
+      <Section
+        title="Lựa chọn trong form đăng tin"
+        hint="Các mục HR chọn ở Phòng ban, Kinh nghiệm, Học vấn và Yêu cầu."
+      >
+        <ChoiceList label="Phòng ban" items={template.departments} onChange={(departments) => patch({ departments })} />
+        <ChoiceList
+          label="Kinh nghiệm"
+          items={template.experiences}
+          onChange={(experiences) => patch({ experiences })}
+        />
+        <ChoiceList label="Học vấn" items={template.educations} onChange={(educations) => patch({ educations })} />
+        <ChoiceList
+          label="Yêu cầu hay dùng"
+          max={200}
+          items={template.requirementOptions}
+          onChange={(requirementOptions) => patch({ requirementOptions })}
+        />
       </Section>
 
       <Section title="Lộ trình 2 tháng thử việc" hint="Nội dung điền sẵn cho từng mốc ở tin mới.">

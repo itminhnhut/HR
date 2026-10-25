@@ -8,11 +8,14 @@ import {
   deleteApplication,
   deleteDueApplications,
   deleteSubscriber,
+  logContact,
+  scoreCvOf,
   listApplications,
   listSubscribers,
   openApplication,
   updateApplication,
 } from '../services/hr-applications.js';
+import { scorePending } from '../services/cv-score.js';
 
 /** Mounted at /api/hr behind requireHr. */
 export const hrApplicationRoutes = new Hono<Env>();
@@ -34,9 +37,21 @@ hrApplicationRoutes.get('/applications/:id', async (c) => {
   return c.json(await openApplication(c.get('deps').db, c.req.param('id')));
 });
 
+/** Scores CV files without an up-to-date result, a batch at a time (the list calls it until none remain). */
+hrApplicationRoutes.post('/applications/score-pending', async (c) => c.json(await scorePending(c.get('deps'))));
+
+hrApplicationRoutes.post('/applications/:id/score', async (c) => {
+  return c.json(await scoreCvOf(c.get('deps'), c.req.param('id')));
+});
+
 hrApplicationRoutes.patch('/applications/:id', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await updateApplication(db, c.req.param('id'), await readJson(c), now(), hrOf(c)));
+});
+
+hrApplicationRoutes.post('/applications/:id/contacts', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await logContact(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
 });
 
 /** Streams the CV from the PRIVATE blob store; the URL only works with an HR session. */

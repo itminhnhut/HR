@@ -38,6 +38,12 @@ export interface JobTemplate {
   benefits: BenefitOption[];
   /** One text per ROADMAP_MILESTONES entry. */
   roadmap: string[];
+  /** Choices in the job form; HR adds more there ("+ Thêm mới") or in "Mẫu tin". */
+  departments: string[];
+  experiences: string[];
+  educations: string[];
+  /** Common requirement lines HR ticks into "Yêu cầu" (one line each). */
+  requirementOptions: string[];
 }
 
 export const DEFAULT_JOB_TEMPLATE: JobTemplate = {
@@ -65,7 +71,25 @@ export const DEFAULT_JOB_TEMPLATE: JobTemplate = {
     'Làm độc lập phần việc chính, thống nhất mục tiêu thử việc với quản lý.',
     'Đánh giá cùng quản lý và ký hợp đồng chính thức.',
   ],
+  departments: DEPARTMENT_SUGGESTIONS,
+  experiences: EXPERIENCE_OPTIONS,
+  educations: EDUCATION_OPTIONS,
+  requirementOptions: [
+    'Giao tiếp rõ ràng, chủ động',
+    'Thành thạo tin học văn phòng (Word, Excel)',
+    'Cẩn thận, trung thực, có trách nhiệm',
+    'Làm việc nhóm tốt',
+    'Chịu được áp lực công việc',
+    'Có laptop cá nhân',
+    'Có phương tiện đi lại',
+    'Đọc hiểu tiếng Anh cơ bản',
+    'Ưu tiên ứng viên có kinh nghiệm trong ngành',
+    'Có thể đi làm ngay',
+  ],
 };
+
+export const CHOICE_MAX = 60;
+export const CHOICES_MAX = 30;
 
 export const standardBenefits = (template: JobTemplate): string[] =>
   template.benefits.filter((b) => b.standard).map((b) => b.label);

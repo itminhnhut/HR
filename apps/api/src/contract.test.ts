@@ -69,7 +69,7 @@ describe('public pages through the FE client', () => {
     expect(page.job.slug).toBe(board.jobs[0].slug);
   });
 
-  it('applies with a PDF, then updates the same application (BR-07)', async () => {
+  it('applies with a PDF; the same form again right away is not a second application', async () => {
     const [job] = (await api.listJobs()).jobs;
     const input = {
       jobId: job.id,
@@ -80,11 +80,13 @@ describe('public pages through the FE client', () => {
       cvLink: '',
       cvFile: pdfFile('An.pdf'),
       consent: true as const,
-      keepForOtherJobs: false,
       formOpenedAt: t.clock.now.getTime(),
     };
-    expect(await api.apply(input)).toMatchObject({ ok: true, firstName: 'An', updatedExisting: false });
-    expect(await api.apply(input)).toMatchObject({ updatedExisting: true });
+    expect(await api.apply(input)).toEqual({ ok: true, firstName: 'An', phone: '0912000111' });
+    await api.apply(input);
+    await signInHr();
+    expect((await api.hrApplications(job.id, '0912000111')).applications).toHaveLength(1);
+    await api.hrLogout();
   });
 
   it('surfaces field errors and the job_closed code as ApiError', async () => {

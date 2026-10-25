@@ -1,4 +1,4 @@
-import type { JobTemplate } from '@careers/shared';
+import type { JobTemplate, MatchItem } from '@careers/shared';
 import {
   boolean,
   jsonb,
@@ -22,6 +22,9 @@ import {
  */
 export const jobState = pgEnum('job_state', ['draft', 'published', 'closed']);
 export const employmentType = pgEnum('employment_type', ['full_time', 'part_time', 'internship']);
+export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
+export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
+export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
 
 const tz = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' });
@@ -87,6 +90,9 @@ export const applications = pgTable(
     status: applicationStatus('status').notNull().default('new'),
     /** When HR set "Hẹn phỏng vấn" with a time. */
     interviewAt: tz('interview_at'),
+    interviewMode: interviewMode('interview_mode'),
+    /** Google Meet (or other) link for an online interview. */
+    meetingUrl: text('meeting_url'),
     note: text('note'),
     noteUpdatedAt: tz('note_updated_at'),
     /** Name (or email) of the HR who last changed the note. */
@@ -156,6 +162,10 @@ export const hrUsers = pgTable(
     failedAttempts: integer('failed_attempts').notNull().default(0),
     lockedUntil: tz('locked_until'),
     lastLoginAt: tz('last_login_at'),
+    /** Filled into message templates as {SĐT HR}. */
+    phone: text('phone'),
+    /** The real mailbox this HR sends from; the sign-in email may not receive mail. */
+    contactEmail: text('contact_email'),
     createdAt,
     updatedAt,
   },
@@ -180,6 +190,45 @@ export const jobTemplates = pgTable('job_template', {
   /** JobTemplate from @careers/shared. */
   data: jsonb('data').$type<JobTemplate>().notNull(),
   updatedAt,
+});
+
+/** HR's own wording of a message template; a missing row means the built-in text. */
+export const messageTemplates = pgTable('message_templates', {
+  key: templateKey('key').primaryKey(),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+  updatedAt,
+});
+
+/** "Đã soạn thư": HR opened a filled template in Gmail / a mail app, or copied it. Goes with the application. */
+export const contactLog = pgTable(
+  'contact_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    templateKey: templateKey('template_key').notNull(),
+    channel: contactChannel('channel').notNull(),
+    hrName: text('hr_name').notNull(),
+    createdAt,
+  },
+  (t) => [index('contact_log_application_idx').on(t.applicationId)],
+);
+
+/** Last automatic CV check of an application against its job's requirements (spec-cv-match.md). */
+export const cvScores = pgTable('cv_scores', {
+  applicationId: uuid('application_id')
+    .primaryKey()
+    .references(() => applications.id, { onDelete: 'cascade' }),
+  percent: integer('percent'),
+  items: jsonb('items').$type<MatchItem[]>().notNull(),
+  note: text('note'),
+  /** Scoring rules version, CV file and requirements the result was made from: any change means re-score. */
+  version: integer('version').notNull(),
+  cvPathname: text('cv_pathname'),
+  requirementsKey: text('requirements_key').notNull(),
+  scoredAt: tz('scored_at').notNull(),
 });
 
 export type Job = typeof jobs.$inferSelect;

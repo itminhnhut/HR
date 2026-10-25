@@ -1,0 +1,14 @@
+{
+  "id": "c34-no-experience-entry-level",
+  "notes": "\"Chưa có kinh nghiệm làm việc\" → sales experience unmet. Basic Word/Excel listed → \"Tin học văn phòng cơ bản\" met. Motorbike not mentioned → unknown.",
+  "cvText": "DƯƠNG THỊ YẾN\nỨng tuyển: Nhân viên bán hàng\nNgày sinh: 14/02/2006   SĐT: 0372 140 206\n\nHỌC VẤN\nTốt nghiệp THPT Lê Quý Đôn (2024)\n\nKINH NGHIỆM\nChưa có kinh nghiệm làm việc\n\nKỸ NĂNG\nWord, Excel cơ bản\n",
+  "requirements": [
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Tin học văn phòng cơ bản",
+    "Có xe máy",
+    "Học vấn: THPT",
+    "Nhiệt tình, vui vẻ"
+  ],
+  "expected": ["unmet", "met", "unknown", "met", "unknown"],
+  "today": "2026-10-25"
+}

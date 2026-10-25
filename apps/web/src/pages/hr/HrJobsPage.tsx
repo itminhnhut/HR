@@ -123,15 +123,22 @@ function ActLink({
   icon,
   to,
   children,
+  title,
   strong = false,
 }: {
   icon: IconName;
   to: string;
   children: ReactNode;
+  /** Tooltip, for the desktop table where only the icon shows. */
+  title?: string;
   strong?: boolean;
 }) {
   return (
-    <Link to={to} className={`${actClass} ${strong ? 'font-medium text-link' : 'text-body hover:text-navy'}`}>
+    <Link
+      to={to}
+      title={title}
+      className={`${actClass} ${strong ? 'font-medium text-link' : 'text-body hover:text-navy'}`}
+    >
       <Icon name={icon} size={16} stroke={1.5} />
       {children}
     </Link>
@@ -173,15 +180,21 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
         </ActButton>
       )}
       {row.totalApplications > 0 && (
-        <ActLink icon="inbox" to={`/hr/ho-so?tin=${row.id}`}>
+        <ActLink icon="inbox" to={`/hr/ho-so?tin=${row.id}`} title="Xem hồ sơ của tin này">
           {/* Desktop table: icon only to keep each row on one line; the label stays for screen readers. */}
           <span className="xl:sr-only">Hồ sơ</span>
+        </ActLink>
+      )}
+      {status !== 'draft' && (
+        <ActLink icon="copy" to={`/hr/tin/moi?tu=${row.id}`} title="Đăng tin mới giống tin này">
+          <span className="xl:sr-only">Nhân bản</span>
         </ActLink>
       )}
       {
         <Link
           to={`/hr/tin/${row.id}`}
           aria-label={`Sửa tin ${row.title}`}
+          title="Sửa tin"
           className="inline-flex size-11 items-center justify-center rounded-control text-body transition-colors hover:bg-tint hover:text-navy lg:size-10"
         >
           <Icon name="pencil" size={17} stroke={1.5} />

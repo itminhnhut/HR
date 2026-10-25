@@ -1,0 +1,13 @@
+{
+  "id": "c26-thpt-below-cao-dang-warehouse",
+  "notes": "Highest education THPT < Cao đẳng → unmet. \"2020 - 2023\" ≥ 1 year. Forklift certificate listed.",
+  "cvText": "KIỀU VĂN LỢI\nCông nhân kho\nSĐT 0396 112 033 | Bình Dương\n\nKINH NGHIỆM\n2020 - 2023   Công nhân kho – Công ty TNHH Bao bì Tân Tiến\n              Bốc xếp, kiểm đếm hàng, lái xe nâng\n\nHỌC VẤN\nTốt nghiệp THPT Dĩ An (2019)\n\nCHỨNG CHỈ\nChứng chỉ vận hành xe nâng hàng (2021)\n",
+  "requirements": [
+    "Học vấn: Cao đẳng trở lên",
+    "Kinh nghiệm: Từ 1 năm",
+    "Có chứng chỉ vận hành xe nâng",
+    "Sức khỏe tốt"
+  ],
+  "expected": ["unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

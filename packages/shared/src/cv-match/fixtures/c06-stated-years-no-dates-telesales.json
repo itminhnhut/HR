@@ -1,0 +1,13 @@
+{
+  "id": "c06-stated-years-no-dates-telesales",
+  "notes": "Experience is only stated as \"2 năm kinh nghiệm\" (jobs listed without dates). \"Từ 1 năm\" met, \"Tối thiểu 3 năm\" unmet. No education section → education unknown.",
+  "cvText": "HOÀNG THỊ LAN\nTelesales\nSĐT 0399 765 432\n\nGIỚI THIỆU\n2 năm kinh nghiệm telesales sản phẩm bảo hiểm và thẻ tín dụng. Giọng nói rõ ràng, chịu khó.\n\nKINH NGHIỆM\n• Nhân viên telesales – Công ty TNHH Bảo hiểm Nhân thọ Hưng Thịnh\n• Nhân viên telesales thẻ tín dụng – Trung tâm dịch vụ Tài chính Ngân Phát\n\nKỸ NĂNG\n- Tin học văn phòng cơ bản\n- Kỹ năng thuyết phục khách hàng\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 1 năm",
+    "Tối thiểu 3 năm kinh nghiệm telesales",
+    "Học vấn: Cao đẳng trở lên",
+    "Giọng nói dễ nghe"
+  ],
+  "expected": ["met", "unmet", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

@@ -1,4 +1,4 @@
-import { and, asc, count, eq, gt, lt, sql } from 'drizzle-orm';
+import { and, asc, count, eq, gt, like, lt, sql } from 'drizzle-orm';
 import type { Context } from 'hono';
 import type { Db } from '../db/index.js';
 import { rateLimitHits } from '../db/schema.js';
@@ -57,12 +57,17 @@ export async function takeSlot(db: Db, key: string, max: number, windowMs: numbe
   });
 }
 
-export async function clearSlots(db: Db, key: string): Promise<void> {
-  await db.delete(rateLimitHits).where(eq(rateLimitHits.key, key));
+/** Gives back every slot whose key starts with `prefix` (e.g. all addresses of one email). */
+export async function clearSlots(db: Db, prefix: string): Promise<void> {
+  await db.delete(rateLimitHits).where(like(rateLimitHits.key, `${prefix.replace(/[%_\\]/g, '\\$&')}%`));
 }
 
-/** Client address as Vercel (and most proxies) report it. Falls back to one shared bucket. */
+/**
+ * Client address. Headers set by the platform come first (Vercel overwrites these), the client-controlled
+ * first hop of x-forwarded-for only as a fallback (local dev, tests). Falls back to one shared bucket.
+ */
 export function clientIp(c: Context): string {
+  const platform = c.req.header('x-vercel-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip');
   const forwarded = c.req.header('x-forwarded-for')?.split(',')[0]?.trim();
-  return forwarded || c.req.header('x-real-ip') || 'unknown';
+  return platform || forwarded || 'unknown';
 }

@@ -1,0 +1,15 @@
+{
+  "id": "c01-sales-one-column-met",
+  "notes": "Simple one-column Vietnamese sales CV. 03/2021 – nay = 5y7m to 2026-10-25. \"Tư vấn bán hàng\" makes the sales experience explicit. HubSpot is a CRM. Soft skills are unknown.",
+  "cvText": "NGUYỄN THỊ MAI ANH\nNhân viên kinh doanh\nSĐT: 0903 456 789  |  Email: maianh.nguyen@example.com\nNgày sinh: 12/04/1997\nĐịa chỉ: Quận Bình Thạnh, TP. Hồ Chí Minh\n\nMỤC TIÊU NGHỀ NGHIỆP\nPhát triển thành chuyên viên kinh doanh B2B, gắn bó lâu dài với doanh nghiệp.\n\nKINH NGHIỆM LÀM VIỆC\n03/2021 – nay\nCông ty TNHH Thương mại Phú Gia\nNhân viên kinh doanh\n• Tư vấn bán hàng, chăm sóc khách hàng doanh nghiệp, quản lý ~120 khách hàng trên HubSpot CRM\n• Lập báo cáo doanh số hằng tuần bằng Excel\n• Đạt 115% chỉ tiêu doanh số năm 2023\n\nHỌC VẤN\n2015 - 2019    Đại học Kinh tế TP. HCM\nChuyên ngành: Quản trị kinh doanh – Tốt nghiệp loại Khá\n\nKỸ NĂNG\n• Tin học văn phòng: Word, Excel, PowerPoint\n• CRM: HubSpot\n• Tiếng Anh giao tiếp\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Học vấn: Đại học trở lên",
+    "Có kinh nghiệm sử dụng CRM",
+    "Giao tiếp rõ ràng, chủ động",
+    "Chịu được áp lực công việc"
+  ],
+  "expected": ["met", "met", "met", "met", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

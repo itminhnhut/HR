@@ -1,0 +1,14 @@
+{
+  "id": "c08-fresh-graduate-internship-only",
+  "notes": "Fresh graduate, says \"Chưa có kinh nghiệm làm việc chính thức\"; only a 3-month internship (07/2025 – 09/2025). \"Từ 1 năm\" unmet whether or not internships count. Laptop not mentioned → unknown (absence of a possession in a CV is no evidence).",
+  "cvText": "TRƯƠNG GIA BẢO\nSinh viên mới tốt nghiệp – Marketing\ngiabao.truong@example.com | 0707 654 321 | Gò Vấp, TP.HCM\nNgày sinh: 20/11/2003\n\nHỌC VẤN\nĐại học Văn Lang — Cử nhân Marketing (2021 – 2025), đã tốt nghiệp, GPA 3.2/4\n\nKINH NGHIỆM\nChưa có kinh nghiệm làm việc chính thức.\nThực tập sinh Marketing – Công ty TNHH Truyền thông Mây Hồng (07/2025 – 09/2025)\n  - Viết nội dung fanpage, thiết kế ấn phẩm bằng Canva\n\nKỸ NĂNG\nPhotoshop, Canva, CapCut, Google Sheets\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 1 năm",
+    "Sử dụng được Photoshop hoặc Canva",
+    "Học vấn: Cao đẳng trở lên",
+    "Có laptop cá nhân",
+    "Chủ động, ham học hỏi"
+  ],
+  "expected": ["unmet", "met", "met", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "c15-keyword-only-in-company-name",
+  "notes": "\"Excel\" appears only in the employer name \"Công ty TNHH Excel Việt Logistics\"; the skills list has Word, PowerPoint only → Excel unmet. Trung cấp < Cao đẳng → unmet. 01/2022 – nay = 4y9m.",
+  "cvText": "LÝ HOÀNG NAM\nNhân viên điều phối kho vận\nSĐT: 0944 100 222\n\nKINH NGHIỆM\n01/2022 – nay\nCông ty TNHH Excel Việt Logistics\nNhân viên điều phối\n- Lên lịch xe giao hàng, theo dõi chứng từ xuất nhập kho trên phần mềm WMS của công ty\n\nHỌC VẤN\nTrung cấp Giao thông vận tải miền Nam – Logistics (2018 – 2020)\n\nKỸ NĂNG\n- Word, PowerPoint\n- Phần mềm quản lý kho WMS\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Thành thạo Excel",
+    "Học vấn: Cao đẳng trở lên",
+    "Có tinh thần trách nhiệm"
+  ],
+  "expected": ["met", "unmet", "unmet", "unknown"],
+  "today": "2026-10-25"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "c16-birth-phone-education-years-not-experience",
+  "notes": "Trap: years appear only in birth date, phone number, student ID and the education range 2019 – 2022. None is work experience, and the CV says \"Chưa có kinh nghiệm\" → \"Từ 2 năm\" unmet. Cao đẳng → \"Cao đẳng trở lên\" met.",
+  "cvText": "CAO MỸ DUYÊN\nNgày sinh: 03/2001\nĐiện thoại: 0987.201.922\nMSSV: 2019 6021\n\nHỌC VẤN\n2019 – 2022   Cao đẳng FPT Polytechnic – Thiết kế đồ hoạ\nTốt nghiệp loại Giỏi\n\nKINH NGHIỆM LÀM VIỆC\nChưa có kinh nghiệm.\nĐồ án tốt nghiệp: bộ nhận diện thương hiệu cho quán trà sữa (2022)\n\nKỸ NĂNG\nPhotoshop, Illustrator, Figma\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Học vấn: Cao đẳng trở lên",
+    "Thành thạo Photoshop, Illustrator",
+    "Sáng tạo, có gu thẩm mỹ"
+  ],
+  "expected": ["unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

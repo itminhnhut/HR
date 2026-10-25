@@ -1,0 +1,13 @@
+{
+  "id": "c40-career-changer-domain-years",
+  "notes": "Five years as a teacher (08/2018 – 07/2023) then sales since 03/2026 (7–8 months). Total experience ≥ 2 years → met, but sales experience < 1 year → unmet. A scorer that only sums all jobs would wrongly say met here; it should say unmet or at worst unknown.",
+  "cvText": "TẠ ĐÌNH KHOA\nTư vấn bán hàng ô tô\n0911 202 303 · dinhkhoa.ta@example.com\n\nKINH NGHIỆM LÀM VIỆC\n03/2026 – nay       Nhân viên tư vấn bán hàng – Showroom Ô tô Đại Phát\n08/2018 – 07/2023   Giáo viên Toán – Trường THCS Hoà Bình\n\nHỌC VẤN\nĐại học Sư phạm TP.HCM – Cử nhân Sư phạm Toán (2014 – 2018)\n\nBẰNG CẤP KHÁC\nBằng lái B2\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Có bằng lái xe B2",
+    "Học vấn: Đại học trở lên"
+  ],
+  "expected": ["met", "unmet", "met", "met"],
+  "today": "2026-10-25"
+}

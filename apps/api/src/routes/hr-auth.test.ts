@@ -30,14 +30,26 @@ describe('HR sign-in with own password', () => {
     const res = await login('  HR@congty.vn ', PASSWORD);
     expect(res.status).toBe(200);
     const [user] = await t.db.select().from(hrUsers);
-    expect(await res.json()).toEqual({ id: user.id, email: HR_EMAIL, name: 'Phòng Nhân sự' });
+    expect(await res.json()).toEqual({
+      id: user.id,
+      email: HR_EMAIL,
+      name: 'Phòng Nhân sự',
+      phone: null,
+      contactEmail: null,
+    });
     expect(user.lastLoginAt).toEqual(t.clock.now);
     const setCookie = res.headers.getSetCookie()[0];
     expect(setCookie).toMatch(/^hr_session=.*HttpOnly/i);
     expect(setCookie).toMatch(/SameSite=Lax/i);
 
     const me = await t.request('/api/hr/me', { headers: { cookie: cookiesFrom(res) } });
-    expect(await me.json()).toEqual({ id: user.id, email: HR_EMAIL, name: 'Phòng Nhân sự' });
+    expect(await me.json()).toEqual({
+      id: user.id,
+      email: HR_EMAIL,
+      name: 'Phòng Nhân sự',
+      phone: null,
+      contactEmail: null,
+    });
   });
 
   it('gives the same answer for a wrong password and an unknown email', async () => {

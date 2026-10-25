@@ -26,6 +26,7 @@ import { ApiError, type Api } from './types';
  *   GET    /hr/applications?jobId=&q=   → ApplicationsResponse
  *   GET    /hr/applications/:id         → ApplicationDetailDto (marks "seen")
  *   PATCH  /hr/applications/:id         { status?, note?, interviewAt? } → ApplicationDetailDto
+ *   POST   /hr/applications/:id/score   → ApplicationDetailDto (cvScore filled)
  *   DELETE /hr/applications/:id         → { ok }   CV file included
  *   DELETE /hr/applications/due         → { deleted }   jobs ended more than 30 days ago
  *   GET    /hr/applications/:id/cv      → the uploaded PDF (inline)
@@ -33,6 +34,10 @@ import { ApiError, type Api } from './types';
  *   POST   /hr/users/:id/reset-password → TempPasswordResponse
  *   DELETE /hr/users/:id                → { ok }
  *   POST   /hr/me/password              { current, next } → HrMe
+ *   PATCH  /hr/me                       { name, phone, contactEmail } → HrMe
+ *   GET    /hr/message-templates        → MessageTemplatesResponse
+ *   PUT    /hr/message-templates/:key   { subject, body } → MessageTemplatesResponse   DELETE resets
+ *   POST   /hr/applications/:id/contacts { templateKey, channel } → ApplicationDetailDto
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -116,7 +121,8 @@ export const httpApi: Api = {
     if (cvFile) form.append('cv', cvFile);
     return request('/applications', { method: 'POST', body: form });
   },
-  lookupApplications: (phone) => request('/applications/lookup', json('POST', { phone })),
+  lookupApplications: (phone, captchaToken) =>
+    request('/applications/lookup', json('POST', { phone, ...(captchaToken ? { captchaToken } : {}) })),
 
   googleSignIn: async () => request('/candidate/google', json('POST', { idToken: await googleIdToken() })),
   candidateOverview: () => request('/candidate/me', {}, true),
@@ -138,6 +144,7 @@ export const httpApi: Api = {
   hrDashboard: () => request('/hr/dashboard'),
   hrJobTemplate: () => request('/hr/jobs/template'),
   hrSaveJobTemplate: (template) => request('/hr/jobs/template', json('PUT', template)),
+  hrAddTemplateChoice: (list, value) => request('/hr/jobs/template/choices', json('POST', { list, value })),
   hrJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`),
   hrSaveJob: (id, input) =>
     id ? request(`/hr/jobs/${encodeURIComponent(id)}`, json('PUT', input)) : request('/hr/jobs', json('POST', input)),
@@ -153,6 +160,8 @@ export const httpApi: Api = {
   },
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
+  hrScorePending: () => request('/hr/applications/score-pending', { method: 'POST' }),
+  hrScoreCv: (id) => request(`/hr/applications/${encodeURIComponent(id)}/score`, { method: 'POST' }),
   hrDeleteApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrDeleteDueApplications: () => request('/hr/applications/due', { method: 'DELETE' }),
   hrCvUrl: (id) => `${BASE}/hr/applications/${encodeURIComponent(id)}/cv`,
@@ -161,4 +170,9 @@ export const httpApi: Api = {
   hrResetPassword: (id) => request(`/hr/users/${encodeURIComponent(id)}/reset-password`, { method: 'POST' }),
   hrDeleteUser: (id) => request(`/hr/users/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrChangePassword: (current, next) => request('/hr/me/password', json('POST', { current, next })),
+  hrUpdateProfile: (patch) => request('/hr/me', json('PATCH', patch)),
+  hrMessageTemplates: () => request('/hr/message-templates'),
+  hrSaveMessageTemplate: (key, input) => request(`/hr/message-templates/${key}`, json('PUT', input)),
+  hrResetMessageTemplate: (key) => request(`/hr/message-templates/${key}`, { method: 'DELETE' }),
+  hrLogContact: (id, input) => request(`/hr/applications/${encodeURIComponent(id)}/contacts`, json('POST', input)),
 };

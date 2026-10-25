@@ -1,5 +1,6 @@
 import type { Db } from './db/index.js';
 import type { CvStore } from './lib/cv-store.js';
+import type { CaptchaVerifier } from './lib/captcha.js';
 import type { GoogleVerifier } from './lib/google.js';
 
 export interface AppConfig {
@@ -22,5 +23,7 @@ export interface Deps {
   config: AppConfig;
   cvStore: CvStore;
   verifyGoogleToken: GoogleVerifier;
+  /** Cloudflare Turnstile on the public forms; null when no keys are configured. */
+  verifyCaptcha: CaptchaVerifier;
   now: () => Date;
 }

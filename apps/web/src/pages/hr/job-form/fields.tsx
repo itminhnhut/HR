@@ -1,84 +1,137 @@
-import { DEPARTMENT_MAX, groupThousands, WORK_DAYS } from '@careers/shared';
-import { useId, useState } from 'react';
+import { CHOICE_MAX, groupThousands, WORK_DAYS } from '@careers/shared';
+import { useState } from 'react';
 import { SelectField, TextField } from '../../../ui/Field';
 import { OTHER, roundSalary, salaryDigits, salaryProblem, type FormState } from './model';
 
-/** A fixed list plus "Khác", which opens a box to type a value of one's own. */
-export function ChoiceWithOther({
+const ADD_NEW = '__add__';
+
+/**
+ * A normal dropdown of `options`, ending with "+ Thêm mới…". A new value is typed once, picked for this job,
+ * and handed to `onAdd` so it can be kept in the list for next time.
+ */
+export function PickOrAdd({
   label,
   options,
   value,
   error,
+  placeholder,
   onChange,
+  onAdd,
 }: {
   label: string;
   options: string[];
   value: string;
   error?: string;
+  placeholder?: string;
   onChange: (value: string) => void;
+  onAdd?: (value: string) => void;
 }) {
-  const [typing, setTyping] = useState(!options.includes(value));
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+  const list = value && !options.includes(value) ? [value, ...options] : options;
+  const add = () => {
+    const next = draft.trim().slice(0, CHOICE_MAX);
+    if (!next) return;
+    onChange(next);
+    if (!options.includes(next)) onAdd?.(next);
+    setDraft('');
+    setAdding(false);
+  };
   return (
     <div className="flex flex-col gap-2">
       <SelectField
         label={label}
-        value={typing ? OTHER : value}
+        value={adding ? ADD_NEW : value}
         onChange={(e) => {
-          const picked = e.target.value;
-          setTyping(picked === OTHER);
-          onChange(picked === OTHER ? '' : picked);
+          if (e.target.value === ADD_NEW) return setAdding(true);
+          setAdding(false);
+          onChange(e.target.value);
         }}
       >
-        {[...options, OTHER].map((o) => (
-          <option key={o}>{o}</option>
+        {!value && !adding && <option value="">{placeholder ?? `Chọn ${label.toLowerCase()}`}</option>}
+        {list.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
         ))}
+        <option value={ADD_NEW}>+ Thêm mới…</option>
       </SelectField>
-      {typing && (
-        <TextField
-          label={<span className="sr-only">{label} khác</span>}
-          placeholder={`Ghi ${label.toLowerCase()} khác`}
-          maxLength={60}
-          autoFocus
-          value={value}
-          error={error}
-          onChange={(e) => onChange(e.target.value)}
-        />
+      {adding && (
+        <div className="flex gap-2">
+          <input
+            autoFocus
+            aria-label={`${label} mới`}
+            maxLength={CHOICE_MAX}
+            placeholder={`Tên ${label.toLowerCase()} mới`}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                e.preventDefault();
+                add();
+              }
+              if (e.key === 'Escape') setAdding(false);
+            }}
+            className="field-focus min-h-11 min-w-0 flex-1 rounded-control border border-field bg-white px-3.5 text-sm text-navy outline-none"
+          />
+          <button
+            type="button"
+            onClick={add}
+            disabled={!draft.trim()}
+            className="min-h-11 rounded-control border border-silver bg-white px-4 text-sm font-medium text-navy hover:bg-mist disabled:opacity-60"
+          >
+            Thêm
+          </button>
+        </div>
       )}
+      {adding && onAdd && <span className="text-xs text-muted">Mục mới được lưu vào danh sách để lần sau chọn.</span>}
+      {error && <span className="text-[13px] text-error">{error}</span>}
     </div>
   );
 }
 
-/** Free text with suggestions: typing a new name makes a new department. */
-export function DepartmentField({
-  value,
-  suggestions,
-  error,
+/** Drops empty lines at the end only, so paragraphs HR made stay as they are. */
+function trimTrailing(lines: string[]): string[] {
+  const out = [...lines];
+  while (out.length > 0 && !out[out.length - 1].trim()) out.pop();
+  return out;
+}
+
+/** "Yêu cầu" quick picks: ticking adds the line, unticking removes it; the text stays free to edit. */
+export function RequirementPicks({
+  options,
+  text,
   onChange,
 }: {
-  value: string;
-  suggestions: string[];
-  error?: string;
-  onChange: (value: string) => void;
+  options: string[];
+  text: string;
+  onChange: (text: string) => void;
 }) {
-  const listId = useId();
+  const lines = text.split('\n');
+  const has = (o: string) => lines.some((l) => l.trim() === o);
+  const toggle = (o: string) =>
+    onChange(has(o) ? lines.filter((l) => l.trim() !== o).join('\n') : [...trimTrailing(lines), o].join('\n'));
+  if (options.length === 0) return null;
   return (
-    <>
-      <TextField
-        label="Phòng ban"
-        placeholder="Chọn hoặc gõ tên mới"
-        maxLength={DEPARTMENT_MAX}
-        list={listId}
-        autoComplete="off"
-        value={value}
-        error={error}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <datalist id={listId}>
-        {suggestions.map((d) => (
-          <option key={d} value={d} />
-        ))}
-      </datalist>
-    </>
+    <div className="flex flex-col gap-2">
+      <span className="text-xs text-muted">Chọn nhanh (bấm để thêm hoặc bỏ):</span>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((o) => {
+          const on = has(o);
+          return (
+            <button
+              key={o}
+              type="button"
+              aria-pressed={on}
+              onClick={() => toggle(o)}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-ring bg-white text-navy hover:bg-mist'}`}
+            >
+              {on ? '✓' : '+'} {o}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 

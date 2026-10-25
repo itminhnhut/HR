@@ -1,7 +1,8 @@
-import type { JobInput, JobTemplate } from '@careers/shared';
+import type { ApplicationDetailDto, ContactChannel, JobInput, JobTemplate, TemplateKey } from '@careers/shared';
+import { useEffect, useState } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from './index';
-import type { ApplicationPatch, ApplyInput, CandidatePatch, JobAction } from './types';
+import type { ApplicationPatch, ApplyInput, CandidatePatch, HrProfilePatch, JobAction } from './types';
 
 export const keys = {
   jobs: ['jobs'] as const,
@@ -13,6 +14,7 @@ export const keys = {
   hrJobTemplate: ['hr', 'job-template'] as const,
   hrDashboard: ['hr', 'dashboard'] as const,
   hrUsers: ['hr', 'users'] as const,
+  hrMessageTemplates: ['hr', 'message-templates'] as const,
   hrApps: (jobId?: string, q = '') => ['hr', 'apps', jobId ?? 'all', q] as const,
   hrApp: (id: string) => ['hr', 'app', id] as const,
 };
@@ -41,7 +43,11 @@ export function useApply() {
   });
 }
 
-export const useLookup = () => useMutation({ mutationFn: (phone: string) => api.lookupApplications(phone) });
+export const useLookup = () =>
+  useMutation({
+    mutationFn: ({ phone, captchaToken }: { phone: string; captchaToken?: string }) =>
+      api.lookupApplications(phone, captchaToken),
+  });
 
 // ── Candidate account ────────────────────────────────────────────────────
 
@@ -241,5 +247,101 @@ export function useChangePassword() {
   return useMutation({
     mutationFn: ({ current, next }: { current: string; next: string }) => api.hrChangePassword(current, next),
     onSuccess: (me) => qc.setQueryData(keys.hrMe, me),
+  });
+}
+
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (patch: HrProfilePatch) => api.hrUpdateProfile(patch),
+    onSuccess: (me) => {
+      qc.setQueryData(keys.hrMe, me);
+      qc.invalidateQueries({ queryKey: keys.hrUsers });
+    },
+  });
+}
+
+// ── Message templates ────────────────────────────────────────────────────
+
+export const useMessageTemplates = () =>
+  useQuery({ queryKey: keys.hrMessageTemplates, queryFn: api.hrMessageTemplates, staleTime: 5 * 60_000 });
+
+export function useMessageTemplateActions() {
+  const qc = useQueryClient();
+  const done = (data: Awaited<ReturnType<typeof api.hrMessageTemplates>>) =>
+    qc.setQueryData(keys.hrMessageTemplates, data);
+  return {
+    save: useMutation({
+      mutationFn: ({ key, subject, body }: { key: TemplateKey; subject: string; body: string }) =>
+        api.hrSaveMessageTemplate(key, { subject, body }),
+      onSuccess: done,
+    }),
+    reset: useMutation({ mutationFn: (key: TemplateKey) => api.hrResetMessageTemplate(key), onSuccess: done }),
+  };
+}
+
+export function useLogContact() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, templateKey, channel }: { id: string; templateKey: TemplateKey; channel: ContactChannel }) =>
+      api.hrLogContact(id, { templateKey, channel }),
+    // Only the contact list: this answer may be older than a save that ran at the same time (Meet link).
+    onSuccess: (detail) =>
+      qc.setQueryData<ApplicationDetailDto>(keys.hrApp(detail.id), (old) =>
+        old ? { ...old, contacts: detail.contacts } : detail,
+      ),
+  });
+}
+
+export function useAddTemplateChoice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ list, value }: { list: 'departments' | 'experiences' | 'educations'; value: string }) =>
+      api.hrAddTemplateChoice(list, value),
+    onSuccess: (data) => qc.setQueryData(keys.hrJobTemplate, data),
+  });
+}
+
+/**
+ * Scores CV files without an up-to-date result in the background, a batch per call, refreshing the list as
+ * percents arrive. Returns how many are still waiting (null when none or done).
+ */
+export function useScorePending(enabled: boolean): number | null {
+  const qc = useQueryClient();
+  const [left, setLeft] = useState<number | null>(null);
+  useEffect(() => {
+    if (!enabled) return;
+    let stopped = false;
+    const run = async () => {
+      try {
+        for (;;) {
+          const { scored, remaining } = await api.hrScorePending();
+          if (stopped) return;
+          if (scored > 0) await qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+          setLeft(remaining > 0 && scored > 0 ? remaining : null);
+          if (remaining === 0 || scored === 0) return;
+        }
+      } catch (e) {
+        // The list still works without percents; opening an application scores it.
+        console.warn('Could not score CVs', e);
+        setLeft(null);
+      }
+    };
+    void run();
+    return () => {
+      stopped = true;
+    };
+  }, [enabled, qc]);
+  return left;
+}
+
+export function useScoreCv() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.hrScoreCv(id),
+    onSuccess: (detail) => {
+      qc.setQueryData(keys.hrApp(detail.id), detail);
+      qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+    },
   });
 }

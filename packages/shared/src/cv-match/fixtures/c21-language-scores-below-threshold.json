@@ -1,0 +1,14 @@
+{
+  "id": "c21-language-scores-below-threshold",
+  "notes": "TOEIC 550 < 650 and IELTS 5.5 < 6.0 → combined language requirement unmet. Holding TOEIC/IELTS certificates is enough for \"Đọc hiểu tiếng Anh cơ bản\" → met. 09/2023 – nay = 3y1m, consistent with \"Hơn 3 năm\".",
+  "cvText": "VƯƠNG NGỌC HÂN\nChăm sóc khách hàng\n0378 909 121 | ngochan.vuong@example.com\n\nHơn 3 năm kinh nghiệm chăm sóc khách hàng qua tổng đài và chat.\n\nKINH NGHIỆM LÀM VIỆC\n09/2023 – nay   Nhân viên CSKH – Công ty CP Thương mại điện tử Chợ Xanh\n                - Trả lời 80–100 cuộc chat mỗi ngày, xử lý khiếu nại đơn hàng\n\nHỌC VẤN\nĐại học Mở Hà Nội – Ngôn ngữ Anh (2019 – 2023)\n\nNGOẠI NGỮ\n- TOEIC 550 (2022)\n- IELTS 5.5 (2024)\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Tiếng Anh: IELTS 6.0 trở lên hoặc TOEIC 650+",
+    "Đọc hiểu tiếng Anh cơ bản",
+    "Học vấn: Đại học trở lên",
+    "Kiên nhẫn, chịu được áp lực"
+  ],
+  "expected": ["met", "unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

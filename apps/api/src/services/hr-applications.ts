@@ -1,5 +1,6 @@
 import {
   applicationUpdateSchema,
+  contactLogSchema,
   fieldErrors,
   matchesQuery,
   type ApplicationDetailDto,
@@ -12,20 +13,22 @@ import {
 import { and, desc, eq, getTableColumns, inArray, ne } from 'drizzle-orm';
 import type { Deps } from '../deps.js';
 import type { Db } from '../db/index.js';
-import { applications, jobs, subscribers, type Application } from '../db/schema.js';
+import { applications, contactLog, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
+import { scoreApplication, storedScore } from './cv-score.js';
 import { invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { dueJobIds } from './hr-jobs.js';
 
 const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'rejected'];
 
-type ApplicationWithJob = Application & { jobTitle: string };
+type ApplicationWithJob = Application & { jobTitle: string; matchPercent: number | null };
 
 const withJobTitle = (db: Db) =>
   db
-    .select({ ...getTableColumns(applications), jobTitle: jobs.title })
+    .select({ ...getTableColumns(applications), jobTitle: jobs.title, matchPercent: cvScores.percent })
     .from(applications)
-    .innerJoin(jobs, eq(jobs.id, applications.jobId));
+    .innerJoin(jobs, eq(jobs.id, applications.jobId))
+    .leftJoin(cvScores, eq(cvScores.applicationId, applications.id));
 
 const firstLine = (text: string | null) =>
   text
@@ -43,6 +46,7 @@ function toRow(a: ApplicationWithJob): ApplicationRowDto {
     status: a.status,
     createdAt: a.createdAt.toISOString(),
     hasCv: !!(a.cvPathname || a.cvLink),
+    matchPercent: a.matchPercent,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
   };
@@ -52,8 +56,22 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
   const others = await withJobTitle(db)
     .where(and(eq(applications.phone, a.phone), ne(applications.id, a.id)))
     .orderBy(desc(applications.createdAt));
+  const contacts = await db
+    .select()
+    .from(contactLog)
+    .where(eq(contactLog.applicationId, a.id))
+    .orderBy(desc(contactLog.createdAt));
   return {
     ...toRow(a),
+    interviewMode: a.interviewMode,
+    meetingUrl: a.meetingUrl,
+    cvScore: await storedScore(db, a.id),
+    contacts: contacts.map((c) => ({
+      templateKey: c.templateKey,
+      channel: c.channel,
+      hrName: c.hrName,
+      createdAt: c.createdAt.toISOString(),
+    })),
     email: a.email,
     message: a.message,
     cvFileName: a.cvFileName,
@@ -86,7 +104,8 @@ export async function listApplications(db: Db, jobId: string | undefined, q = ''
       .innerJoin(applications, eq(applications.jobId, jobs.id))
       .orderBy(jobs.title),
   ]);
-  const digits = q.replace(/\D/g, '');
+  // "+84 933 111 999" from a caller ID finds 0933111999.
+  const digits = q.replace(/\D/g, '').replace(/^84(?=\d{9}$)/, '0');
   const found = rows.filter(
     (row) => matchesQuery(`${row.fullName} ${row.phone}`, q) || (digits.length >= 3 && row.phone.includes(digits)),
   );
@@ -120,22 +139,46 @@ export async function updateApplication(
   const row = await findApplication(db, id);
   const parsed = applicationUpdateSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
-  const { status, note, interviewAt } = parsed.data;
+  const { status, note, interviewAt, interviewMode, meetingUrl } = parsed.data;
   // An interview time only belongs to "Hẹn phỏng vấn".
   if (interviewAt && (status ?? row.status) !== 'interview') {
     throw invalid('Chỉ hồ sơ "Hẹn phỏng vấn" mới có giờ phỏng vấn.', { interviewAt: 'Chọn "Hẹn phỏng vấn" trước.' });
   }
+  // Interview details only belong to "Hẹn phỏng vấn"; for any other status they are cleared below.
+  const interviewing = (status ?? row.status) === 'interview';
   const noteChanged = note !== undefined && (note?.trim() || null) !== row.note;
   const patch = {
     ...(status ? { status } : {}),
-    // Leaving "Hẹn phỏng vấn" drops the interview time.
-    ...(status && status !== 'interview' ? { interviewAt: null } : {}),
+    // Leaving "Hẹn phỏng vấn" drops the interview details, so a later invitation never reuses an old Meet link.
+    ...(status && status !== 'interview' ? { interviewAt: null, interviewMode: null, meetingUrl: null } : {}),
     ...(interviewAt !== undefined ? { interviewAt: interviewAt ? new Date(interviewAt) : null } : {}),
+    ...(interviewing && interviewMode !== undefined ? { interviewMode } : {}),
+    ...(interviewing && meetingUrl !== undefined ? { meetingUrl } : {}),
     ...(noteChanged ? { note: note?.trim() || null, noteUpdatedAt: now, noteUpdatedBy: hr.name || hr.email } : {}),
   };
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
-  return toDetail(db, { ...updated, jobTitle: row.jobTitle });
+  return toDetail(db, { ...updated, jobTitle: row.jobTitle, matchPercent: row.matchPercent });
+}
+
+/** Records that HR prepared a message for this person (the site cannot see whether it was really sent). */
+export async function logContact(db: Db, id: string, raw: unknown, hr: HrMe, now: Date): Promise<ApplicationDetailDto> {
+  const row = await findApplication(db, id);
+  const parsed = contactLogSchema.safeParse(raw);
+  if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
+  await db
+    .insert(contactLog)
+    .values({ applicationId: row.id, ...parsed.data, hrName: hr.name || hr.email, createdAt: now });
+  return toDetail(db, row);
+}
+
+/** "Chấm CV": scores (or re-uses the stored score of) the application's CV against its job. */
+export async function scoreCvOf(deps: Deps, id: string): Promise<ApplicationDetailDto> {
+  const row = await findApplication(deps.db, id);
+  const job = await deps.db.query.jobs.findFirst({ where: eq(jobs.id, row.jobId) });
+  if (!job) throw notFound('Không tìm thấy tin.');
+  await scoreApplication(deps, row, job);
+  return toDetail(deps.db, await findApplication(deps.db, id));
 }
 
 export async function cvOf(db: Db, id: string): Promise<{ pathname: string; fullName: string }> {

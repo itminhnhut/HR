@@ -9,6 +9,7 @@ import { Button } from '../ui/Button';
 import { Icon } from '../ui/icons';
 import { errorText } from './candidate/candidateUi';
 import { PhoneField } from '../ui/PhoneField';
+import { Captcha, CaptchaError, useCaptcha } from '../ui/Captcha';
 
 /** Lookups by phone number should never show up in search engines. */
 function useNoIndex() {
@@ -28,6 +29,8 @@ export default function LookupPage() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [result, setResult] = useState<LookupResponse | null>(null);
+  const captcha = useCaptcha();
+  const [waiting, setWaiting] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -37,10 +40,21 @@ export default function LookupPage() {
       setError('Số điện thoại chưa đúng, ví dụ 0912 345 678.');
       return;
     }
+    setWaiting(true);
     try {
-      setResult(await lookup.mutateAsync(phone));
+      // Waits for the background "not a robot" check if it has not finished yet.
+      const captchaToken = await captcha.getToken();
+      setResult(await lookup.mutateAsync({ phone, captchaToken }));
     } catch (err) {
-      setError(errorText(err, 'phone', 'Chưa tra cứu được. Kiểm tra mạng rồi thử lại.'));
+      setError(
+        err instanceof CaptchaError
+          ? err.message
+          : errorText(err, 'phone', '') || errorText(err, 'captcha', 'Chưa tra cứu được. Kiểm tra mạng rồi thử lại.'),
+      );
+    } finally {
+      setWaiting(false);
+      // Each token works once.
+      captcha.renew();
     }
   };
 
@@ -59,12 +73,15 @@ export default function LookupPage() {
         <form
           noValidate
           onSubmit={submit}
-          className="flex flex-col gap-4 rounded-card border border-line bg-white p-5 sm:flex-row sm:items-start sm:p-6"
+          className="flex flex-col gap-4 rounded-card border border-line bg-white p-5 sm:flex-row sm:flex-wrap sm:items-start sm:p-6"
         >
           <PhoneField label="Số điện thoại" value={phone} error={error} onChange={setPhone} className="flex-1" />
-          <Button type="submit" size="lg" icon="search" disabled={lookup.isPending} className="min-h-[52px] sm:mt-7">
-            {lookup.isPending ? 'Đang tra…' : 'Tra cứu'}
+          <Button type="submit" size="lg" icon="search" disabled={waiting} className="min-h-[52px] sm:mt-7">
+            {waiting ? 'Đang tra…' : 'Tra cứu'}
           </Button>
+          <div className="sm:basis-full">
+            <Captcha control={captcha} />
+          </div>
         </form>
 
         {result && <Results result={result} />}

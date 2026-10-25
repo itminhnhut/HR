@@ -1,0 +1,13 @@
+{
+  "id": "c27-english-college-diploma-accounting",
+  "notes": "English CV; \"College\" diploma (3-year programme) = Cao đẳng: meets \"Cao đẳng trở lên\" but not \"Đại học chuyên ngành Kế toán\". Jun 2020 – Present = 6y4m. MISA listed.",
+  "cvText": "PHAM THU TRANG\nAccountant\ntrang.pham@example.com — 0904 777 120 — Hai Phong\n\nWORK EXPERIENCE\nJun 2020 – Present\nJunior Accountant → Accountant, Pacific Bloom Trading Co., Ltd.\n- Bookkeeping in MISA, monthly VAT returns, bank reconciliation\n\nEDUCATION\nDiploma in Accounting (3-year college program)\nSaigon Polytechnic College, 2017 – 2020\n\nSKILLS\nMISA, Excel, Word\n",
+  "requirements": [
+    "Học vấn: Cao đẳng trở lên",
+    "Tốt nghiệp Đại học chuyên ngành Kế toán",
+    "Kinh nghiệm: Từ 3 năm",
+    "Sử dụng phần mềm MISA"
+  ],
+  "expected": ["met", "unmet", "met", "met"],
+  "today": "2026-10-25"
+}

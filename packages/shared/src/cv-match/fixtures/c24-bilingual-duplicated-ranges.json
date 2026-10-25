@@ -1,0 +1,14 @@
+{
+  "id": "c24-bilingual-duplicated-ranges",
+  "notes": "Bilingual CV: the same job appears twice (\"10/2022 – nay\" and \"Oct 2022 – Present\"). Must count once: 4y0m. \"Từ 5 năm\" unmet (double counting would give 8 years). Bachelor ≥ Cao đẳng.",
+  "cvText": "ĐẶNG THUỲ DƯƠNG\nChuyên viên Marketing / Marketing Executive\nthuyduong.dang@example.com | 0916 330 772\n\nKINH NGHIỆM LÀM VIỆC / WORK EXPERIENCE\n10/2022 – nay | Chuyên viên Marketing – Công ty CP Mỹ phẩm Hương Lài\nOct 2022 – Present | Marketing Executive – Huong Lai Cosmetics JSC\n• Quản lý ngân sách quảng cáo Facebook Ads, Google Ads 300 triệu/tháng\n• Managed Facebook Ads and Google Ads budgets of VND 300M/month\n\nHỌC VẤN / EDUCATION\n2018 – 2022 | Cử nhân Marketing – Đại học Tài chính – Marketing\n2018 – 2022 | Bachelor of Marketing – University of Finance – Marketing\n\nKỸ NĂNG / SKILLS\nFacebook Ads, Google Ads, Google Analytics, Canva\nTiếng Anh: giao tiếp tốt / English: good communication\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Từ 5 năm kinh nghiệm marketing",
+    "Sử dụng thành thạo Facebook Ads, Google Ads",
+    "Học vấn: Cao đẳng trở lên",
+    "Tiếng Anh giao tiếp"
+  ],
+  "expected": ["met", "unmet", "met", "met", "met"],
+  "today": "2026-10-25"
+}

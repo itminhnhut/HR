@@ -1,0 +1,13 @@
+{
+  "id": "c19-two-column-read-out-of-order",
+  "notes": "Two-column layout extracted line by line across columns, so left (contact/skills) and right (experience) are interleaved. 07/2019 – nay = 7y3m as chief accountant. MISA listed. Đại học Kinh tế Quốc dân, Kế toán.",
+  "cvText": "TRẦN VĂN HÙNG                    KINH NGHIỆM LÀM VIỆC\nLIÊN HỆ                          Kế toán tổng hợp\n0938 111 222                     Công ty CP Xây dựng Hoà Bình An\nhung.tran@example.com            07/2019 – nay\nLong Biên, Hà Nội                • Lập báo cáo tài chính, quyết toán thuế năm\nKỸ NĂNG                          • Kiểm soát chi phí công trình\n• MISA                           Kế toán viên\n• Excel nâng cao                 Công ty TNHH Thép Đại Nam\n• Word                           09/2017 – 06/2019\nHỌC VẤN                          • Hạch toán kho, công nợ\nĐại học Kinh tế Quốc dân\nChuyên ngành Kế toán\n2013 – 2017\n",
+  "requirements": [
+    "Từ 3 năm kinh nghiệm kế toán tổng hợp",
+    "Sử dụng phần mềm MISA",
+    "Tốt nghiệp Đại học chuyên ngành Kế toán",
+    "Cẩn thận, trung thực, có trách nhiệm"
+  ],
+  "expected": ["met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

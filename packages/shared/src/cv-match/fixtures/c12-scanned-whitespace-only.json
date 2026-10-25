@@ -1,0 +1,8 @@
+{
+  "id": "c12-scanned-whitespace-only",
+  "notes": "Image-only PDF whose extractor returned only whitespace / form feeds. Treat as empty: all unknown, percent null.",
+  "cvText": "  \n\n \f\n   \n",
+  "requirements": ["Tối thiểu 1 năm kinh nghiệm bán hàng", "Có bằng lái xe B2", "TOEIC 650+"],
+  "expected": ["unknown", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

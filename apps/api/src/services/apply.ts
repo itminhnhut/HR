@@ -1,5 +1,4 @@
 import {
-  addDays,
   applicationFieldsSchema,
   acceptsApplications,
   effectiveStatus,
@@ -7,26 +6,22 @@ import {
   lastName,
   POLICY_VERSION,
   subscribeSchema,
-  todayInVietnam,
   type ApplyResponse,
 } from '@careers/shared';
-import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import { and, eq, gte, isNull, sql } from 'drizzle-orm';
 import type { Deps } from '../deps.js';
 import type { Db } from '../db/index.js';
-import {
-  applications,
-  jobs,
-  subscribers,
-  type Application,
-  type Candidate,
-  type Job,
-  type NewApplication,
-} from '../db/schema.js';
+import { applications, jobs, subscribers, type Candidate, type Job, type NewApplication } from '../db/schema.js';
 import { checkCvFile, CV_PROBLEM_MESSAGE, cvFileName, deleteFilesQuietly, type CvStore } from '../lib/cv-store.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
 
-export const DEDUPE_DAYS = 30; // BR-07
+/**
+ * The same person sending the same form again this soon is a double click or a retry, not a new application.
+ * Anything later becomes a NEW application: a re-send never overwrites an earlier one, because the phone number
+ * alone does not prove who is sending (anyone who knows it could otherwise replace the email and CV).
+ */
+export const REPEAT_WINDOW_MINUTES = 10;
 
 /** Multipart sends everything as text; turn it back into what the shared schema expects. */
 function formToInput(fields: Record<string, string>) {
@@ -51,11 +46,6 @@ async function validate(body: MultipartBody, savedCv: SavedCv | null) {
   return parsed.data;
 }
 
-/** Start of the Vietnam day DEDUPE_DAYS ago: BR-07 counts calendar days like the mock. */
-function dedupeSince(now: Date): Date {
-  return new Date(`${addDays(todayInVietnam(now), -DEDUPE_DAYS)}T00:00:00.000+07:00`);
-}
-
 async function openJobOrFail(db: Db, jobId: string, at: Date): Promise<Job> {
   const job = isUuid(jobId) ? await db.query.jobs.findFirst({ where: eq(jobs.id, jobId) }) : undefined;
   if (!job) throw notFound('Không tìm thấy tin tuyển dụng.');
@@ -72,34 +62,27 @@ async function openJobOrFail(db: Db, jobId: string, at: Date): Promise<Job> {
 
 type ApplicationRecord = Omit<NewApplication, 'id' | 'jobId' | 'status' | 'createdAt'>;
 
-/** Inserts, or updates the application from the last 30 days (BR-07). Returns the replaced one, if any. */
-async function upsertApplication(db: Db, jobId: string, record: ApplicationRecord, at: Date) {
+/** Inserts the application, unless the very same one was just sent (double click). Returns whether it was new. */
+async function insertApplication(db: Db, jobId: string, record: ApplicationRecord, at: Date): Promise<boolean> {
   return db.transaction(async (tx) => {
     // Serialize submissions for the same job and phone, so a double click cannot create two applications.
     await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`${jobId}:${record.phone}`}))`);
-    const [existing] = await tx
-      .select()
+    const [repeat] = await tx
+      .select({ id: applications.id })
       .from(applications)
       .where(
         and(
           eq(applications.jobId, jobId),
           eq(applications.phone, record.phone),
-          gte(applications.createdAt, dedupeSince(at)),
+          eq(applications.fullName, record.fullName),
+          record.email ? eq(applications.email, record.email) : isNull(applications.email),
+          gte(applications.createdAt, new Date(at.getTime() - REPEAT_WINDOW_MINUTES * 60_000)),
         ),
       )
-      .orderBy(desc(applications.createdAt))
       .limit(1);
-    if (existing) {
-      // The new submission replaces the content but keeps HR's status and note (BR-07);
-      // the new time moves it to the top of HR's list.
-      await tx
-        .update(applications)
-        .set({ ...record, createdAt: at })
-        .where(eq(applications.id, existing.id));
-    } else {
-      await tx.insert(applications).values({ ...record, jobId, createdAt: at });
-    }
-    return existing;
+    if (repeat) return false;
+    await tx.insert(applications).values({ ...record, jobId, createdAt: at });
+    return true;
   });
 }
 
@@ -138,7 +121,7 @@ export async function apply(
   const input = await validate(body, savedCv);
   const accountEmail = account?.email ?? null;
   // Honeypot: bots get a success they cannot tell apart, nothing is stored.
-  if (input.website) return { ok: true, firstName: '', phone: '', updatedExisting: false, previousDate: null };
+  if (input.website) return { ok: true, firstName: '', phone: '' };
   const at = now();
   const job = await openJobOrFail(db, input.jobId, at);
 
@@ -158,21 +141,20 @@ export async function apply(
     consentAt: at,
     policyVersion: POLICY_VERSION,
   };
-  let previous: Application | undefined;
+  let created: boolean;
   try {
-    previous = await upsertApplication(db, job.id, record, at);
+    created = await insertApplication(db, job.id, record, at);
   } catch (error) {
     await deleteFilesQuietly(cvStore, [cvPathname]);
     throw error;
   }
-  if (previous && previous.cvPathname !== cvPathname) await deleteFilesQuietly(cvStore, [previous.cvPathname]);
+  // A repeat of the same submission: the first one already has its own copy of the CV.
+  if (!created) await deleteFilesQuietly(cvStore, [cvPathname]);
 
   return {
     ok: true,
     firstName: lastName(input.fullName),
     phone: input.phone,
-    updatedExisting: !!previous,
-    previousDate: previous ? previous.createdAt.toISOString() : null,
   };
 }
 

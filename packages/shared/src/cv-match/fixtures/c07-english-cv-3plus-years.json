@@ -1,0 +1,14 @@
+{
+  "id": "c07-english-cv-3plus-years",
+  "notes": "English-only CV. \"3+ years\"; Jan 2023 – Present = 3y9m plus a 6-month internship in 2022. Salesforce listed. Bachelor = Đại học. \"Notice period: 30 days\" clearly means cannot start immediately → unmet.",
+  "cvText": "DANIEL TRAN\nAccount Executive – B2B SaaS\ndaniel.tran@example.com | +84 90 111 2233 | Ho Chi Minh City\n\nSUMMARY\nSales professional with 3+ years of experience closing mid-market software deals.\n\nWORK EXPERIENCE\nAccount Executive — Brightline Software Vietnam                 Jan 2023 – Present\n- Owned a pipeline of 60+ accounts in Salesforce; 118% of quota in 2025\n- Ran product demos in English and Vietnamese\n\nSales Intern — Brightline Software Vietnam                       Jul 2022 – Dec 2022\n- Qualified inbound leads, updated CRM records\n\nEDUCATION\nBachelor of Business Administration, RMIT University Vietnam     2018 – 2022\n\nSKILLS\nSalesforce, HubSpot, Excel, Google Sheets, negotiation\nLanguages: Vietnamese (native), English (fluent, IELTS 7.0)\n\nOTHER\nNotice period: 30 days\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Có kinh nghiệm sử dụng Salesforce",
+    "Học vấn: Đại học trở lên",
+    "Tiếng Anh giao tiếp tốt",
+    "Có thể đi làm ngay"
+  ],
+  "expected": ["met", "met", "met", "met", "unmet"],
+  "today": "2026-10-25"
+}

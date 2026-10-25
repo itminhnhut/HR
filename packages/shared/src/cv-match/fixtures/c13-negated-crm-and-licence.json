@@ -1,0 +1,14 @@
+{
+  "id": "c13-negated-crm-and-licence",
+  "notes": "\"Chưa từng sử dụng CRM\" → CRM unmet. \"Không có bằng lái ô tô\" → B2 unmet (A1 is a motorbike licence). 04/2023 – 08/2025 = 2y4m → \"Từ 1 năm\" met.",
+  "cvText": "BÙI QUỐC HUY\nNhân viên chăm sóc khách hàng\n0901 404 233 – quochuy.bui@example.com\n\nKINH NGHIỆM LÀM VIỆC\n04/2023 – 08/2025 | Nhân viên CSKH – Công ty TNHH Điện máy Gia Thịnh\n- Tiếp nhận khiếu nại qua hotline, xử lý đổi trả\n- Chưa từng sử dụng CRM, quản lý danh sách khách hàng bằng Excel\n\nHỌC VẤN\nCao đẳng Kinh tế Đối ngoại – Quản trị kinh doanh (2019 – 2022)\n\nKỸ NĂNG\nExcel, Word\nKhông có bằng lái ô tô; có bằng A1 (xe máy)\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 1 năm",
+    "Có kinh nghiệm sử dụng CRM (HubSpot, Salesforce...)",
+    "Thành thạo Excel",
+    "Có bằng lái xe B2",
+    "Chịu được áp lực công việc"
+  ],
+  "expected": ["met", "unmet", "met", "unmet", "unknown"],
+  "today": "2026-10-25"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "c14-wish-to-learn-trap",
+  "notes": "SQL and Power BI appear only under \"MONG MUỐN HỌC THÊM\" → unmet (the CV lists actual skills and they are not among them). 08/2022 – 02/2024 = 1y6m → \"Từ 2 năm\" unmet.",
+  "cvText": "TẠ PHƯƠNG THẢO\nNhân viên nhập liệu / Admin\n\nLiên hệ: 0359 818 228  ·  thao.ta@example.com\n\nKINH NGHIỆM LÀM VIỆC\n08/2022 – 02/2024\nNhân viên nhập liệu – Công ty CP Phân phối Thực phẩm Đông Á\n• Nhập đơn hàng, đối chiếu tồn kho trên Excel\n• Soạn công văn, báo cáo bằng Word\n\nHỌC VẤN\nTrung cấp Kinh tế Hà Nội – Tin học ứng dụng (2018 – 2020)\n\nKỸ NĂNG\nWord, Excel, gõ 10 ngón 60 từ/phút\n\nMONG MUỐN HỌC THÊM\nPower BI, SQL, Python cơ bản\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Biết SQL",
+    "Sử dụng được Power BI",
+    "Thành thạo tin học văn phòng (Word, Excel)",
+    "Cẩn thận, tỉ mỉ"
+  ],
+  "expected": ["unmet", "unmet", "unmet", "met", "unknown"],
+  "today": "2026-10-25"
+}

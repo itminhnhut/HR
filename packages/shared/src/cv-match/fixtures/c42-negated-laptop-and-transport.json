@@ -1,0 +1,8 @@
+{
+  "id": "c42-negated-laptop-and-transport",
+  "notes": "\"Chưa có laptop\" → laptop unmet; \"Không có xe máy, đi lại bằng xe buýt\" → own transport unmet. 11/2023 – nay = 2y11m → \"Từ 2 năm\" met.",
+  "cvText": "MẠC THỊ HẰNG\nChăm sóc khách hàng online\n0395 113 311 | hang.mac@example.com\n\nKINH NGHIỆM\n11/2023 – nay   CSKH online – Shop Thời trang Lụa Việt\n  - Trả lời tin nhắn Facebook, Shopee, chốt đơn\n\nHỌC VẤN\nCao đẳng Công thương – Quản trị kinh doanh (2020 – 2023)\n\nTHÔNG TIN KHÁC\n- Chưa có laptop (đang dùng máy tính bàn ở nhà)\n- Không có xe máy, đi lại bằng xe buýt\n",
+  "requirements": ["Kinh nghiệm: Từ 2 năm", "Có laptop cá nhân", "Có phương tiện đi lại", "Gõ phím nhanh"],
+  "expected": ["met", "unmet", "unmet", "unknown"],
+  "today": "2026-10-25"
+}

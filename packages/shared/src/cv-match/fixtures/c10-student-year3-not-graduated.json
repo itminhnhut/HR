@@ -1,0 +1,14 @@
+{
+  "id": "c10-student-year3-not-graduated",
+  "notes": "\"Sinh viên năm 3\" at a university: not graduated, so \"Đại học trở lên\" is unmet. Part-time online sales 09/2024 – nay = 2y1m → \"1 năm bán hàng\" met. TOEIC 785 ≥ 650.",
+  "cvText": "ĐINH KHÁNH LINH\nSinh viên năm 3 – Đại học Ngoại thương (Khoa Kinh tế quốc tế)\nNăm sinh 2005 | 0965 112 205 | khanhlinh.dinh@example.com\n\nKINH NGHIỆM\n09/2024 – nay   Cộng tác viên bán hàng online – Shop Hoa Cúc Xinh\n  • Tư vấn bán hàng qua Facebook, Zalo; chốt 40–60 đơn/tuần\n  • Theo dõi đơn hàng bằng Excel\n\nHỌC VẤN\n2023 – 2027 (dự kiến)   Đại học Ngoại thương – sinh viên năm 3\n\nKỸ NĂNG & CHỨNG CHỈ\n• Excel (VLOOKUP, Pivot Table)\n• TOEIC 785 (2025)\n",
+  "requirements": [
+    "Học vấn: Đại học trở lên",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "TOEIC 650+",
+    "Sử dụng thành thạo Excel",
+    "Có thể đi làm ngay"
+  ],
+  "expected": ["unmet", "met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

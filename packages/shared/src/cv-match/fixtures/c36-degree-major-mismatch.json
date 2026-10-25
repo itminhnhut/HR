@@ -1,0 +1,13 @@
+{
+  "id": "c36-degree-major-mismatch",
+  "notes": "Đại học Tài chính – Ngân hàng, not Kế toán → \"Đại học chuyên ngành Kế toán\" unmet (degree level ok, major specified and different). Full work history is bank teller only and the word \"kế toán\" never appears → \"1 năm kinh nghiệm kế toán\" unmet. 08/2021 – 07/2025 = 3y11m total.",
+  "cvText": "KHÚC THANH TÂM\nỨng tuyển: Kế toán viên\n0388 212 345 | thanhtam.khuc@example.com\n\nKINH NGHIỆM LÀM VIỆC\n08/2021 – 07/2025   Giao dịch viên – Ngân hàng TMCP Phương Đông Á (chi nhánh Gò Vấp)\n  • Mở tài khoản, giao dịch nộp/rút tiền, chuyển khoản\n\nHỌC VẤN\nĐại học Ngân hàng TP.HCM – Tài chính – Ngân hàng (2017 – 2021)\n\nKỸ NĂNG\nExcel, Word, phần mềm core banking\n",
+  "requirements": [
+    "Tốt nghiệp Đại học chuyên ngành Kế toán",
+    "Học vấn: Đại học trở lên",
+    "Kinh nghiệm: Từ 2 năm",
+    "Từ 1 năm kinh nghiệm kế toán"
+  ],
+  "expected": ["unmet", "met", "met", "unmet"],
+  "today": "2026-10-25"
+}

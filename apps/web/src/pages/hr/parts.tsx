@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { lastName } from '@careers/shared';
 import { ApiError } from '../../api';
 
 /** Turns any thrown value into the message HR should read. */
@@ -199,7 +200,8 @@ export function MenuItem({
 
 /** Letter in a ring/disc, from the given name (last word of a Vietnamese name). */
 export function Avatar({ name, size = 42, solid = false }: { name: string; size?: number; solid?: boolean }) {
-  const initial = name.trim().split(/\s+/).pop()?.charAt(0).toUpperCase() ?? '?';
+  // lastName skips notes in brackets: "Nguyễn Văn Hùng (thử)" → H.
+  const initial = lastName(name).charAt(0).toUpperCase() || '?';
   return (
     <span
       aria-hidden="true"

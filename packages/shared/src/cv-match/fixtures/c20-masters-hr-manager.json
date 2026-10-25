@@ -1,0 +1,14 @@
+{
+  "id": "c20-masters-hr-manager",
+  "notes": "Thạc sĩ ≥ Đại học. 2016 – 2020 + 2020 – nay = 10 years. IELTS 6.5 ≥ 6.0. \"Ưu tiên ứng viên có kinh nghiệm trong ngành\" is unknown: the requirement does not name the industry and the scorer has no job context.",
+  "cvText": "MAI XUÂN PHƯƠNG\nTrưởng phòng Nhân sự\nphuong.mai@example.com · 0909 616 161\n\nKINH NGHIỆM LÀM VIỆC\n2020 – nay     Trưởng phòng Nhân sự – Công ty CP Dệt may Thành Công Mới\n2016 – 2020    Chuyên viên tuyển dụng – Công ty TNHH Bán lẻ Sao Mai\n\nHỌC VẤN\n2018 – 2020    Thạc sĩ Quản trị kinh doanh – Đại học Kinh tế TP.HCM\n2011 – 2015    Cử nhân Quản trị nhân lực – Đại học Lao động – Xã hội (CS2)\n\nNGOẠI NGỮ\nIELTS 6.5 (2023)\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Học vấn: Đại học trở lên",
+    "Tiếng Anh: IELTS 6.0 trở lên",
+    "Ưu tiên ứng viên có kinh nghiệm trong ngành",
+    "Kỹ năng lãnh đạo tốt"
+  ],
+  "expected": ["met", "met", "met", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

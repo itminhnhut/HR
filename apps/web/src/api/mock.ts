@@ -1,12 +1,16 @@
 import {
+  contactLogSchema,
+  hrProfileSchema,
+  addChoiceSchema,
+  DEFAULT_MESSAGE_TEMPLATES,
+  TEMPLATE_KEYS,
+  messageTemplateSchema,
   DEFAULT_JOB_TEMPLATE,
-  DEPARTMENT_SUGGESTIONS,
   acceptsApplications,
   addDays,
   applicationFieldsSchema,
   CV_MAX_BYTES,
   candidateStage,
-  daysBetween,
   endedOn,
   jobTemplateSchema,
   matchesQuery,
@@ -35,7 +39,7 @@ import { buildSeed, DB_VERSION, DEMO_CANDIDATE_EMAIL, type MockDb, type MockHrUs
 import { ApiError, type Api } from './types';
 
 const STORAGE_KEY = 'careers-demo-db';
-const DEDUPE_DAYS = 30; // BR-07
+const REPEAT_MS = 10 * 60_000; // same as the BE: an exact repeat this soon is a double click
 
 function safeStorage(): Storage | null {
   try {
@@ -192,13 +196,21 @@ function requireHr(db: MockDb): MockHrUser {
   return me;
 }
 
-const toHrMe = (u: MockHrUser): HrMe => ({ id: u.id, email: u.email, name: u.name });
+const toHrMe = (u: MockHrUser): HrMe => ({
+  id: u.id,
+  email: u.email,
+  name: u.name,
+  phone: u.phone,
+  contactEmail: u.contactEmail,
+});
 const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
   id: u.id,
   email: u.email,
   name: u.name,
   lastLoginAt: u.lastLoginAt,
   isMe: u.id === me.id,
+  phone: u.phone,
+  contactEmail: u.contactEmail,
 });
 
 /** Like the BE's generatePassword: three groups of five letters and digits. */
@@ -235,6 +247,7 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     status: a.status,
     createdAt: a.createdAt,
     hasCv: !!(a.cvFileName || a.cvLink),
+    matchPercent: null,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt,
   };
@@ -248,6 +261,10 @@ function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDe
     cvFileName: a.cvFileName,
     cvLink: a.cvLink,
     note: a.note,
+    interviewMode: a.interviewMode,
+    meetingUrl: a.meetingUrl,
+    cvScore: null,
+    contacts: [...a.contacts].sort((x, y) => y.createdAt.localeCompare(x.createdAt)),
     noteUpdatedAt: a.noteUpdatedAt,
     noteUpdatedBy: a.noteUpdatedBy,
     otherApplications: db.applications
@@ -301,8 +318,7 @@ export const mockApi: Api = {
       else if (input.cvFile.size > CV_MAX_BYTES) errors.cv = 'File lớn hơn 4 MB. Nén lại hoặc dán link CV.';
     }
     if (!parsed.success || Object.keys(errors).length) return fail(422, 'Kiểm tra lại các ô được đánh dấu.', errors);
-    if (parsed.data.website)
-      return delay({ ok: true as const, firstName: '', phone: '', updatedExisting: false, previousDate: null });
+    if (parsed.data.website) return delay({ ok: true as const, firstName: '', phone: '' });
 
     const job = db.jobs.find((j) => j.id === parsed.data.jobId);
     if (!job) return fail(404, 'Không tìm thấy tin tuyển dụng.');
@@ -317,28 +333,16 @@ export const mockApi: Api = {
     }
 
     const d = parsed.data;
-    const existing = db.applications.find(
+    // Same as the BE: a re-send is a new application (never overwrites), except an exact repeat (double click).
+    const repeat = db.applications.some(
       (a) =>
         a.jobId === job.id &&
         a.phone === d.phone &&
-        daysBetween(todayInVietnam(new Date(a.createdAt)), todayInVietnam(now)) <= DEDUPE_DAYS,
+        a.fullName === d.fullName &&
+        (a.email ?? null) === ((db.session.candidateEmail ?? d.email) || null) &&
+        now.getTime() - new Date(a.createdAt).getTime() < REPEAT_MS,
     );
-    const record = {
-      fullName: d.fullName,
-      phone: d.phone,
-      email: db.session.candidateEmail ?? d.email,
-      message: d.message,
-      cvFileName: input.cvFile?.name ?? savedCv,
-      cvLink: d.cvLink,
-      consentAt: now.toISOString(),
-      policyVersion: POLICY_VERSION,
-    };
-    let previousDate: string | null = null;
-    if (existing) {
-      previousDate = existing.createdAt;
-      // Same as the BE: content replaced, HR's status and note kept, moved to the top of HR's list.
-      Object.assign(existing, record, { createdAt: now.toISOString() });
-    } else {
+    if (!repeat) {
       db.applications.push({
         id: uid('a'),
         jobId: job.id,
@@ -347,21 +351,29 @@ export const mockApi: Api = {
         noteUpdatedAt: null,
         noteUpdatedBy: null,
         interviewAt: null,
+        interviewMode: null,
+        meetingUrl: null,
+        contacts: [],
         createdAt: now.toISOString(),
-        ...record,
+        fullName: d.fullName,
+        phone: d.phone,
+        email: db.session.candidateEmail ?? d.email,
+        message: d.message,
+        cvFileName: input.cvFile?.name ?? savedCv,
+        cvLink: d.cvLink,
+        consentAt: now.toISOString(),
+        policyVersion: POLICY_VERSION,
       });
+      save();
     }
-    save();
     return delay({
       ok: true as const,
       firstName: d.fullName.split(/\s+/).pop() ?? d.fullName,
       phone: d.phone,
-      updatedExisting: !!existing,
-      previousDate,
     });
   },
 
-  async lookupApplications(phone) {
+  async lookupApplications(phone, _captchaToken) {
     const db = load();
     const normalized = normalizeVietnamPhone(phone);
     if (!normalized) {
@@ -589,7 +601,11 @@ export const mockApi: Api = {
     const known = new Set(template.benefits.map((b) => b.label));
     return delay({
       template,
-      departments: [...new Set([...DEPARTMENT_SUGGESTIONS, ...db.jobs.map((j) => j.department)])],
+      departments: [...new Set([...template.departments, ...db.jobs.map((j) => j.department)])],
+      experiences: [
+        ...new Set([...template.experiences, ...db.jobs.flatMap((j) => (j.experience ? [j.experience] : []))]),
+      ],
+      educations: [...new Set([...template.educations, ...db.jobs.flatMap((j) => (j.education ? [j.education] : []))])],
       extraBenefits: [...new Set(db.jobs.flatMap((j) => j.benefits))].filter((b) => !known.has(b)).slice(0, 8),
     });
   },
@@ -601,6 +617,19 @@ export const mockApi: Api = {
     if (!parsed.success) return fail(422, 'Chưa lưu được, kiểm tra các ô được đánh dấu.', fieldErrors(parsed.error));
     db.template = parsed.data;
     save();
+    return mockApi.hrJobTemplate();
+  },
+
+  async hrAddTemplateChoice(list, value) {
+    const db = load();
+    requireHr(db);
+    const parsed = addChoiceSchema.safeParse({ list, value });
+    if (!parsed.success) return fail(422, 'Chưa thêm được.', fieldErrors(parsed.error));
+    const current = db.template ?? DEFAULT_JOB_TEMPLATE;
+    if (!current[list].includes(parsed.data.value)) {
+      db.template = { ...current, [list]: [...current[list], parsed.data.value] };
+      save();
+    }
     return mockApi.hrJobTemplate();
   },
 
@@ -694,7 +723,7 @@ export const mockApi: Api = {
   async hrApplications(jobId, q = '') {
     const db = load();
     requireHr(db);
-    const digits = q.replace(/\D/g, '');
+    const digits = q.replace(/\D/g, '').replace(/^84(?=\d{9}$)/, '0');
     const all = db.applications
       .filter((a) => !jobId || a.jobId === jobId)
       .filter((a) => matchesQuery(`${a.fullName} ${a.phone}`, q) || (digits.length >= 3 && a.phone.includes(digits)))
@@ -731,9 +760,17 @@ export const mockApi: Api = {
     }
     if (patch.status) {
       a.status = patch.status;
-      if (patch.status !== 'interview') a.interviewAt = null;
+      if (patch.status !== 'interview') Object.assign(a, { interviewAt: null, interviewMode: null, meetingUrl: null });
     }
     if (patch.interviewAt !== undefined) a.interviewAt = patch.interviewAt;
+    if (patch.interviewMode !== undefined) a.interviewMode = patch.interviewMode;
+    if (patch.meetingUrl !== undefined) {
+      const url = patch.meetingUrl?.trim() || null;
+      if (url && !/^https?:\/\//i.test(url)) {
+        return fail(422, 'Link phải bắt đầu bằng http:// hoặc https://', { meetingUrl: 'Link chưa đúng.' });
+      }
+      a.meetingUrl = url;
+    }
     const note = patch.note === undefined ? undefined : patch.note?.trim() || null;
     if (note !== undefined && note !== a.note) {
       a.note = note;
@@ -742,6 +779,29 @@ export const mockApi: Api = {
     }
     save();
     return delay(appDetail(db, a));
+  },
+
+  async hrScorePending() {
+    requireHr(load());
+    // The demo keeps no CV files, so there is nothing to score.
+    return delay({ scored: 0, remaining: 0 });
+  },
+
+  async hrScoreCv(id) {
+    const db = load();
+    requireHr(db);
+    const a = db.applications.find((x) => x.id === id);
+    if (!a) return fail(404, 'Không tìm thấy hồ sơ.');
+    // The demo keeps no CV files, so there is nothing to read.
+    return delay({
+      ...appDetail(db, a),
+      cvScore: {
+        percent: null,
+        items: [],
+        scoredAt: new Date().toISOString(),
+        note: 'Bản demo không lưu file CV nên không chấm được.',
+      },
+    });
   },
 
   async hrDeleteApplication(id) {
@@ -777,7 +837,15 @@ export const mockApi: Api = {
     if (db.hrUsers.some((u) => u.email === clean)) {
       return fail(422, 'Email này đã có tài khoản.', { email: 'Email này đã có tài khoản.' });
     }
-    const user = { id: uid('u'), email: clean, name: name.trim() || null, password: tempPassword(), lastLoginAt: null };
+    const user = {
+      id: uid('u'),
+      email: clean,
+      name: name.trim() || null,
+      password: tempPassword(),
+      lastLoginAt: null,
+      phone: null,
+      contactEmail: null,
+    };
     db.hrUsers.push(user);
     save();
     return delay({ user: toUserDto(user, me), password: user.password });
@@ -804,6 +872,54 @@ export const mockApi: Api = {
     return delay({ ok: true as const });
   },
 
+  async hrUpdateProfile(patch) {
+    const db = load();
+    const me = requireHr(db);
+    const parsed = hrProfileSchema.safeParse(patch);
+    if (!parsed.success) return fail(422, 'Kiểm tra lại thông tin.', fieldErrors(parsed.error));
+    me.name = parsed.data.name || null;
+    me.phone = parsed.data.phone || null;
+    me.contactEmail = parsed.data.contactEmail.toLowerCase() || null;
+    save();
+    return delay(toHrMe(me));
+  },
+
+  async hrMessageTemplates() {
+    const db = load();
+    requireHr(db);
+    return delay(messageTemplatesOf(db));
+  },
+
+  async hrSaveMessageTemplate(key, input) {
+    const db = load();
+    requireHr(db);
+    if (!TEMPLATE_KEYS.includes(key)) return fail(404, 'Không có mẫu thư này.');
+    const parsed = messageTemplateSchema.safeParse(input);
+    if (!parsed.success) return fail(422, 'Chưa lưu được, kiểm tra các ô được đánh dấu.', fieldErrors(parsed.error));
+    db.messageTemplates = [...db.messageTemplates.filter((t) => t.key !== key), { key, ...parsed.data }];
+    save();
+    return delay(messageTemplatesOf(db));
+  },
+
+  async hrResetMessageTemplate(key) {
+    const db = load();
+    requireHr(db);
+    db.messageTemplates = db.messageTemplates.filter((t) => t.key !== key);
+    save();
+    return delay(messageTemplatesOf(db));
+  },
+
+  async hrLogContact(id, input) {
+    const db = load();
+    const me = requireHr(db);
+    const a = db.applications.find((x) => x.id === id);
+    if (!a) return fail(404, 'Không tìm thấy hồ sơ.');
+    if (!contactLogSchema.safeParse(input).success) return fail(422, 'Dữ liệu không hợp lệ.');
+    a.contacts.push({ ...input, hrName: me.name || me.email, createdAt: new Date().toISOString() });
+    save();
+    return delay(appDetail(db, a));
+  },
+
   async hrChangePassword(current, next) {
     const db = load();
     const me = requireHr(db);
@@ -817,6 +933,14 @@ export const mockApi: Api = {
     return delay(toHrMe(me));
   },
 };
+
+function messageTemplatesOf(db: MockDb) {
+  const saved = new Map(db.messageTemplates.map((t) => [t.key, t]));
+  return {
+    templates: TEMPLATE_KEYS.map((key) => saved.get(key) ?? DEFAULT_MESSAGE_TEMPLATES[key]),
+    customized: TEMPLATE_KEYS.filter((key) => saved.has(key)),
+  };
+}
 
 /** Demo mode only: the per-browser HR password, shown on the HR sign-in page. */
 export function demoHrPassword(): string {

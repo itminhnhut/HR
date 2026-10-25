@@ -2,24 +2,26 @@ import {
   APPLICATION_STATUS_LABEL,
   formatPhone,
   formatTimestamp,
-  lastName,
   NOTE_MAX,
   zaloLink,
   type ApplicationDetailDto,
   type ApplicationStatus,
+  type TemplateKey,
 } from '@careers/shared';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { api } from '../../../api';
+import { api, type ApplicationPatch } from '../../../api';
 import { useApplication, useDeleteApplication, useUpdateApplication } from '../../../api/queries';
-import { copyText, useFlash } from '../../../lib/hooks';
-import { SITE, telLink } from '../../../lib/site';
+import { telLink } from '../../../lib/site';
+import { Button } from '../../../ui/Button';
 import { CopyButton } from '../../../ui/CopyButton';
 import { CloseButton } from '../../../ui/Dialog';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../../ui/feedback';
 import { Icon, type IconName } from '../../../ui/icons';
 import { apiMessage, Avatar, errorMessage } from '../parts';
-import { InterviewField, interviewLabel } from './InterviewField';
+import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
+import { CvMatch } from './CvMatch';
+import { InterviewField } from './InterviewField';
 
 const shortDate = (iso: string) => formatTimestamp(iso).slice(0, 5);
 
@@ -113,16 +115,26 @@ const STATUS_BUTTONS: { status: ApplicationStatus; label: string; icon: IconName
     label: 'Chưa phù hợp',
     icon: 'x',
     idle: 'border-field text-slate',
-    on: 'border-slate bg-tint text-navy font-medium',
+    on: 'border-slate bg-slate text-white font-medium',
   },
 ];
 
 const UNDO_MS = 5000;
 
 /** Status buttons. A change can be undone for 5 seconds, in case of a wrong tap. */
-function StatusButtons({ app, onError }: { app: ApplicationDetailDto; onError: (msg: string) => void }) {
+function StatusButtons({
+  app,
+  onError,
+  onCompose,
+}: {
+  app: ApplicationDetailDto;
+  onError: (msg: string) => void;
+  /** Opens "Soạn thư" with the template that fits the new status. */
+  onCompose: (key: TemplateKey) => void;
+}) {
   const update = useUpdateApplication();
-  const [undo, setUndo] = useState<{ status: ApplicationStatus; interviewAt: string | null } | null>(null);
+  // Everything a status change can clear, so "Hoàn tác" brings back the Meet link and mode too.
+  const [undo, setUndo] = useState<ApplicationPatch | null>(null);
   useEffect(() => {
     if (!undo) return;
     const t = setTimeout(() => setUndo(null), UNDO_MS);
@@ -130,7 +142,12 @@ function StatusButtons({ app, onError }: { app: ApplicationDetailDto; onError: (
   }, [undo]);
 
   const change = (status: ApplicationStatus) => {
-    const before = { status: app.status, interviewAt: app.interviewAt };
+    const before: ApplicationPatch = {
+      status: app.status,
+      interviewAt: app.interviewAt,
+      interviewMode: app.interviewMode,
+      meetingUrl: app.meetingUrl,
+    };
     update.mutate(
       { id: app.id, patch: { status } },
       { onSuccess: () => setUndo(before), onError: (e) => onError(errorMessage(e)) },
@@ -150,7 +167,7 @@ function StatusButtons({ app, onError }: { app: ApplicationDetailDto; onError: (
               aria-pressed={on}
               disabled={update.isPending}
               onClick={() => !on && change(b.status)}
-              className={`inline-flex min-h-11 flex-1 items-center justify-center gap-[7px] rounded-control border px-3.5 text-[13px] transition-colors sm:flex-none ${on ? b.on : `bg-white hover:bg-mist ${b.idle}`}`}
+              className={`inline-flex min-h-11 flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-control border px-3.5 text-[13px] transition-colors sm:flex-none ${on ? b.on : `bg-white hover:bg-mist ${b.idle}`}`}
             >
               <Icon name={b.icon} size={15} stroke={1.6} />
               {b.label}
@@ -174,6 +191,24 @@ function StatusButtons({ app, onError }: { app: ApplicationDetailDto; onError: (
           className="flex flex-wrap items-center justify-between gap-2 rounded-control bg-navy px-4 py-2.5 text-sm text-white"
         >
           <span>Đã chuyển sang "{APPLICATION_STATUS_LABEL[app.status]}".</span>
+          {(app.status === 'rejected' || app.status === 'interview') && (
+            <button
+              type="button"
+              onClick={() => {
+                setUndo(null);
+                onCompose(
+                  app.status === 'rejected'
+                    ? 'rejection'
+                    : app.interviewMode === 'online'
+                      ? 'interview_online'
+                      : 'interview_onsite',
+                );
+              }}
+              className="min-h-9 rounded-control border-0 bg-white px-3 font-semibold text-navy"
+            >
+              {app.status === 'rejected' ? 'Soạn thư cảm ơn' : 'Soạn thư mời'}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => {
@@ -190,53 +225,78 @@ function StatusButtons({ app, onError }: { app: ApplicationDetailDto; onError: (
   );
 }
 
-function InterviewTime({ app, onError }: { app: ApplicationDetailDto; onError: (msg: string) => void }) {
-  const update = useUpdateApplication();
+/** Keyed by the saved link, so a link saved elsewhere (e.g. the compose dialog) shows up here at once. */
+function MeetLinkInput({ saved, onSave }: { saved: string; onSave: (value: string) => void }) {
+  const [value, setValue] = useState(saved);
   return (
-    <InterviewField
-      value={app.interviewAt}
-      disabled={update.isPending}
-      onChange={(interviewAt) =>
-        update.mutate({ id: app.id, patch: { interviewAt } }, { onError: (e) => onError(errorMessage(e)) })
-      }
+    <input
+      type="url"
+      inputMode="url"
+      aria-label="Link Meet"
+      placeholder="Dán link Meet: https://meet.google.com/…"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={() => value.trim() !== saved && onSave(value.trim())}
+      className="field-focus min-h-11 rounded-control border border-field bg-white px-3.5 text-sm text-navy outline-none"
     />
   );
 }
 
-/** Ready-made Zalo text HR copies, then pastes in Zalo: an interview invitation or a polite no. */
-function ZaloMessage({ app }: { app: ApplicationDetailDto }) {
-  const [copied, flash] = useFlash();
-  const name = lastName(app.fullName);
-  const message =
-    app.status === 'interview'
-      ? `Chào ${name}, ${SITE.company} mời bạn phỏng vấn vị trí ${app.jobTitle}${app.interviewAt ? ` vào ${interviewLabel(app.interviewAt)}` : ''} tại ${SITE.officeAddress}. Bạn xác nhận giúp mình nhé. Cảm ơn bạn!`
-      : `Chào ${name}, cảm ơn bạn đã ứng tuyển vị trí ${app.jobTitle} tại ${SITE.company}. Lần này chúng tôi đã chọn ứng viên phù hợp hơn với yêu cầu hiện tại. Chúc bạn sớm tìm được công việc ưng ý.`;
+/** Interview time, onsite/online, and for online the Meet link (made by HR in Google Calendar). */
+function InterviewTime({ app, onError }: { app: ApplicationDetailDto; onError: (msg: string) => void }) {
+  const update = useUpdateApplication();
+  const patch = (p: ApplicationPatch) =>
+    update.mutate({ id: app.id, patch: p }, { onError: (e) => onError(errorMessage(e)) });
+  const online = app.interviewMode === 'online';
+  const calendar = hrCalendarUrl(app);
   return (
-    <div className="flex flex-col gap-2.5 rounded-card border border-line px-[18px] py-4">
-      <strong className="text-sm font-semibold">
-        {app.status === 'interview' ? 'Tin nhắn mời phỏng vấn' : 'Tin nhắn cảm ơn'}
-      </strong>
-      <p className="m-0 rounded-control bg-hover px-3.5 py-3 text-sm leading-relaxed text-ink">{message}</p>
-      <div className="flex flex-wrap gap-2">
-        <a
-          href={zaloLink(app.phone)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => void copyText(message)}
-          className="btn-glow inline-flex min-h-11 items-center gap-2 rounded-control bg-accent px-4 text-sm font-medium text-white no-underline hover:text-white"
-        >
-          <Icon name="chat" size={16} />
-          Chép tin và mở Zalo
-        </a>
-        <button
-          type="button"
-          onClick={() => copyText(message).then((ok) => ok && flash())}
-          className="inline-flex min-h-11 items-center gap-2 rounded-control border border-field bg-white px-4 text-sm text-body hover:bg-mist"
-        >
-          <Icon name={copied ? 'check' : 'copy'} size={16} />
-          {copied ? 'Đã sao chép' : 'Chỉ sao chép'}
-        </button>
+    <div className="flex flex-col gap-3">
+      <InterviewField
+        value={app.interviewAt}
+        disabled={update.isPending}
+        onChange={(interviewAt) => patch({ interviewAt })}
+      />
+      <div role="group" aria-label="Hình thức phỏng vấn" className="flex gap-2">
+        {(['onsite', 'online'] as const).map((mode) => {
+          const on = (app.interviewMode ?? 'onsite') === mode;
+          return (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={on}
+              disabled={update.isPending}
+              onClick={() => !on && patch({ interviewMode: mode })}
+              className={`min-h-10 rounded-full border px-4 text-sm ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+            >
+              {mode === 'onsite' ? 'Trực tiếp' : 'Online (Meet)'}
+            </button>
+          );
+        })}
       </div>
+      {calendar && (
+        <div className="flex flex-col gap-1 rounded-control border border-line px-4 py-3">
+          <a
+            href={calendar}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm font-medium"
+          >
+            <Icon name="calendar" size={16} />
+            Tạo lịch Google (mời ứng viên)
+          </a>
+          <span className="text-xs text-muted">
+            Lưu sự kiện là Google gửi lời mời lịch cho ứng viên.
+            {online ? ' Bấm "Thêm hội nghị truyền hình Google Meet" trước khi lưu, rồi dán link Meet bên dưới.' : ''}
+          </span>
+        </div>
+      )}
+      {online && (
+        <MeetLinkInput
+          key={app.meetingUrl ?? ''}
+          saved={app.meetingUrl ?? ''}
+          onSave={(v) => patch({ meetingUrl: v })}
+        />
+      )}
     </div>
   );
 }
@@ -364,12 +424,15 @@ function DetailBody({
   app,
   onClose,
   onDeleted,
+  onNext,
 }: {
   app: ApplicationDetailDto;
   onClose?: () => void;
   onDeleted: () => void;
+  onNext?: () => void;
 }) {
   const [error, setError] = useState<string | null>(null);
+  const [composeRequest, setComposeRequest] = useState<TemplateKey | null>(null);
   return (
     <div className="flex flex-col gap-5 max-lg:gap-4">
       <div className="flex items-center gap-4 max-lg:gap-3.5">
@@ -381,11 +444,34 @@ function DetailBody({
           </span>
           <span className="text-[13px] text-slate lg:text-sm">{app.jobTitle}</span>
         </div>
+        {onNext && (
+          <Button
+            variant="ghost"
+            size="sm"
+            iconRight="arrowRight"
+            onClick={onNext}
+            aria-label="Hồ sơ tiếp"
+            className="shrink-0"
+          >
+            {/* Arrow only on phones, so the name keeps the width. */}
+            <span className="max-sm:hidden">Hồ sơ tiếp</span>
+          </Button>
+        )}
         {onClose && <CloseButton onClick={onClose} className="border-0 bg-tint" />}
       </div>
 
       <BigActions app={app} />
+      {/* What HR does next sits right under the contact buttons, before the long reading below. */}
+      {error && (
+        <Notice tone="error" icon="alert">
+          <span role="alert">{error}</span>
+        </Notice>
+      )}
+      <StatusButtons app={app} onError={setError} onCompose={setComposeRequest} />
+      {app.status === 'interview' && <InterviewTime app={app} onError={setError} />}
+      <ComposeMessage app={app} request={composeRequest} onRequestDone={() => setComposeRequest(null)} />
       <CvFileNote app={app} />
+      <CvMatch app={app} />
 
       <dl className="m-0 flex flex-col gap-3 text-sm">
         <Fact icon="phone" label="Điện thoại" copy={app.phone}>
@@ -410,14 +496,7 @@ function DetailBody({
         </div>
       )}
 
-      {error && (
-        <Notice tone="error" icon="alert">
-          <span role="alert">{error}</span>
-        </Notice>
-      )}
-      <StatusButtons app={app} onError={setError} />
-      {app.status === 'interview' && <InterviewTime app={app} onError={setError} />}
-      {(app.status === 'interview' || app.status === 'rejected') && <ZaloMessage app={app} />}
+      <ContactHistory app={app} />
       <NoteField key={app.id} app={app} onError={setError} />
 
       <div className="flex items-start gap-2.5 rounded-control bg-mist px-3.5 py-3 text-[13px] leading-relaxed text-body">
@@ -433,10 +512,13 @@ export function ApplicantDetail({
   id,
   onClose,
   onDeleted,
+  onNext,
 }: {
   id: string;
   onClose?: () => void;
   onDeleted: () => void;
+  /** Next application in the current list, to go through new ones without going back. */
+  onNext?: () => void;
 }) {
   const detail = useApplication(id);
   const showSkeleton = useDelayedFlag(detail.isPending, 400);
@@ -462,5 +544,5 @@ export function ApplicantDetail({
     );
   }
   if (detail.isError) return <ErrorState onRetry={() => detail.refetch()} message={apiMessage(detail.error)} />;
-  return <DetailBody app={detail.data} onClose={onClose} onDeleted={onDeleted} />;
+  return <DetailBody app={detail.data} onClose={onClose} onDeleted={onDeleted} onNext={onNext} />;
 }

@@ -1,7 +1,7 @@
 import { formatTimestamp, type HrUserDto, type TempPasswordResponse } from '@careers/shared';
 import { useState, type FormEvent } from 'react';
 import { ApiError } from '../../api';
-import { useChangePassword, useHrUserAction, useHrUsers } from '../../api/queries';
+import { useChangePassword, useHrMe, useHrUserAction, useHrUsers, useUpdateProfile } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
@@ -144,6 +144,72 @@ function AddUser({ onCreated }: { onCreated: (r: TempPasswordResponse) => void }
   );
 }
 
+/** What goes into {Tên HR} / {SĐT HR}, and the mailbox Gmail should send from. */
+function SenderProfile() {
+  const me = useHrMe();
+  const update = useUpdateProfile();
+  const [name, setName] = useState(me.data?.name ?? '');
+  const [phone, setPhone] = useState(me.data?.phone ?? '');
+  const [contactEmail, setContactEmail] = useState(me.data?.contactEmail ?? '');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [done, setDone] = useState(false);
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    setDone(false);
+    update.mutate(
+      { name, phone, contactEmail },
+      {
+        onSuccess: () => setDone(true),
+        onError: (err) => setErrors(err instanceof ApiError ? err.fieldErrors : { form: errorMessage(err) }),
+      },
+    );
+  };
+  return (
+    <form
+      noValidate
+      onSubmit={submit}
+      className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
+    >
+      <div className="flex flex-col gap-1">
+        <h2 className="m-0 font-serif text-xl font-medium">Thông tin người gửi của bạn</h2>
+        <p className="m-0 text-[13px] text-slate">
+          Điền vào chữ ký mẫu thư: {'{Tên HR}'}, {'{SĐT HR}'}.
+        </p>
+      </div>
+      <div className="grid gap-3.5 sm:grid-cols-3">
+        <TextField label="Tên hiển thị" value={name} error={errors.name} onChange={(e) => setName(e.target.value)} />
+        <TextField
+          label="Số điện thoại / Zalo"
+          type="tel"
+          inputMode="tel"
+          value={phone}
+          error={errors.phone}
+          onChange={(e) => setPhone(e.target.value)}
+        />
+        <TextField
+          label="Email gửi thư"
+          type="email"
+          hint="Gmail thật của bạn, để ứng viên trả lời."
+          value={contactEmail}
+          error={errors.contactEmail}
+          onChange={(e) => setContactEmail(e.target.value)}
+        />
+      </div>
+      {errors.form && <span className="text-sm text-error">{errors.form}</span>}
+      {done && (
+        <span role="status" className="inline-flex items-center gap-1.5 text-sm text-ok">
+          <Icon name="check" size={16} />
+          Đã lưu.
+        </span>
+      )}
+      <Button type="submit" icon="check" disabled={update.isPending} className="self-start">
+        {update.isPending ? 'Đang lưu…' : 'Lưu thông tin'}
+      </Button>
+    </form>
+  );
+}
+
 function ChangeOwnPassword() {
   const change = useChangePassword();
   const [current, setCurrent] = useState('');
@@ -221,6 +287,7 @@ function ChangeOwnPassword() {
 export function HrAccountsPage() {
   usePageMeta('Tài khoản HR');
   const users = useHrUsers();
+  const me = useHrMe();
   const showSkeleton = useDelayedFlag(users.isPending);
   const [temp, setTemp] = useState<TempPasswordResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -267,6 +334,7 @@ export function HrAccountsPage() {
             setTemp(r);
           }}
         />
+        {me.data && <SenderProfile key={me.data.id} />}
         <ChangeOwnPassword />
       </div>
     </>

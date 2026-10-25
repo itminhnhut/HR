@@ -1,0 +1,13 @@
+{
+  "id": "c38-month-words-and-gplx",
+  "notes": "\"Tháng 3/2020 - Tháng 8/2022\" (2y5m) + \"Tháng 9/2022 – Tháng 2/2024\" (1y5m) = 3y11m, adjacent, both sales. \"GPLX hạng B2\" = giấy phép lái xe B2 → met.",
+  "cvText": "TRỊNH CÔNG MINH\nNhân viên kinh doanh thiết bị y tế\n0904 330 220 – congminh.trinh@example.com\n\nKINH NGHIỆM LÀM VIỆC\nTháng 9/2022 – Tháng 2/2024\nNhân viên kinh doanh – Công ty TNHH Thiết bị Y tế An Phúc\n- Bán hàng cho phòng khám, bệnh viện tư khu vực miền Tây\n\nTháng 3/2020 - Tháng 8/2022\nNhân viên bán hàng – Công ty CP Dược phẩm Kim Long\n\nHỌC VẤN\nCao đẳng Y tế Cần Thơ – Dược (2016 – 2019)\n\nGIẤY TỜ\nGPLX hạng B2\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Có bằng lái xe B2",
+    "Học vấn: Cao đẳng trở lên"
+  ],
+  "expected": ["met", "met", "met", "met"],
+  "today": "2026-10-25"
+}

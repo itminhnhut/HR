@@ -1,6 +1,7 @@
 import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { vercelBlobCvStore, type CvStore } from './lib/cv-store.js';
+import { turnstileVerifier, type CaptchaVerifier } from './lib/captcha.js';
 import { googleVerifier, type GoogleVerifier } from './lib/google.js';
 
 function requireEnv(name: string): string {
@@ -31,6 +32,14 @@ function googleSignIn(): GoogleVerifier {
   };
 }
 
+/** CAPTCHA on the public forms once TURNSTILE_SECRET_KEY is set (with VITE_TURNSTILE_SITE_KEY on the FE). */
+function captcha(): CaptchaVerifier {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (secret) return turnstileVerifier(secret);
+  console.warn('TURNSTILE_SECRET_KEY is not set: the public forms run without CAPTCHA.');
+  return null;
+}
+
 /** Local stand-ins for services without credentials yet (see local-dev.ts). Ignored on Vercel. */
 export interface LocalOverrides {
   db?: Db;
@@ -51,6 +60,7 @@ export function createProductionApp(local: LocalOverrides = {}) {
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
     verifyGoogleToken: googleSignIn(),
+    verifyCaptcha: captcha(),
     now: () => new Date(),
   });
 }

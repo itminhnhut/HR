@@ -1,7 +1,5 @@
 import {
-  EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_LABEL,
-  EXPERIENCE_OPTIONS,
   type EmploymentType,
   type HrJobDto,
   type JobInput,
@@ -10,14 +8,14 @@ import {
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { ApiError } from '../../api';
-import { useHrJob, useJobTemplate, useSaveJob } from '../../api/queries';
+import { useAddTemplateChoice, useHrJob, useJobTemplate, useSaveJob } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { Button } from '../../ui/Button';
 import { Checkbox, SelectField, TextArea, TextField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, IconRing } from '../../ui/icons';
 import { DeadlineField } from './job-form/DeadlineField';
-import { ChoiceWithOther, DepartmentField, SalaryInput, WorkingHoursField } from './job-form/fields';
+import { PickOrAdd, RequirementPicks, SalaryInput, WorkingHoursField } from './job-form/fields';
 import {
   emptyForm,
   fromJob,
@@ -129,6 +127,19 @@ function JobForm({
   const allowLeave = useUnsavedGuard(form !== savedForm && JSON.stringify(form) !== JSON.stringify(savedForm));
   /** A live or paused job: one button, state stays as it is. */
   const editsLiveJob = mode === 'edit' && !!job && job.status !== 'draft';
+  const addToList = useAddTemplateChoice();
+  /** "+ Thêm mới" in a dropdown also keeps the value in "Mẫu tin" for next time (appended on the server). */
+  const addChoice = (list: 'departments' | 'experiences' | 'educations', value: string) =>
+    addToList.mutate(
+      { list, value },
+      // The job still uses the value; only keeping it in the list failed.
+      {
+        onError: (e) =>
+          setGeneral(
+            `Đã chọn "${value}" cho tin này, nhưng chưa lưu được vào danh sách: ${apiMessage(e) ?? 'thử lại sau.'}`,
+          ),
+      },
+    );
   const rangeProblem = form.negotiable ? null : salaryRangeProblem(form);
 
   useEffect(() => {
@@ -206,11 +217,13 @@ function JobForm({
             }
           />
           <div className="grid items-start gap-3.5 sm:grid-cols-2">
-            <DepartmentField
+            <PickOrAdd
+              label="Phòng ban"
+              options={options.departments}
               value={form.department}
-              suggestions={options.departments}
               error={errors.department}
               onChange={(v) => set('department', v)}
+              onAdd={(v) => addChoice('departments', v)}
             />
             <SelectField
               label="Hình thức"
@@ -223,19 +236,21 @@ function JobForm({
                 </option>
               ))}
             </SelectField>
-            <ChoiceWithOther
+            <PickOrAdd
               label="Kinh nghiệm"
-              options={EXPERIENCE_OPTIONS}
+              options={options.experiences}
               value={form.experience}
               error={errors.experience}
               onChange={(v) => set('experience', v)}
+              onAdd={(v) => addChoice('experiences', v)}
             />
-            <ChoiceWithOther
+            <PickOrAdd
               label="Học vấn"
-              options={EDUCATION_OPTIONS}
+              options={options.educations}
               value={form.education}
               error={errors.education}
               onChange={(v) => set('education', v)}
+              onAdd={(v) => addChoice('educations', v)}
             />
           </div>
           <WorkingHoursField form={form} error={errors.workingHours} onChange={patch} />
@@ -300,6 +315,11 @@ function JobForm({
             maxLength={4000}
             placeholder={'Từ 1 năm kinh nghiệm bán hàng…\nĐiểm cộng: đã dùng CRM'}
             {...text('requirements')}
+          />
+          <RequirementPicks
+            options={options.template.requirementOptions}
+            text={form.requirements}
+            onChange={(v) => set('requirements', v)}
           />
           <p className="m-0 text-xs text-muted">
             Không ghi giới tính, độ tuổi, ngoại hình, tình trạng hôn nhân trừ khi công việc bắt buộc (Bộ luật Lao động
@@ -380,7 +400,9 @@ const HEADINGS: Record<Mode, string> = {
 export function HrJobFormPage() {
   const { id } = useParams();
   const location = useLocation();
-  const sourceId = id;
+  // "Nhân bản": a new job filled from an earlier one (?tu=<id>).
+  const copyFrom = id ? undefined : (new URLSearchParams(location.search).get('tu') ?? undefined);
+  const sourceId = id ?? copyFrom;
   const mode: Mode = id ? 'edit' : 'new';
   const source = useHrJob(sourceId);
   const options = useJobTemplate();
@@ -401,6 +423,12 @@ export function HrJobFormPage() {
         </Link>
         <h1 className="m-0 font-serif text-[30px] font-medium sm:text-[36px]">{HEADINGS[mode]}</h1>
       </div>
+      {copyFrom && source.data && (
+        <Notice tone="mist" icon="copy">
+          Tin mới, điền sẵn từ <strong className="font-semibold text-navy">{source.data.title}</strong>. Sửa những gì
+          khác rồi đăng; tin cũ giữ nguyên.
+        </Notice>
+      )}
       {loading && (
         <>
           <LoadingStatus />
@@ -415,7 +443,17 @@ export function HrJobFormPage() {
           mode={mode}
           job={mode === 'edit' ? source.data : undefined}
           options={options.data}
-          initial={source.data ? fromJob(source.data, options.data.template) : emptyForm(options.data.template)}
+          initial={
+            source.data
+              ? copyFrom
+                ? // A copy gets a fresh deadline; everything else is the earlier job's.
+                  {
+                    ...fromJob(source.data, options.data.template),
+                    deadline: emptyForm(options.data.template).deadline,
+                  }
+                : fromJob(source.data, options.data.template)
+              : emptyForm(options.data.template)
+          }
           initialNotice={notice}
         />
       )}

@@ -1,4 +1,4 @@
-import type { HrMe, HrUserDto, TempPasswordResponse } from '@careers/shared';
+import { fieldErrors, hrProfileSchema, type HrMe, type HrUserDto, type TempPasswordResponse } from '@careers/shared';
 import { asc, count, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Db } from '../db/index.js';
@@ -6,7 +6,7 @@ import { hrUsers, type HrUser } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { generatePassword, hashPassword, passwordProblem, verifyPassword } from '../lib/password.js';
 import { clearSlots } from '../lib/rate-limit.js';
-import { failureKey } from './hr-accounts.js';
+import { failureKey, toHrMe } from './hr-accounts.js';
 import { isUuid, normalizeEmail } from '../lib/request.js';
 
 const toDto = (user: HrUser, me: HrMe): HrUserDto => ({
@@ -15,6 +15,8 @@ const toDto = (user: HrUser, me: HrMe): HrUserDto => ({
   name: user.name,
   lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
   isMe: user.id === me.id,
+  phone: user.phone,
+  contactEmail: user.contactEmail,
 });
 
 export async function listHrUsers(db: Db, me: HrMe): Promise<HrUserDto[]> {
@@ -63,7 +65,7 @@ export async function resetHrPassword(db: Db, id: string, me: HrMe): Promise<Tem
     .where(eq(hrUsers.id, user.id))
     .returning();
   // A forgotten password often comes with a locked account: the new password works right away.
-  await clearSlots(db, failureKey(user.email));
+  await clearSlots(db, `${failureKey(user.email)}:`);
   return { user: toDto(updated, me), password };
 }
 
@@ -94,4 +96,18 @@ export async function changeOwnPassword(db: Db, raw: unknown, me: HrMe): Promise
     .where(eq(hrUsers.id, user.id))
     .returning();
   return updated;
+}
+
+/** "Thông tin người gửi": the name, phone and real mailbox put into message templates. */
+export async function updateMyProfile(db: Db, raw: unknown, me: HrMe): Promise<HrMe> {
+  const parsed = hrProfileSchema.safeParse(raw);
+  if (!parsed.success) throw invalid('Kiểm tra lại thông tin.', fieldErrors(parsed.error));
+  const { name, phone, contactEmail } = parsed.data;
+  const [user] = await db
+    .update(hrUsers)
+    .set({ name: name || null, phone: phone || null, contactEmail: contactEmail.toLowerCase() || null })
+    .where(eq(hrUsers.id, me.id))
+    .returning();
+  if (!user) throw notFound('Không tìm thấy tài khoản.');
+  return toHrMe(user);
 }

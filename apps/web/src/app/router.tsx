@@ -41,6 +41,7 @@ const routes: RouteObject[] = [
       { path: 'tin/:id', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'ho-so', lazy: lazy(() => import('../pages/hr/HrApplicantsPage')) },
       { path: 'mau-tin', lazy: lazy(() => import('../pages/hr/HrTemplatePage')) },
+      { path: 'mau-thu', lazy: lazy(() => import('../pages/hr/HrMessagesPage')) },
       { path: 'tai-khoan', lazy: lazy(() => import('../pages/hr/HrAccountsPage')) },
     ],
   },

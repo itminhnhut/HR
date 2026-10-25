@@ -1,0 +1,14 @@
+{
+  "id": "c18-casing-and-synonyms-office",
+  "notes": "Upper/lower casing and synonyms: \"MS OFFICE (WORD, EXCEL, POWERPOINT)\", \"google sheets\". Spreadsheet requirement with Excel/Google Sheets met. 2021 – 2024 then 2024 – nay → ≥ 4 years.",
+  "cvText": "PHAN NGỌC TRÂM\nTRỢ LÝ KINH DOANH\nngoctram.phan@example.com  /  0326 555 101\n\nKINH NGHIỆM\n2021 – 2024   Trợ lý kinh doanh, Công ty CP Nội thất Gỗ Việt\n2024 – nay    Thư ký văn phòng, Công ty TNHH Tư vấn Đầu tư Bảo Minh\n\nHỌC VẤN\nĐẠI HỌC MỞ TP.HCM – CỬ NHÂN QUẢN TRỊ VĂN PHÒNG (2017 – 2021)\n\nKỸ NĂNG\nMS OFFICE (WORD, EXCEL, POWERPOINT)\ngoogle sheets, google docs\n",
+  "requirements": [
+    "Thành thạo tin học văn phòng (Word, Excel)",
+    "Sử dụng bảng tính (Excel hoặc Google Sheets)",
+    "Kinh nghiệm: Từ 3 năm",
+    "Học vấn: Đại học trở lên",
+    "Cẩn thận, trung thực, có trách nhiệm"
+  ],
+  "expected": ["met", "met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

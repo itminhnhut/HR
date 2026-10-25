@@ -1,0 +1,14 @@
+{
+  "id": "c02-overlapping-jobs-no-double-count",
+  "notes": "Two accounting jobs overlap: 01/2020–12/2022 and 06/2021–06/2023 (part-time). Union = 01/2020–06/2023 = 3y5m; naive sum = 5y. \"Từ 4 năm\" must be unmet. Education is Cao đẳng (Kế toán), so \"Đại học chuyên ngành Kế toán\" is unmet (lower degree). No job since 07/2023.",
+  "cvText": "LÊ THỊ THU HÀ\nKế toán viên\n☎ 0977 123 450   ✉ thuha.le@example.com\nHà Đông, Hà Nội\n\nKINH NGHIỆM LÀM VIỆC\n▪ 01/2020 – 12/2022   Kế toán viên – Công ty TNHH Sản xuất Bao bì Minh Phát\n  - Hạch toán chứng từ thu chi, công nợ phải thu/phải trả\n  - Sử dụng phần mềm kế toán MISA SME hằng ngày\n▪ 06/2021 – 06/2023   Kế toán dịch vụ (bán thời gian, làm buổi tối) – Văn phòng Kế toán Thuế Ánh Dương\n  - Lập tờ khai thuế GTGT, TNCN cho 8 doanh nghiệp nhỏ\n▪ 07/2023 – nay: nghỉ chăm con nhỏ, đang tìm việc lại\n\nHỌC VẤN\nCao đẳng Kinh tế – Kỹ thuật Thương mại\nChuyên ngành: Kế toán doanh nghiệp (2016 – 2019)\n\nKỸ NĂNG\nMISA, Excel (hàm SUMIFS, VLOOKUP), Word\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Từ 4 năm kinh nghiệm kế toán",
+    "Sử dụng thành thạo phần mềm MISA",
+    "Tốt nghiệp Đại học chuyên ngành Kế toán",
+    "Trung thực, cẩn thận"
+  ],
+  "expected": ["met", "unmet", "met", "unmet", "unknown"],
+  "today": "2026-10-25"
+}

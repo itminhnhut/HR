@@ -25,7 +25,7 @@ const later = (ms: number) => {
 
 describe('HR sign-in limits', () => {
   it('checks at most 5 passwords per account even when guesses arrive in parallel', async () => {
-    const results = await Promise.all(Array.from({ length: 20 }, () => login(HR_EMAIL, 'sai')));
+    const results = await Promise.all(Array.from({ length: 20 }, () => login(HR_EMAIL, 'sai', '198.51.100.1')));
     const checked = results.filter((r) => r.status === 401).length;
     expect(checked).toBeLessThanOrEqual(5);
     expect(results.every((r) => r.status === 401 || r.status === 429)).toBe(true);
@@ -34,18 +34,29 @@ describe('HR sign-in limits', () => {
   it('locks an unknown email exactly like a real one, so the answers do not reveal accounts', async () => {
     const statuses = async (email: string) => {
       const out: number[] = [];
-      for (let i = 0; i < 6; i++) out.push((await login(email, 'sai')).status);
+      for (let i = 0; i < 6; i++) out.push((await login(email, 'sai', '198.51.100.3')).status);
       return out;
     };
     expect(await statuses('khong-co@congty.vn')).toEqual(await statuses(HR_EMAIL));
   });
 
   it('gives a full 5 tries again once a lock from a parallel burst has ended', async () => {
-    await Promise.all(Array.from({ length: 8 }, () => login(HR_EMAIL, 'sai')));
+    await Promise.all(Array.from({ length: 8 }, () => login(HR_EMAIL, 'sai', '198.51.100.2')));
     later(16 * MINUTE);
     const next: number[] = [];
-    for (let i = 0; i < 5; i++) next.push((await login(HR_EMAIL, 'sai')).status);
+    for (let i = 0; i < 5; i++) next.push((await login(HR_EMAIL, 'sai', '198.51.100.2')).status);
     expect(next).toEqual([401, 401, 401, 401, 429]);
+  });
+
+  it('does not lock the real HR out on their own device when someone guesses from elsewhere', async () => {
+    for (let i = 0; i < 5; i++) await login(HR_EMAIL, 'sai', '203.0.113.50');
+    expect((await login(HR_EMAIL, PASSWORD, '203.0.113.50')).status).toBe(429);
+    expect((await login(HR_EMAIL, PASSWORD, '198.51.100.77')).status).toBe(200);
+  });
+
+  it('still caps wrong guesses for one email spread over many devices', async () => {
+    for (let i = 0; i < 30; i++) await login(HR_EMAIL, 'sai', `192.0.2.${i}`);
+    expect((await login(HR_EMAIL, PASSWORD, '192.0.2.200')).status).toBe(429);
   });
 
   it('limits sign-in attempts per device, whatever email is tried', async () => {

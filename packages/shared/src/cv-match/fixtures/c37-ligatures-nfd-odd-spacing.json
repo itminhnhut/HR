@@ -1,0 +1,14 @@
+{
+  "id": "c37-ligatures-nfd-odd-spacing",
+  "notes": "PDF artefacts: ligatures (\"Ofﬁce\", \"Proﬁle\"), letter-spaced headers, non-breaking spaces, em dash, and the whole text in Unicode NFD (combining diacritics). 02/2023 — nay = 3y8m. \"MS Ofﬁce\" → tin học văn phòng met. TOEIC 700 → reading English met.",
+  "cvText": "L Ê   T H Ả O   V Y\nThư ký giám đốc\n\nP R O F I L E\nProﬁle: thư ký, trợ lý hành chính\n\nK I N H   N G H I Ệ M\n02/2023 — nay  Thư ký giám đốc – Công ty CP Đầu tư Hạ Long Xanh\n• Quản lý lịch họp, soạn thảo văn bản, tổng hợp báo cáo\n\nH Ọ C   V Ấ N\nĐại học Hạ Long – Ngôn ngữ Anh (2018 – 2022)\n\nK Ỹ   N Ă N G\nTin học: MS Ofﬁce\nNgoại ngữ: TOEIC 700\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Thành thạo tin học văn phòng",
+    "Đọc hiểu tiếng Anh",
+    "Học vấn: Đại học trở lên",
+    "Chu đáo, cẩn thận"
+  ],
+  "expected": ["met", "met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

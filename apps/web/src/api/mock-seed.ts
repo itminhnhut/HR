@@ -8,6 +8,10 @@ import {
   type EmploymentType,
   type JobState,
   type JobTemplate,
+  type MessageTemplate,
+  type InterviewMode,
+  type TemplateKey,
+  type ContactChannel,
 } from '@careers/shared';
 
 /** Rows of the in-browser demo database. Shapes mirror what the BE stores. */
@@ -50,6 +54,9 @@ export interface MockApplication {
   noteUpdatedAt: string | null;
   noteUpdatedBy: string | null;
   interviewAt: string | null;
+  interviewMode: InterviewMode | null;
+  meetingUrl: string | null;
+  contacts: { templateKey: TemplateKey; channel: ContactChannel; hrName: string; createdAt: string }[];
   consentAt: string;
   policyVersion: string;
   createdAt: string;
@@ -82,6 +89,8 @@ export interface MockHrUser {
   name: string | null;
   password: string;
   lastLoginAt: string | null;
+  phone: string | null;
+  contactEmail: string | null;
 }
 
 export interface MockDb {
@@ -89,6 +98,8 @@ export interface MockDb {
   hrUsers: MockHrUser[];
   /** "Mẫu tin" once HR saved one; null = the built-in default. */
   template: JobTemplate | null;
+  /** "Mẫu thư" HR changed; others use the built-in text. */
+  messageTemplates: MessageTemplate[];
   jobs: MockJob[];
   applications: MockApplication[];
   subscribers: MockSubscriber[];
@@ -97,7 +108,7 @@ export interface MockDb {
   session: { hr: string | null; candidateEmail: string | null };
 }
 
-export const DB_VERSION = 7;
+export const DB_VERSION = 8;
 
 const STANDARD_BENEFITS = standardBenefits(DEFAULT_JOB_TEMPLATE);
 const HOURS = composeWorkingHours(
@@ -319,6 +330,9 @@ export function buildSeed(now: Date = new Date()): MockDb {
     noteUpdatedAt: null,
     noteUpdatedBy: null,
     interviewAt: null,
+    interviewMode: null,
+    meetingUrl: null,
+    contacts: [],
     consentAt: daysAgoIso(today, ago),
     policyVersion: '2026-10',
     createdAt: daysAgoIso(today, ago),
@@ -359,9 +373,18 @@ export function buildSeed(now: Date = new Date()): MockDb {
   return {
     version: DB_VERSION,
     hrUsers: [
-      { id: 'u1', email: DEMO_HR.email, name: DEMO_HR.name, password: randomDemoPassword(), lastLoginAt: null },
+      {
+        id: 'u1',
+        email: DEMO_HR.email,
+        name: DEMO_HR.name,
+        password: randomDemoPassword(),
+        lastLoginAt: null,
+        phone: null,
+        contactEmail: null,
+      },
     ],
     template: null,
+    messageTemplates: [],
     jobs,
     applications,
     subscribers: [

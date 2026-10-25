@@ -1,12 +1,13 @@
 import { formatTimestamp, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { useApplications } from '../../api/queries';
+import { useApplications, useScorePending } from '../../api/queries';
 import { useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { Dialog, SheetHandle } from '../../ui/Dialog';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
 import { ApplicantDetail } from './applicants/ApplicantDetail';
+import { percentTone } from './applicants/CvMatch';
 import { interviewLabel } from './applicants/InterviewField';
 import { apiMessage, Avatar, FilterTabs, PageHeading, type TabItem } from './parts';
 
@@ -68,6 +69,14 @@ function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; curren
         <span className="flex shrink-0 flex-col items-end gap-1">
           <StatusText status={row.status} />
           <span className="text-xs text-muted">{formatTimestamp(row.createdAt)}</span>
+          {row.matchPercent != null && (
+            <span
+              title="Phù hợp với yêu cầu (chấm CV tự động)"
+              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${percentTone(row.matchPercent)}`}
+            >
+              {row.matchPercent}%
+            </span>
+          )}
           <span
             title={row.hasCv ? 'Có CV' : 'Chưa có CV'}
             className={`inline-flex items-center gap-1 text-[11px] ${row.hasCv ? 'text-accent' : 'text-error'}`}
@@ -128,12 +137,13 @@ export function HrApplicantsPage() {
   const selectedId = params.get('id');
   const jobId = params.get('tin') ?? undefined;
   const tabParam = params.get('trang-thai');
-  const tab: TabKey = isTab(tabParam) ? tabParam : 'all';
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const q = params.get('q') ?? '';
   const [draft, setDraft] = useState(q);
   const search = useDeferredValue(draft.trim());
   const apps = useApplications(jobId, search);
+  // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
+  const tab: TabKey = isTab(tabParam) ? tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
   const showSkeleton = useDelayedFlag(apps.isPending);
 
   const setParam = (key: string, value: string | null) => {
@@ -143,11 +153,20 @@ export function HrApplicantsPage() {
     setParams(next, { replace: key !== 'id' });
   };
 
-  const rows = useMemo(
-    () => (apps.data?.applications ?? []).filter((a) => tab === 'all' || a.status === tab),
-    [apps.data, tab],
-  );
+  const byMatch = params.get('sap-xep') === 'phu-hop';
+  const rows = useMemo(() => {
+    // The open application stays in the list after its status changes, so HR still sees where they are.
+    const list = (apps.data?.applications ?? []).filter(
+      (a) => tab === 'all' || a.status === tab || a.id === selectedId,
+    );
+    // Best match first; applications not scored yet go last, newest first among them.
+    return byMatch ? [...list].sort((a, b) => (b.matchPercent ?? -1) - (a.matchPercent ?? -1)) : list;
+  }, [apps.data, tab, byMatch, selectedId]);
   const counts = apps.data?.counts;
+  const at = rows.findIndex((r) => r.id === selectedId);
+  const nextId = at >= 0 ? rows[at + 1]?.id : rows[0]?.id;
+  // CV files without a percent yet are scored in the background so the list can be sorted by match.
+  const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv && a.matchPercent == null));
   const tabs: TabItem<TabKey>[] = TABS.map(([key, label]) => ({ key, label, count: counts?.[key] }));
 
   return (
@@ -190,10 +209,27 @@ export function HrApplicantsPage() {
         />
       </label>
 
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <label className="flex items-center gap-2 text-sm text-body">
+          <input
+            type="checkbox"
+            checked={byMatch}
+            onChange={(e) => setParam('sap-xep', e.target.checked ? 'phu-hop' : null)}
+            className="size-[18px] accent-accent"
+          />
+          Xếp theo % phù hợp với yêu cầu
+        </label>
+        {scoring != null && (
+          <span role="status" className="text-xs text-muted">
+            Đang chấm CV, còn {scoring} hồ sơ…
+          </span>
+        )}
+      </div>
+
       <FilterTabs
         items={tabs}
         value={tab}
-        onChange={(key) => setParam('trang-thai', key === 'all' ? null : key)}
+        onChange={(key) => setParam('trang-thai', key)}
         label="Lọc theo trạng thái"
         navyOnPhone
         className="border-b border-field max-lg:order-first max-lg:-mx-4 max-lg:-mt-6 max-lg:border-b-0 max-lg:bg-navy max-lg:px-4 max-sm:gap-x-[18px] sm:max-lg:-mx-6 sm:max-lg:px-6"
@@ -232,7 +268,12 @@ export function HrApplicantsPage() {
             >
               {selectedId ? (
                 <div className="max-w-[820px]">
-                  <ApplicantDetail key={selectedId} id={selectedId} onDeleted={() => setParam('id', null)} />
+                  <ApplicantDetail
+                    key={selectedId}
+                    id={selectedId}
+                    onDeleted={() => setParam('id', null)}
+                    onNext={nextId ? () => setParam('id', nextId) : undefined}
+                  />
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-3 py-16 text-center text-sm text-slate">
@@ -257,6 +298,7 @@ export function HrApplicantsPage() {
                 id={selectedId}
                 onClose={() => setParam('id', null)}
                 onDeleted={() => setParam('id', null)}
+                onNext={nextId ? () => setParam('id', nextId) : undefined}
               />
             )}
           </div>

@@ -1,0 +1,14 @@
+{
+  "id": "c29-fresh-graduate-japanese-only",
+  "notes": "\"Không yêu cầu kinh nghiệm\" → met (trivial). Graduated Đại học 06/2026 → met. The languages section lists only Japanese N3, so English reading is unmet. Laptop not mentioned → unknown.",
+  "cvText": "QUÁCH MINH THƯ\nCử nhân Kinh doanh quốc tế\nminhthu.quach@example.com · 0349 606 707\n\nHỌC VẤN\nĐại học Thương mại – Kinh doanh quốc tế\n2022 – 06/2026 (đã tốt nghiệp)\n\nKINH NGHIỆM\nThực tập sinh xuất nhập khẩu – Công ty TNHH Giao nhận Á Châu (3 tháng, 2025)\n\nNGOẠI NGỮ\nTiếng Nhật N3\n\nKỸ NĂNG\nWord, Excel, PowerPoint\n",
+  "requirements": [
+    "Không yêu cầu kinh nghiệm",
+    "Tốt nghiệp Đại học",
+    "Đọc hiểu tiếng Anh",
+    "Có laptop cá nhân",
+    "Ham học hỏi"
+  ],
+  "expected": ["met", "met", "unmet", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

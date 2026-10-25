@@ -94,8 +94,19 @@ function PerDayChart({ data }: { data: DashboardDto }) {
         </span>
       </p>
       <div
+        role="group"
+        aria-label="Hồ sơ theo ngày, dùng phím mũi tên để xem từng ngày"
         className="flex h-[180px] items-end gap-[3px] border-b border-line sm:gap-1"
         onMouseLeave={() => setPicked(null)}
+        onKeyDown={(e) => {
+          // One Tab stop for the whole chart; arrows move between days.
+          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!step) return;
+          e.preventDefault();
+          const next = Math.min(counts.length - 1, Math.max(0, shown + step));
+          setPicked(next);
+          (e.currentTarget.children[next] as HTMLElement | undefined)?.focus();
+        }}
       >
         {counts.map((count, i) => {
           const on = i === shown;
@@ -105,6 +116,7 @@ function PerDayChart({ data }: { data: DashboardDto }) {
               type="button"
               aria-label={`Ngày ${dayLabel(data.perDay[i].day)}: ${count} hồ sơ`}
               aria-pressed={on}
+              tabIndex={on ? 0 : -1}
               onMouseEnter={() => setPicked(i)}
               onFocus={() => setPicked(i)}
               onClick={() => setPicked(i)}

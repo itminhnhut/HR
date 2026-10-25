@@ -1,0 +1,14 @@
+{
+  "id": "c04-tmonth-format-hr-admin",
+  "notes": "\"T6/2020 - T12/2023\" = 3y6m (or 3y7m inclusive), then nothing. \"Từ 3 năm\" met, \"5 năm trở lên\" unmet. Google Sheets listed explicitly.",
+  "cvText": "ĐỖ THỊ KIM NGÂN\nHành chính – Nhân sự\n0868 222 314 · kimngan.do@example.com · Cầu Giấy, Hà Nội\n\nKINH NGHIỆM LÀM VIỆC\nCông ty CP Giáo dục Ánh Sao                                   T6/2020 - T12/2023\nNhân viên Hành chính Nhân sự\n- Chấm công, tính lương cho 150 nhân sự bằng Excel và Google Sheets\n- Soạn thảo hợp đồng lao động, quyết định trên Word\n- Đăng tin, sàng lọc hồ sơ ứng viên\n\nHỌC VẤN\nĐại học Lao động – Xã hội                                     2016 - 2020\nCử nhân Quản trị nhân lực\n\nKỸ NĂNG\nWord · Excel · Google Sheets · Google Forms\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Kinh nghiệm hành chính nhân sự 5 năm trở lên",
+    "Sử dụng Google Sheets",
+    "Học vấn: Đại học trở lên",
+    "Làm việc nhóm tốt"
+  ],
+  "expected": ["met", "unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

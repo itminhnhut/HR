@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { BENEFIT_MAX, MAX_BENEFITS, ROADMAP_ITEM_MAX, ROADMAP_MILESTONES } from './job-template.js';
+import {
+  BENEFIT_MAX,
+  CHOICE_MAX,
+  CHOICES_MAX,
+  DEFAULT_JOB_TEMPLATE,
+  MAX_BENEFITS,
+  ROADMAP_ITEM_MAX,
+  ROADMAP_MILESTONES,
+} from './job-template.js';
+import { SUBJECT_MAX, TEMPLATE_BODY_MAX } from './message-templates.js';
 import { normalizeVietnamPhone } from './phone.js';
 
 const optionalText = (max: number) =>
@@ -114,8 +123,19 @@ export const jobInputSchema = z
 
 export type JobInput = z.input<typeof jobInputSchema>;
 
+const httpUrl = z
+  .url({ protocol: /^https?$/, message: 'Link phải bắt đầu bằng http:// hoặc https://' })
+  .max(500, 'Link tối đa 500 ký tự.');
+
 export const applicationUpdateSchema = z.object({
   status: z.enum(['new', 'seen', 'interview', 'rejected']).optional(),
+  interviewMode: z.enum(['onsite', 'online']).nullable().optional(),
+  /** Google Meet (or other) link for an online interview; empty string clears it. */
+  meetingUrl: z
+    .union([z.literal(''), httpUrl])
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v)),
   /** ISO time of the interview; null clears it. */
   interviewAt: z.iso.datetime({ offset: true }).nullable().optional(),
   note: z.string().max(NOTE_MAX, `Ghi chú tối đa ${NOTE_MAX} ký tự.`).nullable().optional(),
@@ -129,6 +149,11 @@ export function fieldErrors(error: z.ZodError): Record<string, string> {
   }
   return out;
 }
+
+const choiceList = z
+  .array(z.string().trim().min(1).max(CHOICE_MAX, `Mỗi lựa chọn tối đa ${CHOICE_MAX} ký tự.`))
+  .max(CHOICES_MAX, `Tối đa ${CHOICES_MAX} lựa chọn.`)
+  .transform((items) => [...new Set(items)]);
 
 const HH_MM = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -148,4 +173,43 @@ export const jobTemplateSchema = z.object({
   roadmap: z
     .array(z.string().trim().max(ROADMAP_ITEM_MAX, `Mỗi mốc tối đa ${ROADMAP_ITEM_MAX} ký tự.`))
     .length(ROADMAP_MILESTONES.length),
+  // Older saved templates have no lists yet: they get the built-in ones.
+  departments: choiceList.default(DEFAULT_JOB_TEMPLATE.departments),
+  experiences: choiceList.default(DEFAULT_JOB_TEMPLATE.experiences),
+  educations: choiceList.default(DEFAULT_JOB_TEMPLATE.educations),
+  requirementOptions: z
+    .array(z.string().trim().min(1).max(200, 'Mỗi dòng tối đa 200 ký tự.'))
+    .max(CHOICES_MAX, `Tối đa ${CHOICES_MAX} dòng.`)
+    .transform((items) => [...new Set(items)])
+    .default(DEFAULT_JOB_TEMPLATE.requirementOptions),
+});
+
+export const messageTemplateSchema = z.object({
+  subject: z.string().trim().min(1, 'Nhập tiêu đề.').max(SUBJECT_MAX, `Tiêu đề tối đa ${SUBJECT_MAX} ký tự.`),
+  body: z
+    .string()
+    .trim()
+    .min(1, 'Nhập nội dung.')
+    .max(TEMPLATE_BODY_MAX, `Nội dung tối đa ${TEMPLATE_BODY_MAX} ký tự để link Gmail không bị cắt.`),
+});
+
+/** "Thông tin người gửi": what an HR fills in about themselves. */
+export const hrProfileSchema = z.object({
+  name: z.string().trim().max(100, 'Tên tối đa 100 ký tự.'),
+  phone: z.string().trim().max(30, 'Số điện thoại tối đa 30 ký tự.'),
+  contactEmail: z
+    .string()
+    .trim()
+    .pipe(z.union([z.literal(''), z.email('Email chưa đúng.').max(200)])),
+});
+
+export const contactLogSchema = z.object({
+  templateKey: z.enum(['interview_onsite', 'interview_online', 'rejection', 'call']),
+  channel: z.enum(['gmail', 'mailto', 'copy']),
+});
+
+/** "+ Thêm mới" in a job form dropdown: one value appended to one list of the job template, on the server. */
+export const addChoiceSchema = z.object({
+  list: z.enum(['departments', 'experiences', 'educations']),
+  value: z.string().trim().min(1).max(CHOICE_MAX, `Tối đa ${CHOICE_MAX} ký tự.`),
 });

@@ -1,0 +1,13 @@
+{
+  "id": "c22-shipper-a1-licence-not-b2",
+  "notes": "Only an A1 (motorbike) licence → \"B2 trở lên\" unmet. Own motorbike stated → met. 02/2024 – nay = 2y8m of delivery ≥ 6 months.",
+  "cvText": "LÂM QUỐC VIỆT\nShipper / Giao hàng\nSĐT: 0833 240 199 — Năm sinh: 1999\n\nKINH NGHIỆM\n02/2024 – nay  Nhân viên giao hàng – Công ty CP Giao Vận Tốc Hành\n- Giao 50–70 đơn/ngày khu vực Quận 7, Nhà Bè\n\nGIẤY TỜ / PHƯƠNG TIỆN\n- Bằng lái xe: A1\n- Có xe máy riêng (Honda Wave)\n- Có smartphone Android\n\nHỌC VẤN\nTốt nghiệp THPT\n",
+  "requirements": [
+    "Có bằng lái xe B2 trở lên",
+    "Có xe máy",
+    "Kinh nghiệm giao hàng từ 6 tháng",
+    "Nhanh nhẹn, chịu khó"
+  ],
+  "expected": ["unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

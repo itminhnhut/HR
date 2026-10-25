@@ -10,6 +10,10 @@ import type {
   HrJobsResponse,
   HrMe,
   HrUserDto,
+  InterviewMode,
+  MessageTemplatesResponse,
+  TemplateKey,
+  ContactChannel,
   JobTemplate,
   DashboardDto,
   JobInput,
@@ -39,6 +43,8 @@ export interface ApplyInput extends Omit<ApplicationFields, 'phone'> {
   cvFile: File | null;
   /** Signed in only: reuse the CV saved in the account (the BE keeps a copy per application). */
   useSavedCv?: boolean;
+  /** Cloudflare Turnstile token, when CAPTCHA is on. */
+  captchaToken?: string;
 }
 
 export interface CandidatePatch {
@@ -54,6 +60,15 @@ export interface ApplicationPatch {
   note?: string | null;
   /** ISO time; null clears it. */
   interviewAt?: string | null;
+  interviewMode?: InterviewMode | null;
+  /** Empty string clears it. */
+  meetingUrl?: string | null;
+}
+
+export interface HrProfilePatch {
+  name: string;
+  phone: string;
+  contactEmail: string;
 }
 
 /**
@@ -66,7 +81,7 @@ export interface Api {
   getJob(slug: string): Promise<JobPageResponse>;
   apply(input: ApplyInput): Promise<ApplyResponse>;
   /** Public lookup by phone: job, date and stage only (last 90 days). 429 when looked up too often. */
-  lookupApplications(phone: string): Promise<LookupResponse>;
+  lookupApplications(phone: string, captchaToken?: string): Promise<LookupResponse>;
 
   // Candidate account (optional, never needed to apply)
   /** Google is the only candidate sign-in. The account sees applications sent with its email. */
@@ -85,6 +100,7 @@ export interface Api {
   hrDashboard(): Promise<DashboardDto>;
   hrJobTemplate(): Promise<JobTemplateResponse>;
   hrSaveJobTemplate(template: JobTemplate): Promise<JobTemplateResponse>;
+  hrAddTemplateChoice(list: 'departments' | 'experiences' | 'educations', value: string): Promise<JobTemplateResponse>;
   hrJob(id: string): Promise<HrJobDto>;
   hrSaveJob(id: string | null, input: JobInput): Promise<HrJobDto>;
   hrJobAction(id: string, action: JobAction): Promise<{ ok: true }>;
@@ -96,6 +112,10 @@ export interface Api {
   hrApplication(id: string): Promise<ApplicationDetailDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
   hrDeleteApplication(id: string): Promise<{ ok: true }>;
+  /** "Chấm CV": scores the CV against the job's requirements (reuses the stored result when unchanged). */
+  hrScoreCv(id: string): Promise<ApplicationDetailDto>;
+  /** Scores a batch of CV files that have no up-to-date result. */
+  hrScorePending(): Promise<{ scored: number; remaining: number }>;
   hrDeleteDueApplications(): Promise<{ deleted: number }>;
   /** Link that opens an uploaded CV for HR, or null where files are not stored (demo). */
   hrCvUrl(applicationId: string): string | null;
@@ -104,4 +124,10 @@ export interface Api {
   hrResetPassword(id: string): Promise<TempPasswordResponse>;
   hrDeleteUser(id: string): Promise<{ ok: true }>;
   hrChangePassword(current: string, next: string): Promise<HrMe>;
+  hrUpdateProfile(patch: HrProfilePatch): Promise<HrMe>;
+  hrMessageTemplates(): Promise<MessageTemplatesResponse>;
+  hrSaveMessageTemplate(key: TemplateKey, input: { subject: string; body: string }): Promise<MessageTemplatesResponse>;
+  hrResetMessageTemplate(key: TemplateKey): Promise<MessageTemplatesResponse>;
+  /** "Đã soạn thư": HR opened a filled template in Gmail / a mail app, or copied it. */
+  hrLogContact(id: string, input: { templateKey: TemplateKey; channel: ContactChannel }): Promise<ApplicationDetailDto>;
 }

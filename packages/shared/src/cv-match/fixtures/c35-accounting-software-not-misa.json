@@ -1,0 +1,13 @@
+{
+  "id": "c35-accounting-software-not-misa",
+  "notes": "CV lists accounting software Fast Accounting and Bravo but not MISA → MISA unmet. T1/2022 – T9/2023 + T10/2023 – nay = 4y10m. Cử nhân Kế toán → met.",
+  "cvText": "NINH THỊ PHƯƠNG\nKế toán tổng hợp\n0975 010 122 · phuong.ninh@example.com\n\nKINH NGHIỆM LÀM VIỆC\nT10/2023 – nay   Kế toán tổng hợp – Công ty CP Cơ khí Tân Long\nT1/2022 – T9/2023   Kế toán thuế – Công ty TNHH Thương mại Hải Âu\n\nHỌC VẤN\nHọc viện Tài chính – Cử nhân Kế toán (2017 – 2021)\n\nKỸ NĂNG\nPhần mềm kế toán: Fast Accounting, Bravo\nExcel nâng cao (Pivot, Power Query)\n",
+  "requirements": [
+    "Sử dụng thành thạo MISA",
+    "Tốt nghiệp Đại học chuyên ngành Kế toán",
+    "Kinh nghiệm: Từ 3 năm",
+    "Thành thạo Excel"
+  ],
+  "expected": ["unmet", "met", "met", "met"],
+  "today": "2026-10-25"
+}

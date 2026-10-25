@@ -1,0 +1,13 @@
+{
+  "id": "c31-jobs-without-dates",
+  "notes": "Jobs are listed without any dates or durations, so years of experience cannot be measured → unknown (not unmet). KiotViet listed as a skill. THPT stated.",
+  "cvText": "ÔNG THỊ HỒNG\nNhân viên bán hàng – thu ngân\n0362 555 919\n\nKINH NGHIỆM\n- Nhân viên bán hàng – Siêu thị Mini Hoa Mai\n- Thu ngân – Cửa hàng tiện lợi 24h Sao Việt\n\nHỌC VẤN\nTốt nghiệp THPT\n\nKỸ NĂNG\nPhần mềm bán hàng KiotViet, tính tiền nhanh\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Biết sử dụng phần mềm bán hàng KiotViet",
+    "Học vấn: THPT"
+  ],
+  "expected": ["unknown", "unknown", "met", "met"],
+  "today": "2026-10-25"
+}

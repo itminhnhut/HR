@@ -82,8 +82,10 @@ export function postedAgoLabel(publishedAt: string, now: Date = new Date()): str
   return days <= 0 ? 'Mới đăng hôm nay' : `Mới đăng ${days} ngày trước`;
 }
 
+/** "Nguyễn Hồ Minh Nhựt (thử)" -> "Nhựt": the given name, ignoring notes in brackets. */
 export function lastName(fullName: string): string {
-  return fullName.trim().split(/\s+/).pop() ?? fullName;
+  const name = fullName.replace(/\([^)]*\)|\[[^\]]*\]/g, ' ').trim() || fullName.trim();
+  return name.split(/\s+/).pop() ?? fullName;
 }
 
 export const CANDIDATE_STAGE_LABEL: Record<import('./types.js').CandidateStage, string> = {

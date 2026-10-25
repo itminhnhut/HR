@@ -51,6 +51,7 @@ export async function createTestContext(): Promise<TestContext> {
     },
     cvStore,
     verifyGoogleToken: fakeGoogle,
+    verifyCaptcha: null,
     now: () => clock.now,
   };
   const app = createApp(deps);
@@ -73,6 +74,7 @@ export async function createTestContext(): Promise<TestContext> {
       cvStore.clear();
       deps.cvStore = cvStore;
       deps.verifyGoogleToken = fakeGoogle;
+      deps.verifyCaptcha = null;
       await db.execute(sql.raw(`TRUNCATE ${TABLES} CASCADE`));
     },
   };

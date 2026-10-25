@@ -21,8 +21,15 @@ const TOO_MANY_FROM_DEVICE = 'Thử đăng nhập quá nhiều lần từ máy n
 export const findHrUser = (db: Db, email: string): Promise<HrUser | undefined> =>
   db.query.hrUsers.findFirst({ where: eq(hrUsers.email, normalizeEmail(email)) });
 
-/** Wrong-password counter per email. Unknown emails get one too, so answers never reveal which accounts exist. */
+/**
+ * Wrong-password counters. Unknown emails get them too, so answers never reveal which accounts exist.
+ * Per email AND device: someone guessing from elsewhere cannot lock the real HR out of their own laptop.
+ * A wider per-email cap still stops guessing spread over many devices.
+ */
 export const failureKey = (email: string) => `hr-login:email:${normalizeEmail(email)}`;
+const deviceFailureKey = (email: string, ip: string) => `${failureKey(email)}:ip:${ip}`;
+const MAX_FAILED_PER_EMAIL = 30;
+const EMAIL_WINDOW_MS = 60 * 60_000;
 
 const CLOCK = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' });
 
@@ -49,7 +56,9 @@ export async function signIn(db: Db, raw: unknown, now: Date, ip: string): Promi
     TOO_MANY_FROM_DEVICE,
   );
   const key = failureKey(email);
-  const slot = await takeSlot(db, key, MAX_FAILED_LOGINS, LOCK_MS, now);
+  const overall = await takeSlot(db, `${key}:all`, MAX_FAILED_PER_EMAIL, EMAIL_WINDOW_MS, now);
+  if (!overall.ok) throw locked(overall.freeAt, now);
+  const slot = await takeSlot(db, deviceFailureKey(email, ip), MAX_FAILED_LOGINS, LOCK_MS, now);
   if (!slot.ok) throw locked(slot.freeAt, now);
 
   const user = await findHrUser(db, email);
@@ -62,7 +71,7 @@ export async function signIn(db: Db, raw: unknown, now: Date, ip: string): Promi
     throw new HttpError(401, WRONG);
   }
 
-  await clearSlots(db, key);
+  await clearSlots(db, `${key}:`);
   const upgrade = needsRehash(user.passwordHash) ? { passwordHash: await hashPassword(password) } : {};
   const [fresh] = await db
     .update(hrUsers)
@@ -72,7 +81,13 @@ export async function signIn(db: Db, raw: unknown, now: Date, ip: string): Promi
   return fresh ?? user;
 }
 
-export const toHrMe = (user: HrUser): HrMe => ({ id: user.id, email: user.email, name: user.name });
+export const toHrMe = (user: HrUser): HrMe => ({
+  id: user.id,
+  email: user.email,
+  name: user.name,
+  phone: user.phone,
+  contactEmail: user.contactEmail,
+});
 
 /**
  * Creates the account, or sets a new password for an existing one (and its name, only when given).
@@ -91,6 +106,6 @@ export async function upsertHrUser(db: Db, input: { email: string; name?: string
       set: { passwordHash, ...(input.name !== undefined ? { name: input.name } : {}) },
     })
     .returning();
-  await clearSlots(db, failureKey(email));
+  await clearSlots(db, `${failureKey(email)}:`);
   return user;
 }

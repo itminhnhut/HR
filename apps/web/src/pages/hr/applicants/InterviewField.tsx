@@ -1,4 +1,4 @@
-import { addDays, todayInVietnam } from '@careers/shared';
+import { addDays, formatDate, todayInVietnam } from '@careers/shared';
 import { useState, type CSSProperties } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { vi } from 'react-day-picker/locale';
@@ -30,7 +30,9 @@ const timeOf = (iso: string) =>
 export function interviewLabel(iso: string): string {
   const date = new Date(iso);
   const weekday = new Intl.DateTimeFormat('vi-VN', { timeZone: VN, weekday: 'long' }).format(date);
-  const day = new Intl.DateTimeFormat('vi-VN', { timeZone: VN, day: '2-digit', month: '2-digit' }).format(date);
+  // Built by hand: some browsers format vi-VN day/month as "27-10".
+  const [, m, d] = dayOf(iso).split('-');
+  const day = `${d}/${m}`;
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${day} lúc ${timeOf(iso).replace(/^0/, '')}`;
 }
 
@@ -45,22 +47,40 @@ const toIsoDay = (date: Date) =>
 export function InterviewField({
   value,
   disabled,
+  showTitle = true,
   onChange,
 }: {
   value: string | null;
   disabled?: boolean;
+  /** Off where the surrounding form already labels the field. */
+  showTitle?: boolean;
   onChange: (iso: string | null) => void;
 }) {
   const [open, setOpen] = useState(false);
   const today = todayInVietnam();
+  // Times already past today cannot be picked.
+  const nowTime = timeOf(new Date().toISOString());
   const day = value ? dayOf(value) : null;
-  const time = value ? timeOf(value) : '09:00';
-  const set = (nextDay: string, nextTime: string) => onChange(`${nextDay}T${nextTime}:00+07:00`);
+  // A time picked before the day is kept until a day is chosen.
+  const [pendingTime, setPendingTime] = useState('09:00');
+  const time = value ? timeOf(value) : pendingTime;
+  const set = (nextDay: string, nextTime: string) => {
+    // "Hôm nay" late in the day: move to the next free half hour instead of a time already past.
+    const t = nextDay === today && nextTime <= nowTime ? (TIMES.find((x) => x > nowTime) ?? nextTime) : nextTime;
+    onChange(`${nextDay}T${t}:00+07:00`);
+  };
+  const quick: [string, string][] = [
+    ['Hôm nay', today],
+    ['Ngày mai', addDays(today, 1)],
+    ['Ngày kia', addDays(today, 2)],
+  ];
+  const chip = (on: boolean) =>
+    `min-h-10 rounded-full border px-3.5 text-sm transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`;
 
   return (
     <div className="flex flex-col gap-2.5 rounded-control border border-line px-4 py-3.5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-sm font-medium text-navy">Giờ phỏng vấn</span>
+        {showTitle && <span className="text-sm font-medium text-navy">Giờ phỏng vấn</span>}
         {value && (
           <button
             type="button"
@@ -72,33 +92,46 @@ export function InterviewField({
           </button>
         )}
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          disabled={disabled}
-          aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
-          className="inline-flex min-h-11 items-center gap-2 rounded-control border border-field bg-white px-3.5 text-sm text-navy hover:bg-mist"
-        >
-          <Icon name="calendar" size={16} />
-          {value ? interviewLabel(value) : 'Chọn ngày'}
-        </button>
-        {day && (
-          <SelectField
-            label="Giờ"
-            hideLabel
-            value={time}
+      <div className="flex flex-wrap items-end gap-x-4 gap-y-2.5">
+        <div role="group" aria-label="Ngày phỏng vấn" className="flex flex-wrap gap-1.5">
+          {quick.map(([label, iso]) => (
+            <button
+              key={label}
+              type="button"
+              // Late in the day there is no half hour left to book today.
+              disabled={disabled || (iso === today && !TIMES.some((x) => x > nowTime))}
+              aria-pressed={day === iso}
+              onClick={() => set(iso, time)}
+              className={chip(day === iso)}
+            >
+              {label}
+            </button>
+          ))}
+          <button
+            type="button"
             disabled={disabled}
-            onChange={(e) => set(day, e.target.value)}
-            className="w-[120px]"
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+            className={`inline-flex items-center gap-1.5 ${chip(!!day && !quick.some(([, iso]) => iso === day))}`}
           >
-            {TIMES.map((t) => (
-              <option key={t} value={t}>
-                {t.replace(/^0/, '')}
-              </option>
-            ))}
-          </SelectField>
-        )}
+            <Icon name="calendar" size={15} />
+            {day && !quick.some(([, iso]) => iso === day) ? formatDate(day).slice(0, 5) : 'Chọn ngày khác'}
+          </button>
+        </div>
+        <SelectField
+          label="Giờ"
+          hideLabel
+          value={time}
+          disabled={disabled}
+          onChange={(e) => (day ? set(day, e.target.value) : setPendingTime(e.target.value))}
+          className="w-[110px]"
+        >
+          {TIMES.map((t) => (
+            <option key={t} value={t} disabled={day === today && t <= nowTime}>
+              {t.replace(/^0/, '')}
+            </option>
+          ))}
+        </SelectField>
       </div>
       {open && (
         <div className="w-fit max-w-full overflow-x-auto">
@@ -120,6 +153,9 @@ export function InterviewField({
           />
         </div>
       )}
+      <span role="status" className={`text-sm ${value ? 'font-medium text-accent' : 'text-muted'}`}>
+        {value ? interviewLabel(value) : 'Chưa chọn ngày phỏng vấn.'}
+      </span>
     </div>
   );
 }

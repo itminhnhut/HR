@@ -1,0 +1,14 @@
+{
+  "id": "c28-internship-plus-job-qa",
+  "notes": "Internship 01/2023 – 06/2023 then job 07/2023 – nay (3y3m). With the internship it is 3y9m/3y10m, without 3y3m: \"2+ năm\" met and \"Từ 4 năm\" unmet either way.",
+  "cvText": "TÔN NỮ KHÁNH VY\nQA Engineer\nkhanhvy.ton@example.com | 0935 909 808 | Huế\n\nKINH NGHIỆM LÀM VIỆC\n07/2023 – nay      QA Engineer – Công ty TNHH Phần mềm Sông Hương\n  - Viết test tự động bằng Cypress cho ứng dụng web\n  - Kiểm tra dữ liệu bằng SQL (MySQL)\n01/2023 – 06/2023  Thực tập sinh Kiểm thử phần mềm – Công ty TNHH Phần mềm Sông Hương\n\nHỌC VẤN\nĐại học Khoa học Huế – Công nghệ thông tin (2018 – 2022)\n\nKỸ NĂNG\nManual testing, Cypress, Postman, SQL, Jira\n",
+  "requirements": [
+    "Kinh nghiệm kiểm thử phần mềm 2+ năm",
+    "Từ 4 năm kinh nghiệm kiểm thử phần mềm",
+    "Biết SQL",
+    "Có kinh nghiệm viết test tự động (Selenium/Cypress)",
+    "Tư duy logic tốt"
+  ],
+  "expected": ["met", "unmet", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

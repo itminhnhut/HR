@@ -1,0 +1,13 @@
+{
+  "id": "c41-backend-developer-no-react",
+  "notes": "Backend developer, skills list has no React → \"Kinh nghiệm React tối thiểu 2 năm\" unmet. \"2020 – nay\" ≥ 5 years. SQL (PostgreSQL) met.",
+  "cvText": "VI HẢI ĐĂNG\nBackend Developer (Java)\nhaidang.vi@example.com | github.com/haidang-example | 0945 202 020\n\nKINH NGHIỆM LÀM VIỆC\n2020 – nay   Backend Developer – Công ty CP Giải pháp Thanh toán Ví Vàng\n             • Xây dựng microservice bằng Java, Spring Boot\n             • Tối ưu truy vấn PostgreSQL, Oracle\n\nHỌC VẤN\nĐại học Khoa học Tự nhiên TP.HCM – Cử nhân Khoa học máy tính (2016 – 2020)\n\nKỸ NĂNG\nJava, Spring Boot, SQL (PostgreSQL, Oracle), Docker, Kafka\n",
+  "requirements": [
+    "Kinh nghiệm React tối thiểu 2 năm",
+    "Có kinh nghiệm với SQL",
+    "Kinh nghiệm: Từ 3 năm",
+    "Học vấn: Đại học trở lên"
+  ],
+  "expected": ["unmet", "met", "met", "met"],
+  "today": "2026-10-25"
+}

@@ -11,7 +11,7 @@ import {
   type JobAction,
 } from '../services/hr-jobs.js';
 import { toHrJob } from '../services/job-mappers.js';
-import { jobTemplate, saveJobTemplate } from '../services/job-template.js';
+import { addTemplateChoice, jobTemplate, saveJobTemplate } from '../services/job-template.js';
 
 /** Mounted at /api/hr/jobs behind requireHr. */
 export const hrJobRoutes = new Hono<Env>();
@@ -22,6 +22,10 @@ hrJobRoutes.get('/', async (c) => {
 });
 
 hrJobRoutes.get('/template', async (c) => c.json(await jobTemplate(c.get('deps').db)));
+
+hrJobRoutes.post('/template/choices', async (c) =>
+  c.json(await addTemplateChoice(c.get('deps').db, await readJson(c))),
+);
 
 hrJobRoutes.put('/template', async (c) => c.json(await saveJobTemplate(c.get('deps').db, await readJson(c))));
 

@@ -322,6 +322,10 @@ describe('"Mẫu tin" job template', () => {
       { label: 'Phụ cấp ăn trưa', standard: false },
     ],
     roadmap: ['a', 'b', 'c', 'd', 'e'],
+    departments: ['Kinh doanh'],
+    experiences: ['Không yêu cầu'],
+    educations: ['Không yêu cầu'],
+    requirementOptions: ['Giao tiếp tốt'],
     ...overrides,
   });
 

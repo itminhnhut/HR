@@ -13,6 +13,7 @@ import { Link } from 'react-router';
 import { ApiError } from '../api';
 import { useApply, useCandidate, useGoogleSignIn } from '../api/queries';
 import { SITE } from '../lib/site';
+import { Captcha, CaptchaError, useCaptcha } from '../ui/Captcha';
 import { Button, ButtonLink } from '../ui/Button';
 import { CloseButton, Dialog } from '../ui/Dialog';
 import { Checkbox, FieldError, TextArea, TextField } from '../ui/Field';
@@ -23,7 +24,9 @@ import { PhoneField } from '../ui/PhoneField';
 /** saved = the CV stored in the signed-in account (one CV per account). */
 type CvMode = 'saved' | 'file' | 'link';
 
-type Errors = Partial<Record<'fullName' | 'phone' | 'email' | 'cv' | 'cvLink' | 'consent' | 'message', string>>;
+type Errors = Partial<
+  Record<'fullName' | 'phone' | 'email' | 'cv' | 'cvLink' | 'consent' | 'message' | 'captcha', string>
+>;
 
 function validate(f: {
   fullName: string;
@@ -90,6 +93,8 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false); // BR-11: never pre-ticked
   const [website, setWebsite] = useState(''); // honeypot
+  const captcha = useCaptcha();
+  const [waiting, setWaiting] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [dragging, setDragging] = useState(false);
   const [closedMessage, setClosedMessage] = useState<string | null>(null);
@@ -127,13 +132,24 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
     pick(e.dataTransfer.files[0]);
   };
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const found = validate({ fullName, phone, email, cvFile, cvLink, mode, consent });
+    const found: Errors = validate({ fullName, phone, email, cvFile, cvLink, mode, consent });
     setErrors(found);
     if (Object.keys(found).length) {
       setAttempt((n) => n + 1);
       return;
+    }
+    let captchaToken: string;
+    setWaiting(true);
+    try {
+      // Waits for the background "not a robot" check if it has not finished yet.
+      captchaToken = await captcha.getToken();
+    } catch (err) {
+      setErrors({ captcha: err instanceof CaptchaError ? err.message : 'Chưa xác minh được, thử lại.' });
+      return;
+    } finally {
+      setWaiting(false);
     }
     apply.mutate(
       {
@@ -149,10 +165,13 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
         // The "keep 12 months for other jobs" option was dropped by the product owner (2026-10-24).
         formOpenedAt: openedAt.current,
         website,
+        captchaToken,
       },
       {
         onSuccess: onSent,
         onError: (err) => {
+          // A token works once: get a fresh one for the next try.
+          captcha.renew();
           if (err instanceof ApiError && err.code === 'job_closed') setClosedMessage(err.message);
           else if (err instanceof ApiError && Object.keys(err.fieldErrors).length) {
             setErrors(err.fieldErrors as Errors);
@@ -195,15 +214,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
             <path className="check-draw" d="M5 12.5l4.5 4.5L19 7.5" />
           </svg>
         </span>
-        <h2 className="m-0 font-serif text-[34px] font-medium lg:text-[40px]">
-          {r.updatedExisting ? 'Đã cập nhật hồ sơ' : 'Đã gửi hồ sơ'}
-        </h2>
-        {r.updatedExisting && r.previousDate && (
-          <p className="m-0 max-w-[460px] border-l-2 border-silver bg-hover px-4 py-3 text-sm leading-relaxed text-body">
-            Bạn đã nộp vị trí này ngày {formatDate(r.previousDate)}. Hồ sơ cũ đã được thay bằng hồ sơ vừa gửi, HR sẽ xem
-            bản mới nhất.
-          </p>
-        )}
+        <h2 className="m-0 font-serif text-[34px] font-medium lg:text-[40px]">Đã gửi hồ sơ</h2>
         <p className="m-0 max-w-[460px] text-base leading-relaxed text-body">
           Cảm ơn {r.firstName}. HR sẽ xem hồ sơ và liên hệ qua số{' '}
           <strong className="text-navy">{formatPhone(r.phone)}</strong> nếu bạn phù hợp với vị trí này.
@@ -509,9 +520,19 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
           </div>
         </div>
 
+        <div className="px-5 sm:px-8 lg:px-12">
+          <Captcha control={captcha} error={errors.captcha} />
+        </div>
+
         <div className="sticky bottom-0 mt-auto border-t border-line bg-white px-5 py-3 shadow-[0_-6px_16px_rgba(11,31,58,0.06)] lg:static lg:border-0 lg:px-12 lg:pb-10 lg:pt-2 lg:shadow-none">
-          <Button type="submit" size="lg" icon="send" disabled={apply.isPending} className="w-full lg:w-auto">
-            {apply.isPending ? 'Đang gửi…' : 'Gửi hồ sơ'}
+          <Button
+            type="submit"
+            size="lg"
+            icon="send"
+            disabled={waiting || apply.isPending}
+            className="w-full lg:w-auto"
+          >
+            {waiting || apply.isPending ? 'Đang gửi…' : 'Gửi hồ sơ'}
           </Button>
         </div>
       </form>

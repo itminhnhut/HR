@@ -1,0 +1,14 @@
+{
+  "id": "c03-driver-year-ranges-b2",
+  "notes": "Year-only ranges \"2016 - 2019\" and \"2019 - nay\": >= 7 years however counted. Birth year 1990 must not matter. Licence B2 stated. CV explicitly states availability \"Có thể đi làm ngay\" so that item is met.",
+  "cvText": "PHẠM VĂN TOÀN\nTài xế xe tải / xe con\n\nNăm sinh: 1990          Điện thoại: 0912 345 990\nQuê quán: Nam Định       Nơi ở: Thủ Đức, TP.HCM\n\nKINH NGHIỆM\n2016 - 2019    Tài xế giao hàng – Công ty Vận tải Hoàng Long Phát\n2019 - nay     Tài xế xe con đưa đón chuyên gia – Công ty TNHH Dịch vụ Thuận Thành\n\nBẰNG CẤP\n- Bằng lái xe hạng B2 (cấp năm 2014)\n- Tốt nghiệp Cao đẳng nghề Cơ khí ô tô – Trường CĐ nghề số 8 (2010 - 2013)\n\nTHÔNG TIN KHÁC\n- Có thể đi làm ngay\n- Không hút thuốc\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 3 năm",
+    "Học vấn: Cao đẳng trở lên",
+    "Có bằng lái xe B2",
+    "Có thể đi làm ngay",
+    "Trung thực, cẩn thận"
+  ],
+  "expected": ["met", "met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

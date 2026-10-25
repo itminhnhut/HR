@@ -1,0 +1,13 @@
+{
+  "id": "c30-no-education-section",
+  "notes": "CV has no education information at all → education requirement unknown (not unmet). 2018 – 2024 = 6 years of real-estate sales. Transport not mentioned → unknown.",
+  "cvText": "CHU ĐỨC THẮNG\nChuyên viên kinh doanh bất động sản\n0989 818 989 | ducthang.chu@example.com\n\nKINH NGHIỆM\n2018 – 2024\nCông ty CP Địa ốc Phúc Khang\n• Tư vấn, bán hàng dự án căn hộ tại TP. Thủ Đức\n• Doanh số 2022: 46 căn\n\nKỸ NĂNG\nĐàm phán, Excel, Facebook Ads cơ bản\n",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Học vấn: Đại học trở lên",
+    "Tối thiểu 1 năm kinh nghiệm bán hàng",
+    "Có phương tiện đi lại"
+  ],
+  "expected": ["met", "unknown", "met", "unknown"],
+  "today": "2026-10-25"
+}

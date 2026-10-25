@@ -53,12 +53,13 @@ describe('apply', () => {
     expect(err.fieldErrors.cv).toMatch(/4 MB/);
   });
 
-  it('updates instead of duplicating within 30 days (BR-07)', async () => {
-    const first = await run(mockApi.apply(base));
-    expect(first.updatedExisting).toBe(false);
-    const second = await run(mockApi.apply({ ...base, message: 'cập nhật' }));
-    expect(second.updatedExisting).toBe(true);
-    expect(second.previousDate).toBeTruthy();
+  it('ignores an exact repeat (double click) but never overwrites an earlier application', async () => {
+    await run(mockApi.apply({ ...base, phone: '0933222111' }));
+    await run(mockApi.apply({ ...base, phone: '0933222111' }));
+    await run(mockApi.apply({ ...base, phone: '0933222111', email: 'khac@gmail.com' }));
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
+    const rows = (await run(mockApi.hrApplications(undefined, '0933222111'))).applications;
+    expect(rows).toHaveLength(2);
   });
 
   it('refuses closed jobs with code job_closed', async () => {
@@ -132,8 +133,8 @@ describe('editing live jobs', () => {
   });
 });
 
-describe('re-applying within 30 days (BR-07)', () => {
-  it('keeps the HR status and moves the application to the top', async () => {
+describe('sending the same form twice', () => {
+  it('keeps one application with the status HR set', async () => {
     const [job] = (await run(mockApi.listJobs())).jobs;
     const input = { ...base, jobId: job.id, phone: '0933111222' };
     await run(mockApi.apply(input));

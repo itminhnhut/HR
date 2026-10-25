@@ -1,0 +1,14 @@
+{
+  "id": "c32-soft-requirements-only",
+  "notes": "Every requirement is a soft trait; the CV even claims these traits, but self-claims are not measurable → all unknown, percent null. \"Ưu tiên ứng viên có kinh nghiệm trong ngành\" does not name the industry → unknown.",
+  "cvText": "LƯU BẢO TRÂM\nNhân viên lễ tân\n0707 818 616 | baotram.luu@example.com\n\nKINH NGHIỆM\n03/2022 – nay  Lễ tân – Phòng khám Nha khoa Nụ Cười Việt\n\nKỸ NĂNG MỀM\n• Giao tiếp tốt, chủ động\n• Làm việc nhóm tốt\n• Chịu được áp lực cao\n• Trung thực, cẩn thận\n",
+  "requirements": [
+    "Giao tiếp rõ ràng, chủ động",
+    "Làm việc nhóm tốt",
+    "Chịu được áp lực công việc",
+    "Trung thực, cẩn thận",
+    "Ưu tiên ứng viên có kinh nghiệm trong ngành"
+  ],
+  "expected": ["unknown", "unknown", "unknown", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

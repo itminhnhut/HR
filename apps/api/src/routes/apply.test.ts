@@ -45,8 +45,6 @@ describe('POST /api/applications', () => {
       ok: true,
       firstName: 'An',
       phone: '0912000111',
-      updatedExisting: false,
-      previousDate: null,
     });
     const [row] = await t.db.select().from(applications);
     expect(row).toMatchObject({
@@ -128,49 +126,31 @@ describe('POST /api/applications', () => {
     expect((await json<{ fieldErrors: Record<string, string> }>(res)).fieldErrors.phone).toBeTruthy();
   });
 
-  it('updates instead of duplicating within 30 days (BR-07)', async () => {
+  it('creates a new application when someone re-sends later, never overwriting the earlier one', async () => {
     const job = await insertJob(t);
-    await applyForm(fields(job.id, { message: 'Lần 1' }));
-    const firstAt = t.clock.now;
-    t.clock.now = new Date(firstAt.getTime() + 29 * 24 * 60 * 60 * 1000);
-
-    const res = await applyForm(fields(job.id, { phone: '+84 912 000 111', message: 'Lần 2' }));
-
-    const body = await json<ApplyResponse>(res);
-    expect(body).toMatchObject({ updatedExisting: true, previousDate: firstAt.toISOString() });
-    const rows = await t.db.select().from(applications);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ message: 'Lần 2', status: 'new' });
-    expect(rows[0].createdAt).toEqual(t.clock.now);
-  });
-
-  it('keeps the status and note HR set when the candidate re-applies, moving it to the top (BR-07)', async () => {
-    const job = await insertJob(t);
-    await applyForm(fields(job.id, { message: 'Bản đầu' }));
+    await applyForm(fields(job.id, { message: 'Lần 1', email: 'that@gmail.com' }));
     await t.db.update(applications).set({ status: 'interview', note: 'Hẹn thứ 5' });
     t.clock.now = new Date(t.clock.now.getTime() + 2 * 24 * 60 * 60 * 1000);
 
-    await applyForm(fields(job.id, { message: 'Bản mới' }));
+    // Someone else who only knows the phone number.
+    const res = await applyForm(fields(job.id, { message: 'Lần 2', email: 'ke-xau@gmail.com' }));
 
-    const [row] = await t.db.select().from(applications);
-    expect(row).toMatchObject({ status: 'interview', note: 'Hẹn thứ 5', message: 'Bản mới' });
-    expect(row.createdAt).toEqual(t.clock.now);
+    expect(await json<ApplyResponse>(res)).toEqual({ ok: true, firstName: 'An', phone: '0912000111' });
+    const rows = await t.db.select().from(applications).orderBy(applications.createdAt);
+    expect(rows.map((r) => [r.message, r.email, r.status, r.note])).toEqual([
+      ['Lần 1', 'that@gmail.com', 'interview', 'Hẹn thứ 5'],
+      ['Lần 2', 'ke-xau@gmail.com', 'new', null],
+    ]);
   });
 
-  it('counts the 30 days in Vietnam calendar days', async () => {
-    const job = await insertJob(t, { deadline: '2026-12-15' });
-    t.clock.now = new Date('2026-10-20T16:30:00.000Z'); // 23:30 on 20/10 in Vietnam
-    await applyForm(fields(job.id));
-    t.clock.now = new Date('2026-11-19T17:30:00.000Z'); // 00:30 on 20/11, 31 calendar days later
-    expect((await json<ApplyResponse>(await applyForm(fields(job.id)))).updatedExisting).toBe(false);
-    expect(await t.db.select().from(applications)).toHaveLength(2);
-  });
-
-  it('keeps applications for different jobs separate', async () => {
-    const a = await insertJob(t);
-    const b = await insertJob(t);
-    await applyForm(fields(a.id));
-    expect((await json<ApplyResponse>(await applyForm(fields(b.id)))).updatedExisting).toBe(false);
+  it('treats the very same form sent again within 10 minutes as one application, keeping one CV', async () => {
+    const job = await insertJob(t);
+    await applyForm(fields(job.id), pdfFile('v1.pdf'));
+    t.clock.now = new Date(t.clock.now.getTime() + 5 * 60_000);
+    await applyForm(fields(job.id), pdfFile('v1.pdf'));
+    const rows = await t.db.select().from(applications);
+    expect(rows).toHaveLength(1);
+    expect([...t.cvStore.files.keys()]).toEqual([rows[0].cvPathname]);
   });
 
   // PGlite runs transactions one at a time, so this guards the logic only. The advisory lock itself was
@@ -180,15 +160,6 @@ describe('POST /api/applications', () => {
     const results = await Promise.all([applyForm(fields(job.id)), applyForm(fields(job.id))]);
     expect(results.map((r) => r.status)).toEqual([200, 200]);
     expect(await t.db.select().from(applications)).toHaveLength(1);
-  });
-
-  it('replaces the stored CV file when the candidate re-applies with a new one', async () => {
-    const job = await insertJob(t);
-    await applyForm(fields(job.id), pdfFile('v1.pdf'));
-    await applyForm(fields(job.id), pdfFile('v2.pdf'));
-    const [row] = await t.db.select().from(applications);
-    expect(row.cvFileName).toBe('v2.pdf');
-    expect([...t.cvStore.files.keys()]).toEqual([row.cvPathname]);
   });
 
   it('refuses closed jobs with code job_closed', async () => {
@@ -250,6 +221,20 @@ describe('POST /api/applications', () => {
     const form = new FormData();
     form.append('jobId', job.id);
     expect((await t.request('/api/applications', { method: 'POST', body: form })).status).toBe(403);
+  });
+});
+
+describe('application limits', () => {
+  it('accepts 20 submissions an hour from one device, then asks to wait', async () => {
+    const job = await insertJob(t);
+    for (let i = 0; i < 20; i++) {
+      const res = await applyForm(fields(job.id, { phone: `09120001${String(i).padStart(2, '0')}` }));
+      expect(res.status).toBe(200);
+    }
+    const blocked = await applyForm(fields(job.id, { phone: '0912000199' }));
+    expect(blocked.status).toBe(429);
+    t.clock.now = new Date(t.clock.now.getTime() + 61 * 60_000);
+    expect((await applyForm(fields(job.id, { phone: '0912000199' }))).status).toBe(200);
   });
 });
 

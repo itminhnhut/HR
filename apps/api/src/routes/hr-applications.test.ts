@@ -58,6 +58,7 @@ describe('GET /api/hr/applications', () => {
       hasCv: false,
       noteLine: null,
       interviewAt: null,
+      matchPercent: null,
     });
     expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, interview: 1, rejected: 0 });
     expect(body.jobs).toEqual([

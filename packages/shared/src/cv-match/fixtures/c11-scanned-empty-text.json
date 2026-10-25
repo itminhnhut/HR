@@ -1,0 +1,14 @@
+{
+  "id": "c11-scanned-empty-text",
+  "notes": "Scanned CV: the PDF has no text layer, cvText is empty. Every verdict unknown, percent null.",
+  "cvText": "",
+  "requirements": [
+    "Kinh nghiệm: Từ 2 năm",
+    "Học vấn: Cao đẳng trở lên",
+    "Thành thạo tin học văn phòng (Word, Excel)",
+    "Có laptop cá nhân",
+    "Giao tiếp rõ ràng, chủ động"
+  ],
+  "expected": ["unknown", "unknown", "unknown", "unknown", "unknown"],
+  "today": "2026-10-25"
+}

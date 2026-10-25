@@ -1,0 +1,8 @@
+{
+  "id": "c09-waiter-no-experience-required-thpt",
+  "notes": "\"Kinh nghiệm: Không yêu cầu\" is trivially satisfied → met (see ambiguity note in report). THPT graduate vs requirement \"Học vấn: THPT\" → met. Motorbike stated.",
+  "cvText": "NGÔ THANH TÚ\nỨng tuyển: Nhân viên phục vụ\nSinh ngày 05/06/2005 – SĐT 0388 050 605\nĐịa chỉ: Ninh Kiều, Cần Thơ\n\nHỌC VẤN\nTốt nghiệp THPT Châu Văn Liêm (2023)\n\nKINH NGHIỆM\nPhụ quán cà phê gia đình (không chính thức)\n\nTHÔNG TIN THÊM\n- Có xe máy đi lại\n- Có thể làm theo ca\n- Vui vẻ, hoà đồng\n",
+  "requirements": ["Kinh nghiệm: Không yêu cầu", "Học vấn: THPT", "Có xe máy", "Vui vẻ, hòa đồng"],
+  "expected": ["met", "met", "met", "unknown"],
+  "today": "2026-10-25"
+}

@@ -41,8 +41,14 @@ export function PreviewDialog({ form, open, onClose }: { form: FormState; open: 
     t.trim(),
   );
   return (
-    <Dialog open={open} onClose={onClose} label="Xem trước tin" variant="panel">
-      <div className="flex max-h-[92dvh] flex-col overflow-y-auto sm:w-[720px]">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      label="Xem trước tin"
+      variant="panel"
+      className="sm:!w-[min(760px,calc(100vw-48px))]"
+    >
+      <div className="flex max-h-[92dvh] flex-col overflow-y-auto">
         <div className="sticky top-0 flex items-start justify-between gap-4 bg-navy px-6 py-5 text-white">
           <div className="flex flex-col gap-1.5">
             <span className="text-sm text-silver-soft">{form.department || 'Phòng ban'} · Xem trước</span>

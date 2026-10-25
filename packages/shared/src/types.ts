@@ -74,7 +74,10 @@ export interface HrJobDto extends SalaryFields {
 /** Defaults for a new job plus what earlier jobs used, for suggestions. */
 export interface JobTemplateResponse {
   template: import('./job-template.js').JobTemplate;
+  /** Template choices plus values used on earlier jobs. */
   departments: string[];
+  experiences: string[];
+  educations: string[];
   /** Benefits typed by hand on earlier jobs. */
   extraBenefits: string[];
 }
@@ -106,6 +109,8 @@ export interface ApplicationRowDto {
   status: ApplicationStatus;
   createdAt: string;
   hasCv: boolean;
+  /** Automatic CV match against the job's requirements, when scored; null otherwise. */
+  matchPercent: number | null;
   /** First line of the HR note, for the list. */
   noteLine: string | null;
   interviewAt: string | null;
@@ -119,6 +124,17 @@ export interface ApplicationDetailDto extends ApplicationRowDto {
   note: string | null;
   noteUpdatedAt: string | null;
   noteUpdatedBy: string | null;
+  interviewMode: import('./message-templates.js').InterviewMode | null;
+  meetingUrl: string | null;
+  /** Last automatic CV check (see spec-cv-match.md); null when never scored. */
+  cvScore: CvScoreDto | null;
+  /** Messages HR prepared for this person (opened in Gmail, a mail app, or copied), newest first. */
+  contacts: {
+    templateKey: import('./message-templates.js').TemplateKey;
+    channel: import('./message-templates.js').ContactChannel;
+    hrName: string;
+    createdAt: string;
+  }[];
   /** The same person's other applications (same phone), newest first. */
   otherApplications: { id: string; jobTitle: string; status: ApplicationStatus; createdAt: string }[];
 }
@@ -136,6 +152,8 @@ export interface HrUserDto {
   name: string | null;
   lastLoginAt: string | null;
   isMe: boolean;
+  phone: string | null;
+  contactEmail: string | null;
 }
 
 /** Shown once: the temporary password of a new or reset account. */
@@ -166,6 +184,21 @@ export interface SubscriberDto {
   createdAt: string;
 }
 
+export interface CvScoreDto {
+  /** null: nothing could be judged (no readable text, or only soft requirements). */
+  percent: number | null;
+  items: import('./cv-match/types.js').MatchItem[];
+  scoredAt: string;
+  /** Why there is no score, e.g. "CV là link, không đọc được tự động". */
+  note: string | null;
+}
+
+export interface MessageTemplatesResponse {
+  templates: import('./message-templates.js').MessageTemplate[];
+  /** Keys HR has changed from the built-in text. */
+  customized: import('./message-templates.js').TemplateKey[];
+}
+
 export interface ApiError {
   error: string;
   fieldErrors?: Record<string, string>;
@@ -175,15 +208,16 @@ export interface ApplyResponse {
   ok: true;
   firstName: string;
   phone: string;
-  /** BR-07: same phone applied to the same job within 30 days. */
-  updatedExisting: boolean;
-  previousDate: string | null;
 }
 
 export interface HrMe {
   id: string;
   email: string;
   name: string | null;
+  /** Filled into templates as {SĐT HR}. */
+  phone: string | null;
+  /** The real mailbox this HR sends from (the sign-in email may not receive mail). */
+  contactEmail: string | null;
 }
 
 export interface CandidateMe {
