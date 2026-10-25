@@ -9,3 +9,6 @@ export function envValue(value: string | undefined): string {
 }
 
 export const DEFAULT_COMPANY = 'TOP FLOW';
+
+/** Where the site lives when VITE_SITE_URL is not set: share previews need absolute addresses. */
+export const LIVE_SITE_URL = 'https://www.lee-hr.com';

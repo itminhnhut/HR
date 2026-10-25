@@ -277,6 +277,8 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
       </aside>
 
       <form
+        // Clarity never shows what applicants type or attach.
+        data-clarity-mask="true"
         onSubmit={onSubmit}
         noValidate
         className="flex max-h-dvh scroll-pb-24 flex-col overflow-y-auto sm:max-h-[calc(100dvh-48px)]"

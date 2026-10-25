@@ -18,6 +18,13 @@ const SECTIONS: [string, string[]][] = [
     ['Chỉ bộ phận nhân sự và người phỏng vấn của vị trí đó.', 'Không bán, không chia sẻ cho công ty khác.'],
   ],
   [
+    'Thống kê lượt xem trang',
+    [
+      'Trang dùng Google Analytics và Microsoft Clarity (có cookie) để đếm lượt xem, biết người xem đến từ đâu và xem trang được dùng thế nào (cuộn, bấm), nhằm cải thiện trang.',
+      'Những gì bạn gõ hoặc đính kèm trong form ứng tuyển được che, không gửi họ tên, số điện thoại, email hay CV cho Google hay Microsoft. Trang HR và trang Hồ sơ của tôi không được thống kê.',
+    ],
+  ],
+  [
     'Lưu trong bao lâu',
     [
       'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng.',
