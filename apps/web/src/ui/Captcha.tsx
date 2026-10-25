@@ -9,7 +9,7 @@ export const captchaEnabled = !!SITE_KEY;
 const WAIT_MS = 15_000;
 
 const LOAD_FAILED = 'Không tải được bước chống spam. Kiểm tra mạng rồi bấm "Thử lại".';
-const NEEDS_CLICK = 'Bấm vào ô "Tôi không phải robot" bên dưới rồi gửi lại.';
+const NEEDS_CLICK = 'Bấm vào ô "Xác minh bạn là con người" bên dưới rồi gửi lại.';
 const TOO_SLOW = 'Bước chống spam chưa xong. Đợi vài giây rồi bấm lại.';
 
 interface Turnstile {
@@ -67,6 +67,8 @@ export function useCaptcha(): CaptchaControl {
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const token = useRef('');
+  // Cloudflare is showing the box and waits for a click: a submit cannot get a token by waiting.
+  const needsClick = useRef(false);
   const waiters = useRef<Waiter[]>([]);
   const widget = useRef<{ ts: Turnstile; id: string } | null>(null);
 
@@ -89,12 +91,16 @@ export function useCaptcha(): CaptchaControl {
           appearance: 'interaction-only',
           size: 'flexible',
           callback: (t: string) => {
+            needsClick.current = false;
             token.current = t;
             settle((w) => w.resolve(t));
           },
           'expired-callback': () => (token.current = ''),
           // The box is now visible: a waiting submit tells the visitor to click it.
-          'before-interactive-callback': () => settle((w) => w.reject(new CaptchaError(NEEDS_CLICK))),
+          'before-interactive-callback': () => {
+            needsClick.current = true;
+            settle((w) => w.reject(new CaptchaError(NEEDS_CLICK)));
+          },
           'error-callback': () => {
             token.current = '';
             settle((w) => w.reject(new CaptchaError(TOO_SLOW)));
@@ -118,6 +124,7 @@ export function useCaptcha(): CaptchaControl {
   const getToken = useCallback((): Promise<string> => {
     if (!captchaEnabled || token.current) return Promise.resolve(token.current);
     if (failed) return Promise.reject(new CaptchaError(LOAD_FAILED));
+    if (needsClick.current) return Promise.reject(new CaptchaError(NEEDS_CLICK));
     return new Promise<string>((resolve, reject) => {
       const timer = setTimeout(() => {
         waiters.current = waiters.current.filter((w) => w !== waiter);

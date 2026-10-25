@@ -44,6 +44,9 @@ export default function LookupPage() {
     try {
       // Waits for the background "not a robot" check if it has not finished yet.
       const captchaToken = await captcha.getToken();
+      // Each token works once: the next lookup needs a fresh one. Without a token the box stays as it is,
+      // so a visitor asked to click it still sees it.
+      captcha.renew();
       setResult(await lookup.mutateAsync({ phone, captchaToken }));
     } catch (err) {
       setError(
@@ -53,8 +56,6 @@ export default function LookupPage() {
       );
     } finally {
       setWaiting(false);
-      // Each token works once.
-      captcha.renew();
     }
   };
 

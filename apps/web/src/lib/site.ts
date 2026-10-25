@@ -1,15 +1,24 @@
 /** Company details shown across the site. Set them in .env (see .env.example). */
 const env = import.meta.env;
 
+/**
+ * A setting from the environment, or '' when unset. A "[...]" value is a placeholder copied from an example
+ * file, never real data, so it counts as unset instead of showing "[Tên công ty]" on the live site.
+ */
+export function envValue(value: string | undefined): string {
+  const v = value?.trim() ?? '';
+  return /^\[.*\]$/.test(v) ? '' : v;
+}
+
 export const SITE = {
-  company: env.VITE_COMPANY_NAME || 'TOP FLOW',
+  company: envValue(env.VITE_COMPANY_NAME) || 'TOP FLOW',
   /** Legal name for the privacy policy (topflow.vn). */
   legalName: 'Công ty Cổ phần Top Flow',
   /** HR contact: empty until set in env, and then hidden everywhere instead of showing a placeholder. */
-  hrEmail: env.VITE_HR_EMAIL || '',
-  hrPhone: env.VITE_HR_PHONE || '',
-  hrZalo: env.VITE_HR_ZALO || '',
-  url: (env.VITE_SITE_URL || (typeof location !== 'undefined' ? location.origin : '')).replace(/\/$/, ''),
+  hrEmail: envValue(env.VITE_HR_EMAIL) || '',
+  hrPhone: envValue(env.VITE_HR_PHONE) || '',
+  hrZalo: envValue(env.VITE_HR_ZALO) || '',
+  url: (envValue(env.VITE_SITE_URL) || (typeof location !== 'undefined' ? location.origin : '')).replace(/\/$/, ''),
   industry: 'Giải pháp đường ống và điều khiển lưu chất',
   size: '50+ nhân sự',
   founded: 'Hơn 10 năm',
@@ -20,7 +29,7 @@ export const SITE = {
   officeLatLng: '10.8458828,106.6801312',
   /** Registered head office (topflow.vn/lien-he). */
   headOffice: 'Tòa nhà Pearl Plaza, 561A Điện Biên Phủ, P. Thạnh Mỹ Tây, TP. HCM',
-  hrContactName: env.VITE_HR_CONTACT_NAME || '',
+  hrContactName: envValue(env.VITE_HR_CONTACT_NAME) || '',
 } as const;
 
 export const telLink = (phone: string) => `tel:${phone.replace(/\s/g, '')}`;
