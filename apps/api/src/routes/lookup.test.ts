@@ -101,7 +101,5 @@ describe('POST /api/applications/lookup', () => {
     expect((await t.request(`/api/applications/lookup?phone=${PHONE}`)).status).toBe(404);
   });
 
-  it('is kept out of search engines', async () => {
-    expect(await (await t.request('/robots.txt')).text()).toContain('Disallow: /tra-cuu-ho-so');
-  });
+  // Kept out of search engines by X-Robots-Tag: noindex, see vercel-config.test.ts.
 });

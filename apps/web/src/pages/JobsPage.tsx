@@ -11,7 +11,8 @@ const MOBILE_LIMIT = 4;
 
 export function JobsPage() {
   usePageMeta(
-    `Việc làm tại ${SITE.company}`,
+    // "· TOP FLOW" is added after it.
+    'Tuyển dụng – việc làm đang mở',
     'Xem vị trí đang mở và gửi CV trong khoảng một phút. Không cần tạo tài khoản.',
   );
   const jobs = useJobs();

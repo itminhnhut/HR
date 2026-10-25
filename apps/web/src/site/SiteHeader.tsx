@@ -63,6 +63,7 @@ export function SiteHeader() {
         ))}
         <Link
           to="/hr"
+          rel="nofollow"
           className="ml-1 inline-flex items-center gap-2 whitespace-nowrap rounded-control border border-silver/45 px-4 py-2.5 text-sm text-white no-underline hover:bg-white/10 hover:text-white"
         >
           <Icon name="lock" size={16} />
@@ -118,6 +119,7 @@ export function SiteHeader() {
           </div>
           <Link
             to="/hr"
+            rel="nofollow"
             className="mt-auto inline-flex min-h-[52px] items-center justify-center gap-2 rounded-control border border-silver/45 text-[15px] text-white no-underline hover:bg-white/10 hover:text-white"
           >
             <Icon name="lock" size={18} />

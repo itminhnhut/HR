@@ -1,17 +1,12 @@
 /** Company details shown across the site. Set them in .env (see .env.example). */
+import { DEFAULT_COMPANY, envValue } from './env-value';
+
+export { envValue };
+
 const env = import.meta.env;
 
-/**
- * A setting from the environment, or '' when unset. A "[...]" value is a placeholder copied from an example
- * file, never real data, so it counts as unset instead of showing "[Tên công ty]" on the live site.
- */
-export function envValue(value: string | undefined): string {
-  const v = value?.trim() ?? '';
-  return /^\[.*\]$/.test(v) ? '' : v;
-}
-
 export const SITE = {
-  company: envValue(env.VITE_COMPANY_NAME) || 'TOP FLOW',
+  company: envValue(env.VITE_COMPANY_NAME) || DEFAULT_COMPANY,
   /** Legal name for the privacy policy (topflow.vn). */
   legalName: 'Công ty Cổ phần Top Flow',
   /** HR contact: empty until set in env, and then hidden everywhere instead of showing a placeholder. */

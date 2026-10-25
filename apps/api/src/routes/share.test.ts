@@ -75,11 +75,17 @@ describe('GET /sitemap.xml', () => {
 });
 
 describe('GET /robots.txt', () => {
-  it('keeps private pages out and points to the sitemap', async () => {
+  it('keeps the API out and points to the sitemap', async () => {
     const text = await (await t.request('/robots.txt')).text();
-    expect(text).toContain('Disallow: /hr');
     expect(text).toContain('Disallow: /api');
     expect(text).toContain('Sitemap: https://tuyendung.test/sitemap.xml');
+  });
+
+  it('should let crawlers read private pages, so they see the noindex that keeps them out of results', async () => {
+    // A blocked page that is linked (the HR link in the menu) can still be listed by its address alone.
+    const text = await (await t.request('/robots.txt')).text();
+
+    expect(text).not.toMatch(/Disallow: \/(hr|ho-so-cua-toi|dang-nhap|tra-cuu-ho-so)\b/);
   });
 });
 

@@ -1,8 +1,8 @@
 import { formatDate, normalizeVietnamPhone, type LookupResponse } from '@careers/shared';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { useLookup } from '../api/queries';
-import { usePageMeta } from '../lib/hooks';
+import { useNoIndex, usePageMeta } from '../lib/hooks';
 import { ApplicationStage } from '../site/ApplicationStage';
 import { NavyHero } from '../site/PublicLayout';
 import { Button } from '../ui/Button';
@@ -12,15 +12,6 @@ import { PhoneField } from '../ui/PhoneField';
 import { Captcha, CaptchaError, useCaptcha } from '../ui/Captcha';
 
 /** Lookups by phone number should never show up in search engines. */
-function useNoIndex() {
-  useEffect(() => {
-    const meta = document.createElement('meta');
-    meta.name = 'robots';
-    meta.content = 'noindex';
-    document.head.appendChild(meta);
-    return () => meta.remove();
-  }, []);
-}
 
 export default function LookupPage() {
   usePageMeta('Tra cứu hồ sơ', 'Xem hồ sơ bạn đã nộp tới đâu bằng số điện thoại, không cần đăng nhập.');

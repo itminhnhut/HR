@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { demoHrSignIn } from '../../api';
 import { useHrMe, useHrSignIn } from '../../api/queries';
-import { usePageMeta } from '../../lib/hooks';
+import { useNoIndex, usePageMeta } from '../../lib/hooks';
 import { SITE } from '../../lib/site';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/Field';
@@ -163,6 +163,7 @@ function LoginNotes() {
 
 export function HrLoginPage() {
   usePageMeta('Đăng nhập HR');
+  useNoIndex();
   const me = useHrMe();
   if (me.data) return <Navigate to="/hr" replace />;
 

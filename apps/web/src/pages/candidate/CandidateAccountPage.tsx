@@ -11,7 +11,7 @@ import {
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useCandidate, useCandidateSignOut, useUpdateCandidate } from '../../api/queries';
-import { usePageMeta } from '../../lib/hooks';
+import { useNoIndex, usePageMeta } from '../../lib/hooks';
 import { ApplicationStage } from '../../site/ApplicationStage';
 import { NavyHero } from '../../site/PublicLayout';
 import { Button, ButtonLink, buttonClass } from '../../ui/Button';
@@ -36,6 +36,7 @@ function greetingName(fullName: string | null): string {
 
 export function CandidateAccountPage() {
   usePageMeta('Hồ sơ của tôi');
+  useNoIndex();
   const candidate = useCandidate();
   const showSkeleton = useDelayedFlag(candidate.isPending);
 

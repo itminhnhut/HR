@@ -1,21 +1,62 @@
 import { useEffect, useState } from 'react';
 import { SITE } from './site';
 
-/** Sets <title> and the description meta for the current screen. */
+/** The <meta> with this name/property, created when missing. */
+function metaTag(attr: 'name' | 'property', key: string): HTMLMetaElement {
+  let meta = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.setAttribute(attr, key);
+    document.head.appendChild(meta);
+  }
+  return meta;
+}
+
+/**
+ * The page address on the official domain (lee-hr.com without www, or the vercel.app address, would be
+ * duplicates), without query or hash: tracking parameters are not a different page.
+ */
+function canonicalUrl(): string {
+  return `${SITE.url}${window.location.pathname}`;
+}
+
+/**
+ * Sets <title>, description, canonical address and share preview tags (Open Graph) for the current screen.
+ * Google reads them after running the page; Zalo/Facebook use the defaults in index.html.
+ */
 export function usePageMeta(title: string | undefined, description?: string) {
+  // Read on every render: moving between two pages with the same title still updates the address.
+  const path = window.location.pathname;
   useEffect(() => {
     if (!title) return;
-    document.title = `${title} · ${SITE.company}`;
+    const full = `${title} · ${SITE.company}`;
+    document.title = full;
+    metaTag('property', 'og:title').content = full;
     if (description) {
-      let meta = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.name = 'description';
-        document.head.appendChild(meta);
-      }
-      meta.content = description;
+      metaTag('name', 'description').content = description;
+      metaTag('property', 'og:description').content = description;
     }
-  }, [title, description]);
+    const url = canonicalUrl();
+    metaTag('property', 'og:url').content = url;
+    let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'canonical';
+      document.head.appendChild(link);
+    }
+    link.href = url;
+  }, [title, description, path]);
+}
+
+/** Keeps a private page (HR, candidate account, lookup) out of search results while it is open. */
+export function useNoIndex() {
+  useEffect(() => {
+    const meta = document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+    return () => meta.remove();
+  }, []);
 }
 
 /** Flips back to false after `ms`, for "Đã chép" style confirmations. */

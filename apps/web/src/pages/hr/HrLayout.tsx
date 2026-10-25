@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Navigate, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router';
 import { useHrJobs, useHrMe, useHrSignOut } from '../../api/queries';
+import { useNoIndex } from '../../lib/hooks';
 import { SITE } from '../../lib/site';
 import { SkipLink } from '../../site/PublicLayout';
 import { Dialog } from '../../ui/Dialog';
@@ -208,6 +209,8 @@ function Shell({ email }: { email: string }) {
 }
 
 export function HrLayout() {
+  // Every HR screen stays out of search results (vercel.json also sends X-Robots-Tag: noindex).
+  useNoIndex();
   const me = useHrMe();
   if (me.isPending) return <LoadingStatus />;
   if (me.isError) return <ErrorState onRetry={() => me.refetch()} />;

@@ -97,11 +97,9 @@ shareRoutes.get('/robots.txt', (c) => {
   return c.text(
     [
       'User-agent: *',
-      'Disallow: /hr',
+      // HR and account pages are not blocked here on purpose: crawlers must read them to see their
+      // noindex (X-Robots-Tag in vercel.json), otherwise a linked page can be listed by its address alone.
       'Disallow: /api',
-      'Disallow: /ho-so-cua-toi',
-      'Disallow: /dang-nhap',
-      'Disallow: /tra-cuu-ho-so',
       `Sitemap: ${config.siteUrl}/sitemap.xml`,
       '',
     ].join('\n'),
