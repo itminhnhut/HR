@@ -13,11 +13,12 @@ import { Link, useNavigate } from 'react-router';
 import { useCandidate, useCandidateSignOut, useUpdateCandidate } from '../../api/queries';
 import { useNoIndex, usePageMeta } from '../../lib/hooks';
 import { ApplicationStage } from '../../site/ApplicationStage';
-import { NavyHero } from '../../site/PublicLayout';
+import { PAGE_WIDTH, PageHero, PageHeroSkeleton } from '../../site/PageHero';
+import { SectionHeading } from '../../site/SectionHeading';
 import { Button, ButtonLink, buttonClass } from '../../ui/Button';
 import { CandidateLoginPage } from './CandidateLoginPage';
 import { FieldError, TextField } from '../../ui/Field';
-import { EmptyState, ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
+import { EmptyState, ErrorState, LoadingStatus, Sk } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
 import { errorText } from './candidateUi';
 import { PhoneField } from '../../ui/PhoneField';
@@ -38,7 +39,6 @@ export function CandidateAccountPage() {
   usePageMeta('Hồ sơ của tôi');
   useNoIndex();
   const candidate = useCandidate();
-  const showSkeleton = useDelayedFlag(candidate.isPending);
 
   /**
    * Signing out clears the cached candidate. Keep the last overview on screen
@@ -51,14 +51,14 @@ export function CandidateAccountPage() {
   if (candidate.isError && !data) {
     return (
       <>
-        <NavyHero />
-        <main className="mx-auto w-full max-w-[1160px] px-4 py-10 sm:px-6">
+        <PageHero crumbs={[{ label: 'Hồ sơ của tôi' }]} title="Hồ sơ của tôi" />
+        <main className={`${PAGE_WIDTH} py-10`}>
           <ErrorState onRetry={() => candidate.refetch()} />
         </main>
       </>
     );
   }
-  if (candidate.isPending) return <AccountSkeleton visible={showSkeleton} />;
+  if (candidate.isPending) return <AccountSkeleton />;
   // Signed out: the Google button is right here, there is no separate sign-in page.
   if (!data) return <CandidateLoginPage />;
 
@@ -66,26 +66,25 @@ export function CandidateAccountPage() {
 
   return (
     <>
-      <NavyHero waves={false}>
-        <div className="relative mx-auto flex max-w-[1160px] flex-col gap-[18px] px-4 pb-10 pt-[18px] sm:gap-[26px] sm:px-6 sm:pb-14 sm:pt-10">
-          <div className="flex flex-col gap-1 sm:gap-2">
-            <h1 className="m-0 animate-rise font-serif text-[30px] font-medium sm:text-[42px]">
-              Chào {greetingName(me.name)}
-            </h1>
-            <span className="text-[13px] font-light text-silver sm:text-[15px]">
-              <span className="hidden sm:inline">Đăng nhập Google: </span>
-              <span className="break-all">{me.email}</span>
-            </span>
-          </div>
-        </div>
-      </NavyHero>
+      <PageHero
+        crumbs={[{ label: 'Hồ sơ của tôi' }]}
+        title={`Chào ${greetingName(me.name)}`}
+        intro={
+          <>
+            <span className="hidden sm:inline">Đăng nhập Google: </span>
+            <span className="break-all">{me.email}</span>
+          </>
+        }
+      />
 
-      <main className="mx-auto w-full max-w-[1160px] px-4 pb-14 pt-4 sm:px-6 sm:pb-[72px] sm:pt-9">
+      <main className={`${PAGE_WIDTH} py-10 sm:py-14`}>
         <div className="flex flex-col gap-10 sm:gap-14">
           <section aria-labelledby="apps-title" className="flex flex-col gap-4">
-            <h2 id="apps-title" className="m-0 font-serif text-[26px] font-medium sm:text-[30px]">
-              Hồ sơ đã nộp <span className="text-lg font-normal text-slate">{applications.length}</span>
-            </h2>
+            <SectionHeading
+              id="apps-title"
+              title="Hồ sơ đã nộp"
+              note={<span className="text-sm text-slate">{applications.length} hồ sơ</span>}
+            />
             <ApplicationsTab applications={applications} />
           </section>
           <section aria-label="Thông tin, CV và dữ liệu">
@@ -136,10 +135,10 @@ function ApplicationCard({ app, note }: { app: CandidateApplicationDto; note: st
   return (
     <article className="card-hover grid gap-2.5 rounded-card border border-line bg-white p-[18px] sm:gap-5 sm:px-7 sm:py-[26px] md:grid-cols-[minmax(0,1fr)_300px] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="flex min-w-0 flex-col gap-1.5">
-        <span className="text-xs text-muted sm:text-[13px]">Nộp ngày {formatTimestamp(app.createdAt)}</span>
+        <span className="text-[13px] text-muted">Nộp ngày {formatTimestamp(app.createdAt)}</span>
         <Link
           to={`/viec-lam/${app.jobSlug}`}
-          className="font-serif text-[21px] font-medium text-navy no-underline hover:text-link sm:text-[26px]"
+          className="font-serif type-card-lg font-medium text-navy no-underline hover:text-link"
         >
           {app.jobTitle}
         </Link>
@@ -210,7 +209,7 @@ function ProfileForm({ me }: { me: CandidateMe }) {
     setResult(null);
     setPhoneError('');
     if (phone.trim() && !normalizeVietnamPhone(phone)) {
-      setPhoneError('Số điện thoại chưa đúng, ví dụ 0912 345 678.');
+      setPhoneError('Số điện thoại chưa đúng, cần 10 số, ví dụ 0912 345 678.');
       return;
     }
     try {
@@ -240,7 +239,7 @@ function ProfileForm({ me }: { me: CandidateMe }) {
       aria-labelledby="profile-title"
       className="flex flex-col gap-3.5 rounded-card border border-line bg-white p-[18px] sm:gap-[18px] sm:px-8 sm:py-[30px]"
     >
-      <h2 id="profile-title" className="m-0 hidden font-serif text-[26px] font-medium sm:block">
+      <h2 id="profile-title" className="m-0 hidden font-serif type-h2-sm font-medium sm:block">
         Thông tin để nộp nhanh
       </h2>
       <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
@@ -266,10 +265,10 @@ function ProfileForm({ me }: { me: CandidateMe }) {
         <div
           className={`flex items-center gap-3 rounded-control border p-3.5 sm:gap-3.5 sm:px-[18px] sm:py-4 ${cvError ? 'border-error' : 'border-line'}`}
         >
-          <Icon name="file" size={22} stroke={1.5} className="shrink-0 text-accent" />
+          <Icon name="file" size={20} stroke={1.5} className="shrink-0 text-accent" />
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <strong className="truncate text-sm font-medium sm:text-[15px]">{fileName ?? 'Chưa có CV'}</strong>
-            <span className="text-xs text-muted sm:text-[13px]">{fileMeta}</span>
+            <span className="text-[13px] text-muted">{fileMeta}</span>
           </span>
           <Button
             variant="outline"
@@ -348,7 +347,7 @@ function DataCard({ onLeave, onStay }: { onLeave: () => void; onStay: () => void
         aria-labelledby="data-title"
         className="flex flex-col gap-2.5 rounded-card border border-line bg-white p-[18px] sm:px-[26px] sm:py-6"
       >
-        <h2 id="data-title" className="m-0 font-serif text-xl font-medium">
+        <h2 id="data-title" className="m-0 font-serif type-card font-medium">
           Dữ liệu của bạn
         </h2>
         <p className="m-0 text-sm leading-relaxed text-slate">Xóa toàn bộ hồ sơ và CV đã gửi. Không thể khôi phục.</p>
@@ -408,42 +407,26 @@ function DataCard({ onLeave, onStay }: { onLeave: () => void; onStay: () => void
 
 // ── Loading ──────────────────────────────────────────────────────────────
 
-function AccountSkeleton({ visible }: { visible: boolean }) {
+/** Same boxes as the signed-in page, faded in only if the sign-in check takes a moment. */
+function AccountSkeleton() {
   return (
     <>
-      <NavyHero waves={false}>
-        <div className="relative mx-auto flex max-w-[1160px] flex-col gap-[18px] px-4 pb-4 pt-[18px] sm:gap-[26px] sm:px-6 sm:pt-10">
-          {visible && (
-            <>
-              <div className="flex flex-col gap-2">
-                <Sk dark h={36} w={240} />
-                <Sk dark h={16} w={160} />
-              </div>
-              <div className="flex gap-6">
-                <Sk dark h={14} w={90} />
-                <Sk dark h={14} w={80} />
-                <Sk dark h={14} w={80} />
-              </div>
-            </>
-          )}
+      <LoadingStatus />
+      <PageHeroSkeleton />
+      <main aria-hidden="true" className={`${PAGE_WIDTH} min-h-svh py-10 sm:py-14`}>
+        <div className="skeleton-in flex flex-col gap-3.5">
+          <Sk h={30} w={220} />
+          {Array.from({ length: 3 }, (_, i) => (
+            <div
+              key={i}
+              className="flex flex-col gap-3 rounded-card border border-line bg-white p-[18px] sm:px-7 sm:py-[26px]"
+            >
+              <Sk h={12} w={110} />
+              <Sk h={26} className="w-2/3" />
+              <Sk h={14} className="w-1/2" />
+            </div>
+          ))}
         </div>
-      </NavyHero>
-      <main className="mx-auto w-full max-w-[1160px] px-4 pb-14 pt-4 sm:px-6 sm:pt-9">
-        <LoadingStatus />
-        {visible && (
-          <div className="flex flex-col gap-3.5" aria-hidden="true">
-            {Array.from({ length: 3 }, (_, i) => (
-              <div
-                key={i}
-                className="flex flex-col gap-3 rounded-card border border-line bg-white p-[18px] sm:px-7 sm:py-[26px]"
-              >
-                <Sk h={12} w={110} />
-                <Sk h={26} className="w-2/3" />
-                <Sk h={14} className="w-1/2" />
-              </div>
-            ))}
-          </div>
-        )}
       </main>
     </>
   );

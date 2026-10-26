@@ -196,7 +196,7 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
 
       <Section
         title="Lựa chọn trong form đăng tin"
-        hint="Các mục HR chọn ở Phòng ban, Kinh nghiệm, Học vấn và Yêu cầu."
+        hint="Các mục HR chọn ở Phòng ban, Kinh nghiệm, Học vấn, Yêu cầu và Ưu tiên."
       >
         <ChoiceList label="Phòng ban" items={template.departments} onChange={(departments) => patch({ departments })} />
         <ChoiceList
@@ -210,6 +210,12 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
           max={200}
           items={template.requirementOptions}
           onChange={(requirementOptions) => patch({ requirementOptions })}
+        />
+        <ChoiceList
+          label="Ưu tiên hay dùng"
+          max={200}
+          items={template.preferredOptions}
+          onChange={(preferredOptions) => patch({ preferredOptions })}
         />
       </Section>
 

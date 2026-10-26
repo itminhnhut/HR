@@ -11,6 +11,8 @@ import { sampleCvPdf } from './db/sample-cv.js';
 import { seedDemoData } from './db/seed.js';
 import { findHrUser, upsertHrUser } from './services/hr-accounts.js';
 import type { CvStore } from './lib/cv-store.js';
+import { localImageStore } from './lib/image-store.js';
+import { rewriteLocalImageUrls } from './lib/local-image-urls.js';
 import { generatePassword } from './lib/password.js';
 import type { LocalOverrides } from './main.js';
 
@@ -35,6 +37,8 @@ async function localDb(cvStore: CvStore | undefined): Promise<Db> {
     console.info(`Local database seeded with ${seeded.jobs} demo jobs.`);
   }
   await ensureLocalHr(db);
+  const moved = await rewriteLocalImageUrls(db);
+  if (moved > 0) console.info(`Local news images: ${moved} posts now use site paths (/api/news-images/…).`);
   return db;
 }
 
@@ -94,8 +98,13 @@ function localCvStore(): CvStore {
 /** Uses the local stand-ins only for what is not configured in apps/api/.env. */
 export async function localDevOverrides(): Promise<LocalOverrides> {
   const cvStore = process.env.BLOB_READ_WRITE_TOKEN ? undefined : localCvStore();
+  // News images need a PUBLIC store; without its token they are files served by GET /api/news-images/:name.
+  const imageStore = process.env.NEWS_BLOB_READ_WRITE_TOKEN
+    ? undefined
+    : localImageStore(join(DATA_DIR, 'news-images'));
   return {
     ...(process.env.DATABASE_URL ? {} : { db: await localDb(cvStore) }),
     ...(cvStore ? { cvStore } : {}),
+    ...(imageStore ? { imageStore } : {}),
   };
 }

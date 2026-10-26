@@ -27,17 +27,22 @@ export function Dialog({
   keepMounted?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (open && !el.open) {
+      opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       el.showModal();
       // The browser focuses the first button (the close X), which shows a focus ring on every open.
       // Focus the dialog itself instead: screen readers announce its label, Tab still reaches the X.
       el.focus();
     }
-    if (!open && el.open) el.close();
+    if (!open && el.open) {
+      el.close();
+      returnFocus(el, opener.current);
+    }
   }, [open]);
 
   useEffect(() => {
@@ -75,6 +80,16 @@ export function Dialog({
       {(open || keepMounted) && children}
     </dialog>
   );
+}
+
+/**
+ * After closing (Escape, the X, a backdrop click): focus goes back to what opened the dialog ("Mở menu"),
+ * unless the page already moved it somewhere else on purpose.
+ */
+function returnFocus(dialog: HTMLDialogElement, opener: HTMLElement | null) {
+  const now = document.activeElement;
+  const lost = !now || now === document.body || dialog.contains(now);
+  if (lost && opener?.isConnected) opener.focus({ preventScroll: true });
 }
 
 export function CloseButton({

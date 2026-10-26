@@ -1,5 +1,6 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../app.js';
+import { indexNowInBackground } from '../lib/indexnow.js';
 import { readJson } from '../lib/request.js';
 import {
   deleteDraft,
@@ -15,6 +16,16 @@ import { addTemplateChoice, jobTemplate, saveJobTemplate } from '../services/job
 
 /** Mounted at /api/hr/jobs behind requireHr. */
 export const hrJobRoutes = new Hono<Env>();
+
+/** A public job changed: tell search engines about its page and the home page (the job board). */
+function announceJob(c: Context<Env>, job: { slug: string; status: string }) {
+  if (job.status !== 'draft') indexNowInBackground(c, [`/viec-lam/${job.slug}`, '/']);
+}
+
+async function announceJobById(c: Context<Env>, id: string) {
+  const { db, now } = c.get('deps');
+  announceJob(c, toHrJob(await findJob(db, id), now()));
+}
 
 hrJobRoutes.get('/', async (c) => {
   const { db, now } = c.get('deps');
@@ -36,12 +47,16 @@ hrJobRoutes.get('/:id', async (c) => {
 
 hrJobRoutes.post('/', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await saveJob(db, null, await readJson(c), now()));
+  const job = await saveJob(db, null, await readJson(c), now());
+  announceJob(c, job);
+  return c.json(job);
 });
 
 hrJobRoutes.put('/:id', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await saveJob(db, c.req.param('id'), await readJson(c), now()));
+  const job = await saveJob(db, c.req.param('id'), await readJson(c), now());
+  announceJob(c, job);
+  return c.json(job);
 });
 
 hrJobRoutes.delete('/:id', async (c) => {
@@ -50,11 +65,15 @@ hrJobRoutes.delete('/:id', async (c) => {
 
 hrJobRoutes.post('/:id/deadline', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await setDeadline(db, c.req.param('id'), await readJson(c), now()));
+  const result = await setDeadline(db, c.req.param('id'), await readJson(c), now());
+  await announceJobById(c, c.req.param('id'));
+  return c.json(result);
 });
 
 hrJobRoutes.post('/:id/:action{publish|close}', async (c) => {
   const { db, now } = c.get('deps');
   const action = c.req.param('action') as JobAction;
-  return c.json(await runJobAction(db, c.req.param('id'), action, now()));
+  const result = await runJobAction(db, c.req.param('id'), action, now());
+  await announceJobById(c, c.req.param('id'));
+  return c.json(result);
 });

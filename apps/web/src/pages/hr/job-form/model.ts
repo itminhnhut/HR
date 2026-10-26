@@ -43,6 +43,8 @@ export interface FormState {
   deadline: string;
   responsibilities: string;
   requirements: string;
+  /** "Ưu tiên (không bắt buộc)", one per line. */
+  preferred: string;
   benefits: string[];
   roadmap: string[];
   /** null: the company office. */
@@ -67,6 +69,7 @@ export function emptyForm(template: JobTemplate): FormState {
     deadline: addDays(todayInVietnam(), DEFAULT_OPEN_DAYS),
     responsibilities: '',
     requirements: '',
+    preferred: '',
     benefits: standardBenefits(template),
     roadmap: template.roadmap,
     address: null,
@@ -98,6 +101,7 @@ export function fromJob(job: HrJobDto, template: JobTemplate): FormState {
     deadline: job.deadline,
     responsibilities: job.responsibilities,
     requirements: job.requirements,
+    preferred: job.preferred,
     benefits: job.benefits,
     roadmap: job.roadmap,
     address: job.address,
@@ -124,6 +128,7 @@ export function toInput(f: FormState, intent: JobInput['intent']): JobInput {
     salaryMax: f.negotiable ? null : toVnd(f.salaryMax),
     responsibilities: f.responsibilities,
     requirements: f.requirements,
+    preferred: f.preferred,
     benefits: f.benefits,
     roadmap: f.roadmap.some((t) => t.trim()) ? f.roadmap : [],
     deadline: f.deadline,

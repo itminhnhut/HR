@@ -25,7 +25,9 @@ export const phoneSchema = z
   .transform((value, ctx) => {
     const phone = normalizeVietnamPhone(value);
     if (!phone) {
-      ctx.addIssue({ code: 'custom', message: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
+      // Empty asks for the number; typed but wrong says what is wrong.
+      const message = value ? 'Số điện thoại chưa đúng, cần 10 số, ví dụ 0912 345 678.' : 'Nhập số điện thoại (Zalo).';
+      ctx.addIssue({ code: 'custom', message });
       return z.NEVER;
     }
     return phone;
@@ -52,7 +54,7 @@ export const applicationFieldsSchema = z.object({
     .nullish()
     .transform((v) => (v ? v : null)),
   /** BR-11: must be ticked by the candidate, never pre-ticked. */
-  consent: z.literal(true, { message: 'Cần tích ô đồng ý đầu tiên để gửi hồ sơ.' }),
+  consent: z.literal(true, { message: 'Hãy tích ô đồng ý để gửi hồ sơ.' }),
   formOpenedAt: z.number().int().positive(),
   /** Honeypot. Real users never see this field. */
   website: z.string().max(200).optional(),
@@ -64,7 +66,7 @@ export const subscribeSchema = z.object({
   phone: phoneSchema,
   department: z.string().trim().min(1).max(DEPARTMENT_MAX),
   fromJobId: z.string().nullish(),
-  consent: z.literal(true, { message: 'Cần tích ô đồng ý để nhận tin.' }),
+  consent: z.literal(true, { message: 'Hãy tích ô đồng ý để nhận tin.' }),
 });
 
 export const SALARY_MIN_VND = 1_000_000;
@@ -92,6 +94,8 @@ export const jobInputSchema = z
     salaryMax: money,
     responsibilities: z.string().trim().max(4000, 'Tối đa 4000 ký tự.'),
     requirements: z.string().trim().max(4000, 'Tối đa 4000 ký tự.'),
+    /** Older clients send no "Ưu tiên". */
+    preferred: z.string().trim().max(2000, 'Tối đa 2000 ký tự.').default(''),
     benefits: z
       .array(z.string().trim().min(1).max(BENEFIT_MAX, `Mỗi quyền lợi tối đa ${BENEFIT_MAX} ký tự.`))
       .max(MAX_BENEFITS, `Tối đa ${MAX_BENEFITS} quyền lợi.`),
@@ -182,6 +186,11 @@ export const jobTemplateSchema = z.object({
     .max(CHOICES_MAX, `Tối đa ${CHOICES_MAX} dòng.`)
     .transform((items) => [...new Set(items)])
     .default(DEFAULT_JOB_TEMPLATE.requirementOptions),
+  preferredOptions: z
+    .array(z.string().trim().min(1).max(200, 'Mỗi dòng tối đa 200 ký tự.'))
+    .max(CHOICES_MAX, `Tối đa ${CHOICES_MAX} dòng.`)
+    .transform((items) => [...new Set(items)])
+    .default(DEFAULT_JOB_TEMPLATE.preferredOptions),
 });
 
 export const messageTemplateSchema = z.object({

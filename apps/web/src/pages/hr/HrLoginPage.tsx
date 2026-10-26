@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { demoHrSignIn } from '../../api';
 import { useHrMe, useHrSignIn } from '../../api/queries';
@@ -57,9 +57,20 @@ function SignInError({ error }: { error: unknown }) {
   );
 }
 
-/** Demo mode only: the demo account, read once rather than on every keystroke. */
+type DemoAccount = Awaited<ReturnType<typeof demoHrSignIn>>;
+
+/** Demo mode only: the demo account, read once (the demo data loads on demand). */
 function DemoHint() {
-  const [demo] = useState(demoHrSignIn);
+  const [demo, setDemo] = useState<DemoAccount>(null);
+  useEffect(() => {
+    let live = true;
+    demoHrSignIn()
+      .then((account) => live && setDemo(account))
+      .catch((error: unknown) => console.warn('Demo account unavailable', error));
+    return () => {
+      live = false;
+    };
+  }, []);
   if (!demo) return null;
   return (
     <span className="text-xs text-muted">
@@ -168,7 +179,7 @@ export function HrLoginPage() {
   if (me.data) return <Navigate to="/hr" replace />;
 
   return (
-    <div className="grid min-h-dvh grid-cols-1 bg-mist text-navy lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+    <main className="grid min-h-dvh grid-cols-1 bg-mist text-navy lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
       <Brand />
       <section className="flex items-center justify-center px-4 py-12 sm:px-6">
         <div className="flex w-full max-w-[420px] flex-col gap-6">
@@ -183,7 +194,7 @@ export function HrLoginPage() {
           </Link>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 

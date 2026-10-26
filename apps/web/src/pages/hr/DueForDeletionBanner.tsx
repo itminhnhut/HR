@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDeleteDueApplications } from '../../api/queries';
+import { FieldError } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { errorMessage } from './parts';
 
@@ -20,7 +21,11 @@ export function DueForDeletionBanner({ count }: { count: number }) {
       <span className="min-w-0 flex-[1_1_300px] leading-relaxed">
         <strong className="font-semibold">{count} hồ sơ đến hạn xoá</strong>: thuộc các tin đã đóng hoặc hết hạn quá 30
         ngày. Chính sách dữ liệu hứa xoá các hồ sơ này, kể cả file CV.
-        {error && <span className="mt-1 block text-error">{error}</span>}
+        {error && (
+          <span className="mt-1 block">
+            <FieldError>{error}</FieldError>
+          </span>
+        )}
       </span>
       <button
         type="button"

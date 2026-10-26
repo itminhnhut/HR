@@ -22,6 +22,12 @@ import type {
   JobTemplateResponse,
   LookupResponse,
   TempPasswordResponse,
+  HrNewsListResponse,
+  HrNewsPostDto,
+  NewsCategoryDto,
+  NewsListResponse,
+  NewsPostDto,
+  NewsPostInput,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -63,6 +69,28 @@ export interface ApplicationPatch {
   interviewMode?: InterviewMode | null;
   /** Empty string clears it. */
   meetingUrl?: string | null;
+}
+
+/** An uploaded article image: its public address and real size (for width/height, no layout shift). */
+export interface UploadedImage {
+  url: string;
+  width: number;
+  height: number;
+}
+
+export interface NewsListQuery {
+  page?: number;
+  /** Category slug. */
+  category?: string;
+  /** Hashtag slug. */
+  tag?: string;
+}
+
+/** A hashtag suggestion for the editor (postCount includes drafts). */
+export interface NewsTagSuggestion {
+  name: string;
+  slug: string;
+  postCount: number;
 }
 
 export interface HrProfilePatch {
@@ -130,4 +158,31 @@ export interface Api {
   hrResetMessageTemplate(key: TemplateKey): Promise<MessageTemplatesResponse>;
   /** "Đã soạn thư": HR opened a filled template in Gmail / a mail app, or copied it. */
   hrLogContact(id: string, input: { templateKey: TemplateKey; channel: ContactChannel }): Promise<ApplicationDetailDto>;
+
+  // News (spec-news.md). Public: published posts only.
+  listNews(query: NewsListQuery): Promise<NewsListResponse>;
+  /** 404 for drafts, hidden posts and unknown slugs. */
+  getNews(slug: string): Promise<NewsPostDto>;
+  hrNews(): Promise<HrNewsListResponse>;
+  hrNewsPost(id: string): Promise<HrNewsPostDto>;
+  /** A new draft. 422 { fieldErrors } like saving. */
+  hrCreateNews(input: NewsPostInput): Promise<HrNewsPostDto>;
+  /**
+   * Autosave. Partial: a field left out keeps its stored value. Slug: a typed one wins, '' follows the title
+   * again, and once the post was ever published it never changes. A published post stays publishable (422).
+   */
+  hrSaveNews(id: string, input: NewsPostInput): Promise<HrNewsPostDto>;
+  /** 422 { fieldErrors: { title?, categoryId?, cover?, content? } } when something is missing. */
+  hrPublishNews(id: string): Promise<HrNewsPostDto>;
+  /** Published → hidden: off the site and the sitemap, keeps its address. Publish shows it again. */
+  hrUnpublishNews(id: string): Promise<HrNewsPostDto>;
+  /** Hashtags already used, most used first, matched without accents (at most 20). */
+  hrNewsTags(q: string): Promise<{ tags: NewsTagSuggestion[] }>;
+  hrDeleteNews(id: string): Promise<{ ok: true }>;
+  hrCreateNewsCategory(name: string): Promise<NewsCategoryDto>;
+  hrRenameNewsCategory(id: string, name: string): Promise<NewsCategoryDto>;
+  /** 409 while the category still has posts. */
+  hrDeleteNewsCategory(id: string): Promise<{ ok: true }>;
+  /** JPEG/PNG/WebP up to NEWS_IMAGE_MAX_BYTES (4 MB); the editor shrinks big photos first. */
+  hrUploadNewsImage(file: File): Promise<UploadedImage>;
 }

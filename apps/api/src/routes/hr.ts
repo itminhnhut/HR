@@ -20,6 +20,7 @@ import {
 import { listMessageTemplates, resetMessageTemplate, saveMessageTemplate } from '../services/message-templates.js';
 import { hrApplicationRoutes } from './hr-applications.js';
 import { hrJobRoutes } from './hr-jobs.js';
+import { hrNewsRoutes } from './hr-news.js';
 
 export const hrRoutes = new Hono<Env>();
 
@@ -46,6 +47,7 @@ hrRoutes.post('/logout', (c) => {
 const signedIn = new Hono<Env>();
 signedIn.use(requireHr);
 signedIn.route('/jobs', hrJobRoutes);
+signedIn.route('/news', hrNewsRoutes);
 signedIn.get('/dashboard', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await dashboard(db, now()));

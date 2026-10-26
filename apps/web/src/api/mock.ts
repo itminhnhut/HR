@@ -35,75 +35,12 @@ import {
   type JobCardDto,
   type JobDetailDto,
 } from '@careers/shared';
-import {
-  buildSeed,
-  DB_VERSION,
-  DEMO_CANDIDATE_EMAIL,
-  DEMO_HR,
-  randomPassword,
-  type MockDb,
-  type MockHrUser,
-  type MockJob,
-} from './mock-seed';
-import { ApiError, type Api } from './types';
+import { DEMO_CANDIDATE_EMAIL, DEMO_HR, randomPassword, type MockDb, type MockHrUser, type MockJob } from './mock-seed';
+import { delay, fail, load, requireHr, save, uid } from './mock-store';
+import { newsMockApi } from './mock-news';
+import type { Api } from './types';
 
-const STORAGE_KEY = 'careers-demo-db';
 const REPEAT_MS = 10 * 60_000; // same as the BE: an exact repeat this soon is a double click
-
-function safeStorage(): Storage | null {
-  try {
-    return typeof window === 'undefined' ? null : window.localStorage;
-  } catch {
-    return null;
-  }
-}
-
-let memory: MockDb | null = null;
-
-function load(): MockDb {
-  if (memory) return memory;
-  const store = safeStorage();
-  const wantsReset = typeof location !== 'undefined' && new URLSearchParams(location.search).has('reset');
-  if (store && !wantsReset) {
-    try {
-      const parsed = JSON.parse(store.getItem(STORAGE_KEY) ?? 'null') as MockDb | null;
-      if (parsed?.version === DB_VERSION) return (memory = parsed);
-    } catch {
-      // Corrupt storage: fall through to a fresh seed.
-    }
-  }
-  memory = buildSeed();
-  save();
-  return memory;
-}
-
-function save() {
-  try {
-    safeStorage()?.setItem(STORAGE_KEY, JSON.stringify(memory));
-  } catch {
-    // Private mode or full storage: keep working in memory.
-  }
-}
-
-/** Demo delay. Add ?slow to the URL to see loading skeletons. */
-function delay<T>(value: T): Promise<T> {
-  let slow = false;
-  try {
-    slow =
-      typeof location !== 'undefined' &&
-      (new URLSearchParams(location.search).has('slow') || sessionStorage.getItem('demo-slow') === '1');
-    if (slow) sessionStorage.setItem('demo-slow', '1');
-  } catch {
-    // ignore
-  }
-  const ms = slow ? 1800 : 220;
-  return new Promise((resolve) => setTimeout(() => resolve(structuredClone(value)), ms));
-}
-
-const fail = (status: number, message: string, errors: Record<string, string> = {}, code?: string) =>
-  Promise.reject(new ApiError(status, message, errors, code));
-
-const uid = (prefix: string) => `${prefix}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
 
 function statusOf(job: MockJob, now = new Date()) {
   return effectiveStatus(job, now);
@@ -135,6 +72,7 @@ function toDetail(job: MockJob): JobDetailDto {
     education: job.education,
     responsibilities: toLines(job.responsibilities),
     requirements: toLines(job.requirements),
+    preferred: toLines(job.preferred),
     benefits: job.benefits,
     roadmap: job.roadmap,
   };
@@ -198,12 +136,6 @@ const DEADLINE_MESSAGE = {
   past: 'Hạn nộp không được ở quá khứ.',
   too_far: 'Hạn nộp tối đa 60 ngày từ hôm nay.',
 } as const;
-
-function requireHr(db: MockDb): MockHrUser {
-  const me = db.hrUsers.find((u) => u.id === db.session.hr);
-  if (!me) throw new ApiError(401, 'Phiên đăng nhập đã hết, đăng nhập lại.');
-  return me;
-}
 
 const toHrMe = (u: MockHrUser): HrMe => ({
   id: u.id,
@@ -380,7 +312,9 @@ export const mockApi: Api = {
     const db = load();
     const normalized = normalizeVietnamPhone(phone);
     if (!normalized) {
-      return fail(422, 'Số điện thoại chưa đúng.', { phone: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
+      return fail(422, 'Số điện thoại chưa đúng.', {
+        phone: 'Số điện thoại chưa đúng, cần 10 số, ví dụ 0912 345 678.',
+      });
     }
     const since = Date.now() - 90 * 24 * 60 * 60 * 1000;
     const applications = db.applications
@@ -444,7 +378,9 @@ export const mockApi: Api = {
     if (patch.phone !== undefined) {
       phone = patch.phone.trim() ? normalizeVietnamPhone(patch.phone) : null;
       if (patch.phone.trim() && !phone) {
-        return fail(422, 'Số điện thoại chưa đúng.', { phone: 'Số điện thoại chưa đúng, ví dụ 0912 345 678.' });
+        return fail(422, 'Số điện thoại chưa đúng.', {
+          phone: 'Số điện thoại chưa đúng, cần 10 số, ví dụ 0912 345 678.',
+        });
       }
     }
     const own = db.subscribers.filter((s) => s.candidateEmail === email);
@@ -935,6 +871,8 @@ export const mockApi: Api = {
     save();
     return delay(toHrMe(me));
   },
+
+  ...newsMockApi,
 };
 
 function messageTemplatesOf(db: MockDb) {
@@ -950,8 +888,4 @@ export function demoHrPassword(): string {
   return load().hrUsers.find((u) => u.email === DEMO_HR.email)?.password ?? '';
 }
 
-/** Test helper: start from a fresh seed. */
-export function resetMockDb(now?: Date) {
-  memory = buildSeed(now);
-  save();
-}
+export { resetMockDb } from './mock-store';

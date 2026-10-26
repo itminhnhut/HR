@@ -205,7 +205,7 @@ export function HrApplicantsPage() {
           onChange={(e) => setDraft(e.target.value)}
           onBlur={() => setParam('q', draft.trim() || null)}
           placeholder="Tìm theo tên hoặc số điện thoại"
-          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-navy outline-none placeholder:text-muted"
+          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-navy outline-none placeholder:text-placeholder"
         />
       </label>
 

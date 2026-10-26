@@ -37,6 +37,8 @@ export interface JobDetailDto extends JobCardDto {
   education: string | null;
   responsibilities: string[];
   requirements: string[];
+  /** "Ưu tiên (không bắt buộc)": nice to have, never required. */
+  preferred: string[];
   benefits: string[];
   /** One text per ROADMAP_MILESTONES entry; empty when the job has no roadmap. */
   roadmap: string[];
@@ -64,6 +66,8 @@ export interface HrJobDto extends SalaryFields {
   education: string | null;
   responsibilities: string;
   requirements: string;
+  /** "Ưu tiên (không bắt buộc)", one item per line. */
+  preferred: string;
   benefits: string[];
   roadmap: string[];
   deadline: string;
@@ -238,6 +242,11 @@ export interface CandidateApplicationDto {
   place: string;
   createdAt: string;
   stage: CandidateStage;
+}
+
+/** GET /candidate/me for a visitor who is not signed in (200, so public pages log no error). */
+export interface SignedOutResponse {
+  signedIn: false;
 }
 
 export interface CandidateOverview {

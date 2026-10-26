@@ -77,6 +77,11 @@ export function PreviewDialog({ form, open, onClose }: { form: FormState; open: 
           <Block title="Yêu cầu">
             <Bullets text={form.requirements} />
           </Block>
+          {form.preferred.trim() && (
+            <Block title="Ưu tiên (không bắt buộc)">
+              <Bullets text={form.preferred} />
+            </Block>
+          )}
           {form.benefits.length > 0 && (
             <Block title="Quyền lợi">
               <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">

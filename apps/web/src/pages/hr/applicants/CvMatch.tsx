@@ -2,6 +2,7 @@ import { formatTimestamp, type ApplicationDetailDto, type MatchItem, type MatchV
 import { useEffect, useRef } from 'react';
 import { useScoreCv } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
+import { FieldError } from '../../../ui/Field';
 import { Icon, type IconName } from '../../../ui/icons';
 import { errorMessage } from '../parts';
 
@@ -77,7 +78,7 @@ export function CvMatch({ app }: { app: ApplicationDetailDto }) {
           {score.isPending ? 'Đang chấm…' : result ? 'Chấm lại' : 'Chấm CV'}
         </Button>
       </div>
-      {score.isError && <span className="text-sm text-error">{errorMessage(score.error)}</span>}
+      {score.isError && <FieldError>{errorMessage(score.error)}</FieldError>}
       {result?.note && <span className="text-sm text-slate">{result.note}</span>}
       {result && result.items.length > 0 && (
         <span className="flex flex-wrap gap-x-3 gap-y-1 text-[13px]">

@@ -1,8 +1,16 @@
-import type { ApplicationDetailDto, ContactChannel, JobInput, JobTemplate, TemplateKey } from '@careers/shared';
+import type {
+  ApplicationDetailDto,
+  ContactChannel,
+  HrNewsPostDto,
+  JobInput,
+  JobTemplate,
+  NewsPostInput,
+  TemplateKey,
+} from '@careers/shared';
 import { useEffect, useState } from 'react';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from './index';
-import type { ApplicationPatch, ApplyInput, CandidatePatch, HrProfilePatch, JobAction } from './types';
+import type { ApplicationPatch, ApplyInput, CandidatePatch, HrProfilePatch, JobAction, NewsListQuery } from './types';
 
 export const keys = {
   jobs: ['jobs'] as const,
@@ -17,6 +25,11 @@ export const keys = {
   hrMessageTemplates: ['hr', 'message-templates'] as const,
   hrApps: (jobId?: string, q = '') => ['hr', 'apps', jobId ?? 'all', q] as const,
   hrApp: (id: string) => ['hr', 'app', id] as const,
+  news: (query: NewsListQuery) => ['news', 'list', query.category ?? '', query.tag ?? '', query.page ?? 1] as const,
+  newsPost: (slug: string) => ['news', 'post', slug] as const,
+  hrNews: ['hr', 'news'] as const,
+  hrNewsPost: (id: string) => ['hr', 'news', 'post', id] as const,
+  hrNewsTags: (q: string) => ['hr', 'news', 'tags', q] as const,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────
@@ -345,3 +358,99 @@ export function useScoreCv() {
     },
   });
 }
+
+// ── News ─────────────────────────────────────────────────────────────────
+
+export const useNewsList = (query: NewsListQuery) =>
+  useQuery({ queryKey: keys.news(query), queryFn: () => api.listNews(query), placeholderData: keepPreviousData });
+
+/** Phones: one growing list ("Xem thêm bài") instead of numbered pages, starting at `from`. */
+export const useNewsInfinite = (query: Omit<NewsListQuery, 'page'>, from: number, enabled: boolean) =>
+  useInfiniteQuery({
+    queryKey: ['news', 'more', query.category ?? '', query.tag ?? '', from],
+    queryFn: ({ pageParam }) => api.listNews({ ...query, page: pageParam }),
+    initialPageParam: from,
+    getNextPageParam: (last) => (last.page < last.pageCount ? last.page + 1 : undefined),
+    enabled,
+  });
+
+export const useNewsPost = (slug: string) =>
+  useQuery({ queryKey: keys.newsPost(slug), queryFn: () => api.getNews(slug) });
+
+export const useHrNews = () => useQuery({ queryKey: keys.hrNews, queryFn: api.hrNews });
+
+export const useHrNewsPost = (id: string | null) =>
+  useQuery({
+    queryKey: keys.hrNewsPost(id ?? 'new'),
+    queryFn: () => (id ? api.hrNewsPost(id) : Promise.reject(new Error('No post id'))),
+    enabled: !!id,
+    // The editor keeps its own copy once open: a refetch must never reset what HR is typing.
+    staleTime: Infinity,
+    refetchOnMount: 'always',
+  });
+
+/**
+ * Lists (HR and public) that show this post. The editor keeps its own state, so its query is only updated.
+ * `quiet`: mark stale without refetching now (autosave runs every few seconds; lists refetch when opened).
+ */
+function refreshNews(qc: ReturnType<typeof useQueryClient>, post?: HrNewsPostDto, quiet = false) {
+  if (post) qc.setQueryData(keys.hrNewsPost(post.id), post);
+  const refetchType = quiet ? 'none' : 'active';
+  qc.invalidateQueries({ queryKey: keys.hrNews, exact: true, refetchType });
+  qc.invalidateQueries({ queryKey: ['news'], refetchType });
+}
+
+/** Autosave: creates the post on the first save, then updates it. */
+export function useSaveNews() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }: { id: string | null; input: NewsPostInput }) =>
+      id ? api.hrSaveNews(id, input) : api.hrCreateNews(input),
+    onSuccess: (post) => refreshNews(qc, post, true),
+  });
+}
+
+export function useNewsAction() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, action }: { id: string; action: 'publish' | 'unpublish' }) =>
+      action === 'publish' ? api.hrPublishNews(id) : api.hrUnpublishNews(id),
+    onSuccess: (post) => refreshNews(qc, post),
+  });
+}
+
+export function useDeleteNews() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.hrDeleteNews(id),
+    onSuccess: (_r, id) => {
+      qc.removeQueries({ queryKey: keys.hrNewsPost(id) });
+      refreshNews(qc);
+    },
+  });
+}
+
+export function useNewsCategoryActions() {
+  const qc = useQueryClient();
+  const done = () => refreshNews(qc);
+  return {
+    create: useMutation({ mutationFn: (name: string) => api.hrCreateNewsCategory(name), onSuccess: done }),
+    rename: useMutation({
+      mutationFn: ({ id, name }: { id: string; name: string }) => api.hrRenameNewsCategory(id, name),
+      onSuccess: done,
+    }),
+    remove: useMutation({ mutationFn: (id: string) => api.hrDeleteNewsCategory(id), onSuccess: done }),
+  };
+}
+
+/** Hashtag suggestions while HR types (kept for a minute: they change only when posts are saved). */
+export const useNewsTagSuggestions = (q: string, enabled: boolean) =>
+  useQuery({
+    queryKey: keys.hrNewsTags(q.trim()),
+    queryFn: () => api.hrNewsTags(q),
+    enabled,
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
+
+export const useUploadNewsImage = () => useMutation({ mutationFn: (file: File) => api.hrUploadNewsImage(file) });

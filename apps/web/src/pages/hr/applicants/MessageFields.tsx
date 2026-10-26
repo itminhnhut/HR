@@ -94,7 +94,7 @@ function SavedInput({
         onTyping(e.target.value);
       }}
       onBlur={() => value.trim() !== initial && onSave(value.trim())}
-      onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+      onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && (e.target as HTMLInputElement).blur()}
       className={inputClass(missing && !value.trim())}
     />
   );

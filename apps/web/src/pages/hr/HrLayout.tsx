@@ -21,6 +21,7 @@ const NAV: NavItem[] = [
   { to: '/hr', label: 'Tổng quan', icon: 'bars', end: true },
   { to: '/hr/tin', label: 'Tin tuyển dụng', icon: 'briefcase' },
   { to: '/hr/ho-so', label: 'Hồ sơ ứng viên', icon: 'inbox', badge: true },
+  { to: '/hr/tin-tuc', label: 'Tin tức', icon: 'newspaper' },
   { to: '/hr/mau-tin', label: 'Mẫu tin', icon: 'file' },
   { to: '/hr/mau-thu', label: 'Mẫu thư', icon: 'mail' },
   { to: '/hr/tai-khoan', label: 'Tài khoản HR', icon: 'users' },
@@ -35,7 +36,8 @@ function sectionTitle(pathname: string): string {
 /** "Tin tuyển dụng" stays active while editing a job under /hr/tin/…. */
 function isActive(item: NavItem, pathname: string): boolean {
   if (item.end) return pathname === item.to || pathname === `${item.to}/`;
-  return pathname.startsWith(item.to);
+  // A whole path segment: /hr/tin-tuc is not under /hr/tin.
+  return pathname === item.to || pathname.startsWith(`${item.to}/`);
 }
 
 function NewBadge({ count }: { count: number }) {

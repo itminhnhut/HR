@@ -1,3 +1,4 @@
+import type { CandidateOverview, SignedOutResponse } from '@careers/shared';
 import { ApiError, type Api } from './types';
 
 /**
@@ -8,7 +9,7 @@ import { ApiError, type Api } from './types';
  *   POST   /applications   (multipart)  → ApplyResponse     409 { code: "job_closed" }
  *   POST   /applications/lookup         { phone } → LookupResponse   (no sign-in; 429 when rate-limited)
  *   POST   /candidate/google            { idToken }        → CandidateMe   (only candidate sign-in)
- *   GET    /candidate/me                → CandidateOverview | 401
+ *   GET    /candidate/me                → CandidateOverview | { signedIn: false }
  *   PATCH  /candidate/me   (multipart)  → CandidateMe
  *   DELETE /candidate/me                → { ok }
  *   POST   /candidate/logout            → { ok }
@@ -38,6 +39,17 @@ import { ApiError, type Api } from './types';
  *   GET    /hr/message-templates        → MessageTemplatesResponse
  *   PUT    /hr/message-templates/:key   { subject, body } → MessageTemplatesResponse   DELETE resets
  *   POST   /hr/applications/:id/contacts { templateKey, channel } → ApplicationDetailDto
+ *   GET    /news?page=&category=<slug>&tag=<slug> → NewsListResponse   404 unknown category/tag
+ *   GET    /news/:slug                  → NewsPostDto   404 for drafts
+ *   GET    /hr/news                     → HrNewsListResponse
+ *   POST   /hr/news  |  PUT /hr/news/:id  NewsPostInput → HrNewsPostDto   422 { fieldErrors }
+ *   GET    /hr/news/:id                 → HrNewsPostDto
+ *   POST   /hr/news/:id/(publish|unpublish) → HrNewsPostDto   publish: 422 { fieldErrors }; unpublish → hidden
+ *   GET    /hr/news/tags?q=             → { tags: { name, slug, postCount }[] }
+ *   DELETE /hr/news/:id                 → { ok }
+ *   POST   /hr/news/categories  { name } → NewsCategoryDto  |  PATCH /hr/news/categories/:id { name }
+ *   DELETE /hr/news/categories/:id      → { ok }   409 while it has posts
+ *   POST   /hr/news/images  (multipart "file")  → { url, width, height }
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -125,7 +137,11 @@ export const httpApi: Api = {
     request('/applications/lookup', json('POST', { phone, ...(captchaToken ? { captchaToken } : {}) })),
 
   googleSignIn: async () => request('/candidate/google', json('POST', { idToken: await googleIdToken() })),
-  candidateOverview: () => request('/candidate/me', {}, true),
+  candidateOverview: async () => {
+    // Older servers answered 401 when signed out; both mean "not signed in".
+    const body = await request<CandidateOverview | SignedOutResponse | null>('/candidate/me', {}, true);
+    return body && !('signedIn' in body) ? body : null;
+  },
   updateCandidate: (patch) => {
     const form = new FormData();
     if (patch.name !== undefined) form.append('name', patch.name);
@@ -175,4 +191,30 @@ export const httpApi: Api = {
   hrSaveMessageTemplate: (key, input) => request(`/hr/message-templates/${key}`, json('PUT', input)),
   hrResetMessageTemplate: (key) => request(`/hr/message-templates/${key}`, { method: 'DELETE' }),
   hrLogContact: (id, input) => request(`/hr/applications/${encodeURIComponent(id)}/contacts`, json('POST', input)),
+
+  listNews: ({ page, category, tag }) => {
+    const params = new URLSearchParams();
+    if (page && page > 1) params.set('page', String(page));
+    if (category) params.set('category', category);
+    if (tag) params.set('tag', tag);
+    const query = params.toString();
+    return request(`/news${query ? `?${query}` : ''}`);
+  },
+  getNews: (slug) => request(`/news/${encodeURIComponent(slug)}`),
+  hrNews: () => request('/hr/news'),
+  hrNewsPost: (id) => request(`/hr/news/${encodeURIComponent(id)}`),
+  hrCreateNews: (input) => request('/hr/news', json('POST', input)),
+  hrSaveNews: (id, input) => request(`/hr/news/${encodeURIComponent(id)}`, json('PUT', input)),
+  hrPublishNews: (id) => request(`/hr/news/${encodeURIComponent(id)}/publish`, { method: 'POST' }),
+  hrUnpublishNews: (id) => request(`/hr/news/${encodeURIComponent(id)}/unpublish`, { method: 'POST' }),
+  hrNewsTags: (q) => request(`/hr/news/tags?q=${encodeURIComponent(q.trim())}`),
+  hrDeleteNews: (id) => request(`/hr/news/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrCreateNewsCategory: (name) => request('/hr/news/categories', json('POST', { name })),
+  hrRenameNewsCategory: (id, name) => request(`/hr/news/categories/${encodeURIComponent(id)}`, json('PATCH', { name })),
+  hrDeleteNewsCategory: (id) => request(`/hr/news/categories/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrUploadNewsImage: (file) => {
+    const form = new FormData();
+    form.append('file', file);
+    return request('/hr/news/images', { method: 'POST', body: form });
+  },
 };

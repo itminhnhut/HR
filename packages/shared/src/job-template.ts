@@ -44,6 +44,8 @@ export interface JobTemplate {
   educations: string[];
   /** Common requirement lines HR ticks into "Yêu cầu" (one line each). */
   requirementOptions: string[];
+  /** Common nice-to-have lines HR ticks into "Ưu tiên (không bắt buộc)". */
+  preferredOptions: string[];
 }
 
 export const DEFAULT_JOB_TEMPLATE: JobTemplate = {
@@ -83,8 +85,13 @@ export const DEFAULT_JOB_TEMPLATE: JobTemplate = {
     'Có laptop cá nhân',
     'Có phương tiện đi lại',
     'Đọc hiểu tiếng Anh cơ bản',
-    'Ưu tiên ứng viên có kinh nghiệm trong ngành',
     'Có thể đi làm ngay',
+  ],
+  preferredOptions: [
+    'Có kinh nghiệm trong ngành',
+    'Đã dùng CRM hoặc phần mềm quản lý khách hàng',
+    'Tiếng Anh giao tiếp',
+    'Có sẵn mạng lưới khách hàng',
   ],
 };
 

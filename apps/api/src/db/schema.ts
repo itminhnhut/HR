@@ -1,4 +1,4 @@
-import type { JobTemplate, MatchItem } from '@careers/shared';
+import type { ArticleHeadingRef, ArticleState, JobTemplate, MatchItem, NewsImage } from '@careers/shared';
 import {
   boolean,
   jsonb,
@@ -6,6 +6,7 @@ import {
   index,
   integer,
   pgEnum,
+  primaryKey,
   pgTable,
   text,
   timestamp,
@@ -26,6 +27,8 @@ export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
 export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
+/** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
+export const newsStatus = pgEnum('news_status', ['draft', 'published', 'hidden']);
 
 const tz = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' });
 const createdAt = tz('created_at').notNull().defaultNow();
@@ -54,6 +57,8 @@ export const jobs = pgTable(
     /** Multi-line text, one bullet per line. Rendered as text, never as HTML. */
     responsibilities: text('responsibilities').notNull().default(''),
     requirements: text('requirements').notNull().default(''),
+    /** "Ưu tiên (không bắt buộc)": nice-to-haves, one per line; never scored as requirements. */
+    preferred: text('preferred').notNull().default(''),
     benefits: text('benefits').array().notNull().default([]),
     /** One text per probation milestone (ROADMAP_MILESTONES); empty means no roadmap. */
     roadmap: text('roadmap').array().notNull().default([]),
@@ -229,6 +234,82 @@ export const cvScores = pgTable('cv_scores', {
   scoredAt: tz('scored_at').notNull(),
 });
 
+/** "Chuyên mục" of news posts (spec-news.md). The slug never changes, so category links keep working. */
+export const newsCategories = pgTable(
+  'news_categories',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    slug: text('slug').notNull(),
+    sort: integer('sort').notNull().default(0),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [uniqueIndex('news_categories_slug_idx').on(t.slug)],
+);
+
+/**
+ * News posts. `content` is the Lexical editor state checked by parseArticleContent; `content_html`,
+ * `plain_text` and `headings` are rendered from it on every save, so reads never parse or render.
+ */
+export const newsPosts = pgTable(
+  'news_posts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** Restrict: a category with posts cannot be deleted. Null only in drafts. */
+    categoryId: uuid('category_id').references(() => newsCategories.id, { onDelete: 'restrict' }),
+    title: text('title').notNull().default(''),
+    /** Frozen once the post is first published (publishedAt set). */
+    slug: text('slug').notNull(),
+    status: newsStatus('status').notNull().default('draft'),
+    summary: text('summary').notNull().default(''),
+    cover: jsonb('cover').$type<NewsImage>(),
+    content: jsonb('content').$type<ArticleState>(),
+    contentHtml: text('content_html').notNull().default(''),
+    plainText: text('plain_text').notNull().default(''),
+    headings: jsonb('headings').$type<ArticleHeadingRef[]>().notNull().default([]),
+    /** First publish; kept when the post is taken down and published again. */
+    publishedAt: tz('published_at'),
+    updatedAt,
+    /** Name of the HR account that saved last. */
+    updatedBy: text('updated_by'),
+    createdAt,
+  },
+  (t) => [
+    uniqueIndex('news_posts_slug_idx').on(t.slug),
+    index('news_posts_status_published_idx').on(t.status, t.publishedAt),
+    index('news_posts_category_idx').on(t.categoryId, t.status, t.publishedAt),
+  ],
+);
+
+/** Hashtags of news posts. A tag outlives its posts; public pages only ever show tags of published posts. */
+export const newsTags = pgTable(
+  'news_tags',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** As first typed ("Tuyển dụng"); later spellings with the same slug reuse it. */
+    name: text('name').notNull(),
+    slug: text('slug').notNull(),
+    createdAt,
+  },
+  (t) => [uniqueIndex('news_tags_slug_idx').on(t.slug)],
+);
+
+/** Which tags a post has, in the order HR typed them. */
+export const newsPostTags = pgTable(
+  'news_post_tags',
+  {
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => newsPosts.id, { onDelete: 'cascade' }),
+    tagId: uuid('tag_id')
+      .notNull()
+      .references(() => newsTags.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.postId, t.tagId] }), index('news_post_tags_tag_idx').on(t.tagId)],
+);
+
 export type Job = typeof jobs.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
 export type Application = typeof applications.$inferSelect;
@@ -236,3 +317,7 @@ export type NewApplication = typeof applications.$inferInsert;
 export type Subscriber = typeof subscribers.$inferSelect;
 export type Candidate = typeof candidates.$inferSelect;
 export type HrUser = typeof hrUsers.$inferSelect;
+export type NewsCategory = typeof newsCategories.$inferSelect;
+export type NewsPost = typeof newsPosts.$inferSelect;
+export type NewNewsPost = typeof newsPosts.$inferInsert;
+export type NewsTag = typeof newsTags.$inferSelect;
