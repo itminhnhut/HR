@@ -59,7 +59,11 @@ export default function LookupPage() {
         intro="Nhập số điện thoại bạn đã dùng khi nộp hồ sơ để xem hồ sơ đang tới bước nào. Không cần đăng nhập."
       />
 
-      <main className={`${PAGE_WIDTH} py-10 sm:py-14`}>
+      <main
+        // Clarity never records the phone number nor the applications found for it (jobs, dates, outcome).
+        data-clarity-mask="true"
+        className={`${PAGE_WIDTH} py-10 sm:py-14`}
+      >
         <div className="flex max-w-[760px] flex-col gap-6">
           <form
             noValidate

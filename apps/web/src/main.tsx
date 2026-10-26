@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
 import { ApiError } from './api';
 import { router } from './app/router';
+import { startAnalytics } from './lib/analytics';
 import './styles.css';
 
 /** An expired HR session sends everyone back to the HR login screen. */
@@ -23,6 +24,9 @@ const queryClient: QueryClient = new QueryClient({
     },
   },
 });
+
+// Page views and screen recording follow the router (HR and account pages are never sent nor recorded).
+startAnalytics(router, window.location.origin, document.referrer);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

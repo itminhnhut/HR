@@ -11,7 +11,6 @@ import {
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useCandidate, useCandidateSignOut, useUpdateCandidate } from '../../api/queries';
-import { useNoAnalytics } from '../../lib/analytics';
 import { useNoIndex, usePageMeta } from '../../lib/hooks';
 import { ApplicationStage } from '../../site/ApplicationStage';
 import { PAGE_WIDTH, PageHero, PageHeroSkeleton } from '../../site/PageHero';
@@ -39,7 +38,6 @@ function greetingName(fullName: string | null): string {
 export function CandidateAccountPage() {
   usePageMeta('Hồ sơ của tôi');
   useNoIndex();
-  useNoAnalytics();
   const candidate = useCandidate();
 
   /**

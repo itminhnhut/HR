@@ -49,7 +49,10 @@ export default function ApplyFormDialog({
   };
   return (
     <Dialog open={open} onClose={close} label={`Ứng tuyển ${job.title}`} variant="panel" keepMounted>
-      <ApplyForm key={round} job={job} active={open} onClose={close} onSent={() => setSent(true)} />
+      {/* Clarity never shows what applicants type or attach, nor the thank-you screen (name and phone). */}
+      <div data-clarity-mask="true" className="contents">
+        <ApplyForm key={round} job={job} active={open} onClose={close} onSent={() => setSent(true)} />
+      </div>
     </Dialog>
   );
 }
@@ -267,8 +270,6 @@ function ApplyForm({ job, active, onClose, onSent }: ApplyFormProps) {
       </aside>
 
       <form
-        // Clarity never shows what applicants type or attach.
-        data-clarity-mask="true"
         onSubmit={onSubmit}
         onFocus={arm}
         noValidate

@@ -109,4 +109,17 @@ describe('ApplyDialog', () => {
     expect(scrolled).toHaveBeenCalledWith(expect.objectContaining({ block: 'center' }));
     expect(scrolled.mock.contexts.at(-1)).toBe(message.closest('[role="alert"]'));
   });
+
+  it('should hide everything in the dialog from screen recordings, the thank-you screen with name and phone included', async () => {
+    // Arrange
+    setup();
+    const form = await screen.findByRole('button', { name: /Gửi hồ sơ/ });
+
+    // Act
+    const mask = form.closest('[data-clarity-mask="true"]');
+
+    // Assert: the mask wraps all the dialog shows, so the screen that replaces the form is masked too.
+    const dialog = form.closest('dialog');
+    expect(mask?.textContent).toBe(dialog?.textContent);
+  });
 });
