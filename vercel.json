@@ -11,7 +11,73 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/tin-tuc",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/tin-tuc/chuyen-muc/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/tin-tuc/the/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/tin-tuc/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/gioi-thieu",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+        }
+      ],
+      "destination": "/api"
+    },
+    {
+      "source": "/chinh-sach-du-lieu",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
         }
       ],
       "destination": "/api"
@@ -30,6 +96,10 @@
     },
     {
       "source": "/robots.txt",
+      "destination": "/api"
+    },
+    {
+      "source": "/:file([a-zA-Z0-9-]{8,128}\\.txt)",
       "destination": "/api"
     },
     {

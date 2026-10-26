@@ -1,10 +1,11 @@
-import { placeLabel, EMPLOYMENT_TYPE_LABEL, formatDate, formatSalary, isListed, jobPostingData } from '@careers/shared';
-import { eq } from 'drizzle-orm';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../app.js';
-import { jobs } from '../db/schema.js';
-import { toDetail } from '../services/job-mappers.js';
-import { listedJobs } from '../services/public-jobs.js';
+import { notFoundHtml } from '../lib/bot-page.js';
+import { HttpError } from '../lib/http-error.js';
+import { sharePagesRoutes } from './share-pages.js';
+import { jobBotPage } from '../services/job-bot-page.js';
+import { getJobPage } from '../services/public-jobs.js';
+import { buildSitemap, SITEMAP_CACHE_CONTROL } from '../services/sitemap.js';
 
 /**
  * Server-rendered pages for link previews and crawlers. vercel.json sends bot
@@ -12,14 +13,7 @@ import { listedJobs } from '../services/public-jobs.js';
  * previews and Google for Jobs see real content while people get the SPA.
  */
 export const shareRoutes = new Hono<Env>();
-
-const HTML_ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (ch) => HTML_ESCAPES[ch] ?? ch);
-
-const list = (heading: string, lines: string[]) =>
-  lines.length > 0
-    ? `<h2>${escapeHtml(heading)}</h2><ul>${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`
-    : '';
+shareRoutes.route('/', sharePagesRoutes);
 
 /** /viec-lam/:slug only arrives here for crawler user-agents (see vercel.json). */
 shareRoutes.get('/viec-lam/:slug', (c) => sharePage(c, c.req.param('slug')));
@@ -27,69 +21,26 @@ shareRoutes.get('/share/jobs/:slug', (c) => sharePage(c, c.req.param('slug')));
 
 async function sharePage(c: Context<Env>, slug: string) {
   const { db, config, now } = c.get('deps');
-  const row = await db.query.jobs.findFirst({ where: eq(jobs.slug, slug) });
-  if (!row || row.state === 'draft') {
-    return c.html(
-      '<!doctype html><html lang="vi"><title>Không tìm thấy</title><p>Không tìm thấy vị trí này.</p></html>',
-      404,
-    );
+  const site = { url: config.siteUrl, companyName: config.companyName };
+  try {
+    const { job, similar } = await getJobPage(db, slug, now());
+    c.header('cache-control', 'public, s-maxage=300, stale-while-revalidate=600');
+    return c.html(jobBotPage(site, job, similar));
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 404) {
+      return c.html(notFoundHtml({ href: `${site.url}/`, text: 'Xem vị trí đang mở' }), 404);
+    }
+    throw error;
   }
-
-  const job = toDetail(row, now());
-  const listed = isListed(job.status);
-  const url = `${config.siteUrl}/viec-lam/${job.slug}`;
-  const title = `${job.title} – ${config.companyName}`;
-  const summary = `${formatSalary(job)} · ${placeLabel(job.address)} · ${EMPLOYMENT_TYPE_LABEL[job.employmentType]} · Hạn nộp ${formatDate(job.deadline)}`;
-  // BR-05: a closed job keeps its page; BR-16: but drops out of Google for Jobs.
-  const description = listed ? summary : `Vị trí này đã ngừng nhận hồ sơ. ${summary}`;
-  // "</" inside JSON would end the script tag early.
-  const jsonLd = JSON.stringify(jobPostingData(job, { name: config.companyName, url: config.siteUrl })).replace(
-    /</g,
-    '\\u003c',
-  );
-
-  c.header('cache-control', 'public, s-maxage=300, stale-while-revalidate=600');
-  return c.html(`<!doctype html>
-<html lang="vi">
-<head>
-<meta charset="utf-8">
-<title>${escapeHtml(title)}</title>
-<meta name="description" content="${escapeHtml(description)}">
-<link rel="canonical" href="${escapeHtml(url)}">
-${listed ? '' : '<meta name="robots" content="noindex">'}
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="${escapeHtml(config.companyName)}">
-<meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="${escapeHtml(description)}">
-<meta property="og:url" content="${escapeHtml(url)}">
-${listed ? `<script type="application/ld+json">${jsonLd}</script>` : ''}
-</head>
-<body>
-<h1>${escapeHtml(job.title)}</h1>
-<p>${escapeHtml(description)}</p>
-${list('Bạn sẽ làm gì', job.responsibilities)}
-${list('Chúng tôi cần ở bạn', job.requirements)}
-<p><a href="${escapeHtml(url)}">Xem và ứng tuyển</a></p>
-</body>
-</html>`);
 }
 
+/** Built per request from the database (see services/sitemap.ts), so there is nothing to regenerate. */
 shareRoutes.get('/sitemap.xml', async (c) => {
   const { db, config, now } = c.get('deps');
-  const site = escapeHtml(config.siteUrl);
-  // BR-16: only jobs taking applications are in the sitemap.
-  const urls = (await listedJobs(db, now())).map(
-    (job) =>
-      `<url><loc>${site}/viec-lam/${escapeHtml(job.slug)}</loc><lastmod>${job.updatedAt.toISOString().slice(0, 10)}</lastmod></url>`,
-  );
+  const xml = await buildSitemap({ db, now: now(), siteUrl: config.siteUrl });
   c.header('content-type', 'application/xml; charset=utf-8');
-  c.header('cache-control', 'public, s-maxage=600');
-  return c.body(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>${site}/</loc></url>
-<url><loc>${site}/gioi-thieu</loc></url>
-${urls.join('\n')}
-</urlset>`);
+  c.header('cache-control', SITEMAP_CACHE_CONTROL);
+  return c.body(xml);
 });
 
 shareRoutes.get('/robots.txt', (c) => {
@@ -104,4 +55,11 @@ shareRoutes.get('/robots.txt', (c) => {
       '',
     ].join('\n'),
   );
+});
+
+/** IndexNow ownership proof (lib/indexnow.ts): the key, as plain text, at /<key>.txt. Nothing else. */
+shareRoutes.get('/:file{[a-zA-Z0-9-]{8,128}\\.txt}', (c) => {
+  const key = c.get('deps').config.indexNowKey;
+  if (!key || c.req.param('file') !== `${key}.txt`) return c.text('Không tìm thấy.', 404);
+  return c.text(key);
 });
