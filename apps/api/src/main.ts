@@ -4,6 +4,7 @@ import { vercelBlobCvStore, type CvStore } from './lib/cv-store.js';
 import { turnstileVerifier, type CaptchaVerifier } from './lib/captcha.js';
 import { googleVerifier, type GoogleVerifier } from './lib/google.js';
 import { vercelBlobImageStore, type ImageStore } from './lib/image-store.js';
+import { companyName, envValue } from './lib/env-value.js';
 import { isValidIndexNowKey } from './lib/indexnow.js';
 
 function requireEnv(name: string): string {
@@ -15,7 +16,7 @@ function requireEnv(name: string): string {
 const onVercel = process.env.VERCEL === '1';
 
 /** Public FRONTEND origin without a trailing slash. */
-export const siteUrl = () => (process.env.SITE_URL ?? 'http://localhost:3344').replace(/\/$/, '');
+export const siteUrl = () => (envValue(process.env.SITE_URL) || 'http://localhost:3344').replace(/\/$/, '');
 
 /** Fixed so local sessions survive `tsx watch` restarts. Never used on Vercel. */
 const LOCAL_DEV_SECRET = 'local-dev-only-session-secret-0000';
@@ -82,7 +83,7 @@ export function createProductionApp(local: LocalOverrides = {}) {
     db: useLocal.db ?? createNeonDb(requireEnv('DATABASE_URL')),
     config: {
       siteUrl: siteUrl(),
-      companyName: process.env.COMPANY_NAME ?? 'TOP FLOW',
+      companyName: companyName(process.env),
       isProduction,
       sessionSecret: sessionSecret(),
       secureCookies: onVercel,
