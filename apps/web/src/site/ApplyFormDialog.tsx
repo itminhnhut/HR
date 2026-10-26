@@ -1,11 +1,9 @@
 import {
-  CV_MAX_BYTES,
   EMPLOYMENT_TYPE_LABEL,
   formatDate,
   formatPhone,
   formatSalary,
   MESSAGE_MAX,
-  normalizeVietnamPhone,
   type JobDetailDto,
 } from '@careers/shared';
 import { useEffect, useRef, useState, type DragEvent, type FormEvent } from 'react';
@@ -20,41 +18,24 @@ import { Checkbox, FieldError, TextArea, TextField } from '../ui/Field';
 import { Notice } from '../ui/feedback';
 import { Icon } from '../ui/icons';
 import { PhoneField } from '../ui/PhoneField';
+import {
+  checkCvFile,
+  revealFirstError,
+  validateApply,
+  type ApplyErrors as Errors,
+  type CvMode,
+} from './applyValidation';
 
-/** saved = the CV stored in the signed-in account (one CV per account). */
-type CvMode = 'saved' | 'file' | 'link';
-
-type Errors = Partial<
-  Record<'fullName' | 'phone' | 'email' | 'cv' | 'cvLink' | 'consent' | 'message' | 'captcha', string>
->;
-
-function validate(f: {
-  fullName: string;
-  phone: string;
-  email: string;
-  cvFile: File | null;
-  cvLink: string;
-  mode: CvMode;
-  consent: boolean;
-}): Errors {
-  const e: Errors = {};
-  if (f.fullName.trim().length < 2) e.fullName = 'Nhập họ và tên.';
-  if (!normalizeVietnamPhone(f.phone)) e.phone = 'Số điện thoại chưa đúng, ví dụ 0912 345 678.';
-  if (f.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = 'Email chưa đúng.';
-  if (f.mode === 'file' && !f.cvFile) e.cv = 'Đính kèm file CV hoặc dán link CV.';
-  if (f.mode === 'link' && !/^https?:\/\/\S+/i.test(f.cvLink.trim()))
-    e.cv = 'Dán link CV bắt đầu bằng http:// hoặc https://';
-  if (!f.consent) e.consent = 'Cần tích ô đồng ý đầu tiên để gửi hồ sơ.';
-  return e;
-}
-
-function checkFile(file: File): string | null {
-  if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') return 'CV cần là file PDF.';
-  if (file.size > CV_MAX_BYTES) return 'File lớn hơn 4 MB. Nén lại hoặc dán link CV.';
-  return null;
-}
-
-export function ApplyDialog({ job, open, onClose }: { job: JobDetailDto; open: boolean; onClose: () => void }) {
+/** The apply form in its dialog. Loaded on first open through ApplyDialog (its own chunk with Turnstile). */
+export default function ApplyFormDialog({
+  job,
+  open,
+  onClose,
+}: {
+  job: JobDetailDto;
+  open: boolean;
+  onClose: () => void;
+}) {
   // The form stays mounted while closed so typed details survive (BR edge case:
   // "thông tin bạn nhập vẫn còn"). A new form starts only after a successful send.
   const [round, setRound] = useState(0);
@@ -68,12 +49,20 @@ export function ApplyDialog({ job, open, onClose }: { job: JobDetailDto; open: b
   };
   return (
     <Dialog open={open} onClose={close} label={`Ứng tuyển ${job.title}`} variant="panel" keepMounted>
-      <ApplyForm key={round} job={job} onClose={close} onSent={() => setSent(true)} />
+      <ApplyForm key={round} job={job} active={open} onClose={close} onSent={() => setSent(true)} />
     </Dialog>
   );
 }
 
-function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () => void; onSent: () => void }) {
+interface ApplyFormProps {
+  job: JobDetailDto;
+  /** The dialog is open: the form stays mounted while closed, but the anti-spam check loads only once open. */
+  active: boolean;
+  onClose: () => void;
+  onSent: () => void;
+}
+
+function ApplyForm({ job, active, onClose, onSent }: ApplyFormProps) {
   const { data: candidate, isPending: checkingAccount } = useCandidate();
   const apply = useApply();
 
@@ -94,6 +83,10 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
   const [consent, setConsent] = useState(false); // BR-11: never pre-ticked
   const [website, setWebsite] = useState(''); // honeypot
   const captcha = useCaptcha();
+  const { arm } = captcha;
+  useEffect(() => {
+    if (active) arm();
+  }, [active, arm]);
   const [waiting, setWaiting] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [dragging, setDragging] = useState(false);
@@ -110,18 +103,15 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
     if (candidate.me.cvFileName) setMode((m) => (m === 'file' ? 'saved' : m));
   }, [candidate]);
 
-  // Move focus to the first problem after the errors render.
+  // Move focus to the first problem after the errors render, its message clear of the sticky send bar.
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (!attempt) return;
-    document
-      .querySelector<HTMLElement>('dialog[open] [aria-invalid="true"], dialog[open] [data-error="true"]')
-      ?.focus();
+    if (attempt) revealFirstError();
   }, [attempt]);
 
   const pick = (file: File | undefined) => {
     if (!file) return;
-    const problem = checkFile(file);
+    const problem = checkCvFile(file);
     setErrors((e) => ({ ...e, cv: problem ?? undefined }));
     setCvFile(problem ? null : file);
   };
@@ -134,7 +124,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const found: Errors = validate({ fullName, phone, email, cvFile, cvLink, mode, consent });
+    const found: Errors = validateApply({ fullName, phone, email, cvFile, cvLink, mode, consent });
     setErrors(found);
     if (Object.keys(found).length) {
       setAttempt((n) => n + 1);
@@ -280,12 +270,13 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
         // Clarity never shows what applicants type or attach.
         data-clarity-mask="true"
         onSubmit={onSubmit}
+        onFocus={arm}
         noValidate
         className="flex max-h-dvh scroll-pb-24 flex-col overflow-y-auto sm:max-h-[calc(100dvh-48px)]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 lg:border-0 lg:px-12 lg:pb-2 lg:pt-10">
           <div className="flex flex-col gap-1">
-            <span className="text-xs text-muted lg:hidden">Ứng tuyển vị trí</span>
+            <span className="text-[13px] text-muted lg:hidden">Ứng tuyển vị trí</span>
             <h2 className="m-0 font-serif text-[22px] font-medium lg:text-[34px]">
               <span className="lg:hidden">{job.title}</span>
               <span className="hidden lg:inline">Gửi hồ sơ</span>
@@ -325,7 +316,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
               label="Họ và tên"
               icon="user"
               autoComplete="name"
-              placeholder="Nguyễn Văn A"
+              placeholder="VD: Nguyễn Văn A"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               error={errors.fullName}
@@ -335,7 +326,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
               value={phone}
               onChange={setPhone}
               error={errors.phone}
-              hint="HR dùng số này để liên hệ nếu bạn phù hợp."
+              hint="Ví dụ 0912 345 678. HR dùng số này để liên hệ nếu bạn phù hợp."
             />
           </div>
 
@@ -422,7 +413,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
                     <button
                       type="button"
                       onClick={() => fileInput.current?.click()}
-                      className="border-0 bg-transparent p-0 font-medium text-link underline"
+                      className={`border-0 bg-transparent px-0 font-medium text-link underline ${INLINE_TAP}`}
                     >
                       chọn file
                     </button>
@@ -512,7 +503,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
           <div className="flex flex-col gap-2.5">
             <Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} error={errors.consent}>
               Tôi đồng ý để {SITE.company} dùng thông tin này để xét tuyển vị trí này.{' '}
-              <Link to="/chinh-sach-du-lieu" target="_blank">
+              <Link to="/chinh-sach-du-lieu" target="_blank" className={INLINE_TAP}>
                 Xem chính sách
               </Link>
             </Checkbox>
@@ -529,6 +520,7 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
         <div className="sticky bottom-0 mt-auto border-t border-line bg-white px-5 py-3 shadow-[0_-6px_16px_rgba(11,31,58,0.06)] lg:static lg:border-0 lg:px-12 lg:pb-10 lg:pt-2 lg:shadow-none">
           <Button
             type="submit"
+            variant="brand"
             size="lg"
             icon="send"
             disabled={waiting || apply.isPending}
@@ -541,6 +533,9 @@ function ApplyForm({ job, onClose, onSent }: { job: JobDetailDto; onClose: () =>
     </div>
   );
 }
+
+/** A link inside a sentence: 44px tall to tap (padding), without making its line taller (negative margin). */
+const INLINE_TAP = 'inline-block py-3 -my-3';
 
 /** Optional, inside the form: signing in fills the form in and lets the candidate reuse the saved CV and track it. */
 function GoogleShortcut() {
@@ -562,7 +557,7 @@ function GoogleShortcut() {
           type="button"
           onClick={() => void signIn()}
           disabled={google.isPending}
-          className="border-0 bg-transparent p-0 font-medium text-link underline disabled:opacity-60"
+          className={`border-0 bg-transparent px-0 font-medium text-link underline disabled:opacity-60 ${INLINE_TAP}`}
         >
           {google.isPending ? 'Đang mở Google…' : 'Đăng nhập Google'}
         </button>{' '}

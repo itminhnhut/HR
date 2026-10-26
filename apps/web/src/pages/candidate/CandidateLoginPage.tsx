@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
 import { isDemo } from '../../api';
-import { DEMO_CANDIDATE_EMAIL } from '../../api/mock-seed';
+import { DEMO_CANDIDATE_EMAIL } from '../../api/demo-accounts';
 import { useCandidate, useGoogleSignIn } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
-import { NavyHero } from '../../site/PublicLayout';
+import { Breadcrumbs } from '../../site/Breadcrumbs';
+import { NavyHero } from '../../site/NavyHero';
+import { PAGE_WIDTH } from '../../site/PageHero';
 import { FieldError } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { errorText, safeNextPath } from './candidateUi';
@@ -39,17 +41,18 @@ export function CandidateLoginPage() {
 
   return (
     <NavyHero waves={false} className="flex flex-1 flex-col [&>header]:w-full">
-      <div className="relative grid flex-1 md:min-h-[700px] md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-cols-[560px_minmax(0,1fr)]">
-        <section className="relative flex flex-col gap-7 overflow-hidden px-5 pb-10 pt-8 sm:px-6 md:px-10 md:py-14 lg:p-14">
+      <div className={`relative ${PAGE_WIDTH} pt-3 sm:pt-5`}>
+        <Breadcrumbs items={[{ label: 'Hồ sơ của tôi' }]} />
+      </div>
+      <main className="relative grid flex-1 md:min-h-[700px] md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:grid-cols-[minmax(560px,calc((100vw-1160px)/2+560px))_minmax(0,1fr)]">
+        <section className="relative flex flex-col gap-7 overflow-hidden px-5 pb-10 pt-4 sm:px-6 md:px-10 md:py-14 lg:p-14 lg:pl-[max(1.5rem,calc((100vw-1160px)/2+1.5rem))]">
           <PanelWaves />
-          <div className="relative flex flex-col gap-5 md:my-auto md:gap-[22px]">
-            <h1 className="m-0 animate-rise font-serif text-[32px] font-medium md:text-[38px] lg:text-[44px]">
-              Theo dõi hồ sơ của bạn
-            </h1>
+          <div className="stagger relative flex flex-col gap-5 md:my-auto md:gap-[22px]">
+            <h1 className="m-0 font-serif type-h1 font-medium">Theo dõi hồ sơ của bạn</h1>
             <ul className="m-0 flex list-none flex-col gap-3.5 p-0 text-[15px] text-silver">
               {PERKS.map((perk) => (
                 <li key={perk} className="flex items-center gap-3">
-                  <Icon name="check" size={18} stroke={1.5} className="shrink-0 text-white" />
+                  <Icon name="check" size={16} stroke={1.8} className="shrink-0 text-white" />
                   {perk}
                 </li>
               ))}
@@ -63,7 +66,7 @@ export function CandidateLoginPage() {
         <section className="relative flex items-center justify-center bg-mist px-4 py-10 text-navy sm:px-6 md:py-12">
           <div className="flex w-full max-w-[420px] flex-col gap-[22px]">
             <div className="flex flex-col gap-2">
-              <h2 className="m-0 font-serif text-[30px] font-medium sm:text-[34px]">Đăng nhập</h2>
+              <h2 className="m-0 font-serif type-h2 font-medium">Đăng nhập</h2>
               <p className="m-0 text-[15px] leading-relaxed text-slate">
                 Dùng tài khoản Google có email bạn đã ghi khi nộp hồ sơ, các hồ sơ đó sẽ tự hiện ra.
               </p>
@@ -72,7 +75,7 @@ export function CandidateLoginPage() {
               type="button"
               onClick={() => void startGoogle()}
               disabled={googleSignIn.isPending}
-              className="flex min-h-[54px] items-center justify-center gap-3 rounded-control border border-silver bg-white text-[15px] font-medium text-navy transition-colors hover:bg-hover disabled:opacity-60"
+              className="flex min-h-[52px] items-center justify-center gap-3 rounded-control border border-silver bg-white text-[15px] font-medium text-navy transition-colors hover:bg-hover disabled:opacity-60"
             >
               <GoogleMark />
               {googleSignIn.isPending ? 'Đang mở Google…' : 'Tiếp tục với Google'}
@@ -86,7 +89,7 @@ export function CandidateLoginPage() {
             </Link>
           </div>
         </section>
-      </div>
+      </main>
     </NavyHero>
   );
 }

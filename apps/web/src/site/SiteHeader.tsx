@@ -23,13 +23,23 @@ interface NavItem {
   end?: boolean;
 }
 
+const PROFILE_ITEM: NavItem = { to: '/ho-so-cua-toi', label: 'Hồ sơ của tôi', icon: 'user' };
+const SIGN_IN_ITEM: NavItem = { to: '/ho-so-cua-toi', label: 'Đăng nhập', icon: 'user' };
+
+/** Signed in: the profile; known to be signed out (or the check failed): sign in; still checking: nothing yet. */
+function accountItems(candidate: unknown, isPending: boolean): NavItem[] {
+  if (candidate) return [PROFILE_ITEM];
+  return isPending ? [] : [SIGN_IN_ITEM];
+}
+
 function useNavItems(): NavItem[] {
-  const { data: candidate } = useCandidate();
+  const { data: candidate, isPending } = useCandidate();
   return [
     { to: '/', label: 'Việc làm', icon: 'briefcase', end: true },
+    { to: '/tin-tuc', label: 'Tin tức', icon: 'newspaper' },
     { to: '/gioi-thieu', label: 'Về chúng tôi', icon: 'building' },
     { to: '/tra-cuu-ho-so', label: 'Tra cứu hồ sơ', icon: 'search' },
-    ...(candidate ? [{ to: '/ho-so-cua-toi', label: 'Hồ sơ của tôi', icon: 'user' } as const] : []),
+    ...accountItems(candidate, isPending),
   ];
 }
 

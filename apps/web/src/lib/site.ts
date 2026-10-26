@@ -1,19 +1,23 @@
-/** Company details shown across the site. Set them in .env (see .env.example). */
+/**
+ * Company details shown across the site. Set them in .env (see .env.example). Each value is read as
+ * import.meta.env.VITE_X: Vite then inlines only that string, never the whole env object.
+ */
 import { DEFAULT_COMPANY, envValue } from './env-value';
 
 export { envValue };
 
-const env = import.meta.env;
-
 export const SITE = {
-  company: envValue(env.VITE_COMPANY_NAME) || DEFAULT_COMPANY,
+  company: envValue(import.meta.env.VITE_COMPANY_NAME) || DEFAULT_COMPANY,
   /** Legal name for the privacy policy (topflow.vn). */
   legalName: 'Công ty Cổ phần Top Flow',
   /** HR contact: empty until set in env, and then hidden everywhere instead of showing a placeholder. */
-  hrEmail: envValue(env.VITE_HR_EMAIL) || '',
-  hrPhone: envValue(env.VITE_HR_PHONE) || '',
-  hrZalo: envValue(env.VITE_HR_ZALO) || '',
-  url: (envValue(env.VITE_SITE_URL) || (typeof location !== 'undefined' ? location.origin : '')).replace(/\/$/, ''),
+  hrEmail: envValue(import.meta.env.VITE_HR_EMAIL) || '',
+  hrPhone: envValue(import.meta.env.VITE_HR_PHONE) || '',
+  hrZalo: envValue(import.meta.env.VITE_HR_ZALO) || '',
+  url: (envValue(import.meta.env.VITE_SITE_URL) || (typeof location !== 'undefined' ? location.origin : '')).replace(
+    /\/$/,
+    '',
+  ),
   industry: 'Giải pháp đường ống và điều khiển lưu chất',
   size: '50+ nhân sự',
   founded: 'Hơn 10 năm',
@@ -24,7 +28,7 @@ export const SITE = {
   officeLatLng: '10.8458828,106.6801312',
   /** Registered head office (topflow.vn/lien-he). */
   headOffice: 'Tòa nhà Pearl Plaza, 561A Điện Biên Phủ, P. Thạnh Mỹ Tây, TP. HCM',
-  hrContactName: envValue(env.VITE_HR_CONTACT_NAME) || '',
+  hrContactName: envValue(import.meta.env.VITE_HR_CONTACT_NAME) || '',
 } as const;
 
 export const telLink = (phone: string) => `tel:${phone.replace(/\s/g, '')}`;
@@ -35,4 +39,12 @@ export function jobUrl(slug: string): string {
     return `${location.origin}${location.pathname}#/viec-lam/${slug}`;
   }
   return `${SITE.url}/viec-lam/${slug}`;
+}
+
+/** Public link to a news post (same rules as jobUrl). */
+export function newsUrl(slug: string): string {
+  if (import.meta.env.MODE === 'preview' && typeof location !== 'undefined') {
+    return `${location.origin}${location.pathname}#/tin-tuc/${slug}`;
+  }
+  return `${SITE.url}/tin-tuc/${slug}`;
 }

@@ -1,27 +1,18 @@
-import { usePageMeta } from '../lib/hooks';
-import { NavyHero } from '../site/PublicLayout';
+import { NotFoundView } from '../site/NotFoundView';
 import { ButtonLink } from '../ui/Button';
-import { EmptyState } from '../ui/feedback';
 
 export function NotFoundPage() {
-  usePageMeta('Không tìm thấy trang');
   return (
-    <>
-      <NavyHero waves={false} />
-      <main className="mx-auto w-full max-w-[1160px] px-5 py-16">
-        <EmptyState
-          icon="search"
-          title="Không tìm thấy trang này"
-          actions={
-            <ButtonLink to="/" icon="briefcase">
-              Xem vị trí đang mở
-            </ButtonLink>
-          }
-        >
-          Link có thể đã cũ hoặc gõ nhầm.
-        </EmptyState>
-      </main>
-    </>
+    <NotFoundView
+      crumbs={[{ label: 'Không tìm thấy trang' }]}
+      title="Không tìm thấy trang này"
+      intro="Link có thể đã cũ hoặc gõ nhầm. Thử một trong các trang dưới đây."
+      actions={
+        <ButtonLink to="/" variant="brand" size="lg" icon="briefcase">
+          Xem vị trí đang mở
+        </ButtonLink>
+      }
+    />
   );
 }
 

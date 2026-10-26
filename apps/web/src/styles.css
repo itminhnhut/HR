@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* Article blocks (contents, FAQ, columns, checklist, code…) and the editor's own extras. */
+@import './article-blocks.css';
 
 /* Self-hosted fonts, Vietnamese + Latin subsets only. */
 @import '@fontsource/playfair-display/vietnamese-500.css';
@@ -16,16 +18,28 @@
 
 /*
  * Design tokens: the "Hệ thống giao diện" board on the canvas.
- * Mệnh Thủy: navy/blue + white/silver/grey. No earth brown or dark yellow.
+ * Every text pair is checked for WCAG AA (4.5:1); the numbers are in the comments.
+ *
+ * Colour roles (one job per colour, so colour always means the same thing):
+ * - Navy / accent / greys: text, surfaces, lines, secondary buttons (outline) and links.
+ * - Brand red: the one primary action of a view, the same Button variant everywhere: "Ứng tuyển ngay"
+ *   (hero, sidebar, phone bar), "Gửi hồ sơ", "Tra cứu", the article call-to-action, "Đăng bài" in HR.
+ * - Error (orange-red, never the brand red): field errors and destructive buttons, always with an icon.
+ * - ok (green): success and "Mới đăng". cat-amber also marks a closing deadline.
+ * - Category colours (cat-*): news categories and job departments only, as chips, labels, dots and 3px bars.
+ *   Hashtags are neutral (grey chips, navy text): they are many and would turn the page into a rainbow.
  */
 @theme {
   --color-navy: #0b1f3a;
   --color-accent: #1c3f78;
-  --color-link: #23477f;
+  /* Links: a clear blue (6.7:1 on white, 6.3:1 on mist, 6.0:1 on brand-soft). */
+  --color-link: #1d4ed8;
   --color-ink: #2a3a50;
   --color-body: #3a4a5e;
   --color-slate: #556479;
   --color-muted: #5f6c80;
+  /* Placeholders: lighter than typed text and labels so an example never looks filled in (4.5:1 on white). */
+  --color-placeholder: #6b778a;
   --color-silver: #c5cfdc;
   --color-silver-soft: #aebbcc;
   --color-ring: #d5dce6;
@@ -39,16 +53,76 @@
   --color-ok: #1f6b45;
   --color-ok-soft: #eaf4ee;
   --color-ok-line: #b9d8c6;
-  --color-error: #a23b2a;
-  --color-error-soft: #fbedea;
+  /*
+   * Errors: orange-red (hue 17°) so they never read as the brand red (hue 346°). 5.2:1 on white, 4.9:1 on
+   * error-soft, 4.8:1 on mist; white on it 5.2:1. error-deep: hover of the danger button (7.3:1).
+   */
+  --color-error: #c2410c;
+  --color-error-deep: #9a3412;
+  --color-error-soft: #fff7ed;
   --color-focus: #4a78c2;
   --color-skeleton: #e9edf3;
+
+  /*
+   * Brand red, from the TOP FLOW logo (hue 346°; the photographed logo reads #a33952, the uniform #741d2e).
+   * brand: primary button with white text (6.7:1) and red text on white (6.7:1). brand-deep: hover (9.2:1).
+   * brand-bright: red text on navy (8.5:1). brand-soft / brand-line: tinted sections and their borders.
+   */
+  --color-brand: #b0213f;
+  --color-brand-deep: #8a1a33;
+  --color-brand-bright: #f5a3b5;
+  --color-brand-soft: #fbf0f2;
+  --color-brand-line: #f1cfd7;
+
+  /*
+   * Category colours (news categories, job departments). Per colour: solid = text on white or on its own
+   * soft tint (≥ 4.5:1) and 3px bars; soft = chip/tint background; line = chip border; bright = text on navy.
+   */
+  --color-cat-blue: #1d4ed8;
+  --color-cat-blue-soft: #eef4ff;
+  --color-cat-blue-line: #bfd3fb;
+  --color-cat-blue-bright: #9cc0fb;
+  --color-cat-teal: #0f766e;
+  --color-cat-teal-soft: #ecf8f6;
+  --color-cat-teal-line: #a8e0d8;
+  --color-cat-teal-bright: #6fdccd;
+  --color-cat-amber: #b45309;
+  --color-cat-amber-soft: #fdf6e7;
+  --color-cat-amber-line: #f5d9a0;
+  --color-cat-amber-bright: #f9cd6b;
+  --color-cat-rose: #be185d;
+  --color-cat-rose-soft: #fdf0f6;
+  --color-cat-rose-line: #f6c6dc;
+  --color-cat-rose-bright: #f7a8cb;
+  --color-cat-violet: #6d28d9;
+  --color-cat-violet-soft: #f4f1fe;
+  --color-cat-violet-line: #d8cdfa;
+  --color-cat-violet-bright: #c5b4fb;
+  --color-cat-emerald: #047857;
+  --color-cat-emerald-soft: #ebf8f2;
+  --color-cat-emerald-line: #a6e3c8;
+  --color-cat-emerald-bright: #74dbb0;
 
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
 
+  /* Corners: 4px for controls (buttons, fields), 6px for cards and pictures, full for chips and pills. */
   --radius-control: 4px;
   --radius-card: 6px;
+
+  /*
+   * Type scale for public pages (phone / from 640px). Used through the type-* utilities below, so every page
+   * title, section heading and card title of one kind has the same size.
+   */
+  --type-h1: 30px;
+  --type-h1-lg: 44px;
+  --type-h2: 26px;
+  --type-h2-lg: 32px;
+  --type-h2-sm: 22px;
+  --type-h2-sm-lg: 24px;
+  --type-card: 20px;
+  --type-card-lg: 22px;
+  --type-card-lg-lg: 24px;
 
   --animate-rise: rise 0.4s ease-out both;
   --animate-pop: pop 0.35s ease-out both;
@@ -56,6 +130,8 @@
   --animate-drawer: drawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade: fade 0.25s ease both;
   --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+  --animate-page: page-in 0.2s ease-out both;
+  --animate-slide-up: slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes rise {
     from {
@@ -122,6 +198,52 @@
   }
 }
 
+/* Keyframes for the public page motion (outside @theme so they are always emitted). */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.9);
+  }
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -135,7 +257,7 @@
   }
   /* Playfair needs room for stacked Vietnamese marks (ầ, ẩ, ễ). */
   .font-serif {
-    line-height: 1.18;
+    line-height: 1.25;
     text-wrap: balance;
     /* Playfair defaults to old-style figures (a dropping "4", "9"); keep digits on the line. */
     font-variant-numeric: lining-nums;
@@ -192,14 +314,147 @@
   }
 }
 
+/*
+ * Text boxes and selects: a clear 2px ring while focused (the input inside has no outline of its own), and a
+ * box with an error keeps its orange-red border while focused, so the problem stays visible as it is fixed.
+ */
 @utility field-focus {
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
   &:focus-within {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgb(28 63 120 / 0.12);
+    box-shadow: 0 0 0 2px var(--color-focus);
   }
+  &:has([aria-invalid='true']),
+  &[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+}
+
+/* Cards that are links: a soft lift on hover (pointer devices only, so a tap does not leave it raised). */
+@utility card-lift {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+  @media (hover: hover) {
+    &:hover {
+      border-color: var(--color-silver-soft);
+      box-shadow: 0 10px 28px -12px rgb(11 31 58 / 0.18);
+      transform: translateY(-2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+/*
+ * Two soft glows behind the navy hero: brand red top right, blue bottom left. Plain gradients (no image, no
+ * animation), so they cost nothing and need no reduced-motion variant.
+ */
+@utility hero-glow {
+  background:
+    radial-gradient(44rem 24rem at 92% -8%, rgb(176 33 63 / 0.46), rgb(176 33 63 / 0) 70%),
+    radial-gradient(42rem 22rem at 0% 110%, rgb(59 130 246 / 0.3), rgb(59 130 246 / 0) 70%);
+}
+
+/*
+ * The category colour as a 3px bar on a card (--cat is set by the card: COLOR_CLASSES[color].bar).
+ * cat-bar: along the top. cat-bar-row: down the left side while the card is a row (below lg), on top from lg.
+ */
+@utility cat-bar {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--cat, var(--color-accent));
+    pointer-events: none;
+  }
+}
+@utility cat-bar-row {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--cat, var(--color-accent));
+    pointer-events: none;
+  }
+  @media (min-width: 1024px) {
+    &::before {
+      inset: 0 0 auto;
+      width: auto;
+      height: 3px;
+    }
+  }
+}
+
+@utility type-h1 {
+  font-size: var(--type-h1);
+  @media (min-width: 640px) {
+    font-size: var(--type-h1-lg);
+  }
+}
+@utility type-h2 {
+  font-size: var(--type-h2);
+  @media (min-width: 640px) {
+    font-size: var(--type-h2-lg);
+  }
+}
+@utility type-h2-sm {
+  font-size: var(--type-h2-sm);
+  @media (min-width: 640px) {
+    font-size: var(--type-h2-sm-lg);
+  }
+}
+@utility type-card {
+  font-size: var(--type-card);
+}
+@utility type-card-lg {
+  font-size: var(--type-card-lg);
+  @media (min-width: 640px) {
+    font-size: var(--type-card-lg-lg);
+  }
+}
+
+/*
+ * Entrance: the children of a hero or a list rise in one after another (40ms apart, capped so a long list is
+ * not slow). Pages fade in on navigation; skeletons appear only if loading takes more than a moment.
+ */
+@utility stagger {
+  & > * {
+    animation: enter-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  & > :nth-child(2) {
+    animation-delay: 40ms;
+  }
+  & > :nth-child(3) {
+    animation-delay: 80ms;
+  }
+  & > :nth-child(4) {
+    animation-delay: 120ms;
+  }
+  & > :nth-child(5) {
+    animation-delay: 160ms;
+  }
+  & > :nth-child(6) {
+    animation-delay: 200ms;
+  }
+  & > :nth-child(n + 7) {
+    animation-delay: 240ms;
+  }
+}
+@utility skeleton-in {
+  animation: enter-fade 0.3s ease 0.3s both;
 }
 
 @utility check-draw {
@@ -226,5 +481,283 @@
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/*
+ * News articles: one look for the public page, the HR preview and the editor (spec-news.md).
+ * Vietnamese needs generous line height for stacked marks (ầ, ẫ, ợ); headings stay in Playfair like the site.
+ */
+@layer components {
+  .article-prose {
+    color: var(--color-ink);
+    font-size: 17px;
+    line-height: 1.8;
+    overflow-wrap: break-word;
+  }
+  @media (max-width: 640px) {
+    .article-prose {
+      font-size: 16px;
+      line-height: 1.75;
+    }
+  }
+  .article-prose > :first-child {
+    margin-top: 0;
+  }
+  .article-prose p {
+    margin: 0 0 1.1em;
+  }
+  .article-prose h2,
+  .article-prose h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    color: var(--color-navy);
+    line-height: 1.3;
+    /* "pretty", not "balance": long headings in an article should fill the line (balance squeezes them into
+       short, even lines); pretty only avoids a lone word on the last line. */
+    text-wrap: pretty;
+    font-variant-numeric: lining-nums;
+    /* Room under the sticky header when jumping from the table of contents. */
+    scroll-margin-top: 96px;
+  }
+  .article-prose h2 {
+    font-size: 1.65em;
+    margin: 1.7em 0 0.6em;
+  }
+  .article-prose h3 {
+    font-size: 1.3em;
+    margin: 1.5em 0 0.5em;
+  }
+  .article-prose strong,
+  .article-prose .font-semibold {
+    font-weight: 600;
+    color: var(--color-navy);
+  }
+  .article-prose a {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .article-prose a:hover {
+    color: var(--color-navy);
+  }
+  .article-prose blockquote {
+    margin: 1.5em 0;
+    border-left: 3px solid var(--color-accent);
+    padding: 0.2em 0 0.2em 1.1em;
+    color: var(--color-body);
+    font-style: italic;
+  }
+  .article-prose ul,
+  .article-prose ol {
+    margin: 0 0 1.2em;
+    padding-left: 1.5em;
+  }
+  .article-prose ul {
+    list-style: disc;
+  }
+  .article-prose ol {
+    list-style: decimal;
+  }
+  .article-prose li {
+    margin: 0.35em 0;
+    padding-left: 0.2em;
+  }
+  .article-prose li::marker {
+    color: var(--color-accent);
+  }
+  .article-prose li > ul,
+  .article-prose li > ol {
+    margin: 0.35em 0 0;
+  }
+  /* Lexical nests a list inside an otherwise empty item: no bullet for that wrapper. */
+  .article-prose li:has(> ul:only-child),
+  .article-prose li:has(> ol:only-child),
+  .article-prose li.editor-li-nested {
+    list-style: none;
+  }
+  .article-prose figure {
+    margin: 1.8em 0;
+  }
+  .article-prose img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-inline: auto;
+    border-radius: var(--radius-card);
+    background: var(--color-line);
+  }
+  /* "Tràn khung": the picture fills the text column. */
+  .article-prose figure.img-wide img {
+    width: 100%;
+  }
+  .article-prose figcaption {
+    margin-top: 0.6em;
+    color: var(--color-muted);
+    font-size: 0.85em;
+    line-height: 1.5;
+    text-align: center;
+  }
+  .article-prose .text-center {
+    text-align: center;
+  }
+  .article-prose .text-right {
+    text-align: right;
+  }
+  .article-prose .text-justify {
+    text-align: justify;
+  }
+  .article-prose s,
+  .article-prose .line-through {
+    text-decoration: line-through;
+  }
+  /* No side padding: a highlight can change mid-word (bold part of a word) without opening a gap. */
+  .article-prose span[class*='hl-'] {
+    border-radius: 2px;
+    box-decoration-break: clone;
+  }
+  /* Palette colours (shared TEXT_COLORS / HIGHLIGHT_COLORS): the API writes classes, never inline CSS. */
+  .article-prose .tc-red {
+    color: #b91c1c;
+  }
+  .article-prose .tc-orange {
+    color: #c2410c;
+  }
+  .article-prose .tc-green {
+    color: #15803d;
+  }
+  .article-prose .tc-blue {
+    color: #1d4ed8;
+  }
+  .article-prose .tc-navy {
+    color: #0b1f3a;
+  }
+  .article-prose .tc-gray {
+    color: #64748b;
+  }
+  .article-prose .hl-yellow {
+    background-color: #fef08a;
+  }
+  .article-prose .hl-green {
+    background-color: #bbf7d0;
+  }
+  .article-prose .hl-blue {
+    background-color: #bfdbfe;
+  }
+  .article-prose .hl-pink {
+    background-color: #fbcfe8;
+  }
+  .article-prose hr {
+    margin: 2.2em auto;
+    width: 40%;
+    border: 0;
+    border-top: 1px solid var(--color-silver);
+  }
+  /* YouTube: 16:9 and full column width. */
+  .article-prose figure.embed iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: 0;
+    border-radius: var(--radius-card);
+    background: var(--color-navy);
+  }
+  /* Call-to-action: the site's main button, brand red with a white label (6.7:1; hover 9.2:1). */
+  .article-prose .cta {
+    margin: 1.8em 0;
+    text-align: center;
+  }
+  .article-prose .cta-button {
+    display: inline-flex;
+    min-height: 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-control);
+    background: var(--color-brand);
+    padding: 0 1.75rem;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  .article-prose a.cta-button:hover,
+  .article-prose a.cta-button:focus-visible {
+    color: #fff;
+    background: var(--color-brand-deep);
+  }
+  /*
+   * Tables scroll sideways on phones instead of squeezing. Only tables of three or more columns keep a minimum
+   * width; a soft shadow at an edge shows there is more to scroll (it scrolls away with the content).
+   */
+  .article-prose .table-wrap {
+    margin: 1.6em 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background:
+      linear-gradient(to right, var(--color-mist) 30%, rgb(245 247 250 / 0)) left / 40px 100% no-repeat local,
+      linear-gradient(to left, var(--color-mist) 30%, rgb(245 247 250 / 0)) right / 40px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgb(11 31 58 / 0.16), transparent) left / 14px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgb(11 31 58 / 0.16), transparent) right / 14px 100% no-repeat scroll;
+  }
+  .article-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94em;
+    line-height: 1.55;
+  }
+  .article-prose th,
+  .article-prose td {
+    border: 1px solid var(--color-line);
+    padding: 0.55em 0.75em;
+    vertical-align: top;
+    text-align: left;
+  }
+  .article-prose table:has(tr > :nth-child(3)) {
+    min-width: 480px;
+  }
+  .article-prose th {
+    background: var(--color-mist);
+    color: var(--color-navy);
+    font-weight: 600;
+  }
+  .article-prose th > p,
+  .article-prose td > p {
+    margin: 0;
+  }
+  .article-prose th > p + p,
+  .article-prose td > p + p {
+    margin-top: 0.5em;
+  }
+
+  /* Editor only: a selected picture, and room for the caret. */
+  .article-editor {
+    caret-color: var(--color-navy);
+  }
+  .article-editor .article-image-frame img {
+    cursor: pointer;
+  }
+  .article-editor .article-image-frame.is-selected img,
+  .article-editor .is-selected > iframe,
+  .article-editor .is-selected > .cta-button,
+  .article-editor hr.selected {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  /* The editor shows the video as on the page, but clicks go to the bar under it. */
+  .article-editor figure.embed iframe {
+    pointer-events: none;
+  }
+  .article-editor .editor-hr {
+    cursor: pointer;
+  }
+  .article-editor .editor-table-selection *::selection {
+    background: transparent;
+  }
+  .article-editor td.is-selected,
+  .article-editor th.is-selected {
+    box-shadow: inset 0 0 0 2px var(--color-focus);
   }
 }

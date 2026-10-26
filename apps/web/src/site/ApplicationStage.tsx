@@ -49,7 +49,7 @@ function StageBar({ stage }: { stage: CandidateStage }) {
         return (
           <span
             key={s}
-            className={`flex min-w-0 flex-col gap-1.5 whitespace-nowrap text-[11px] ${
+            className={`flex min-w-0 flex-col gap-1.5 whitespace-nowrap text-xs ${
               current
                 ? `font-semibold ${stage === 'interview' ? 'text-ok' : 'text-navy'}`
                 : done

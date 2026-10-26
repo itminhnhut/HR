@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { JobDetailDto } from '@careers/shared';
 import { ApplyDialog } from './ApplyDialog';
 
@@ -25,6 +25,7 @@ const job: JobDetailDto = {
   education: null,
   responsibilities: [],
   requirements: [],
+  preferred: [],
   benefits: [],
   roadmap: [],
 };
@@ -72,12 +73,40 @@ describe('ApplyDialog', () => {
     expect((phone as HTMLInputElement).value).toBe('0912 345 678');
   });
 
-  it('will not send without name, phone, CV and consent', async () => {
+  it('will not send without name, phone, CV and consent, and asks for each in plain words', async () => {
     setup();
     await userEvent.click(await screen.findByRole('button', { name: /Gửi hồ sơ/ }));
     expect(await screen.findByText('Nhập họ và tên.')).toBeTruthy();
-    expect(screen.getByText(/Số điện thoại chưa đúng/)).toBeTruthy();
+    expect(screen.getByText('Nhập số điện thoại (Zalo).')).toBeTruthy();
     expect(screen.getByText(/Đính kèm file CV/)).toBeTruthy();
-    expect(screen.getByText(/Cần tích ô đồng ý/)).toBeTruthy();
+    expect(screen.getByText('Hãy tích ô đồng ý để gửi hồ sơ.')).toBeTruthy();
+  });
+
+  it('should say the phone number is wrong only when one was typed', async () => {
+    setup();
+    await userEvent.type(await screen.findByLabelText(/Số điện thoại/), '0912');
+    await userEvent.click(screen.getByRole('button', { name: /Gửi hồ sơ/ }));
+    expect(await screen.findByText(/Số điện thoại chưa đúng, cần 10 số/)).toBeTruthy();
+    expect(screen.queryByText('Nhập số điện thoại (Zalo).')).toBeNull();
+  });
+
+  it('should scroll the first problem to the middle so the sticky send bar does not cover its message', async () => {
+    // Arrange
+    const scrolled = vi.fn();
+    Element.prototype.scrollIntoView = scrolled;
+    setup();
+    await userEvent.type(await screen.findByLabelText('Họ và tên'), 'Nguyễn Văn An');
+    await userEvent.type(screen.getByLabelText(/Số điện thoại/), '0912345678');
+    await userEvent.click(screen.getByRole('button', { name: 'Dán link thay vì tải file' }));
+    await userEvent.type(screen.getByLabelText('Link CV'), 'https://drive.google.com/cv');
+
+    // Act
+    await userEvent.click(screen.getByRole('button', { name: /Gửi hồ sơ/ }));
+
+    // Assert
+    const message = await screen.findByText('Hãy tích ô đồng ý để gửi hồ sơ.');
+    expect(document.activeElement).toBe(screen.getByRole('checkbox'));
+    expect(scrolled).toHaveBeenCalledWith(expect.objectContaining({ block: 'center' }));
+    expect(scrolled.mock.contexts.at(-1)).toBe(message.closest('[role="alert"]'));
   });
 });
