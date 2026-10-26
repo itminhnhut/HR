@@ -1,7 +1,5 @@
-import { CLARITY_ID, GA_ID, TRACKED_ORIGIN, UNTRACKED_PATHS } from './analytics-config';
+import { CLARITY_ID, GA_ID, trackedOrigins, UNTRACKED_PATHS } from './analytics-config';
 import { DEFAULT_COMPANY, envValue, LIVE_SITE_URL } from './env-value';
-
-export { LIVE_SITE_URL };
 
 const escapeHtml = (text: string) =>
   text.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch] ?? ch);
@@ -18,6 +16,6 @@ export function fillSiteHtml(html: string, env: Record<string, string | undefine
     .replaceAll('%COMPANY%', escapeHtml(company))
     .replaceAll('%GA_ID%', GA_ID)
     .replaceAll('%CLARITY_ID%', CLARITY_ID)
-    .replaceAll('%TRACKED_ORIGIN%', TRACKED_ORIGIN)
+    .replaceAll('%TRACKED_ORIGINS%', JSON.stringify(trackedOrigins(env)))
     .replaceAll('%UNTRACKED_PATHS%', String(UNTRACKED_PATHS));
 }

@@ -61,7 +61,11 @@ export default function LookupPage() {
         </div>
       </NavyHero>
 
-      <main className="mx-auto flex w-full max-w-[760px] flex-col gap-6 px-4 py-10 sm:px-5 sm:py-14">
+      <main
+        // Clarity never records the phone number nor the applications found for it (jobs, dates, outcome).
+        data-clarity-mask="true"
+        className="mx-auto flex w-full max-w-[760px] flex-col gap-6 px-4 py-10 sm:px-5 sm:py-14"
+      >
         <form
           noValidate
           onSubmit={submit}
