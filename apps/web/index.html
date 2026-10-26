@@ -10,36 +10,43 @@
       content="Việc làm tại %COMPANY%, giải pháp đường ống và điều khiển lưu chất. Xem vị trí đang tuyển và gửi CV trong khoảng một phút, không cần tạo tài khoản."
     />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <!-- Google tag (gtag.js). Live site only, and off on HR and candidate account pages (personal data in addresses). -->
+    <!--
+      Google Analytics and Microsoft Clarity: live site only, never on HR or candidate account pages (personal data
+      in addresses and on screen). Google's switch is read at every hit, so it follows the address as the visitor
+      moves around; the app sends page views itself (src/lib/analytics.ts) and stops Clarity on those pages.
+    -->
     <script>
-      window['ga-disable-%GA_ID%'] =
-        location.origin !== '%TRACKED_ORIGIN%' || %UNTRACKED_PATHS%.test(location.pathname);
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=%GA_ID%"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', '%GA_ID%');
-    </script>
-    <!-- Microsoft Clarity records the screen: live site and public pages only; HR and account pages never load it. -->
-    <script>
-      if (location.origin === '%TRACKED_ORIGIN%' && !%UNTRACKED_PATHS%.test(location.pathname)) {
-        (function (c, l, a, r, i, t, y) {
-          c[a] =
-            c[a] ||
-            function () {
-              (c[a].q = c[a].q || []).push(arguments);
-            };
-          t = l.createElement(r);
-          t.async = 1;
-          t.src = 'https://www.clarity.ms/tag/' + i;
-          y = l.getElementsByTagName(r)[0];
-          y.parentNode.insertBefore(t, y);
-        })(window, document, 'clarity', 'script', '%CLARITY_ID%');
-      }
+      (function () {
+        var live = %TRACKED_ORIGINS%.indexOf(location.origin) !== -1;
+        var untracked = %UNTRACKED_PATHS%;
+        Object.defineProperty(window, 'ga-disable-%GA_ID%', {
+          configurable: true,
+          get: function () {
+            return !live || untracked.test(location.pathname);
+          },
+        });
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          dataLayer.push(arguments);
+        };
+        gtag('js', new Date());
+        gtag('config', '%GA_ID%', { send_page_view: false });
+        if (!live) return;
+        var load = function (src) {
+          var tag = document.createElement('script');
+          tag.async = true;
+          tag.src = src;
+          document.head.appendChild(tag);
+        };
+        load('https://www.googletagmanager.com/gtag/js?id=%GA_ID%');
+        if (untracked.test(location.pathname)) return;
+        window.clarity =
+          window.clarity ||
+          function () {
+            (window.clarity.q = window.clarity.q || []).push(arguments);
+          };
+        load('https://www.clarity.ms/tag/%CLARITY_ID%');
+      })();
     </script>
     <!-- Share previews (Zalo, Facebook, LinkedIn) read these without running the app. -->
     <meta property="og:type" content="website" />
