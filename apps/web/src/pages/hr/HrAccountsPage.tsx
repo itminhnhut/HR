@@ -5,7 +5,7 @@ import { useChangePassword, useHrMe, useHrUserAction, useHrUsers, useUpdateProfi
 import { usePageMeta } from '../../lib/hooks';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
-import { TextField } from '../../ui/Field';
+import { FieldError, TextField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
 import { apiMessage, Avatar, errorMessage, PageHeading } from './parts';
@@ -133,7 +133,7 @@ function AddUser({ onCreated }: { onCreated: (r: TempPasswordResponse) => void }
           onChange={(e) => setName(e.target.value)}
         />
       </div>
-      {errors.form && <span className="text-sm text-error">{errors.form}</span>}
+      <FieldError>{errors.form}</FieldError>
       <Button type="submit" icon="plus" disabled={create.isPending || !email.trim()} className="self-start">
         {create.isPending ? 'Đang tạo…' : 'Tạo tài khoản'}
       </Button>
@@ -196,7 +196,7 @@ function SenderProfile() {
           onChange={(e) => setContactEmail(e.target.value)}
         />
       </div>
-      {errors.form && <span className="text-sm text-error">{errors.form}</span>}
+      <FieldError>{errors.form}</FieldError>
       {done && (
         <span role="status" className="inline-flex items-center gap-1.5 text-sm text-ok">
           <Icon name="check" size={16} />
@@ -270,7 +270,7 @@ function ChangeOwnPassword() {
         />
         Hiện mật khẩu
       </label>
-      {errors.form && !errors.current && !errors.next && <span className="text-sm text-error">{errors.form}</span>}
+      {!errors.current && !errors.next && <FieldError>{errors.form}</FieldError>}
       {done && (
         <span role="status" className="inline-flex items-center gap-1.5 text-sm text-ok">
           <Icon name="check" size={16} />

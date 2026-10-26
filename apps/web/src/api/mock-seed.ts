@@ -1,3 +1,4 @@
+import { DEMO_CANDIDATE_EMAIL, DEMO_HR } from './demo-accounts.js';
 import {
   addDays,
   composeWorkingHours,
@@ -13,6 +14,7 @@ import {
   type TemplateKey,
   type ContactChannel,
 } from '@careers/shared';
+import { buildNewsSeed, type MockNewsCategory, type MockNewsPost } from './mock-news-seed.js';
 
 /** Rows of the in-browser demo database. Shapes mirror what the BE stores. */
 export interface MockJob {
@@ -31,6 +33,8 @@ export interface MockJob {
   salaryMax: number | null;
   responsibilities: string;
   requirements: string;
+  /** "Ưu tiên (không bắt buộc)", one per line. */
+  preferred: string;
   benefits: string[];
   roadmap: string[];
   deadline: string;
@@ -104,11 +108,13 @@ export interface MockDb {
   applications: MockApplication[];
   subscribers: MockSubscriber[];
   candidates: MockCandidate[];
+  newsCategories: MockNewsCategory[];
+  newsPosts: MockNewsPost[];
   /** hr: the signed-in HR account id. */
   session: { hr: string | null; candidateEmail: string | null };
 }
 
-export const DB_VERSION = 8;
+export const DB_VERSION = 11;
 
 const STANDARD_BENEFITS = standardBenefits(DEFAULT_JOB_TEMPLATE);
 const HOURS = composeWorkingHours(
@@ -137,6 +143,7 @@ function job(
     salaryMax: null,
     responsibilities: '',
     requirements: '',
+    preferred: '',
     benefits: STANDARD_BENEFITS,
     roadmap: DEFAULT_JOB_TEMPLATE.roadmap,
     publishedAgo: 10,
@@ -155,7 +162,9 @@ const JOBS: JobSeed[] = [
     responsibilities:
       'Tìm và tiếp cận khách hàng doanh nghiệp mới qua điện thoại, email và gặp trực tiếp.\nTư vấn giải pháp, gửi báo giá và theo dõi đến khi ký hợp đồng.\nChăm sóc khách hàng hiện có, mở rộng đơn hàng định kỳ.\nCập nhật thông tin khách hàng trên CRM và báo cáo kết quả mỗi tuần.\nPhối hợp với bộ phận vận hành để giao hàng đúng hẹn.',
     requirements:
-      'Tối thiểu 1 năm kinh nghiệm bán hàng.\nGiao tiếp rõ ràng, chủ động, chịu được áp lực doanh số.\nDùng thành thạo Excel hoặc Google Sheets.\nCó phương tiện đi lại.\nĐiểm cộng: đã bán phần mềm hoặc dịch vụ cho doanh nghiệp.',
+      'Tối thiểu 1 năm kinh nghiệm bán hàng.\nGiao tiếp rõ ràng, chủ động, chịu được áp lực doanh số.\nDùng thành thạo Excel hoặc Google Sheets.\nCó phương tiện đi lại.',
+    preferred:
+      'Đã bán phần mềm hoặc dịch vụ cho doanh nghiệp.\nĐã dùng CRM (HubSpot, Salesforce, Bitrix…).\nCó sẵn mạng lưới khách hàng doanh nghiệp.',
     benefits: [...STANDARD_BENEFITS, 'Hoa hồng', 'Phụ cấp gửi xe, xăng'],
     deadlineIn: 38,
     publishedAgo: 2,
@@ -173,8 +182,8 @@ const JOBS: JobSeed[] = [
     salaryMax: 30 * M,
     responsibilities:
       'Xây và bảo trì giao diện bằng React và TypeScript.\nPhối hợp với designer để giao diện đúng thiết kế trên mọi màn hình.\nViết test cho phần mình làm.\nReview code cho đồng đội.',
-    requirements:
-      'Từ 2 năm làm React.\nNắm vững HTML, CSS, JavaScript.\nĐọc hiểu tài liệu tiếng Anh.\nĐiểm cộng: đã làm với TanStack Query hoặc React Router.',
+    requirements: 'Từ 2 năm làm React.\nNắm vững HTML, CSS, JavaScript.\nĐọc hiểu tài liệu tiếng Anh.',
+    preferred: 'Đã làm với TanStack Query hoặc React Router.',
     benefits: [...STANDARD_BENEFITS, 'Cấp laptop làm việc'],
     deadlineIn: 43,
     publishedAgo: 3,
@@ -203,7 +212,8 @@ const JOBS: JobSeed[] = [
     salaryMax: 17 * M,
     responsibilities:
       'Lên kế hoạch nội dung hằng tháng.\nViết bài website, fanpage, email.\nTheo dõi số liệu và đề xuất cải thiện.',
-    requirements: 'Từ 1 năm viết nội dung.\nViết tiếng Việt chuẩn, mạch lạc.\nĐiểm cộng: biết SEO cơ bản.',
+    requirements: 'Từ 1 năm viết nội dung.\nViết tiếng Việt chuẩn, mạch lạc.',
+    preferred: 'Biết SEO cơ bản.',
     deadlineIn: 33,
     publishedAgo: 12,
     state: 'published',
@@ -404,12 +414,13 @@ export function buildSeed(now: Date = new Date()): MockDb {
         alertDepartments: ['Kinh doanh'],
       },
     ],
+    ...buildNewsSeed((days: number) => daysAgoIso(today, days), DEMO_HR.name),
     session: { hr: null, candidateEmail: null },
   };
 }
 
 /** HR emails allowed in the demo. The real allowlist lives in the BE. */
-export const DEMO_HR = { email: 'hr@congty.vn', name: 'Phòng Nhân sự' };
+export { DEMO_HR } from './demo-accounts.js';
 
 /**
  * The demo HR password is made per browser when the demo data is created: nothing to guess from the source code.
@@ -434,4 +445,4 @@ export function randomPassword(): string {
   return [0, 5, 10].map((i) => chars.slice(i, i + 5).join('')).join('-');
 }
 /** The demo "Google" account: Trần Minh Anh, who applied with this email. */
-export const DEMO_CANDIDATE_EMAIL = 'minhanh@email.com';
+export { DEMO_CANDIDATE_EMAIL } from './demo-accounts.js';

@@ -17,6 +17,7 @@ import { Button } from '../../../ui/Button';
 import { CopyButton } from '../../../ui/CopyButton';
 import { CloseButton } from '../../../ui/Dialog';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../../ui/feedback';
+import { FieldError } from '../../../ui/Field';
 import { Icon, type IconName } from '../../../ui/icons';
 import { apiMessage, Avatar, errorMessage } from '../parts';
 import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
@@ -347,7 +348,7 @@ function NoteField({ app, onError }: { app: ApplicationDetailDto; onError: (msg:
         onChange={(e) => setNote(e.target.value)}
         onBlur={saveNote}
         placeholder="Chỉ HR thấy, vd: đã gọi, hẹn gọi lại chiều thứ 6"
-        className="field-focus resize-y rounded-control border border-field bg-white px-3.5 py-3 text-sm text-navy outline-none placeholder:text-muted"
+        className="field-focus resize-y rounded-control border border-field bg-white px-3.5 py-3 text-sm text-navy outline-none placeholder:text-placeholder"
       />
       <span className="flex justify-between gap-3 text-xs text-muted">
         <span>
@@ -415,7 +416,7 @@ function DeleteApplication({ app, onDeleted }: { app: ApplicationDetailDto; onDe
       <span className="text-xs text-muted">
         Xoá cả file CV, không khôi phục được. Dùng khi ứng viên yêu cầu xoá dữ liệu.
       </span>
-      {error && <span className="text-xs text-error">{error}</span>}
+      <FieldError>{error}</FieldError>
     </div>
   );
 }

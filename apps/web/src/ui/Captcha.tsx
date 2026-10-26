@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldError } from './Field';
+import { Icon } from './icons';
 
 /** Cloudflare Turnstile site key; without it the widget is not shown (and the BE has no secret either). */
 const SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? '';
@@ -56,14 +57,20 @@ export interface CaptchaControl {
   box: (el: HTMLDivElement | null) => void;
   failed: boolean;
   retry: () => void;
+  /**
+   * Starts loading Cloudflare's script. Nothing loads before this (or a submit): pages call it when the form
+   * is opened or its first field is focused, so visitors who never fill the form never download it.
+   */
+  arm: () => void;
 }
 
 /**
- * "Tôi không phải robot" (Cloudflare Turnstile, free). Runs in the background; the box only shows when
- * Cloudflare wants a click. A submit made before the check finishes waits for it instead of failing.
+ * "Tôi không phải robot" (Cloudflare Turnstile, free). Runs in the background once armed; the box only shows
+ * when Cloudflare wants a click. A submit made before the check finishes waits for it instead of failing.
  */
 export function useCaptcha(): CaptchaControl {
   const [el, setEl] = useState<HTMLDivElement | null>(null);
+  const [armed, setArmed] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const token = useRef('');
@@ -79,7 +86,7 @@ export function useCaptcha(): CaptchaControl {
   };
 
   useEffect(() => {
-    if (!captchaEnabled || !el) return;
+    if (!captchaEnabled || !el || !armed) return;
     let cancelled = false;
     loadTurnstile()
       .then((ts) => {
@@ -119,10 +126,11 @@ export function useCaptcha(): CaptchaControl {
       widget.current?.ts.remove(widget.current.id);
       widget.current = null;
     };
-  }, [el, attempt]);
+  }, [el, attempt, armed]);
 
   const getToken = useCallback((): Promise<string> => {
     if (!captchaEnabled || token.current) return Promise.resolve(token.current);
+    setArmed(true);
     if (failed) return Promise.reject(new CaptchaError(LOAD_FAILED));
     if (needsClick.current) return Promise.reject(new CaptchaError(NEEDS_CLICK));
     return new Promise<string>((resolve, reject) => {
@@ -148,7 +156,9 @@ export function useCaptcha(): CaptchaControl {
     setAttempt((n) => n + 1);
   }, []);
 
-  return { getToken, renew, box: setEl, failed, retry };
+  const arm = useCallback(() => setArmed(true), []);
+
+  return { getToken, renew, box: setEl, failed, retry, arm };
 }
 
 /** Where the box appears when Cloudflare asks for a click, plus a retry when the check could not load. */
@@ -159,6 +169,7 @@ export function Captcha({ control, error }: { control: CaptchaControl; error?: s
       <div ref={control.box} className="empty:hidden" />
       {control.failed && (
         <span className="flex flex-wrap items-center gap-2 text-sm text-error">
+          <Icon name="alert" size={16} className="shrink-0" />
           {LOAD_FAILED}
           <button
             type="button"

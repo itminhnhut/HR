@@ -7,11 +7,13 @@ import {
 } from 'react';
 import { Icon, type IconName } from './icons';
 
+/** An error under a field: orange-red text with an alert icon, so it never relies on colour alone. */
 export function FieldError({ id, children }: { id?: string; children?: ReactNode }) {
   if (!children) return null;
   return (
-    <span id={id} role="alert" className="text-[13px] text-error">
-      {children}
+    <span id={id} role="alert" className="flex items-start gap-1.5 text-[13px] leading-snug text-error">
+      <Icon name="alert" size={15} className="mt-px shrink-0" />
+      <span>{children}</span>
     </span>
   );
 }
@@ -55,12 +57,12 @@ export function TextField({
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errId : undefined}
-          className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-navy outline-none placeholder:text-muted"
+          className="min-w-0 flex-1 border-0 bg-transparent text-[15px] text-navy outline-none placeholder:text-placeholder"
           {...input}
         />
         {trailing}
       </div>
-      {hint && !error && <span className="text-xs text-muted">{hint}</span>}
+      {hint && !error && <span className="text-[13px] text-muted">{hint}</span>}
       <FieldError id={errId}>{error}</FieldError>
     </div>
   );
@@ -87,11 +89,11 @@ export function TextArea({
       <textarea
         id={id}
         aria-invalid={error ? true : undefined}
-        className={`field-focus rounded-control border bg-white px-4 py-3 text-[15px] text-navy outline-none placeholder:text-muted ${error ? 'border-error' : 'border-field'}`}
+        className={`field-focus rounded-control border bg-white px-4 py-3 text-[15px] text-navy outline-none placeholder:text-placeholder ${error ? 'border-error' : 'border-field'}`}
         {...rest}
       />
       <div className="flex justify-between gap-4">
-        {hint && !error ? <span className="text-xs text-muted">{hint}</span> : <FieldError>{error}</FieldError>}
+        {hint && !error ? <span className="text-[13px] text-muted">{hint}</span> : <FieldError>{error}</FieldError>}
         {counter && (
           <span className="ml-auto text-xs text-muted">
             {counter.value}/{counter.max}
@@ -102,6 +104,10 @@ export function TextArea({
   );
 }
 
+/**
+ * The select fills its whole bordered box (not just the text line), so a tap anywhere on the box opens it.
+ * The leading icon and the chevron sit underneath and let taps through.
+ */
 export function SelectField({
   label,
   icon,
@@ -118,10 +124,10 @@ export function SelectField({
         {label}
       </label>
       <div className={`${boxBase} relative min-h-[46px] border-field`}>
-        {icon && <Icon name={icon} size={17} className="shrink-0 text-muted" />}
+        {icon && <Icon name={icon} size={17} className="pointer-events-none shrink-0 text-muted" />}
         <select
           id={id}
-          className="min-w-0 flex-1 appearance-none border-0 bg-transparent pr-6 text-[15px] text-navy outline-none"
+          className={`absolute inset-0 size-full min-w-0 cursor-pointer appearance-none truncate rounded-control border-0 bg-transparent pr-9 text-[15px] text-navy outline-none ${icon ? 'pl-11' : 'pl-4'}`}
           {...rest}
         >
           {children}

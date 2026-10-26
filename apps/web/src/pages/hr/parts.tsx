@@ -68,7 +68,9 @@ export function FilterTabs<K extends string>({
     <div
       role="group"
       aria-label={label}
-      className={`scroll-fade-x flex gap-x-6 overflow-x-auto whitespace-nowrap ${className}`}
+      // No scrollbar: the tabs' underline overlaps the bottom line by 1px, which made browsers draw a stray
+      // scrollbar; on narrow screens the faded edge shows that the row scrolls.
+      className={`scroll-fade-x flex gap-x-6 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
     >
       {items.map((item) => {
         const on = item.key === value;

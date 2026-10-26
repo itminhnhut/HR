@@ -22,7 +22,7 @@ import { copyText, useFlash, useMediaQuery } from '../../../lib/hooks';
 import { SITE } from '../../../lib/site';
 import { Button } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { SelectField } from '../../../ui/Field';
+import { FieldError, SelectField } from '../../../ui/Field';
 import { ErrorState, LoadingStatus, Notice } from '../../../ui/feedback';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
@@ -149,7 +149,7 @@ function ComposeBody({
         }}
         onError={setFieldError}
       />
-      {fieldError && <span className="text-sm text-error">{fieldError}</span>}
+      <FieldError>{fieldError}</FieldError>
       <DraftNotices draft={draft} />
       <DraftEditor app={app} draft={draft} />
       <SendActions app={app} me={me.data} templateKey={key} draft={draft} onError={setFieldError} />

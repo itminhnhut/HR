@@ -63,10 +63,10 @@ export function EmptyState({
 }) {
   return (
     <div className="mx-auto my-10 flex max-w-[540px] flex-col items-center gap-3.5 text-center">
-      <span className="flex rounded-full border border-ring p-3.5 text-accent">
-        <Icon name={icon} size={26} stroke={1.4} />
+      <span className="flex rounded-full border border-ring bg-white p-4 text-accent">
+        <Icon name={icon} size={20} stroke={1.5} />
       </span>
-      <h2 className="m-0 font-serif text-[28px] font-medium">{title}</h2>
+      <h2 className="m-0 font-serif type-h2-sm font-medium">{title}</h2>
       {children && <div className="text-[15px] leading-relaxed text-slate">{children}</div>}
       {actions && <div className="mt-1 flex flex-wrap justify-center gap-2.5">{actions}</div>}
     </div>

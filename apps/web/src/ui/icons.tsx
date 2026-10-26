@@ -5,6 +5,13 @@ import type { SVGProps } from 'react';
  * mockup so every screen uses the same drawings.
  */
 const PATHS = {
+  home: (
+    <>
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5 9v11h14V9" />
+      <path d="M10 20v-6h4v6" />
+    </>
+  ),
   briefcase: (
     <>
       <rect x="3" y="7" width="18" height="13" rx="2" />
@@ -155,6 +162,28 @@ const PATHS = {
       <path d="M21 16l-5-5-9 9" />
     </>
   ),
+  heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.3a4.2 4.2 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z" />,
+  plane: (
+    <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+  ),
+  laptop: (
+    <>
+      <rect x="4" y="5" width="16" height="11" rx="1.5" />
+      <path d="M2 19h20" />
+    </>
+  ),
+  award: (
+    <>
+      <circle cx="12" cy="9" r="5" />
+      <path d="m9 13.5-1.5 7.5 4.5-2.5 4.5 2.5-1.5-7.5" />
+    </>
+  ),
+  coffee: (
+    <>
+      <path d="M5 9h12v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5z" />
+      <path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3" />
+    </>
+  ),
   shield: <path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z" />,
   bell: (
     <>
@@ -193,6 +222,41 @@ const PATHS = {
       <circle cx="12" cy="12" r="3" />
     </>
   ),
+  eyeOff: (
+    <>
+      <path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.6 6.6C3.8 8.4 2 12 2 12s4 7 10 7a9.6 9.6 0 0 0 5.4-1.6" />
+      <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18" />
+    </>
+  ),
+  hash: <path d="M5 9h15M4 15h15M10 3 8 21M16 3l-2 18" />,
+  alignLeft: <path d="M4 6h16M4 10h10M4 14h16M4 18h10" />,
+  alignCenter: <path d="M4 6h16M7 10h10M4 14h16M7 18h10" />,
+  alignRight: <path d="M4 6h16M10 10h10M4 14h16M10 18h10" />,
+  alignJustify: <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />,
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.8-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.6 17 3 12 3z" />
+      <circle cx="7.5" cy="11" r="1" />
+      <circle cx="10.5" cy="7.5" r="1" />
+      <circle cx="15" cy="7.5" r="1" />
+    </>
+  ),
+  table: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="1.5" />
+      <path d="M3 9.5h18M3 15h18M9 9.5V20M15 9.5V20" />
+    </>
+  ),
+  divider: <path d="M3 12h18M7 7h10M7 17h10" strokeOpacity="0.6" />,
+  cta: (
+    <>
+      <rect x="3" y="7" width="18" height="10" rx="5" />
+      <path d="M10 12h5M13 10l2 2-2 2" />
+    </>
+  ),
+  strike: (
+    <path d="M4 12h16M16.5 7.5C16 5.8 14.3 5 12.2 5 9.6 5 7.8 6.3 7.8 8.2c0 1.3.8 2.2 2.4 2.8M8 16.3c.6 1.7 2.3 2.7 4.4 2.7 2.7 0 4.5-1.4 4.5-3.4 0-.6-.1-1.1-.4-1.6" />
+  ),
   trash: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />,
   copy: (
     <>
@@ -227,6 +291,77 @@ const PATHS = {
       <circle cx="5" cy="12" r="1.2" />
       <circle cx="12" cy="12" r="1.2" />
       <circle cx="19" cy="12" r="1.2" />
+    </>
+  ),
+  newspaper: (
+    <>
+      <path d="M4 5h13v14a1 1 0 0 0 1 1H6a2 2 0 0 1-2-2z" />
+      <path d="M17 9h3v9a2 2 0 0 1-2 2" />
+      <path d="M7.5 9h6M7.5 12.5h6M7.5 16h4" />
+    </>
+  ),
+  undo: <path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />,
+  redo: <path d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />,
+  listBullet: (
+    <>
+      <path d="M9 6h11M9 12h11M9 18h11" />
+      <circle cx="4.5" cy="6" r="0.9" />
+      <circle cx="4.5" cy="12" r="0.9" />
+      <circle cx="4.5" cy="18" r="0.9" />
+    </>
+  ),
+  listNumber: (
+    <path d="M10 6h10M10 12h10M10 18h10M4 4.5h1.5V9M4 9h3M4 14.5c.4-.6 1-1 1.7-1 .8 0 1.3.5 1.3 1.2 0 1.3-3 2-3 3.8h3" />
+  ),
+  quote: (
+    <path d="M7 17c-1.7 0-3-1.3-3-3 0-3.5 2-6 5-7M16 17c-1.7 0-3-1.3-3-3 0-3.5 2-6 5-7M4 14a3 3 0 1 0 3-3M13 14a3 3 0 1 0 3-3" />
+  ),
+  listCheck: (
+    <>
+      <path d="M11 6h9M11 12h9M11 18h9" />
+      <path d="m3.5 6 1.5 1.5L8 4.5M3.5 12l1.5 1.5L8 10.5" />
+      <rect x="3.5" y="16" width="4" height="4" rx="0.8" />
+    </>
+  ),
+  indent: <path d="M11 5h9M11 10h9M11 14h9M4 19h16M4 8.5l3.5 3L4 14.5" />,
+  outdent: <path d="M11 5h9M11 10h9M11 14h9M4 19h16M7.5 8.5 4 11.5l3.5 3" />,
+  toc: <path d="M4 5h12M8 9.5h12M8 14h12M4 18.5h12M4 9.5h.01M4 14h.01" />,
+  faq: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6M12 17h.01" />
+    </>
+  ),
+  columns: (
+    <>
+      <rect x="3.5" y="4.5" width="17" height="15" rx="1.5" />
+      <path d="M12 4.5v15" />
+    </>
+  ),
+  code: <path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15" />,
+  textCase: (
+    <path d="M3 18 7.5 6 12 18M4.6 14h5.8M17.5 18v-6.5M14.5 12.5c.6-.8 1.6-1.2 2.6-1.2 1.5 0 2.4.9 2.4 2.4V18M19.5 15.2c-1-.3-5.2-.6-5.2 1.4 0 1.9 3.6 1.7 5.2-.6" />
+  ),
+  clearFormat: <path d="M6 5h12M12 5 9 19M4 21 20 3M14.5 13.5 15 12" />,
+  paragraph: <path d="M13 4v16M17 4v16M19 4H9.5a4.5 4.5 0 0 0 0 9H13" />,
+  highlighter: (
+    <path d="m9 11-5 5v3h3l5-5M9 11l4.5-6.5a2 2 0 0 1 2.8-.4l2.6 1.9a2 2 0 0 1 .4 2.8L14 14M9 11l5 3M3 21h18" />
+  ),
+  minus: <path d="M5 12h14" />,
+  grip: (
+    <>
+      <circle cx="9" cy="6" r="1.1" />
+      <circle cx="15" cy="6" r="1.1" />
+      <circle cx="9" cy="12" r="1.1" />
+      <circle cx="15" cy="12" r="1.1" />
+      <circle cx="9" cy="18" r="1.1" />
+      <circle cx="15" cy="18" r="1.1" />
+    </>
+  ),
+  zalo: (
+    <>
+      <path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+      <path d="M7.5 9.5h3l-3 4h3M13 9.5v4M15.5 11.5a1.2 1.2 0 1 0 0 .01" />
     </>
   ),
 } as const;
@@ -276,10 +411,18 @@ export function LogoMark({ size = 30, light = true }: { size?: number; light?: b
 }
 
 /** Icon inside a thin silver ring, used for facts and benefits. */
-export function IconRing({ name, size = 16, className = '' }: { name: IconName; size?: number; className?: string }) {
+interface IconRingProps {
+  name: IconName;
+  size?: number;
+  className?: string;
+  /** Ring and icon colour; the default is the quiet grey ring with a blue icon. */
+  tone?: string;
+}
+
+export function IconRing({ name, size = 16, className = '', tone = 'border-ring text-accent' }: IconRingProps) {
   return (
     <span
-      className={`inline-flex h-fit shrink-0 self-start items-center justify-center rounded-full border border-ring p-2 text-accent ${className}`}
+      className={`inline-flex h-fit shrink-0 self-start items-center justify-center rounded-full border p-2 ${tone} ${className}`}
     >
       <Icon name={name} size={size} stroke={1.4} />
     </span>

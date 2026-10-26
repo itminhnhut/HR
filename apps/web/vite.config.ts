@@ -14,7 +14,8 @@ const siteHtml = (mode: string): Plugin => ({
 export default defineConfig(({ mode }) => ({
   base: mode === 'preview' ? './' : '/',
   plugins: [react(), tailwindcss(), siteHtml(mode)],
-  build: { target: 'es2022', sourcemap: mode !== 'preview' },
+  // 'hidden': maps are written for error tools, but the shipped files do not point browsers at them.
+  build: { target: 'es2022', sourcemap: mode === 'preview' ? false : 'hidden' },
   // With VITE_API_URL=/api in .env.local, `npm run dev:api` (port 8787) answers these paths.
   server: {
     proxy: Object.fromEntries(

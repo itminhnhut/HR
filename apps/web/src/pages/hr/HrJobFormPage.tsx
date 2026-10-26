@@ -154,7 +154,7 @@ function JobForm({
     setErrors((e) => Object.fromEntries(Object.entries(e).filter(([k]) => !keys.includes(k))));
   };
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => patch({ [key]: value } as Partial<FormState>);
-  const text = (key: 'title' | 'responsibilities' | 'requirements') => ({
+  const text = (key: 'title' | 'responsibilities' | 'requirements' | 'preferred') => ({
     value: form[key],
     error: errors[key],
     onChange: (e: { target: { value: string } }) => set(key, e.target.value),
@@ -313,13 +313,26 @@ function JobForm({
             label="Yêu cầu"
             rows={5}
             maxLength={4000}
-            placeholder={'Từ 1 năm kinh nghiệm bán hàng…\nĐiểm cộng: đã dùng CRM'}
+            placeholder="Từ 1 năm kinh nghiệm bán hàng…"
             {...text('requirements')}
           />
           <RequirementPicks
             options={options.template.requirementOptions}
             text={form.requirements}
             onChange={(v) => set('requirements', v)}
+          />
+          <TextArea
+            label="Ưu tiên (không bắt buộc)"
+            hint="Điểm cộng, không có vẫn ứng tuyển được. Để trống nếu không có."
+            rows={3}
+            maxLength={2000}
+            placeholder="Đã dùng CRM…"
+            {...text('preferred')}
+          />
+          <RequirementPicks
+            options={options.template.preferredOptions}
+            text={form.preferred}
+            onChange={(v) => set('preferred', v)}
           />
           <p className="m-0 text-xs text-muted">
             Không ghi giới tính, độ tuổi, ngoại hình, tình trạng hôn nhân trừ khi công việc bắt buộc (Bộ luật Lao động
