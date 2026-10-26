@@ -82,8 +82,14 @@ describe('Google sign-in', () => {
 });
 
 describe('GET /api/candidate/me', () => {
-  it('answers 401 when signed out', async () => {
-    expect((await t.request('/api/candidate/me')).status).toBe(401);
+  it('should answer 200 { signedIn: false } to a visitor who is not signed in, so public pages log no error', async () => {
+    // Act
+    const res = await t.request('/api/candidate/me');
+
+    // Assert
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ signedIn: false });
+    expect(res.headers.get('cache-control')).toBe('private, no-store');
   });
 
   it('shows only applications sent with the Google email, with the stage the candidate may see', async () => {
@@ -114,10 +120,10 @@ describe('GET /api/candidate/me', () => {
     expect((await overview(await signIn())).applications[0].stage).toBe('closed');
   });
 
-  it('ends the session when the account no longer exists', async () => {
+  it('should treat a session whose account no longer exists as signed out', async () => {
     const cookie = await signIn();
     await t.db.delete(candidates);
-    expect((await t.request('/api/candidate/me', { headers: { cookie } })).status).toBe(401);
+    expect(await (await t.request('/api/candidate/me', { headers: { cookie } })).json()).toEqual({ signedIn: false });
   });
 });
 
@@ -363,7 +369,7 @@ describe('DELETE /api/candidate/me (BR-14)', () => {
     ]);
     expect(await t.db.select().from(candidates)).toEqual([]);
     expect(t.cvStore.files.size).toBe(0);
-    expect((await t.request('/api/candidate/me', { headers: { cookie } })).status).toBe(401);
+    expect(await (await t.request('/api/candidate/me', { headers: { cookie } })).json()).toEqual({ signedIn: false });
   });
 
   it('deletes nothing when the file store fails, so a retry can finish the job', async () => {

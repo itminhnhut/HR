@@ -6,7 +6,9 @@ import type { Deps } from './deps.js';
 import { HttpError } from './lib/http-error.js';
 import { candidateRoutes } from './routes/candidate.js';
 import { hrRoutes } from './routes/hr.js';
+import { publicNewsRoutes } from './routes/public-news.js';
 import { publicRoutes } from './routes/public.js';
+import { shareNewsRoutes } from './routes/share-news.js';
 import { shareRoutes } from './routes/share.js';
 
 export interface Env {
@@ -40,10 +42,12 @@ export function createApp(deps: Deps) {
   api.use(requireFetchHeader);
   api.get('/health', (c) => c.json({ ok: true }));
   api.route('/', publicRoutes);
+  api.route('/', publicNewsRoutes);
   api.route('/candidate', candidateRoutes);
   api.route('/hr', hrRoutes);
   app.route('/api', api);
   app.route('/', shareRoutes);
+  app.route('/', shareNewsRoutes);
 
   app.notFound((c) => c.json({ error: 'Không tìm thấy.' }, 404));
   app.onError((err, c) => {

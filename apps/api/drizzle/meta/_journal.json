@@ -71,6 +71,34 @@
       "when": 1792939711345,
       "tag": "0009_drop_hr_lock_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792987726211,
+      "tag": "0010_news",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792989345839,
+      "tag": "0011_news_tags",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792989889953,
+      "tag": "0012_news_hidden",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793006832807,
+      "tag": "0013_job_preferred",
+      "breakpoints": true
     }
   ]
 }

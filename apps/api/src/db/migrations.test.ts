@@ -183,3 +183,58 @@ describe('migration 0006: lean rest', SLOW, () => {
     expect(await db.select().from(schema.candidates)).toHaveLength(1);
   });
 });
+
+describe('migration 0012: hidden news posts', SLOW, () => {
+  it('adds the hidden status and turns drafts that were once published into hidden posts', async () => {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(12) });
+    await pg.exec(`
+      insert into news_posts (slug, status, published_at) values
+        ('chua-dang', 'draft', null),
+        ('da-go', 'draft', '2026-10-20T03:00:00Z'),
+        ('dang-hien', 'published', '2026-10-20T03:00:00Z');
+    `);
+
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    const rows = await db.select().from(schema.newsPosts).orderBy(schema.newsPosts.slug);
+    expect(rows.map((p) => [p.slug, p.status])).toEqual([
+      ['chua-dang', 'draft'],
+      ['da-go', 'hidden'],
+      ['dang-hien', 'published'],
+    ]);
+    await db.insert(schema.newsPosts).values({ slug: 'moi-an', status: 'hidden' });
+    const [fresh] = await db.insert(schema.newsPosts).values({ slug: 'mac-dinh' }).returning();
+    expect(fresh.status).toBe('draft');
+    const indexes = await pg.query<{ indexname: string }>(
+      `select indexname from pg_indexes where tablename = 'news_posts' order by indexname`,
+    );
+    expect(indexes.rows.map((r) => r.indexname)).toEqual([
+      'news_posts_category_idx',
+      'news_posts_pkey',
+      'news_posts_slug_idx',
+      'news_posts_status_published_idx',
+    ]);
+  });
+});
+
+describe('migration 0013: preferred qualifications on jobs', SLOW, () => {
+  it('should give existing jobs an empty "Ưu tiên" list and keep their requirements', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(13) });
+    await pg.exec(`
+      insert into jobs (slug, title, department, employment_type, requirements, deadline)
+        values ('cu', 'Cũ', 'Kinh doanh', 'full_time', 'Biết Excel', '2026-12-01');
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [job] = await db.select().from(schema.jobs);
+    expect(job).toMatchObject({ slug: 'cu', requirements: 'Biết Excel', preferred: '' });
+  });
+});

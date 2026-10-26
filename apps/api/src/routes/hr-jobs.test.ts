@@ -27,6 +27,34 @@ const hr = (method: string, path: string, body?: unknown) => t.send(method, `/ap
 const saveNew = async (overrides = {}) => json<HrJobDto>(await hr('POST', '/jobs', jobInput(overrides)));
 const dbJob = async (id: string) => (await t.db.select().from(jobs).where(eq(jobs.id, id)))[0];
 
+describe('"Ưu tiên (không bắt buộc)" on a job', () => {
+  it('should save nice-to-haves apart from the requirements and show them on the public job', async () => {
+    // Arrange / Act
+    const saved = await saveNew({ requirements: 'Biết SQL', preferred: 'Đã dùng CRM\nCó sẵn mạng lưới khách hàng' });
+    const page = await json<JobPageResponse>(await t.request(`/api/jobs/${saved.slug}`));
+
+    // Assert
+    expect(saved.preferred).toBe('Đã dùng CRM\nCó sẵn mạng lưới khách hàng');
+    expect(page.job.requirements).toEqual(['Biết SQL']);
+    expect(page.job.preferred).toEqual(['Đã dùng CRM', 'Có sẵn mạng lưới khách hàng']);
+  });
+
+  it('should accept a form without the field from an older page and store no nice-to-haves', async () => {
+    const { preferred: _unused, ...older } = jobInput();
+
+    const res = await hr('POST', '/jobs', older);
+
+    expect(res.status).toBe(200);
+    expect((await json<HrJobDto>(res)).preferred).toBe('');
+  });
+
+  it('should refuse more than 2000 characters of nice-to-haves', async () => {
+    const res = await hr('POST', '/jobs', jobInput({ preferred: 'x'.repeat(2001) }));
+
+    expect(res.status).toBe(422);
+  });
+});
+
 describe('HR job list', () => {
   it('orders by urgency and counts applications per job', async () => {
     const open = await insertJob(t, { title: 'Đang tuyển' });
@@ -326,6 +354,7 @@ describe('"Mẫu tin" job template', () => {
     experiences: ['Không yêu cầu'],
     educations: ['Không yêu cầu'],
     requirementOptions: ['Giao tiếp tốt'],
+    preferredOptions: ['Đã dùng CRM'],
     ...overrides,
   });
 

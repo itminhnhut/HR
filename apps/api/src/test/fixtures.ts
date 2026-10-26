@@ -64,6 +64,7 @@ export function jobInput(overrides: Partial<JobInput> = {}): JobInput {
     salaryMax: 30_000_000,
     responsibilities: 'Viết API',
     requirements: 'Biết SQL',
+    preferred: '',
     benefits: ['Lương tháng 13'],
     roadmap: [],
     deadline: '2026-11-19',

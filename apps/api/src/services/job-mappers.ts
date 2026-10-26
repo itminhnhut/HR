@@ -39,6 +39,7 @@ export function toDetail(job: Job, now: Date): JobDetailDto {
     education: job.education,
     responsibilities: toLines(job.responsibilities),
     requirements: toLines(job.requirements),
+    preferred: toLines(job.preferred),
     benefits: job.benefits,
     roadmap: job.roadmap,
   };

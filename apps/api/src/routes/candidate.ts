@@ -1,3 +1,4 @@
+import type { SignedOutResponse } from '@careers/shared';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../app.js';
@@ -5,7 +6,7 @@ import { HttpError } from '../lib/http-error.js';
 import { readJson, readMultipart } from '../lib/request.js';
 import { clearSession, setSession } from '../lib/session.js';
 import { deleteCandidateData, overview, updateCandidate } from '../services/candidate-account.js';
-import { requireCandidate, signInWithGoogle, toCandidateMe } from '../services/candidate-auth.js';
+import { currentCandidate, requireCandidate, signInWithGoogle, toCandidateMe } from '../services/candidate-auth.js';
 
 const idTokenSchema = z.object({ idToken: z.string().min(1) });
 
@@ -23,8 +24,11 @@ candidateRoutes.post('/google', async (c) => {
   return c.json(await toCandidateMe(db, candidate));
 });
 
+/** Public pages ask on every load: a visitor who is not signed in is a normal answer, not an error. */
 candidateRoutes.get('/me', async (c) => {
-  const candidate = await requireCandidate(c);
+  c.header('cache-control', 'private, no-store');
+  const candidate = await currentCandidate(c);
+  if (!candidate) return c.json({ signedIn: false } satisfies SignedOutResponse);
   const { db, now } = c.get('deps');
   return c.json(await overview(db, candidate, now()));
 });
