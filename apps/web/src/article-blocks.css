@@ -1,0 +1,455 @@
+/*
+ * News article blocks: one look for the public page, the HR preview and the editor (imported by styles.css).
+ */
+@layer components {
+  /*
+   * Article blocks HR adds from "Chèn" / the format menus: H4, contents, FAQ, columns, checklist, indentation,
+   * letter case, sub/superscript, code. Same rules for the public page, the HR preview and the editor.
+   */
+  .article-prose h4 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 1.12em;
+    line-height: 1.35;
+    color: var(--color-navy);
+    margin: 1.4em 0 0.4em;
+    text-wrap: pretty;
+    font-variant-numeric: lining-nums;
+    scroll-margin-top: 96px;
+  }
+  .article-prose .indent-1 {
+    padding-inline-start: 2em;
+  }
+  .article-prose .indent-2 {
+    padding-inline-start: 4em;
+  }
+  .article-prose .indent-3 {
+    padding-inline-start: 6em;
+  }
+  .article-prose .indent-4 {
+    padding-inline-start: 8em;
+  }
+  /* Phones: the steps shrink so text keeps room. */
+  @media (max-width: 640px) {
+    .article-prose .indent-1 {
+      padding-inline-start: 1em;
+    }
+    .article-prose .indent-2 {
+      padding-inline-start: 2em;
+    }
+    .article-prose .indent-3 {
+      padding-inline-start: 3em;
+    }
+    .article-prose .indent-4 {
+      padding-inline-start: 4em;
+    }
+  }
+  .article-prose .tt-upper {
+    text-transform: uppercase;
+  }
+  .article-prose .tt-lower {
+    text-transform: lowercase;
+  }
+  .article-prose .tt-cap {
+    text-transform: capitalize;
+  }
+  .article-prose sub,
+  .article-prose sup {
+    font-size: 0.72em;
+    line-height: 0;
+    position: relative;
+  }
+  .article-prose sup {
+    vertical-align: 0;
+    top: -0.5em;
+  }
+  .article-prose sub {
+    vertical-align: 0;
+    bottom: -0.25em;
+  }
+
+  /* Preset sizes and the serif font from the toolbar (the editor writes the same values inline). */
+  .article-prose .fs-14 {
+    font-size: 14px;
+  }
+  .article-prose .fs-18 {
+    font-size: 18px;
+  }
+  .article-prose .fs-20 {
+    font-size: 20px;
+  }
+  .article-prose .fs-24 {
+    font-size: 24px;
+    line-height: 1.5;
+  }
+  .article-prose .ff-serif {
+    font-family: var(--font-serif);
+  }
+  /* Inline code: monospace on a light chip. */
+  .article-prose :not(pre) > code:not(.code-block),
+  .article-prose code.editor-code {
+    border: 1px solid var(--color-line);
+    border-radius: 3px;
+    background: var(--color-mist);
+    padding: 0.05em 0.35em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.86em;
+    color: var(--color-ink);
+  }
+
+  /* "Mục lục" placed by HR: a box, numbered 1 → 1.1 → 1.1.1, nested levels indented. */
+  .article-prose .toc {
+    margin: 1.8em 0;
+    border: 1px solid var(--color-line);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-card);
+    background: var(--color-mist);
+    padding: 1em 1.25em 1.1em;
+    font-size: 0.94em;
+    line-height: 1.5;
+  }
+  .article-prose .toc-title {
+    margin: 0 0 0.5em;
+    font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-slate);
+  }
+  .article-prose .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .article-prose .toc ol ol {
+    padding-left: 1.4em;
+  }
+  .article-prose .toc li {
+    margin: 0;
+    padding: 0;
+  }
+  .article-prose .toc a,
+  .article-prose .toc button {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    width: 100%;
+    border: 0;
+    background: none;
+    padding: 0.3em 0;
+    text-align: left;
+    font: inherit;
+    font-weight: 500;
+    color: var(--color-navy);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .article-prose .toc ol ol a,
+  .article-prose .toc ol ol button {
+    font-size: 0.93em;
+    font-weight: 400;
+    color: var(--color-body);
+  }
+  .article-prose .toc ol ol ol a,
+  .article-prose .toc ol ol ol button {
+    font-size: 0.9em;
+    color: var(--color-slate);
+  }
+  .article-prose .toc a:hover,
+  .article-prose .toc button:hover {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .article-prose .toc-num {
+    margin-right: 0.6em;
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+  .article-prose .toc-empty {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.94em;
+  }
+
+  /* "Hỏi đáp": the question is a full-width row (≥ 44px) with a chevron that turns when open. */
+  .article-prose .faq {
+    margin: 0 0 0.75em;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: #fff;
+    transition: border-color 0.2s ease;
+  }
+  .article-prose .faq + :not(.faq) {
+    margin-top: 1.6em;
+  }
+  .article-prose .faq[open] {
+    border-color: var(--color-silver);
+  }
+  .article-prose .faq > summary {
+    position: relative;
+    display: block;
+    min-height: 44px;
+    padding: 0.7em 3em 0.7em 1em;
+    list-style: none;
+    font-weight: 600;
+    color: var(--color-navy);
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .article-prose .faq > summary::-webkit-details-marker {
+    display: none;
+  }
+  .article-prose .faq > summary::after {
+    content: '';
+    position: absolute;
+    right: 1.1em;
+    top: 50%;
+    width: 0.55em;
+    height: 0.55em;
+    border-right: 2px solid var(--color-slate);
+    border-bottom: 2px solid var(--color-slate);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+  .article-prose .faq[open] > summary::after {
+    transform: translateY(-30%) rotate(-135deg);
+  }
+  .article-prose .faq > summary:hover {
+    background: var(--color-hover);
+  }
+  .article-prose .faq > summary:focus-visible {
+    outline-offset: -2px;
+  }
+  .article-prose .faq-body {
+    border-top: 1px solid var(--color-line-soft);
+    padding: 0.8em 1em 0.2em;
+  }
+  .article-prose .faq-body > :last-child {
+    margin-bottom: 0.8em;
+  }
+
+  /*
+   * "Bố cục cột": a grid at the chosen widths, one column when the text column is narrow (phones, and the
+   * HR preview's phone frame: a container query on the article, not the window).
+   */
+  .article-prose {
+    container: article-prose / inline-size;
+  }
+  .article-prose .layout {
+    display: grid;
+    gap: 1.5em;
+    margin: 1.6em 0;
+  }
+  .article-prose .layout-item {
+    min-width: 0;
+  }
+  .article-prose .layout-item > :first-child {
+    margin-top: 0;
+  }
+  .article-prose .layout-item > :last-child {
+    margin-bottom: 0;
+  }
+  @container article-prose (min-width: 520px) {
+    .article-prose .cols-1-1 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .article-prose .cols-1-3 {
+      grid-template-columns: 1fr 3fr;
+    }
+    .article-prose .cols-3-1 {
+      grid-template-columns: 3fr 1fr;
+    }
+    .article-prose .cols-1-1-1 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .article-prose .cols-1-2-1 {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+    .article-prose .cols-1-1-1-1 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Checklist: a drawn box, ticked items struck through and greyed. */
+  .article-prose ul.checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .article-prose ul.checklist > li {
+    position: relative;
+    padding-left: 2em;
+  }
+  .article-prose ul.checklist > li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3em;
+    width: 1.2em;
+    height: 1.2em;
+    border: 1.5px solid var(--color-silver-soft);
+    border-radius: 4px;
+    background: #fff;
+  }
+  .article-prose ul.checklist > li.checked {
+    color: var(--color-muted);
+    text-decoration: line-through;
+  }
+  .article-prose ul.checklist > li.checked::before {
+    border-color: var(--color-accent);
+    background: var(--color-accent)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / 80% no-repeat;
+  }
+  /* A wrapper item that only holds a nested list gets no box. */
+  .article-prose ul.checklist > li:has(> ul:only-child),
+  .article-prose ul.checklist > li:has(> ol:only-child),
+  .article-prose ul.checklist > li.editor-li-nested {
+    padding-left: 0;
+    text-decoration: none;
+  }
+  .article-prose ul.checklist > li:has(> ul:only-child)::before,
+  .article-prose ul.checklist > li:has(> ol:only-child)::before,
+  .article-prose ul.checklist > li.editor-li-nested::before {
+    display: none;
+  }
+
+  /* Code: monospace on a light panel, scrolls sideways instead of wrapping. */
+  .article-prose .code-block {
+    display: block;
+    margin: 1.5em 0;
+    overflow-x: auto;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: var(--color-mist);
+    padding: 0.9em 1.1em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.84em;
+    line-height: 1.6;
+    color: var(--color-ink);
+    white-space: pre;
+    tab-size: 2;
+    -webkit-overflow-scrolling: touch;
+  }
+  .article-prose pre.code-block > code {
+    font: inherit;
+    white-space: inherit;
+  }
+
+  /* ── Editor only ─────────────────────────────────────────────── */
+  /* Lexical writes indentation inline as steps of this value: the same steps as .indent-N on the site. */
+  .article-editor {
+    --lexical-indent-base-value: 2em;
+  }
+  @media (max-width: 640px) {
+    .article-editor {
+      --lexical-indent-base-value: 1em;
+    }
+  }
+  /* Notion-like editing: "/" menu, the hint on an empty line, the drag handle. */
+  .slash-menu-anchor {
+    z-index: 45;
+  }
+  .slash-menu {
+    width: min(320px, calc(100vw - 24px));
+    max-height: min(360px, 50dvh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    background: #fff;
+    padding: 6px;
+    box-shadow: 0 10px 30px rgb(11 31 58 / 0.16);
+    animation: var(--animate-fade);
+  }
+  .article-editor:focus p[data-placeholder]::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    color: var(--color-muted);
+    pointer-events: none;
+  }
+  .drag-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 26px;
+    border-radius: var(--radius-control);
+    color: var(--color-slate);
+    cursor: grab;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition:
+      transform 140ms ease-in-out,
+      opacity 160ms ease-in-out;
+  }
+  .drag-handle:hover {
+    background: var(--color-tint);
+    color: var(--color-navy);
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .drag-target-line {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--color-focus);
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  /* "Chèn → Mục lục" when the post already has one: the existing block flashes. */
+  @keyframes toc-flash {
+    0%,
+    60% {
+      box-shadow: 0 0 0 4px rgb(74 120 194 / 0.45);
+    }
+    100% {
+      box-shadow: 0 0 0 4px rgb(74 120 194 / 0);
+    }
+  }
+  .article-editor .toc-flash .toc {
+    animation: toc-flash 1.4s ease-out;
+  }
+  .article-editor .is-selected > .toc {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  /* Columns show their edges while writing (dashed), so HR sees where each one ends. */
+  .article-editor .layout-item {
+    border: 1px dashed var(--color-silver);
+    border-radius: var(--radius-control);
+    padding: 0.6em 0.8em;
+  }
+  /* In the editor the question is typed into: a text cursor, the chevron alone opens or closes. */
+  .article-editor .faq > summary {
+    cursor: text;
+  }
+  .article-editor .faq > summary:has(> br:only-child)::before {
+    content: 'Nhập câu hỏi…';
+    position: absolute;
+    color: var(--color-muted);
+    font-weight: 400;
+    pointer-events: none;
+  }
+  .article-editor .faq-body[hidden] {
+    border: 0;
+    padding: 0;
+  }
+  .article-editor ul.checklist > li::before {
+    cursor: pointer;
+  }
+  .article-editor ul.checklist > li:focus-visible {
+    outline: none;
+  }
+}
