@@ -6,5 +6,8 @@ export * from './phone.js';
 export * from './types.js';
 export * from './validation.js';
 export * from './seo.js';
+export * from './job-location.js';
 export * from './cv-match/types.js';
 export * from './cv-match/index.js';
+export * from './news/index.js';
+export * from './benefit-groups.js';
