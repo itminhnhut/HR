@@ -118,9 +118,24 @@ export interface ApplicationRowDto {
   /** First line of the HR note, for the list. */
   noteLine: string | null;
   interviewAt: string | null;
+  /**
+   * Latest "Sếp duyệt" of this application in a batch HR has not revoked (spec-boss-review.md):
+   * waiting = sent, no decision yet; null = never sent.
+   */
+  review: import('./reviews.js').ReviewDecision | 'waiting' | null;
+}
+
+/** The review an application is in, for the detail panel. */
+export interface ApplicationReviewDto {
+  batchId: string;
+  title: string;
+  reviewerName: string;
+  decision: import('./reviews.js').ReviewDecision | null;
+  reviewerComment: string | null;
 }
 
 export interface ApplicationDetailDto extends ApplicationRowDto {
+  reviewInfo: ApplicationReviewDto | null;
   email: string | null;
   message: string | null;
   cvFileName: string | null;
