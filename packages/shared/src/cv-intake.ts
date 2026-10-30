@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { ApplicationStatus } from './types.js';
+import { REFERRAL_SOURCE, SOURCE_KEY_MAX } from './sources.js';
 import { phoneSchema } from './validation.js';
 
 /**
@@ -7,29 +8,11 @@ import { phoneSchema } from './validation.js';
  * CV, and a signed-in candidate updates the CV of an application already sent.
  */
 
-/** Where an application came from. "website" = sent by the candidate through the form. */
-export type ApplicationSource =
-  'website' | 'email' | 'zalo' | 'referral' | 'topcv' | 'vietnamworks' | 'facebook' | 'other';
-
-export const APPLICATION_SOURCE_LABEL: Record<ApplicationSource, string> = {
-  website: 'Website',
-  email: 'Email',
-  zalo: 'Zalo',
-  referral: 'Người giới thiệu',
-  topcv: 'TopCV',
-  vietnamworks: 'VietnamWorks',
-  facebook: 'Facebook',
-  other: 'Khác',
-};
-
-/** Sources HR can pick when adding an application (website is only the form). */
-export const HR_SOURCES = ['email', 'zalo', 'referral', 'topcv', 'vietnamworks', 'facebook', 'other'] as const;
-export type HrSource = (typeof HR_SOURCES)[number];
-
-export const ALL_SOURCES: readonly ApplicationSource[] = ['website', ...HR_SOURCES];
-
-export const isApplicationSource = (v: unknown): v is ApplicationSource =>
-  typeof v === 'string' && (ALL_SOURCES as readonly string[]).includes(v);
+/**
+ * Where an application came from: the key of a row of HR's source list (spec-custom-sources.md). "website" = sent
+ * by the candidate through the form; HR adds and renames the others.
+ */
+export type ApplicationSource = string;
 
 /** How many times a candidate may replace the CV of one application. */
 export const CANDIDATE_CV_CHANGES_MAX = 3;
@@ -55,8 +38,8 @@ export const cvLinkSchema = z
   .transform((v) => (v ? v : null));
 
 /** "Ai giới thiệu" is needed only for a referral. */
-const withReferrer = <T extends { source: HrSource; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
-  if (v.source === 'referral' && !v.referrer) {
+const withReferrer = <T extends { source: string; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
+  if (v.source === REFERRAL_SOURCE && !v.referrer) {
     ctx.addIssue({ code: 'custom', path: ['referrer'], message: 'Ghi tên người giới thiệu.' });
   }
 };
@@ -64,7 +47,8 @@ const withReferrer = <T extends { source: HrSource; referrer: string | null }>(v
 const contactFields = {
   phone: phoneSchema,
   email,
-  source: z.enum(HR_SOURCES, { message: 'Chọn nguồn hồ sơ.' }),
+  /** A key of the source list; the server checks it exists, is not "website" and is not hidden. */
+  source: z.string().trim().min(1, 'Chọn nguồn hồ sơ.').max(SOURCE_KEY_MAX, 'Nguồn không hợp lệ.'),
   referrer: optionalText(REFERRER_MAX, `Tối đa ${REFERRER_MAX} ký tự.`),
 };
 
