@@ -8,6 +8,30 @@ import { AddApplicationDialog } from './AddApplicationDialog';
 
 const JOB_ID = '11111111-1111-4111-8111-111111111111';
 let posts: number;
+/** The reply to "Đọc CV" (POST /hr/applications/parse-cv). */
+let parseReply: () => Response;
+/** The reply to "Lưu hồ sơ" (POST /hr/applications). */
+let addReply: () => Response;
+
+const reply = (status: number, body: unknown) =>
+  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+const duplicate = () =>
+  reply(409, {
+    error: 'Đã có hồ sơ của Trần Khoa cho vị trí này.',
+    fieldErrors: {},
+    code: 'duplicate',
+    existing: { id: 'old-id', fullName: 'Trần Khoa', status: 'seen', createdAt: '2026-10-20T03:00:00.000Z' },
+  });
+const parsedCv =
+  (over: Record<string, unknown> = {}) =>
+  () =>
+    reply(200, {
+      fullName: 'Nguyễn Thị Mai Anh',
+      phone: '0903456789',
+      email: 'maianh.nguyen@example.com',
+      readable: true,
+      ...over,
+    });
 
 beforeAll(() => {
   // jsdom has no <dialog> methods.
@@ -20,26 +44,23 @@ beforeAll(() => {
 });
 beforeEach(() => {
   posts = 0;
+  parseReply = parsedCv();
+  addReply = duplicate;
   vi.stubGlobal(
     'fetch',
     vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const reply = (status: number, body: unknown) =>
-        new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
-      if (String(input).endsWith('/hr/jobs')) {
+      const url = String(input);
+      if (url.endsWith('/hr/jobs')) {
         return reply(200, {
           jobs: [{ id: JOB_ID, title: 'Kế toán', status: 'open' }],
           newApplications: 0,
           dueForDeletion: 0,
         });
       }
+      if (url.endsWith('/hr/applications/parse-cv')) return parseReply();
       if (init?.method === 'POST') {
         posts += 1;
-        return reply(409, {
-          error: 'Đã có hồ sơ của Trần Khoa cho vị trí này.',
-          fieldErrors: {},
-          code: 'duplicate',
-          existing: { id: 'old-id', fullName: 'Trần Khoa', status: 'seen', createdAt: '2026-10-20T03:00:00.000Z' },
-        });
+        return addReply();
       }
       return reply(404, { error: 'not found' });
     }),
@@ -58,6 +79,9 @@ function show(onAdded = vi.fn()) {
   );
   return onAdded;
 }
+
+const cvPdf = () => new File(['%PDF-1.7\n%%EOF\n'], 'CV Mai Anh.pdf', { type: 'application/pdf' });
+const pickCv = async () => userEvent.upload(screen.getByLabelText(/Chọn file CV/), cvPdf());
 
 async function fillBasics() {
   await userEvent.selectOptions(
@@ -97,5 +121,100 @@ describe('HR adds an application', () => {
     // Assert
     expect(screen.getByText(/Đã có hồ sơ của/)).toBeTruthy();
     expect(onAdded).toHaveBeenCalledWith('old-id');
+  });
+});
+
+describe('HR adds an application from a CV file', () => {
+  it('should fill the empty name, phone and email boxes from the picked PDF', async () => {
+    // Arrange
+    show();
+
+    // Act
+    await pickCv();
+
+    // Assert
+    expect(await screen.findByText(/Đã điền sẵn họ tên, SĐT, email từ CV/)).toBeTruthy();
+    expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('Nguyễn Thị Mai Anh');
+    expect(screen.getByLabelText<HTMLInputElement>('Số điện thoại').value).toBe('0903 456 789');
+    expect(screen.getByLabelText<HTMLInputElement>(/^Email/).value).toBe('maianh.nguyen@example.com');
+    expect(screen.getAllByText('Lấy từ CV')).toHaveLength(3);
+  });
+
+  it('should keep what HR already typed and say which details the CV lacks', async () => {
+    // Arrange
+    parseReply = parsedCv({ email: null });
+    show();
+    await userEvent.type(screen.getByLabelText('Họ và tên'), 'Mai Anh');
+
+    // Act
+    await pickCv();
+
+    // Assert
+    expect(await screen.findByText(/Đã điền sẵn SĐT từ CV.*Không tìm thấy email trong CV\./)).toBeTruthy();
+    expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('Mai Anh');
+    expect(screen.getByLabelText<HTMLInputElement>('Số điện thoại').value).toBe('0903 456 789');
+    expect(screen.getByLabelText<HTMLInputElement>(/^Email/).value).toBe('');
+    expect(screen.getAllByText('Lấy từ CV')).toHaveLength(1);
+  });
+
+  it('should stop marking a box as taken from the CV once HR edits it', async () => {
+    // Arrange
+    show();
+    await pickCv();
+    await screen.findByText(/Đã điền sẵn/);
+
+    // Act
+    await userEvent.type(screen.getByLabelText('Họ và tên'), ' B');
+
+    // Assert
+    expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('Nguyễn Thị Mai Anh B');
+    expect(screen.getAllByText('Lấy từ CV')).toHaveLength(2);
+  });
+
+  it('should ask HR to type the details when the CV is a scan without text', async () => {
+    // Arrange
+    parseReply = parsedCv({ fullName: null, phone: null, email: null, readable: false });
+    show();
+
+    // Act
+    await pickCv();
+
+    // Assert
+    expect(await screen.findByText('Không đọc được chữ trong CV (ảnh scan), nhập tay giúp.')).toBeTruthy();
+    expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('');
+    expect(screen.getByLabelText<HTMLInputElement>('Số điện thoại').value).toBe('');
+    expect(screen.queryByText('Lấy từ CV')).toBeNull();
+  });
+
+  it('should still save the application with its CV when reading the CV fails', async () => {
+    // Arrange
+    parseReply = () => reply(500, { error: 'Có lỗi xảy ra, thử lại sau.' });
+    addReply = () => reply(201, { id: 'new-id' });
+    const onAdded = show();
+    await pickCv();
+    await screen.findByText(/Không đọc được CV lúc này/);
+    await fillBasics();
+    await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), 'email');
+    await userEvent.click(screen.getByRole('checkbox'));
+
+    // Act
+    await userEvent.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
+
+    // Assert
+    await vi.waitFor(() => expect(onAdded).toHaveBeenCalledWith('new-id'));
+    expect(posts).toBe(1);
+  });
+
+  it('should not read anything when HR pastes a link instead of a file', async () => {
+    // Arrange
+    show();
+    await userEvent.click(screen.getByRole('button', { name: 'Dán link' }));
+
+    // Act
+    await userEvent.type(screen.getByLabelText('Link CV'), 'https://drive.google.com/cv');
+
+    // Assert
+    expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('');
   });
 });

@@ -16,6 +16,7 @@ import { Checkbox, FieldError, SelectField, TextArea, TextField } from '../../..
 import { Notice } from '../../../ui/feedback';
 import { PhoneField } from '../../../ui/PhoneField';
 import { errorMessage } from '../parts';
+import { FROM_CV_HINT, useCvAutofill, type CvField } from './useCvAutofill';
 
 /** The existing application the API points to when this phone already applied for this job. */
 function existingOf(error: unknown): DuplicateApplicationDto | null {
@@ -87,18 +88,75 @@ export function AddApplicationDialog({
   );
 }
 
+type Autofill = ReturnType<typeof useCvAutofill>;
+
+/** The CV comes first: picking a PDF reads the name, phone and email into the boxes below. */
+function CvSection({
+  autofill,
+  onChange,
+  error,
+}: {
+  autofill: Autofill;
+  onChange: (cv: CvInput | null) => void;
+  error?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <span className="text-sm font-medium text-navy">
+        CV <span className="font-normal text-muted">(không bắt buộc, thêm sau được)</span>
+      </span>
+      <CvPicker onChange={onChange} error={error} />
+      {autofill.note && (
+        <p role="status" className="m-0 text-[13px] leading-relaxed text-muted">
+          {autofill.note}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Họ và tên, SĐT, Email: a box filled from the CV says so until HR edits it. */
+function ContactFields({ autofill, errors }: { autofill: Autofill; errors: Record<string, string | undefined> }) {
+  const { values, edit, isFromCv } = autofill;
+  const fromCv = (field: CvField) => (isFromCv(field) ? FROM_CV_HINT : undefined);
+  return (
+    <>
+      <TextField
+        label="Họ và tên"
+        value={values.fullName}
+        onChange={(e) => edit('fullName')(e.target.value)}
+        error={errors.fullName}
+        hint={fromCv('fullName')}
+      />
+      <PhoneField
+        label="Số điện thoại"
+        value={values.phone}
+        onChange={edit('phone')}
+        error={errors.phone}
+        hint={fromCv('phone')}
+      />
+      <TextField
+        label="Email"
+        optional
+        type="email"
+        value={values.email}
+        onChange={(e) => edit('email')(e.target.value)}
+        error={errors.email}
+        hint={
+          fromCv('email') ??
+          'Có email thì ứng viên đăng nhập Google bằng email đó sẽ thấy hồ sơ và tự cập nhật CV được.'
+        }
+        className="sm:col-span-2"
+      />
+    </>
+  );
+}
+
 function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: string) => void }) {
   const jobs = (useHrJobs().data?.jobs ?? []).filter((j) => j.status !== 'draft');
   const add = useAddApplication();
-  const [form, setForm] = useState({
-    jobId: '',
-    fullName: '',
-    phone: '',
-    email: '',
-    source: '' as HrSource | '',
-    referrer: '',
-    note: '',
-  });
+  const autofill = useCvAutofill();
+  const [form, setForm] = useState({ jobId: '', source: '' as HrSource | '', referrer: '', note: '' });
   const [cv, setCv] = useState<CvInput | null>(null);
   const [consent, setConsent] = useState(false);
   const set = (key: keyof typeof form) => (value: string) => setForm((f) => ({ ...f, [key]: value }));
@@ -106,6 +164,12 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
 
   const [local, setLocal] = useState<Record<string, string>>({});
   const errors = { ...(add.error instanceof ApiError ? add.error.fieldErrors : {}), ...local };
+  const pickCv = (next: CvInput | null) => {
+    setCv(next);
+    // Only a picked PDF is read; a link is not.
+    if (next && 'file' in next) void autofill.readCv(next.file);
+    else autofill.forgetCv();
+  };
   const submit = (e: FormEvent) => {
     e.preventDefault();
     // The two choices the server needs in a typed form: checked here, the rest by the server.
@@ -118,6 +182,7 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
     add.mutate(
       {
         ...form,
+        ...autofill.values,
         source: form.source,
         cvLink: cv && 'link' in cv ? cv.link : '',
         cvFile: cv && 'file' in cv ? cv.file : null,
@@ -134,6 +199,7 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
         <CloseButton onClick={onClose} />
       </header>
       <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 sm:grid-cols-2 sm:px-7">
+        <CvSection autofill={autofill} onChange={pickCv} error={errors.cv ?? errors.cvLink} />
         <div className="flex flex-col gap-1 sm:col-span-2">
           <SelectField label="Vị trí ứng tuyển" value={form.jobId} onChange={(e) => set('jobId')(e.target.value)}>
             <option value="">Chọn vị trí…</option>
@@ -146,23 +212,7 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
           </SelectField>
           <FieldError>{errors.jobId}</FieldError>
         </div>
-        <TextField
-          label="Họ và tên"
-          value={form.fullName}
-          onChange={(e) => set('fullName')(e.target.value)}
-          error={errors.fullName}
-        />
-        <PhoneField label="Số điện thoại" value={form.phone} onChange={set('phone')} error={errors.phone} />
-        <TextField
-          label="Email"
-          optional
-          type="email"
-          value={form.email}
-          onChange={(e) => set('email')(e.target.value)}
-          error={errors.email}
-          hint="Có email thì ứng viên đăng nhập Google bằng email đó sẽ thấy hồ sơ và tự cập nhật CV được."
-        />
-        <div className="flex flex-col gap-1">
+        <div className={`flex flex-col gap-1 ${form.source === 'referral' ? '' : 'sm:col-span-2'}`}>
           <SelectField label="Nguồn hồ sơ" value={form.source} onChange={(e) => set('source')(e.target.value)}>
             <option value="">Chọn nguồn…</option>
             {HR_SOURCES.map((s) => (
@@ -180,15 +230,9 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
             onChange={(e) => set('referrer')(e.target.value)}
             error={errors.referrer}
             placeholder="Anh Tuấn (kho)"
-            className="sm:col-span-2"
           />
         )}
-        <div className="flex flex-col gap-2 sm:col-span-2">
-          <span className="text-sm font-medium text-navy">
-            CV <span className="font-normal text-muted">(không bắt buộc, thêm sau được)</span>
-          </span>
-          <CvPicker onChange={setCv} error={errors.cv ?? errors.cvLink} />
-        </div>
+        <ContactFields autofill={autofill} errors={errors} />
         <TextArea
           label="Ghi chú nội bộ"
           optional
