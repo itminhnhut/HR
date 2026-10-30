@@ -123,6 +123,10 @@ export interface ApplicationRowDto {
    * waiting = sent, no decision yet; null = never sent.
    */
   review: import('./reviews.js').ReviewDecision | 'waiting' | null;
+  /** Where it came from (spec-cv-intake.md); "website" = sent through the form. */
+  source: import('./cv-intake.js').ApplicationSource;
+  /** The candidate replaced the CV and no HR has opened the application since. */
+  cvUpdatedByCandidate: boolean;
 }
 
 /** The review an application is in, for the detail panel. */
@@ -132,10 +136,20 @@ export interface ApplicationReviewDto {
   reviewerName: string;
   decision: import('./reviews.js').ReviewDecision | null;
   reviewerComment: string | null;
+  /** The CV was replaced after the reviewer decided: they decided on the previous one. */
+  cvChangedAfterDecision: boolean;
 }
 
 export interface ApplicationDetailDto extends ApplicationRowDto {
   reviewInfo: ApplicationReviewDto | null;
+  /** "Ai giới thiệu", for a referral. */
+  referrer: string | null;
+  /** HR who added the application; null when the candidate sent it. Only those have editable contact details. */
+  addedBy: string | null;
+  /** HR who confirmed the candidate's consent (added applications). */
+  consentBy: string | null;
+  /** Newest first. */
+  cvHistory: import('./cv-intake.js').CvChangeDto[];
   email: string | null;
   message: string | null;
   cvFileName: string | null;
@@ -193,6 +207,8 @@ export interface DashboardDto {
   /** Live jobs ending within 3 days and jobs that expired in the last 14 days. */
   endingJobs: { id: string; title: string; deadline: string; status: EffectiveStatus }[];
   dueForDeletion: number;
+  /** Applications of the last 30 days per source, biggest first. */
+  bySource: { source: import('./cv-intake.js').ApplicationSource; count: number }[];
 }
 
 export interface SubscriberDto {
@@ -257,6 +273,11 @@ export interface CandidateApplicationDto {
   place: string;
   createdAt: string;
   stage: CandidateStage;
+  hasCv: boolean;
+  /** Why the candidate cannot replace the CV (candidateCvBlock), or null when they can. */
+  cvBlock: string | null;
+  /** Last time the candidate replaced it. */
+  cvChangedAt: string | null;
 }
 
 /** GET /candidate/me for a visitor who is not signed in (200, so public pages log no error). */

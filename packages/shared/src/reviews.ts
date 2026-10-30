@@ -66,6 +66,8 @@ export interface ReviewItemPublicDto {
   hrRepliedAt: string | null;
   /** HR already set an interview: the decision can no longer change. */
   scheduled: boolean;
+  /** The CV was replaced after this batch was sent. */
+  cvUpdated: boolean;
 }
 
 /** GET /api/review/:token */
