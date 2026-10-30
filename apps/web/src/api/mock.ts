@@ -898,6 +898,8 @@ export const mockApi: Api = {
 
   // "Thêm và cập nhật CV" stores files: the real BE only.
   hrAddApplication: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  // The demo cannot read PDFs: HR types the details in.
+  hrParseCv: async () => delay({ fullName: null, phone: null, email: null, readable: false }),
   hrReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   hrUpdateContact: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   candidateReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),

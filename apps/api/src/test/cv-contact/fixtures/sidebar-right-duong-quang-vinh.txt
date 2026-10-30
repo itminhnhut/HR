@@ -1,0 +1,39 @@
+DƯƠNG QUANG VINH
+Lập trình viên Backend
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm
+để mang lại kết quả rõ ràng cho công ty và phát triển lên vị trí quản lý trong 2
+năm tới.
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty CP Dược phẩm An Khang Xanh
+08/2023 – nay
+Triển khai CI/CD với GitHub Actions và Docker
+Review code và hướng dẫn 2 bạn thực tập
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian
+phản hồi
+Kỹ sư phần mềm   – Công ty TNHH Nội thất Việt Mộc
+06/2021 – 02/2023
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian
+phản hồi
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+LIÊN HỆ
+Tel 0961 330 842
+Mail quangvinh.duong@outlook.com
+Add Căn hộ B2-1507, 99 Nguyễn Hữu
+Thọ, Q.7, TP. HCM
+KỸ NĂNG
+Node.js
+TypeScript
+Docker
+PostgreSQL
+React
+HỌC VẤN
+Đại học Kinh tế Quốc dân
+2011 – 2015
+Chuyên ngành: Khoa học máy tính
+CHỨNG CHỈ
+Chứng chỉ Kế toán trưởng
+IELTS 6.5
+SỞ THÍCH
+Chụp ảnh, Đọc sách, Tình nguyện

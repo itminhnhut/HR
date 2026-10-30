@@ -1,0 +1,33 @@
+Ha Minh Tam
+Backend Developer
+Phone: +84 (0) 912 864 205   |   Email: minhtam.ha.dev@gmail.com   |   Address: Apt B2-1507, 99 Nguyen Huu Tho,
+District 7, HCMC
+CAREER OBJECTIVE
+To grow in a professional environment, apply my experience to deliver measurable results and take on more
+responsibility within two years.
+WORK EXPERIENCE
+Backend Developer   – Lac Hong Digital Software JSC
+03/2023 – Present
+Set up CI/CD with GitHub Actions and Docker
+Designed PostgreSQL schemas and cut response time by 40%
+Reviewed code and mentored 2 interns
+Software Engineer   – Phu Gia Trading Co., Ltd.
+08/2021 – 02/2023
+Designed PostgreSQL schemas and cut response time by 40%
+Integrated a payment gateway and transactional email
+Set up CI/CD with GitHub Actions and Docker
+EDUCATION
+Hanoi University of Science and Technology
+2009 – 2013
+Major: Information Technology
+SKILLS
+Git
+Node.js
+React
+TypeScript
+Docker
+CERTIFICATES
+Chief Accountant Certificate
+Google Ads Search
+INTERESTS
+Cooking, Football, Volunteering

@@ -1,0 +1,802 @@
+[
+  {
+    "id": "onecol-nguyen-thi-mai-anh",
+    "layout": "one-column",
+    "notes": "Classic one column, ALL CAPS name, ☎ ✉ 📍 icons before contact, phone 0912 345 678",
+    "fullName": "Nguyễn Thị Mai Anh",
+    "phone": "0912345678",
+    "email": "mai.anh.nguyen@gmail.com"
+  },
+  {
+    "id": "onecol-tran-quoc-bao",
+    "layout": "one-column",
+    "notes": "Times New Roman, dotted phone 0903.215.468, yahoo email, date of birth, CCCD, GPA",
+    "fullName": "Trần Quốc Bảo",
+    "phone": "0903215468",
+    "email": "tranquocbao.kt@yahoo.com"
+  },
+  {
+    "id": "onecol-le-hoang-nam",
+    "layout": "one-column",
+    "notes": "Dashed phone 0386-772-145, short labels (ĐT:, E-mail:), GitHub and LinkedIn links",
+    "fullName": "Lê Hoàng Nam",
+    "phone": "0386772145",
+    "email": "lehoangnam.dev@gmail.com"
+  },
+  {
+    "id": "onecol-pham-thu-trang",
+    "layout": "one-column",
+    "notes": "+84 977 318 520, email with capitals (Pham.ThuTrang@outlook.com), salary 15.000.000 VNĐ",
+    "fullName": "Phạm Thu Trang",
+    "phone": "0977318520",
+    "email": "pham.thutrang@outlook.com"
+  },
+  {
+    "id": "onecol-hoang-minh-duc",
+    "layout": "one-column",
+    "notes": "(+84) 908123456, email with underscore and digits, icons",
+    "fullName": "Hoàng Minh Đức",
+    "phone": "0908123456",
+    "email": "minhduc_hoang92@gmail.com"
+  },
+  {
+    "id": "onecol-huynh-gia-han",
+    "layout": "one-column",
+    "notes": "84934567812 (84 without plus), contact values without labels separated by •",
+    "fullName": "Huỳnh Gia Hân",
+    "phone": "0934567812",
+    "email": "giahan.huynh2001@gmail.com"
+  },
+  {
+    "id": "onecol-vo-thanh-tam",
+    "layout": "one-column",
+    "notes": "Phone grouped 3-3-4 (097 123 4567)",
+    "fullName": "Võ Thành Tâm",
+    "phone": "0971234567",
+    "email": "vothanhtam.sale@gmail.com"
+  },
+  {
+    "id": "onecol-dang-ngoc-lan",
+    "layout": "one-column",
+    "notes": "\"Số điện thoại:\" label; \"Người tham chiếu\" section with another person’s name, phone and email at the end",
+    "fullName": "Đặng Ngọc Lan",
+    "phone": "0356482913",
+    "email": "ngoclan.dang@yahoo.com"
+  },
+  {
+    "id": "onecol-bui-tien-dung",
+    "layout": "one-column",
+    "notes": "Company phone and company email under each job in the experience section",
+    "fullName": "Bùi Tiến Dũng",
+    "phone": "0918004762",
+    "email": "buitiendung1990@gmail.com"
+  },
+  {
+    "id": "onecol-do-khanh-linh",
+    "layout": "one-column",
+    "notes": "Email written with a visible mailto: prefix (copied link)",
+    "fullName": "Đỗ Khánh Linh",
+    "phone": "0789654321",
+    "email": "khanhlinh.do@gmail.com"
+  },
+  {
+    "id": "onecol-ho-thi-kim-oanh",
+    "layout": "one-column",
+    "notes": "4-word name, ALL CAPS, icons, date of birth line",
+    "fullName": "Hồ Thị Kim Oanh",
+    "phone": "0329517846",
+    "email": "kimoanh.ho.dd@gmail.com"
+  },
+  {
+    "id": "onecol-ngo-minh-kien",
+    "layout": "one-column",
+    "notes": "Rare surname Ngô, Behance-style portfolio link",
+    "fullName": "Ngô Minh Kiên",
+    "phone": "0868120457",
+    "email": "ngominhkien.design@gmail.com"
+  },
+  {
+    "id": "onecol-zalo-only-cao-thi-xuan",
+    "layout": "one-column",
+    "notes": "Only a Zalo number is given (no \"Điện thoại\" label); rare surname Cao",
+    "fullName": "Cao Thị Xuân",
+    "phone": "0978123456",
+    "email": "caothixuan.cskh@gmail.com"
+  },
+  {
+    "id": "onecol-no-email-luu-duc-thang",
+    "layout": "one-column",
+    "notes": "No email anywhere in the CV; surname Lưu",
+    "fullName": "Lưu Đức Thắng",
+    "phone": "0399821576",
+    "email": null
+  },
+  {
+    "id": "onecol-2word-pham-tu",
+    "layout": "one-column",
+    "notes": "2-word name (Phạm Tú), ALL CAPS",
+    "fullName": "Phạm Tú",
+    "phone": "0816245390",
+    "email": "phamtu.illustrator@gmail.com"
+  },
+  {
+    "id": "onecol-mac-thi-thu-hien",
+    "layout": "one-column",
+    "notes": "Rare surname Mạc; phone with Zalo note in brackets \"0915 627 384 (Zalo)\"",
+    "fullName": "Mạc Thị Thu Hiền",
+    "phone": "0915627384",
+    "email": "thuhien.mac@yahoo.com"
+  },
+  {
+    "id": "sidebar-tran-van-hung",
+    "layout": "two-column sidebar",
+    "notes": "Left sidebar first in the DOM: contact comes out before the name; name in the main column",
+    "fullName": "Trần Văn Hùng",
+    "phone": "0912678345",
+    "email": "tranvanhung.ketoan@gmail.com"
+  },
+  {
+    "id": "sidebar-name-in-side-ly-thu-ha",
+    "layout": "two-column sidebar",
+    "notes": "Name and title at the top of the sidebar; surname Lý",
+    "fullName": "Lý Thu Hà",
+    "phone": "0983225167",
+    "email": "lythuha.mkt@gmail.com"
+  },
+  {
+    "id": "sidebar-right-duong-quang-vinh",
+    "layout": "two-column sidebar",
+    "notes": "Right sidebar (after main in the DOM), text labels Tel/Mail/Add; surname Dương",
+    "fullName": "Dương Quang Vinh",
+    "phone": "0961330842",
+    "email": "quangvinh.duong@outlook.com"
+  },
+  {
+    "id": "sidebar-refs-dinh-thi-hoa",
+    "layout": "two-column sidebar",
+    "notes": "Old-style tone mark (Hoà); two references with phones and emails in the sidebar after the contact",
+    "fullName": "Đinh Thị Hoà",
+    "phone": "0374556218",
+    "email": "dinhthihoa.hr@gmail.com"
+  },
+  {
+    "id": "sidebar-truong-cong-danh",
+    "layout": "two-column sidebar",
+    "notes": "Tahoma, +84 916 274 503, icons; surname Trương",
+    "fullName": "Trương Công Danh",
+    "phone": "0916274503",
+    "email": "truongcongdanh.xnk@gmail.com"
+  },
+  {
+    "id": "sidebar-split-lam-my-duyen",
+    "layout": "two-column sidebar",
+    "notes": "Name split across two lines in a narrow sidebar (LÂM / MỸ DUYÊN); surname Lâm",
+    "fullName": "Lâm Mỹ Duyên",
+    "phone": "0707889312",
+    "email": "lammyduyen.art@gmail.com"
+  },
+  {
+    "id": "sidebar-ta-dinh-phong",
+    "layout": "two-column sidebar",
+    "notes": "Rare surname Tạ; GPA and salary expectation",
+    "fullName": "Tạ Đình Phong",
+    "phone": "0965774108",
+    "email": "tadinhphong@gmail.com"
+  },
+  {
+    "id": "sidebar-quach-ngoc-tram",
+    "layout": "two-column sidebar",
+    "notes": "Rare surname Quách; phone grouped 4-2-2-2 (0939 15 26 37)",
+    "fullName": "Quách Ngọc Trâm",
+    "phone": "0939152637",
+    "email": "ngoctram.quach@yahoo.com"
+  },
+  {
+    "id": "sidebar-ton-nu-hoang-bao-chau",
+    "layout": "two-column sidebar",
+    "notes": "5-word name with Tôn Nữ in the sidebar; it wraps onto two lines (TÔN NỮ HOÀNG / BẢO CHÂU)",
+    "fullName": "Tôn Nữ Hoàng Bảo Châu",
+    "phone": "0935448210",
+    "email": "baochau.tonnu@gmail.com"
+  },
+  {
+    "id": "banner-phan-thanh-long",
+    "layout": "banner",
+    "notes": "Coloured banner with big name, job title under it, icon contact row inside the banner",
+    "fullName": "Phan Thành Long",
+    "phone": "0905667321",
+    "email": "phanthanhlong.biz@gmail.com"
+  },
+  {
+    "id": "banner-vu-hai-yen",
+    "layout": "banner",
+    "notes": "Contact strip below the banner, short labels, email with capitals (Vu.HaiYen@gmail.com)",
+    "fullName": "Vũ Hải Yến",
+    "phone": "0945112809",
+    "email": "vu.haiyen@gmail.com"
+  },
+  {
+    "id": "banner-au-duong-thi-ngoc-han",
+    "layout": "banner",
+    "notes": "5-word name with two-syllable surname Âu Dương, ALL CAPS",
+    "fullName": "Âu Dương Thị Ngọc Hân",
+    "phone": "0822345991",
+    "email": "ngochan.auduong@gmail.com"
+  },
+  {
+    "id": "banner-spaced-le-minh-chau",
+    "layout": "banner letter-spaced",
+    "notes": "Name letter-spaced with CSS: unpdf returns \"L Ê   M I N H   C H Â U\"",
+    "fullName": "Lê Minh Châu",
+    "phone": "0397210664",
+    "email": "leminhchau.design@outlook.com"
+  },
+  {
+    "id": "banner-kieu-anh-thu",
+    "layout": "banner",
+    "notes": "Surname Kiều, phone 0912345678-style without spaces",
+    "fullName": "Kiều Anh Thư",
+    "phone": "0918273645",
+    "email": "kieuanhthu.hr@gmail.com"
+  },
+  {
+    "id": "nametitle-tran-minh-hieu",
+    "layout": "name | title on one line",
+    "notes": "\"TRẦN MINH HIẾU | Sales Executive\" on one line",
+    "fullName": "Trần Minh Hiếu",
+    "phone": "0909512784",
+    "email": "tranminhhieu.sales@gmail.com"
+  },
+  {
+    "id": "nametitle-dash-nguyen-phuong-thao",
+    "layout": "name | title on one line",
+    "notes": "En dash separator \"Nguyễn Phương Thảo – Kế toán viên\", dotted phone",
+    "fullName": "Nguyễn Phương Thảo",
+    "phone": "0353908271",
+    "email": "phuongthao.nguyen.kt@gmail.com"
+  },
+  {
+    "id": "nametitle-caps-pham-gia-bao",
+    "layout": "name | title on one line",
+    "notes": "Name and title both ALL CAPS joined by a hyphen: \"PHẠM GIA BẢO - LẬP TRÌNH VIÊN FRONTEND\"",
+    "fullName": "Phạm Gia Bảo",
+    "phone": "0377445120",
+    "email": "giabao.pham.fe@gmail.com"
+  },
+  {
+    "id": "nametitle-bullet-hoang-yen-nhi",
+    "layout": "name | title on one line",
+    "notes": "Bullet separator, dashed phone, yahoo email with digits",
+    "fullName": "Hoàng Yến Nhi",
+    "phone": "0868334219",
+    "email": "yennhi.hoang99@yahoo.com"
+  },
+  {
+    "id": "nametitle-khuc-minh-hoang",
+    "layout": "name | title on one line",
+    "notes": "Rare surname Khúc, icons in the contact line",
+    "fullName": "Khúc Minh Hoàng",
+    "phone": "0329004187",
+    "email": "khucminhhoang@outlook.com"
+  },
+  {
+    "id": "form-syll-nguyen-van-binh",
+    "layout": "label form",
+    "notes": "First line \"SƠ YẾU LÝ LỊCH\", \"Ảnh 3x4\" box, \"Họ và tên: …\" lines, CCCD, birthplace, ethnicity",
+    "fullName": "Nguyễn Văn Bình",
+    "phone": "0918256437",
+    "email": "nguyenvanbinh1988@gmail.com"
+  },
+  {
+    "id": "form-hsxv-le-thi-thu-ha",
+    "layout": "label form",
+    "notes": "First line \"HỒ SƠ XIN VIỆC\" + \"Vị trí ứng tuyển\", label table, salary 15.000.000 VNĐ",
+    "fullName": "Lê Thị Thu Hà",
+    "phone": "0974163582",
+    "email": "thuha.le.kt@gmail.com"
+  },
+  {
+    "id": "form-cv-top-pham-van-khoa",
+    "layout": "label form",
+    "notes": "First line \"CURRICULUM VITAE\" on a Vietnamese label form",
+    "fullName": "Phạm Văn Khoa",
+    "phone": "0353207718",
+    "email": "phamvankhoa.xnk@outlook.com"
+  },
+  {
+    "id": "form-hoten-do-van-luc",
+    "layout": "label form",
+    "notes": "\"Họ tên:\" label, CCCD with issue date/place, short labels ĐT:/E-mail:",
+    "fullName": "Đỗ Văn Lực",
+    "phone": "0396125470",
+    "email": "dovanluc.kythuat@gmail.com"
+  },
+  {
+    "id": "form-2word-le-hang",
+    "layout": "label form",
+    "notes": "2-word name (LÊ HẰNG) in a label form",
+    "fullName": "Lê Hằng",
+    "phone": "0938702154",
+    "email": "lehang.ketoan@yahoo.com"
+  },
+  {
+    "id": "form-trieu-van-sang",
+    "layout": "label form",
+    "notes": "Rare surname Triệu, dots style, date of birth and marital status",
+    "fullName": "Triệu Văn Sáng",
+    "phone": "0587336914",
+    "email": "trieuvansang@gmail.com"
+  },
+  {
+    "id": "en-onecol-nguyen-hoang-long",
+    "layout": "english one-column",
+    "notes": "English CV, name without diacritics, Phone:/Email: labels, LinkedIn/GitHub/website links",
+    "fullName": "Nguyen Hoang Long",
+    "phone": "0912384765",
+    "email": "hoanglong.nguyen@gmail.com"
+  },
+  {
+    "id": "en-sidebar-pham-minh-thu",
+    "layout": "english two-column sidebar",
+    "notes": "English labels (Mobile:/E-mail:) but the name keeps its diacritics",
+    "fullName": "Phạm Minh Thư",
+    "phone": "0905118327",
+    "email": "minhthu.pham@outlook.com"
+  },
+  {
+    "id": "en-western-order-minh-anh-tran",
+    "layout": "english one-column",
+    "notes": "Given name first (Minh Anh Tran), (+84) 908 765 432",
+    "fullName": "Minh Anh Tran",
+    "phone": "0908765432",
+    "email": "minhanh.tran.cs@gmail.com"
+  },
+  {
+    "id": "en-full-name-vo-quoc-thinh",
+    "layout": "english label form",
+    "notes": "English \"Full name: VO QUOC THINH\", email in mixed case QuocThinh.Vo@Gmail.com",
+    "fullName": "Vo Quoc Thinh",
+    "phone": "0987001245",
+    "email": "quocthinh.vo@gmail.com"
+  },
+  {
+    "id": "en-references-hoang-anh-tuan",
+    "layout": "english one-column",
+    "notes": "References section with two other people (Mr./Ms., phones, emails)",
+    "fullName": "Hoang Anh Tuan",
+    "phone": "0916552038",
+    "email": "anhtuan.hoang.acc@gmail.com"
+  },
+  {
+    "id": "en-cv-top-bui-phuong-linh",
+    "layout": "english one-column",
+    "notes": "First line \"CURRICULUM VITAE\", name with diacritics",
+    "fullName": "Bùi Phương Linh",
+    "phone": "0372846159",
+    "email": "phuonglinh.bui.edu@gmail.com"
+  },
+  {
+    "id": "en-two-phones-lam-quoc-huy",
+    "layout": "english one-column",
+    "notes": "Two phones: personal \"Mobile:\" first, then landline \"Office:\" with extension",
+    "fullName": "Lam Quoc Huy",
+    "phone": "0938124567",
+    "email": "quochuy.lam@outlook.com"
+  },
+  {
+    "id": "en-thai-bao-ngoc",
+    "layout": "english one-column",
+    "notes": "Surname Thái, +84-xxx-xxx-xxx with dashes",
+    "fullName": "Thái Bảo Ngọc",
+    "phone": "0976412305",
+    "email": "baongoc.thai@gmail.com"
+  },
+  {
+    "id": "en-banner-nguyen-duc-anh",
+    "layout": "english banner",
+    "notes": "English banner CV, name ALL CAPS without diacritics",
+    "fullName": "Nguyen Duc Anh",
+    "phone": "0912007384",
+    "email": "ducanh.nguyen.dev@gmail.com"
+  },
+  {
+    "id": "mixed-headings-nguyen-thanh-son",
+    "layout": "mixed vi/en one-column",
+    "notes": "Bilingual headings \"KINH NGHIỆM LÀM VIỆC / WORK EXPERIENCE\", English contact labels, Vietnamese body",
+    "fullName": "Nguyễn Thanh Sơn",
+    "phone": "0985237614",
+    "email": "thanhson.nguyen.it@gmail.com"
+  },
+  {
+    "id": "mixed-form-tran-thi-ngoc-anh",
+    "layout": "mixed vi/en label form",
+    "notes": "Bilingual labels \"Họ và tên / Full name:\", \"Điện thoại / Phone:\"",
+    "fullName": "Trần Thị Ngọc Ánh",
+    "phone": "0913846275",
+    "email": "ngocanh.tran.acc@gmail.com"
+  },
+  {
+    "id": "mixed-topcv-le-van-thanh",
+    "layout": "mixed vi/en TopCV-like",
+    "notes": "TopCV-like header with avatar and 2-column contact grid, bilingual headings, English job title",
+    "fullName": "Lê Văn Thành",
+    "phone": "0859663172",
+    "email": "levanthanh.sales@gmail.com"
+  },
+  {
+    "id": "novn-onecol-nguyen-van-an",
+    "layout": "no-diacritics one-column",
+    "notes": "Whole CV without Vietnamese accents, \"NGUYEN VAN AN\", \"Dien thoai:\"",
+    "fullName": "Nguyen Van An",
+    "phone": "0912457836",
+    "email": "nguyenvanan.kd@gmail.com"
+  },
+  {
+    "id": "novn-sidebar-tran-thi-thu-thuy",
+    "layout": "no-diacritics two-column sidebar",
+    "notes": "No accents, sidebar first, 4-word name",
+    "fullName": "Tran Thi Thu Thuy",
+    "phone": "0368245917",
+    "email": "thuthuy.tran.kt@gmail.com"
+  },
+  {
+    "id": "novn-form-pham-duc-manh",
+    "layout": "no-diacritics label form",
+    "notes": "No accents: \"SO YEU LY LICH\", \"Ho va ten:\", \"So dien thoai:\"",
+    "fullName": "Pham Duc Manh",
+    "phone": "0982317640",
+    "email": "phamducmanh88@yahoo.com"
+  },
+  {
+    "id": "novn-banner-hoang-thi-lan-anh",
+    "layout": "no-diacritics banner",
+    "notes": "No accents, banner, 4-word name, icons",
+    "fullName": "Hoang Thi Lan Anh",
+    "phone": "0767209381",
+    "email": "lananh.hoang.mkt@gmail.com"
+  },
+  {
+    "id": "novn-nametitle-vu-dinh-trong",
+    "layout": "no-diacritics name | title",
+    "notes": "\"VU DINH TRONG | Ky su xay dung\"",
+    "fullName": "Vu Dinh Trong",
+    "phone": "0902663517",
+    "email": "vudinhtrong.ksxd@gmail.com"
+  },
+  {
+    "id": "topcv-nguyen-hai-dang",
+    "layout": "TopCV-like",
+    "notes": "Avatar circle + name/title, contact in a 2-column icon grid (date of birth, gender, phone, email, address)",
+    "fullName": "Nguyễn Hải Đăng",
+    "phone": "0961248573",
+    "email": "haidang.nguyen.it@gmail.com"
+  },
+  {
+    "id": "topcv-pham-thi-bich-ngoc",
+    "layout": "TopCV-like",
+    "notes": "4-word name, Facebook link, labels",
+    "fullName": "Phạm Thị Bích Ngọc",
+    "phone": "0352618947",
+    "email": "bichngoc.pham96@gmail.com"
+  },
+  {
+    "id": "topcv-sidebar-ho-quang-minh",
+    "layout": "TopCV-like two-column",
+    "notes": "Green TopCV-like two-column with name in the sidebar; surname Hồ",
+    "fullName": "Hồ Quang Minh",
+    "phone": "0793551248",
+    "email": "hoquangminh.log@gmail.com"
+  },
+  {
+    "id": "topcv-ly-gia-huy",
+    "layout": "TopCV-like",
+    "notes": "Surname Lý, references with phone and email at the end",
+    "fullName": "Lý Gia Huy",
+    "phone": "0337902615",
+    "email": "lygiahuy.design@gmail.com"
+  },
+  {
+    "id": "topcv-ha-thanh-van",
+    "layout": "TopCV-like",
+    "notes": "Surname Hà, short labels",
+    "fullName": "Hà Thanh Vân",
+    "phone": "0705418263",
+    "email": "hathanhvan.hr@outlook.com"
+  },
+  {
+    "id": "vnw-tran-thi-thanh-thuy",
+    "layout": "VietnamWorks-like",
+    "notes": "Name, wanted position, key/value info table; old-style Thuỷ; salary 18.000.000 VNĐ",
+    "fullName": "Trần Thị Thanh Thuỷ",
+    "phone": "0908334125",
+    "email": "thanhthuy.tran.acc@gmail.com"
+  },
+  {
+    "id": "vnw-4col-dang-van-hau",
+    "layout": "VietnamWorks-like",
+    "notes": "Info table with 4 columns (two label/value pairs per row)",
+    "fullName": "Đặng Văn Hậu",
+    "phone": "0377610284",
+    "email": "dangvanhau.xnk@gmail.com"
+  },
+  {
+    "id": "vnw-en-nguyen-thi-hong-nhung",
+    "layout": "VietnamWorks-like english",
+    "notes": "English VietnamWorks-like profile, 4-column info table",
+    "fullName": "Nguyen Thi Hong Nhung",
+    "phone": "0933721846",
+    "email": "hongnhung.nguyen.mkt@gmail.com"
+  },
+  {
+    "id": "vnw-phan-quoc-viet",
+    "layout": "VietnamWorks-like",
+    "notes": "\"Số điện thoại:\" label, years of experience and salary in the info table",
+    "fullName": "Phan Quốc Việt",
+    "phone": "0942157638",
+    "email": "phanquocviet.kd@gmail.com"
+  },
+  {
+    "id": "canva-split-tran-ngoc-quynh",
+    "layout": "Canva-like",
+    "notes": "\"Xin chào!\" greeting, huge letter-spaced name split TRẦN / NGỌC QUỲNH, icons",
+    "fullName": "Trần Ngọc Quỳnh",
+    "phone": "0326715482",
+    "email": "ngocquynh.tran.art@gmail.com"
+  },
+  {
+    "id": "canva-hello-en-le-bao-tran",
+    "layout": "Canva-like english",
+    "notes": "\"Hello, I am\" before the name, name split over two lines",
+    "fullName": "Le Bao Tran",
+    "phone": "0794382516",
+    "email": "baotran.le.mkt@gmail.com"
+  },
+  {
+    "id": "canva-literal-spaced-pham-khanh-vy",
+    "layout": "Canva-like letter-spaced",
+    "notes": "Name typed with literal spaces between letters (P H Ạ M   K H Á N H   V Y)",
+    "fullName": "Phạm Khánh Vy",
+    "phone": "0359284716",
+    "email": "khanhvy.pham@yahoo.com"
+  },
+  {
+    "id": "canva-split2-duong-minh-tuan",
+    "layout": "Canva-like",
+    "notes": "Name split after two words: DƯƠNG MINH / TUẤN",
+    "fullName": "Dương Minh Tuấn",
+    "phone": "0937520148",
+    "email": "duongminhtuan.mkt@gmail.com"
+  },
+  {
+    "id": "canva-giang-vy",
+    "layout": "Canva-like",
+    "notes": "2-word name with rare surname Giang",
+    "fullName": "Giang Vy",
+    "phone": "0583671924",
+    "email": "giangvy.studio@gmail.com"
+  },
+  {
+    "id": "table-nguyen-thi-lan",
+    "layout": "table",
+    "notes": "Whole CV in a bordered 2-column table, first row \"Họ tên | name\"",
+    "fullName": "Nguyễn Thị Lan",
+    "phone": "0947556128",
+    "email": "nguyenthilan.cs@gmail.com"
+  },
+  {
+    "id": "table-header-vo-van-khai",
+    "layout": "table",
+    "notes": "Table with a full-width header row holding the name and title",
+    "fullName": "Võ Văn Khải",
+    "phone": "0907438216",
+    "email": "vovankhai.acc@gmail.com"
+  },
+  {
+    "id": "table-en-hoang-gia-linh",
+    "layout": "english table",
+    "notes": "English table layout",
+    "fullName": "Hoang Gia Linh",
+    "phone": "0812905437",
+    "email": "gialinh.hoang.hr@gmail.com"
+  },
+  {
+    "id": "multipage-tran-dinh-khoa",
+    "layout": "multi-page one-column",
+    "notes": "3 pages, company phones/emails in the experience section, references at the end",
+    "fullName": "Trần Đình Khoa",
+    "phone": "0988715342",
+    "email": "dinhkhoa.tran.dev@gmail.com"
+  },
+  {
+    "id": "multipage-sidebar-le-thi-my-hanh",
+    "layout": "multi-page two-column sidebar",
+    "notes": "3 pages with a sidebar (sidebar text of page 1 comes before the main column), 4-word name",
+    "fullName": "Lê Thị Mỹ Hạnh",
+    "phone": "0396452871",
+    "email": "myhanh.le.mkt@gmail.com"
+  },
+  {
+    "id": "multipage-contact-end-phan-van-tuan",
+    "layout": "multi-page one-column",
+    "notes": "3 pages; contact only in a \"LIÊN HỆ\" section on the last page",
+    "fullName": "Phan Văn Tuấn",
+    "phone": "0975238164",
+    "email": "phanvantuan.sales@gmail.com"
+  },
+  {
+    "id": "multipage-table-nguyen-minh-triet",
+    "layout": "multi-page table",
+    "notes": "2-page table layout",
+    "fullName": "Nguyễn Minh Triết",
+    "phone": "0868427195",
+    "email": "minhtriet.nguyen@outlook.com"
+  },
+  {
+    "id": "titlefirst-pham-thi-hue",
+    "layout": "title first",
+    "notes": "Job title \"KẾ TOÁN TRƯỞNG\" above the name",
+    "fullName": "Phạm Thị Huệ",
+    "phone": "0914638205",
+    "email": "phamthihue.ktt@gmail.com"
+  },
+  {
+    "id": "titlefirst-en-dang-quoc-anh",
+    "layout": "english title first",
+    "notes": "\"BACKEND DEVELOPER\" above the name",
+    "fullName": "Dang Quoc Anh",
+    "phone": "0335917462",
+    "email": "quocanh.dang.be@gmail.com"
+  },
+  {
+    "id": "hard-refs-before-candidate",
+    "layout": "hard: two-column sidebar",
+    "notes": "Sidebar (first in text) starts with two references (names, mobiles, gmail) before anything else; candidate contact sits under the name in the main column",
+    "fullName": "Nguyễn Hữu Phước",
+    "phone": "0938217664",
+    "email": "huuphuoc.nguyen@gmail.com"
+  },
+  {
+    "id": "hard-company-hotline-header",
+    "layout": "hard: one-column",
+    "notes": "First line is \"Kính gửi\" the employer with its hotline (mobile-looking) and gmail before the candidate name and contact",
+    "fullName": "Trần Thị Diễm My",
+    "phone": "0352774196",
+    "email": "diemmy.tran@gmail.com"
+  },
+  {
+    "id": "hard-id-numbers-before-phone",
+    "layout": "hard: label form",
+    "notes": "CCCD (12 digits), personal tax code, social insurance number (10 digits) and a bank account (13 digits starting 0) all come before the phone",
+    "fullName": "Lương Văn Đạt",
+    "phone": "0965318274",
+    "email": "luongvandat.kt@gmail.com"
+  },
+  {
+    "id": "hard-email-wraps-in-sidebar",
+    "layout": "hard: two-column sidebar",
+    "notes": "Very long email in a narrow sidebar breaks onto two lines in the text layer",
+    "fullName": "Nguyễn Thị Thanh Hương",
+    "phone": "0983604172",
+    "email": "nguyenthithanhhuong.ketoantonghop2024@gmail.com"
+  },
+  {
+    "id": "hard-no-email-but-referee-email",
+    "layout": "hard: one-column",
+    "notes": "Candidate gives no email; the only email in the CV belongs to the reference person",
+    "fullName": "Bùi Văn Thắng",
+    "phone": "0989445231",
+    "email": null
+  },
+  {
+    "id": "hard-no-phone-company-hotline",
+    "layout": "hard: one-column",
+    "notes": "Candidate gives no phone; the experience section lists a former employer’s mobile-looking hotline",
+    "fullName": "Đoàn Thị Mỹ Linh",
+    "phone": null,
+    "email": "mylinh.doan.mkt@gmail.com"
+  },
+  {
+    "id": "hard-office-landline-first",
+    "layout": "hard: one-column",
+    "notes": "Two phones: office landline \"(024) 3773 1234\" first, personal mobile \"Di động:\" second",
+    "fullName": "Nguyễn Đức Toàn",
+    "phone": "0965432109",
+    "email": "ductoan.nguyen.hr@gmail.com"
+  },
+  {
+    "id": "hard-office-mobile-first",
+    "layout": "hard: one-column",
+    "notes": "Two mobiles: \"ĐT công ty:\" first, labelled personal \"ĐT cá nhân:\" second (expected: personal)",
+    "fullName": "Trịnh Hoài Nam",
+    "phone": "0968112233",
+    "email": "hoainam.trinh@gmail.com"
+  },
+  {
+    "id": "hard-name-as-image",
+    "layout": "hard: Canva-like",
+    "notes": "Name is a picture (exported Canva header), so the text layer has no name: fullName null",
+    "fullName": null,
+    "phone": "0378516249",
+    "email": "quynhanh.to.design@gmail.com"
+  },
+  {
+    "id": "hard-plus84-zero",
+    "layout": "hard: english one-column",
+    "notes": "Phone written \"+84 (0) 912 864 205\" (international prefix plus the trunk 0)",
+    "fullName": "Ha Minh Tam",
+    "phone": "0912864205",
+    "email": "minhtam.ha.dev@gmail.com"
+  },
+  {
+    "id": "hard-title-first-le-tan",
+    "layout": "hard: title first",
+    "notes": "First line \"LỄ TÂN KHÁCH SẠN\" (receptionist) looks like a name (Lê Tân); real name on the next line",
+    "fullName": "Đoàn Ngọc Ánh",
+    "phone": "0905271638",
+    "email": "ngocanh.doan.fo@gmail.com"
+  },
+  {
+    "id": "hard-nfd-source",
+    "layout": "hard: one-column",
+    "notes": "HTML typed in Unicode NFD (decomposed accents, e.g. pasted from macOS); expected name is NFC",
+    "fullName": "Nguyễn Thị Huyền Trang",
+    "phone": "0913572064",
+    "email": "huyentrang.nguyen.gv@gmail.com"
+  },
+  {
+    "id": "hard-email-link-text-only",
+    "layout": "hard: Canva-like",
+    "notes": "Email shown only as link text \"Gửi email cho tôi\" (the address is in the link, not in the text): email null",
+    "fullName": "Lê Quốc Vượng",
+    "phone": "0817394625",
+    "email": null
+  },
+  {
+    "id": "hard-split-spaced-sidebar-au-duong",
+    "layout": "hard: two-column sidebar letter-spaced",
+    "notes": "Letter-spaced name split over two lines in the sidebar: Â U   D Ư Ơ N G / B Ả O   T R Â M",
+    "fullName": "Âu Dương Bảo Trâm",
+    "phone": "0702318549",
+    "email": "baotram.auduong@gmail.com"
+  },
+  {
+    "id": "hard-work-email-first",
+    "layout": "hard: one-column",
+    "notes": "Work email (company domain) listed before the personal gmail (expected: personal); the phone at the end of the contact line wraps: \"0346\" / \"718 520\"",
+    "fullName": "Ngô Đăng Khánh",
+    "phone": "0346718520",
+    "email": "ngodangkhanh95@gmail.com"
+  },
+  {
+    "id": "hard-manager-before-contact",
+    "layout": "hard: multi-page one-column",
+    "notes": "Contact only at the end of the last page; earlier, the experience section names the line manager with mobile and gmail",
+    "fullName": "Phan Thị Ngọc Diệp",
+    "phone": "0388604157",
+    "email": "ngocdiep.phan.log@gmail.com"
+  },
+  {
+    "id": "hard-dob-cccd-phone-one-line",
+    "layout": "hard: one-column",
+    "notes": "Date of birth, CCCD, phone and email crammed on one line separated by |",
+    "fullName": "Châu Mỹ Kim",
+    "phone": "0389456123",
+    "email": "chaumykim.cs@gmail.com"
+  },
+  {
+    "id": "hard-phone-pairs-grouping",
+    "layout": "hard: one-column",
+    "notes": "Phone grouped in pairs \"09 87 65 43 21\" next to a date range \"2019 – 2021\" in the header",
+    "fullName": "La Văn Phú",
+    "phone": "0987654321",
+    "email": "lavanphu.kd@gmail.com"
+  },
+  {
+    "id": "hard-tax-code-looks-like-phone",
+    "layout": "hard: one-column",
+    "notes": "First line names the last employer with its tax code 0312345678 (10 digits starting 03, looks like a mobile); candidate phone only at the end",
+    "fullName": "Ninh Thị Thảo",
+    "phone": "0329845106",
+    "email": "ninhthithao.kt@gmail.com"
+  }
+]

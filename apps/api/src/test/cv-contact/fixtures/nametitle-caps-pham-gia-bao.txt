@@ -1,0 +1,32 @@
+PHẠM GIA BẢO   - LẬP TRÌNH VIÊN FRONTEND
+Điện thoại: 0377 445 120   ·   Email: giabao.pham.fe@gmail.com   ·   Địa chỉ: Thôn Phú Lộc, xã Hoà Phước, Hoà Vang,
+Đà Nẵng
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho
+công ty và phát triển lên vị trí quản lý trong 2 năm tới.
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty TNHH Thực phẩm Mekong Fresh
+06/2023 – nay
+Viết unit test và integration test, độ phủ 85%
+Review code và hướng dẫn 2 bạn thực tập
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Kỹ sư phần mềm   – Siêu thị Điện máy Minh Khoa
+06/2021 – 05/2023
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+Triển khai CI/CD với GitHub Actions và Docker
+HỌC VẤN
+Đại học Nha Trang
+2016 – 2020
+Chuyên ngành: Công nghệ thông tin
+KỸ NĂNG
+Git
+TypeScript
+PostgreSQL
+Docker
+React
+CHỨNG CHỈ
+IELTS 6.5
+Chứng chỉ Kế toán trưởng
+SỞ THÍCH
+Nấu ăn, Tình nguyện, Chạy bộ

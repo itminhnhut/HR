@@ -4,6 +4,7 @@ import { notFound } from '../lib/http-error.js';
 import { readJson, readMultipart } from '../lib/request.js';
 import { isApplicationSource } from '@careers/shared';
 import { addApplication, hrReplaceCv, updateContact } from '../services/hr-intake.js';
+import { readCvContact } from '../services/cv-contact.js';
 import { hrOf } from '../lib/hr-auth.js';
 import {
   cvOf,
@@ -38,6 +39,15 @@ hrApplicationRoutes.get('/applications', async (c) => {
 hrApplicationRoutes.post('/applications', async (c) => {
   const body = await readMultipart(c, 'cv');
   return c.json(await addApplication(c.get('deps'), body, hrOf(c)), 201);
+});
+
+/**
+ * "Thêm hồ sơ" pre-fill (multipart "cv" PDF) → ParsedCvDto. Only reads the file, nothing is stored.
+ * Registered before /applications/:id so "parse-cv" is not read as an id.
+ */
+hrApplicationRoutes.post('/applications/parse-cv', async (c) => {
+  const { file } = await readMultipart(c, 'cv');
+  return c.json(await readCvContact(file));
 });
 
 /** Registered before /applications/:id so "due" is not read as an id. */

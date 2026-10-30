@@ -61,6 +61,7 @@ import { ApiError, type Api, type CvInput } from './types';
  *   POST   /review/:token/done          → ReviewPageDto
  *   GET    /review/:token/items/:itemId/cv → the PDF (inline)
  *   POST   /hr/applications  (multipart, "cv" file) → { id }   409 { code: "duplicate", existing }
+ *   POST   /hr/applications/parse-cv  (multipart, "cv" file) → ParsedCvDto   422 { fieldErrors.cv }   nothing stored
  *   PUT    /hr/applications/:id/cv  (multipart: "cv" | cvLink) → ApplicationDetailDto
  *   PATCH  /hr/applications/:id/contact  { phone, email, source, referrer } → ApplicationDetailDto
  *   PUT    /candidate/applications/:id/cv  (multipart: "cv" | cvLink | useSavedCv) → CandidateOverview   409 cv_locked
@@ -213,6 +214,11 @@ export const httpApi: Api = {
     form.append('consent', String(consent));
     if (cvFile) form.append('cv', cvFile);
     return request('/hr/applications', { method: 'POST', body: form });
+  },
+  hrParseCv: (file) => {
+    const form = new FormData();
+    form.append('cv', file);
+    return request('/hr/applications/parse-cv', { method: 'POST', body: form });
   },
   hrReplaceCv: (id, cv) =>
     request(`/hr/applications/${encodeURIComponent(id)}/cv`, { method: 'PUT', body: cvForm(cv) }),

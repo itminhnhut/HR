@@ -1,0 +1,34 @@
+BÙI TIẾN DŨNG
+Lập trình viên Backend
+Điện thoại: 0918 004 762   |   Email: buitiendung1990@gmail.com   |   Địa chỉ: 45/7 Nguyễn Trãi, P.2, Q.5, TP. HCM
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho công ty và
+phát triển lên vị trí quản lý trong 2 năm tới.
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty TNHH Nội thất Việt Mộc
+10/2023 – nay
+Review code và hướng dẫn 2 bạn thực tập
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+ĐT công ty: (0274) 3866 222 · Email: vietmoc.noithat@yahoo.com
+Kỹ sư phần mềm   – Công ty TNHH Giáo dục Hạt Mầm
+02/2021 – 01/2023
+Viết unit test và integration test, độ phủ 85%
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+ĐT công ty: 0909 456 123 · Email: hatmam.edu@gmail.com
+HỌC VẤN
+Đại học Bách khoa Hà Nội
+2009 – 2013
+Chuyên ngành: Công nghệ thông tin
+KỸ NĂNG
+TypeScript
+Git
+Docker
+React
+PostgreSQL
+CHỨNG CHỈ
+Chứng chỉ Kế toán trưởng
+TOEIC 750 (2023)
+SỞ THÍCH
+Chạy bộ, Du lịch, Bóng đá

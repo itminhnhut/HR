@@ -36,6 +36,7 @@ import type {
   ApplicationSource,
   HrApplicationInput,
   HrContactInput,
+  ParsedCvDto,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -169,6 +170,8 @@ export interface Api {
   hrApplications(jobId?: string, q?: string, source?: ApplicationSource): Promise<ApplicationsResponse>;
   /** "Thêm hồ sơ". 409 { code: "duplicate", existing } when this phone already applied for this job. */
   hrAddApplication(input: AddApplicationInput): Promise<{ id: string }>;
+  /** "Thêm hồ sơ" pre-fill: name, phone, email read from a PDF (not stored). readable false for a scan. */
+  hrParseCv(file: File): Promise<ParsedCvDto>;
   /** "Thêm CV" / "Đổi CV" on any application. */
   hrReplaceCv(id: string, cv: CvInput): Promise<ApplicationDetailDto>;
   /** Phone, email, source of an application HR added (409 for one the candidate sent). */

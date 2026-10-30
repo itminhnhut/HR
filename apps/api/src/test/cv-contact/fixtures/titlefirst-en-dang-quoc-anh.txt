@@ -1,0 +1,32 @@
+BACKEND DEVELOPER
+Dang Quoc Anh
+Phone: 0335 917 462   |   Email: quocanh.dang.be@gmail.com   |   Address: 12 Le Loi St., District 1, Ho Chi Minh City
+CAREER OBJECTIVE
+To grow in a professional environment, apply my experience to deliver measurable results and take on more
+responsibility within two years.
+WORK EXPERIENCE
+Backend Developer   – Anh Duong Media JSC
+11/2023 – Present
+Designed PostgreSQL schemas and cut response time by 40%
+Built REST APIs in Node.js/TypeScript serving 200,000 users
+Reviewed code and mentored 2 interns
+Software Engineer   – Lam Son Xanh Realty JSC
+04/2021 – 05/2023
+Built REST APIs in Node.js/TypeScript serving 200,000 users
+Wrote unit and integration tests with 85% coverage
+Integrated a payment gateway and transactional email
+EDUCATION
+University of Medicine and Pharmacy at HCMC
+2008 – 2012
+Major: Computer Science
+SKILLS
+TypeScript
+Git
+PostgreSQL
+Docker
+React
+CERTIFICATES
+TOEIC 750 (2023)
+IELTS 6.5
+INTERESTS
+Football, Cooking, Badminton

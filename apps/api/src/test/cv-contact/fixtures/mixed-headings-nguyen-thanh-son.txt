@@ -1,0 +1,33 @@
+NGUYỄN THANH SƠN
+Lập trình viên Backend
+Phone: 0985 237 614   |   Email: thanhson.nguyen.it@gmail.com   |   Address: Thôn Phú Lộc, xã Hoà Phước, Hoà Vang,
+Đà Nẵng
+MỤC TIÊU NGHỀ NGHIỆP / CAREER OBJECTIVE
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho
+công ty và phát triển lên vị trí quản lý trong 2 năm tới.
+KINH NGHIỆM LÀM VIỆC / WORK EXPERIENCE
+Lập trình viên Backend   – Công ty CP Truyền thông Ánh Dương
+10/2023 – nay
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Triển khai CI/CD với GitHub Actions và Docker
+Kỹ sư phần mềm   – Công ty TNHH Logistics Bến Nghé
+06/2021 – 03/2023
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+HỌC VẤN / EDUCATION
+Học viện Công nghệ Bưu chính Viễn thông
+2016 – 2020
+Chuyên ngành: Công nghệ thông tin
+KỸ NĂNG / SKILLS
+Docker
+TypeScript
+Node.js
+Git
+React
+CHỨNG CHỈ / CERTIFICATES
+Chứng chỉ Tin học ứng dụng cơ bản
+Google Ads Search
+SỞ THÍCH / INTERESTS
+Chụp ảnh, Tình nguyện, Bóng đá

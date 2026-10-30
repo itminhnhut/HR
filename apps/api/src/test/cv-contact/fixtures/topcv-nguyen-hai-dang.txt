@@ -1,0 +1,34 @@
+Nguyễn Hải Đăng
+Lập trình viên Backend
+🎂   19/07/1996   ⚥   Nam
+☎   0961 248 573   ✉   haidang.nguyen.it@gmail.com
+📍   Căn hộ B2-1507, 99 Nguyễn Hữu Thọ, Q.7, TP. HCM   🌐   github.com/haidang-ng
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho
+công ty và phát triển lên vị trí quản lý trong 2 năm tới.
+HỌC VẤN
+Đại học Y Dược TP. HCM
+2011 – 2015
+Chuyên ngành: Kỹ thuật phần mềm
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty CP Dược phẩm An Khang Xanh
+10/2023 – nay
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Viết unit test và integration test, độ phủ 85%
+Triển khai CI/CD với GitHub Actions và Docker
+Kỹ sư phần mềm   – Siêu thị Điện máy Minh Khoa
+11/2021 – 08/2023
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Review code và hướng dẫn 2 bạn thực tập
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+KỸ NĂNG
+Node.js
+React
+PostgreSQL
+Docker
+Git
+CHỨNG CHỈ
+IELTS 6.5
+Google Ads Search
+SỞ THÍCH
+Tình nguyện, Bóng đá, Chạy bộ

@@ -118,3 +118,14 @@ export interface DuplicateApplicationDto {
   status: ApplicationStatus;
   createdAt: string;
 }
+
+/**
+ * "Đọc CV" in "Thêm hồ sơ": contact details read from a PDF to pre-fill the form (the file is not stored).
+ * readable is false when the PDF has no text layer (a scan), and then every field is null.
+ */
+export interface ParsedCvDto {
+  fullName: string | null;
+  phone: string | null;
+  email: string | null;
+  readable: boolean;
+}

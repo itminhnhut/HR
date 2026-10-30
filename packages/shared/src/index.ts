@@ -13,3 +13,4 @@ export * from './news/index.js';
 export * from './benefit-groups.js';
 export * from './reviews.js';
 export * from './cv-intake.js';
+export * from './cv-contact/index.js';
