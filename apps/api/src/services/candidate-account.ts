@@ -1,5 +1,6 @@
 import {
   acceptsApplications,
+  candidateCvBlock,
   candidateStage,
   effectiveStatus,
   formatSalary,
@@ -40,6 +41,13 @@ export async function overview(db: Db, candidate: Candidate, now: Date): Promise
         place: placeLabel(job.address),
         createdAt: app.createdAt.toISOString(),
         stage: candidateStage(app.status, !acceptsApplications(status)),
+        hasCv: !!(app.cvPathname || app.cvLink),
+        cvBlock: candidateCvBlock({
+          status: app.status,
+          jobOpen: acceptsApplications(status),
+          changes: app.candidateCvChanges,
+        }),
+        cvChangedAt: app.cvChangedBy === 'candidate' ? (app.cvChangedAt?.toISOString() ?? null) : null,
       };
     }),
   };

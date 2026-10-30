@@ -1,7 +1,9 @@
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { notFound } from '../lib/http-error.js';
-import { readJson } from '../lib/request.js';
+import { readJson, readMultipart } from '../lib/request.js';
+import { isApplicationSource } from '@careers/shared';
+import { addApplication, hrReplaceCv, updateContact } from '../services/hr-intake.js';
 import { hrOf } from '../lib/hr-auth.js';
 import {
   cvOf,
@@ -21,9 +23,21 @@ import { scorePending } from '../services/cv-score.js';
 export const hrApplicationRoutes = new Hono<Env>();
 
 hrApplicationRoutes.get('/applications', async (c) => {
+  const source = c.req.query('source');
   return c.json(
-    await listApplications(c.get('deps').db, c.req.query('jobId') || undefined, c.req.query('q')?.slice(0, 100)),
+    await listApplications(
+      c.get('deps').db,
+      c.req.query('jobId') || undefined,
+      c.req.query('q')?.slice(0, 100),
+      isApplicationSource(source) ? source : undefined,
+    ),
   );
+});
+
+/** "Thêm hồ sơ" (multipart: fields + optional "cv" file). 409 { code: "duplicate", existing } for the same phone and job. */
+hrApplicationRoutes.post('/applications', async (c) => {
+  const body = await readMultipart(c, 'cv');
+  return c.json(await addApplication(c.get('deps'), body, hrOf(c)), 201);
 });
 
 /** Registered before /applications/:id so "due" is not read as an id. */
@@ -47,6 +61,20 @@ hrApplicationRoutes.post('/applications/:id/score', async (c) => {
 hrApplicationRoutes.patch('/applications/:id', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await updateApplication(db, c.req.param('id'), await readJson(c), now(), hrOf(c)));
+});
+
+/** "Thêm CV" / "Đổi CV" (multipart: "cv" file or "cvLink"). */
+hrApplicationRoutes.put('/applications/:id/cv', async (c) => {
+  const deps = c.get('deps');
+  await hrReplaceCv(deps, c.req.param('id'), await readMultipart(c, 'cv'), hrOf(c));
+  return c.json(await openApplication(deps.db, c.req.param('id')));
+});
+
+/** Phone, email, source of an application HR added. */
+hrApplicationRoutes.patch('/applications/:id/contact', async (c) => {
+  const deps = c.get('deps');
+  await updateContact(deps, c.req.param('id'), await readJson(c));
+  return c.json(await openApplication(deps.db, c.req.param('id')));
 });
 
 hrApplicationRoutes.post('/applications/:id/contacts', async (c) => {

@@ -139,6 +139,8 @@ const reviewColumns = {
   reviewerName: reviewBatches.reviewerName,
   decision: reviewItems.decision,
   reviewerComment: reviewItems.reviewerComment,
+  decidedAt: reviewItems.decidedAt,
+  cvChangedAt: applications.cvChangedAt,
 };
 
 /** Latest reviews of these applications (batches HR has not revoked), by application id. */
@@ -149,9 +151,15 @@ export async function latestReviews(db: Db, applicationIds: string[]): Promise<M
     .select(reviewColumns)
     .from(reviewItems)
     .innerJoin(reviewBatches, eq(reviewBatches.id, reviewItems.batchId))
+    .innerJoin(applications, eq(applications.id, reviewItems.applicationId))
     .where(and(inArray(reviewItems.applicationId, applicationIds), isNull(reviewBatches.revokedAt)))
     .orderBy(desc(reviewBatches.createdAt));
-  for (const { applicationId, ...review } of rows) if (!out.has(applicationId)) out.set(applicationId, review);
+  for (const { applicationId, decidedAt, cvChangedAt, ...review } of rows) {
+    if (out.has(applicationId)) continue;
+    // The reviewer decided on the CV that was there then (spec-cv-intake.md).
+    const cvChangedAfterDecision = !!decidedAt && !!cvChangedAt && cvChangedAt > decidedAt;
+    out.set(applicationId, { ...review, cvChangedAfterDecision });
+  }
   return out;
 }
 

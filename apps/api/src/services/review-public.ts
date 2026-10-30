@@ -45,6 +45,7 @@ async function itemRows(db: Db, batchId: string) {
       message: applications.message,
       cvPathname: applications.cvPathname,
       cvLink: applications.cvLink,
+      cvChangedAt: applications.cvChangedAt,
       jobTitle: jobs.title,
       matchPercent: cvScores.percent,
       matchItems: cvScores.items,
@@ -57,7 +58,7 @@ async function itemRows(db: Db, batchId: string) {
     .orderBy(reviewItems.position);
 }
 
-function toItem(row: Awaited<ReturnType<typeof itemRows>>[number]): ReviewItemPublicDto {
+function toItem(row: Awaited<ReturnType<typeof itemRows>>[number], sentAt: Date): ReviewItemPublicDto {
   const { item } = row;
   return {
     id: item.id,
@@ -77,6 +78,8 @@ function toItem(row: Awaited<ReturnType<typeof itemRows>>[number]): ReviewItemPu
     hrReply: item.hrReply,
     hrRepliedAt: item.hrRepliedAt?.toISOString() ?? null,
     scheduled: row.status === 'interview',
+    // Added later than the batch was sent: the reviewer may have read the previous CV.
+    cvUpdated: !!row.cvChangedAt && row.cvChangedAt > (row.item.createdAt > sentAt ? row.item.createdAt : sentAt),
   };
 }
 
@@ -90,7 +93,7 @@ async function page(db: Db, batch: ReviewBatch, now: Date): Promise<ReviewPageDt
     expiresAt: batch.expiresAt.toISOString(),
     state: reviewState(batch, now),
     doneAt: batch.doneAt?.toISOString() ?? null,
-    items: (await itemRows(db, batch.id)).map(toItem),
+    items: (await itemRows(db, batch.id)).map((row) => toItem(row, batch.createdAt)),
   };
 }
 

@@ -11,12 +11,19 @@ export class HttpError extends Error {
     public readonly fieldErrors: Record<string, string> = {},
     /** Machine-readable reason, e.g. "job_closed". */
     public readonly code?: string,
+    /** More for the client to act on, e.g. the existing application of a "duplicate". */
+    public readonly extra: Record<string, unknown> = {},
   ) {
     super(message);
   }
 
   toBody() {
-    return { error: this.message, fieldErrors: this.fieldErrors, ...(this.code ? { code: this.code } : {}) };
+    return {
+      ...this.extra,
+      error: this.message,
+      fieldErrors: this.fieldErrors,
+      ...(this.code ? { code: this.code } : {}),
+    };
   }
 }
 

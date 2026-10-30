@@ -6,6 +6,7 @@ import {
   type ApplicationDetailDto,
   type ApplicationRowDto,
   type ApplicationsResponse,
+  type ApplicationSource,
   type ApplicationStatus,
   type HrMe,
   type SubscriberDto,
@@ -13,7 +14,7 @@ import {
 import { and, desc, eq, getTableColumns, inArray, ne } from 'drizzle-orm';
 import type { Deps } from '../deps.js';
 import type { Db } from '../db/index.js';
-import { applications, contactLog, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
+import { applications, contactLog, cvChanges, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
 import { scoreApplication, storedScore } from './cv-score.js';
 import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './review-model.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
@@ -51,7 +52,22 @@ function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): Appl
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
     review,
+    source: a.source,
+    cvUpdatedByCandidate: a.cvChangedBy === 'candidate' && !a.cvChangeSeen,
   };
+}
+
+async function cvHistoryOf(db: Db, applicationId: string): Promise<ApplicationDetailDto['cvHistory']> {
+  const rows = await db
+    .select()
+    .from(cvChanges)
+    .where(eq(cvChanges.applicationId, applicationId))
+    .orderBy(desc(cvChanges.at));
+  return rows.map((r) => ({
+    by: r.changedBy === 'candidate' ? 'Ứng viên' : r.changedBy,
+    at: r.at.toISOString(),
+    previous: r.previous,
+  }));
 }
 
 async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetailDto> {
@@ -67,6 +83,10 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
   return {
     ...toRow(a, reviewMark(reviewInfo)),
     reviewInfo,
+    referrer: a.referrer,
+    addedBy: a.addedBy,
+    consentBy: a.consentBy,
+    cvHistory: await cvHistoryOf(db, a.id),
     interviewMode: a.interviewMode,
     meetingUrl: a.meetingUrl,
     cvScore: await storedScore(db, a.id),
@@ -96,7 +116,12 @@ const emptyCounts = (): ApplicationsResponse['counts'] =>
   ({ all: 0, ...Object.fromEntries(STATUSES.map((s) => [s, 0])) }) as ApplicationsResponse['counts'];
 
 /** `q`: name or phone, any order, without tones ("huy 0797" finds Phạm Quốc Huy, 0797 586 611). */
-export async function listApplications(db: Db, jobId: string | undefined, q = ''): Promise<ApplicationsResponse> {
+export async function listApplications(
+  db: Db,
+  jobId: string | undefined,
+  q = '',
+  source?: ApplicationSource,
+): Promise<ApplicationsResponse> {
   if (jobId !== undefined && !isUuid(jobId)) return { applications: [], counts: emptyCounts(), jobs: [] };
   const [rows, jobsWithApplications] = await Promise.all([
     withJobTitle(db)
@@ -111,7 +136,9 @@ export async function listApplications(db: Db, jobId: string | undefined, q = ''
   // "+84 933 111 999" from a caller ID finds 0933111999.
   const digits = q.replace(/\D/g, '').replace(/^84(?=\d{9}$)/, '0');
   const found = rows.filter(
-    (row) => matchesQuery(`${row.fullName} ${row.phone}`, q) || (digits.length >= 3 && row.phone.includes(digits)),
+    (row) =>
+      (!source || row.source === source) &&
+      (matchesQuery(`${row.fullName} ${row.phone}`, q) || (digits.length >= 3 && row.phone.includes(digits))),
   );
   const counts = emptyCounts();
   counts.all = found.length;
@@ -136,9 +163,11 @@ async function findApplication(db: Db, id: string): Promise<ApplicationWithJob> 
 /** Opening an application marks it "seen" (the candidate sees "HR đã xem"). */
 export async function openApplication(db: Db, id: string): Promise<ApplicationDetailDto> {
   const row = await findApplication(db, id);
-  if (row.status !== 'new') return toDetail(db, row);
-  await db.update(applications).set({ status: 'seen' }).where(eq(applications.id, id));
-  return toDetail(db, { ...row, status: 'seen' });
+  // An HR has now seen the candidate's new CV too.
+  if (row.status !== 'new' && row.cvChangeSeen) return toDetail(db, row);
+  const patch = { status: row.status === 'new' ? ('seen' as const) : row.status, cvChangeSeen: true };
+  await db.update(applications).set(patch).where(eq(applications.id, id));
+  return toDetail(db, { ...row, ...patch });
 }
 
 export async function updateApplication(

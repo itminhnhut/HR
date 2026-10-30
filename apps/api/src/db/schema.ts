@@ -27,6 +27,17 @@ export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
 export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
+/** Where an application came from (spec-cv-intake.md); "website" = the public form. */
+export const applicationSource = pgEnum('application_source', [
+  'website',
+  'email',
+  'zalo',
+  'referral',
+  'topcv',
+  'vietnamworks',
+  'facebook',
+  'other',
+]);
 /** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
 export const newsStatus = pgEnum('news_status', ['draft', 'published', 'hidden']);
 
@@ -105,6 +116,20 @@ export const applications = pgTable(
     /** Consent evidence (BR-12). */
     consentAt: tz('consent_at').notNull(),
     policyVersion: text('policy_version').notNull(),
+    source: applicationSource('source').notNull().default('website'),
+    /** "Ai giới thiệu", for a referral. */
+    referrer: text('referrer'),
+    /** HR who added it (spec-cv-intake.md); null = sent by the candidate. */
+    addedBy: text('added_by'),
+    /** HR who confirmed the candidate's consent for an added application. */
+    consentBy: text('consent_by'),
+    /** Times the candidate replaced the CV (CANDIDATE_CV_CHANGES_MAX). */
+    candidateCvChanges: integer('candidate_cv_changes').notNull().default(0),
+    cvChangedAt: tz('cv_changed_at'),
+    /** "candidate" or the HR's name. */
+    cvChangedBy: text('cv_changed_by'),
+    /** False after the candidate replaced the CV, until an HR opens the application. */
+    cvChangeSeen: boolean('cv_change_seen').notNull().default(true),
     /** Time of the latest submission; a re-apply within 30 days moves it (BR-07). */
     createdAt,
     updatedAt,
@@ -321,6 +346,23 @@ export type NewsCategory = typeof newsCategories.$inferSelect;
 export type NewsPost = typeof newsPosts.$inferSelect;
 export type NewNewsPost = typeof newsPosts.$inferInsert;
 export type NewsTag = typeof newsTags.$inferSelect;
+
+/** "Lịch sử CV": who replaced an application's CV and what it was before (only the newest file is kept). */
+export const cvChanges = pgTable(
+  'cv_changes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    /** "candidate" or the HR's name. */
+    changedBy: text('changed_by').notNull(),
+    /** File name or link of the replaced CV; null when there was none. */
+    previous: text('previous'),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('cv_changes_application_idx').on(t.applicationId, t.at)],
+);
 
 export const reviewDecision = pgEnum('review_decision', ['approve', 'reject', 'ask']);
 export const reviewPick = pgEnum('review_pick', ['yes', 'maybe']);

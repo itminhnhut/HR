@@ -190,11 +190,13 @@ export async function createReview(db: Db, raw: unknown, hr: HrMe, now: Date): P
         message: input.message,
         ...window,
         createdBy: hr.name || hr.email,
+        // The app's clock, not the database's: "CV changed after it was sent" compares with it.
+        createdAt: now,
       })
       .returning({ id: reviewBatches.id });
     await tx
       .insert(reviewItems)
-      .values(input.items.map((item, position) => ({ batchId: batch.id, position, ...item })));
+      .values(input.items.map((item, position) => ({ batchId: batch.id, position, ...item, createdAt: now })));
     await logEvent(tx, { batchId: batch.id, kind: 'sent', actor, at: now, detail: `${input.items.length} ứng viên` });
     return batch.id;
   });
@@ -213,7 +215,9 @@ export async function addToReview(db: Db, id: string, raw: unknown, hr: HrMe, no
   await checkApplications(db, items, batch.id);
   const start = Math.max(-1, ...existing.map((e) => e.position)) + 1;
   await db.transaction(async (tx) => {
-    await tx.insert(reviewItems).values(items.map((item, i) => ({ batchId: batch.id, position: start + i, ...item })));
+    await tx
+      .insert(reviewItems)
+      .values(items.map((item, i) => ({ batchId: batch.id, position: start + i, ...item, createdAt: now })));
     await tx.update(reviewBatches).set({ doneAt: null }).where(eq(reviewBatches.id, batch.id));
     for (const item of items) {
       await logEvent(tx, {
