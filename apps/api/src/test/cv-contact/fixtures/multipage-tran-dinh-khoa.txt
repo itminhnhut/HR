@@ -1,0 +1,91 @@
+Trần Đình Khoa
+Lập trình viên Backend
+Điện thoại: 0988 715 342   |   Email: dinhkhoa.tran.dev@gmail.com   |   Địa chỉ: Số 18 ngõ 102 Trường Chinh, Đống Đa,
+Hà Nội
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho
+công ty và phát triển lên vị trí quản lý trong 2 năm tới.
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty CP Công nghệ Sao Việt
+11/2023 – nay
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Triển khai CI/CD với GitHub Actions và Docker
+ĐT công ty: Hotline 1900 6868 · Email: hr@saoviet-tech.example
+Kỹ sư phần mềm   – Công ty TNHH May mặc Thành Lợi
+11/2021 – 04/2023
+Triển khai CI/CD với GitHub Actions và Docker
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+ĐT công ty: 0251 3836 777 · Email: nhansu.thanhloi@outlook.com
+Lập trình viên Fullstack   – Công ty TNHH Giáo dục Hạt Mầm
+10/2019 – 04/2021
+Viết unit test và integration test, độ phủ 85%
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Review code và hướng dẫn 2 bạn thực tập
+Triển khai CI/CD với GitHub Actions và Docker
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Dự án kéo dài 9 tháng với đội 12 người. Tôi phụ trách khảo sát yêu cầu, lập kế hoạch triển khai, phối hợp các
+phòng ban, theo dõi tiến độ hằng tuần và báo cáo cho ban giám đốc. Kết quả: hoàn thành đúng hạn, tiết kiệm
+8% ngân sách, quy trình mới được áp dụng cho toàn bộ 5 chi nhánh. Bài học rút ra là cần thống nhất đầu mối
+liên lạc và có tiêu chí nghiệm thu rõ ràng ngay từ đầu.
+Thực tập sinh lập trình   – Công ty TNHH Thực phẩm Mekong Fresh
+08/2017 – 04/2019
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Triển khai CI/CD với GitHub Actions và Docker
+Viết unit test và integration test, độ phủ 85%
+Review code và hướng dẫn 2 bạn thực tập
+Dự án kéo dài 9 tháng với đội 12 người. Tôi phụ trách khảo sát yêu cầu, lập kế hoạch triển khai, phối hợp các
+phòng ban, theo dõi tiến độ hằng tuần và báo cáo cho ban giám đốc. Kết quả: hoàn thành đúng hạn, tiết kiệm
+8% ngân sách, quy trình mới được áp dụng cho toàn bộ 5 chi nhánh. Bài học rút ra là cần thống nhất đầu mối
+liên lạc và có tiêu chí nghiệm thu rõ ràng ngay từ đầu.
+Thực tập sinh lập trình   – Công ty CP Dược phẩm An Khang Xanh
+06/2015 – 04/2017
+Triển khai CI/CD với GitHub Actions và Docker
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+Tích hợp cổng thanh toán và dịch vụ gửi email
+Dự án kéo dài 9 tháng với đội 12 người. Tôi phụ trách khảo sát yêu cầu, lập kế hoạch triển khai, phối hợp các
+phòng ban, theo dõi tiến độ hằng tuần và báo cáo cho ban giám đốc. Kết quả: hoàn thành đúng hạn, tiết kiệm
+8% ngân sách, quy trình mới được áp dụng cho toàn bộ 5 chi nhánh. Bài học rút ra là cần thống nhất đầu mối
+liên lạc và có tiêu chí nghiệm thu rõ ràng ngay từ đầu.
+DỰ ÁN TIÊU BIỂU
+Dự án kéo dài 9 tháng với đội 12 người. Tôi phụ trách khảo sát yêu cầu, lập kế hoạch triển khai, phối hợp các
+phòng ban, theo dõi tiến độ hằng tuần và báo cáo cho ban giám đốc. Kết quả: hoàn thành đúng hạn, tiết kiệm
+8% ngân sách, quy trình mới được áp dụng cho toàn bộ 5 chi nhánh. Bài học rút ra là cần thống nhất đầu mối
+liên lạc và có tiêu chí nghiệm thu rõ ràng ngay từ đầu.
+Dự án kéo dài 9 tháng với đội 12 người. Tôi phụ trách khảo sát yêu cầu, lập kế hoạch triển khai, phối hợp các
+phòng ban, theo dõi tiến độ hằng tuần và báo cáo cho ban giám đốc. Kết quả: hoàn thành đúng hạn, tiết kiệm
+8% ngân sách, quy trình mới được áp dụng cho toàn bộ 5 chi nhánh. Bài học rút ra là cần thống nhất đầu mối
+liên lạc và có tiêu chí nghiệm thu rõ ràng ngay từ đầu.
+HỌC VẤN
+Đại học Ngoại thương
+2015 – 2019
+Chuyên ngành: Kỹ thuật phần mềm
+KỸ NĂNG
+TypeScript
+Git
+Docker
+React
+Node.js
+CHỨNG CHỈ
+IELTS 6.5
+Google Ads Search
+NGƯỜI THAM CHIẾU
+Ông Nguyễn Hữu Lộc
+CTO – Sao Việt Technology
+Điện thoại: 0912 223 344
+Email: huuloc.nguyen.cto@gmail.com
+SỞ THÍCH
+Nấu ăn, Cầu lông, Du lịch

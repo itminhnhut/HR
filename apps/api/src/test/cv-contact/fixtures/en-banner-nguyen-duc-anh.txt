@@ -1,0 +1,33 @@
+NGUYEN DUC ANH
+Backend Developer
+Phone: +84 912 007 384   Email: ducanh.nguyen.dev@gmail.com   Address: Apt B2-1507, 99 Nguyen Huu Tho, District 7,
+HCMC   GitHub: github.com/ducanh-ng
+CAREER OBJECTIVE
+To grow in a professional environment, apply my experience to deliver measurable results and take on more
+responsibility within two years.
+WORK EXPERIENCE
+Backend Developer   – Lam Son Xanh Realty JSC
+04/2023 – Present
+Set up CI/CD with GitHub Actions and Docker
+Wrote unit and integration tests with 85% coverage
+Integrated a payment gateway and transactional email
+Software Engineer   – Hai Au Xanh Travel Co., Ltd.
+04/2021 – 12/2023
+Set up CI/CD with GitHub Actions and Docker
+Built REST APIs in Node.js/TypeScript serving 200,000 users
+Reviewed code and mentored 2 interns
+EDUCATION
+College of Foreign Economic Relations
+2012 – 2016
+Major: Information Technology
+SKILLS
+Docker
+Node.js
+TypeScript
+React
+Git
+CERTIFICATES
+Google Ads Search
+Chief Accountant Certificate
+INTERESTS
+Reading, Badminton, Photography

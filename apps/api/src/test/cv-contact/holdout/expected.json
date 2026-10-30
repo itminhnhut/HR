@@ -1,0 +1,322 @@
+[
+  {
+    "id": "holdout-r01-chau-dat",
+    "layout": "random: topcv / novn",
+    "notes": "Seed 2026: name as written; phone dots; email with capitals; contact labels-vi; personal: Ngày sinh, Mức lương mong muốn; company contacts",
+    "fullName": "Chau Dat",
+    "phone": "0815915851",
+    "email": "dat.chau@gmail.com"
+  },
+  {
+    "id": "holdout-r02-vu-thu-nhan",
+    "layout": "random: table / vi",
+    "notes": "Seed 2026: header row; name ALL CAPS; split; phone 4-2-2-2; email with capitals; contact plain; personal: Ngày sinh, Số CCCD; 1 reference(s); company contacts; profile link",
+    "fullName": "Vũ Thu Nhân",
+    "phone": "0897960718",
+    "email": "nhanvu.work@gmail.com"
+  },
+  {
+    "id": "holdout-r03-luong-my-nhat-tham",
+    "layout": "random: sidebar / vi",
+    "notes": "Seed 2026: sidebar right, name in sidebar, refs in main; name as written; split; phone dashes; contact icons-text; personal: Số CCCD",
+    "fullName": "Lương Mỹ Nhật Thắm",
+    "phone": "0377694745",
+    "email": "tham_luong29@yahoo.com"
+  },
+  {
+    "id": "holdout-r04-le-duc-nguyen",
+    "layout": "random: labelForm / novn",
+    "notes": "Seed 2026: label lines; name as written; phone 3-3-4; contact icons; personal: Số CCCD, Mức lương mong muốn; company contacts; multi-page",
+    "fullName": "Le Duc Nguyen",
+    "phone": "0819986844",
+    "email": "nguyenle.work@yahoo.com.vn"
+  },
+  {
+    "id": "holdout-r05-doan-thu-dinh-uyen",
+    "layout": "random: oneColumn / vi",
+    "notes": "Seed 2026: contact at end; name ALL CAPS; phone +84 spaced; contact plain; personal: Giới tính; company contacts; GPA",
+    "fullName": "Đoàn Thu Đình Uyên",
+    "phone": "0826926621",
+    "email": "uyen_doan13@hotmail.com"
+  },
+  {
+    "id": "holdout-r06-phung-van-dieu-linh",
+    "layout": "random: canva / en",
+    "notes": "Seed 2026: name as written; phone 4-2-2-2; contact labels-en; 2 reference(s); company contacts; multi-page; profile link",
+    "fullName": "Phung Van Dieu Linh",
+    "phone": "0337171905",
+    "email": "linhphung.work@gmail.com"
+  },
+  {
+    "id": "holdout-r07-pham-nhi",
+    "layout": "random: vnw / mixed",
+    "notes": "Seed 2026: 4-column info; name as written; phone 84 no plus; contact plain; personal: Số CCCD; company contacts; GPA",
+    "fullName": "Phạm Nhi",
+    "phone": "0376924810",
+    "email": "nhi.pham@gmail.com"
+  },
+  {
+    "id": "holdout-r08-le-nhat-luan",
+    "layout": "random: oneColumn / vi",
+    "notes": "Seed 2026: name ALL CAPS; phone +84 dashes; contact labels-vi-short; personal: Ngày sinh, Giới tính, Mức lương mong muốn; company contacts; multi-page",
+    "fullName": "Lê Nhật Luân",
+    "phone": "0395339099",
+    "email": "luan_le82@yahoo.com.vn"
+  },
+  {
+    "id": "holdout-r09-ton-that-bao-hai",
+    "layout": "random: banner / vi",
+    "notes": "Seed 2026: name ALL CAPS; split; phone (+84); mailto: email; contact icons; personal: Ngày sinh, Số CCCD; 2 reference(s); profile link",
+    "fullName": "Tôn Thất Bảo Hải",
+    "phone": "0821371958",
+    "email": "hai.ton@gmail.com"
+  },
+  {
+    "id": "holdout-r10-cao-xuan-loc",
+    "layout": "random: table / vi",
+    "notes": "Seed 2026: header row; name as written; phone 4-3-3; contact labels-vi; personal: Ngày sinh, Giới tính; multi-page",
+    "fullName": "Cao Xuân Lộc",
+    "phone": "0783225945",
+    "email": "loccao.work@gmail.com"
+  },
+  {
+    "id": "holdout-r11-ha-duc-tai",
+    "layout": "random: nameTitle / mixed",
+    "notes": "Seed 2026: name as written; split-spaced; phone dashes; contact plain; personal: Ngày sinh, Mức lương mong muốn; profile link",
+    "fullName": "Hà Đức Tài",
+    "phone": "0791589114",
+    "email": "taiha.work@gmail.com"
+  },
+  {
+    "id": "holdout-r12-duong-hau",
+    "layout": "random: canva / vi",
+    "notes": "Seed 2026: name as written; phone 4-2-2-2; contact labels-vi-short; 1 reference(s)",
+    "fullName": "Dương Hậu",
+    "phone": "0325783686",
+    "email": "hau.duong87@gmail.com"
+  },
+  {
+    "id": "holdout-r13-kim-nhat-tai",
+    "layout": "random: oneColumn / en",
+    "notes": "Seed 2026: name ALL CAPS; split; phone +84 plain; email with capitals; contact labels-en; personal: Date of birth, ID card; multi-page",
+    "fullName": "Kim Nhat Tai",
+    "phone": "0982269075",
+    "email": "taikim.work@yahoo.com.vn"
+  },
+  {
+    "id": "holdout-r14-nguyen-cong-bao-son",
+    "layout": "random: labelForm / en",
+    "notes": "Seed 2026: label lines; name ALL CAPS; phone +84 dashes; email with capitals; contact labels-en-mobile; personal: ID card",
+    "fullName": "Nguyễn Công Bảo Sơn",
+    "phone": "0700971232",
+    "email": "sonnguyen.work@hotmail.com"
+  },
+  {
+    "id": "holdout-r15-chau-loan",
+    "layout": "random: nameTitle / en",
+    "notes": "Seed 2026: name as written; phone dots; contact icons-text; 1 reference(s); profile link",
+    "fullName": "Châu Loan",
+    "phone": "0939752690",
+    "email": "loan.chau@gmail.com"
+  },
+  {
+    "id": "holdout-r16-nguyen-gia-hanh",
+    "layout": "random: topcv / vi",
+    "notes": "Seed 2026: name ALL CAPS; phone 3-3-4; contact icons; personal: Ngày sinh, Số CCCD, Giới tính, Mức lương mong muốn; NFD source",
+    "fullName": "Nguyễn Gia Hạnh",
+    "phone": "0932369831",
+    "email": "hanh.nguyen@gmail.com"
+  },
+  {
+    "id": "holdout-r17-hoang-huu-hien",
+    "layout": "random: oneColumn / mixed",
+    "notes": "Seed 2026: name as written; spaced-css; phone 4-2-2-2; mailto: email; contact labels-en-mobile; personal: Giới tính",
+    "fullName": "Hoàng Hữu Hiền",
+    "phone": "0918436020",
+    "email": "hienhoang.work@gmail.com"
+  },
+  {
+    "id": "holdout-r18-do-dieu-huu-an",
+    "layout": "random: oneColumn / mixed",
+    "notes": "Seed 2026: first line \"CV XIN VIỆC\"; name ALL CAPS; phone (+84); contact labels-en; personal: Ngày sinh, Số CCCD, Giới tính; GPA",
+    "fullName": "Đỗ Diệu Hữu An",
+    "phone": "0359895330",
+    "email": "an.do@gmail.com"
+  },
+  {
+    "id": "holdout-r19-trinh-xuan-trinh",
+    "layout": "random: table / mixed",
+    "notes": "Seed 2026: header row; name as written; phone +84 spaced; contact icons; personal: Giới tính; profile link",
+    "fullName": "Trịnh Xuân Trinh",
+    "phone": "0827612440",
+    "email": "trinhtrinh.work@gmail.com"
+  },
+  {
+    "id": "holdout-r20-le-dinh-duc-duy",
+    "layout": "random: canva / vi",
+    "notes": "Seed 2026: name as written; split-spaced; phone dots; contact icons",
+    "fullName": "Lê Đình Đức Duy",
+    "phone": "0824460830",
+    "email": "ledinhducduy89@outlook.com"
+  },
+  {
+    "id": "holdout-r21-vo-duc-bao-nhi",
+    "layout": "random: sidebar / novn",
+    "notes": "Seed 2026: sidebar left, name in sidebar, refs in main; name as written; phone 3-3-4; contact plain; company contacts; GPA",
+    "fullName": "Vo Duc Bao Nhi",
+    "phone": "0799500337",
+    "email": "nhi_vo75@outlook.com"
+  },
+  {
+    "id": "holdout-r22-ly-thu-dung",
+    "layout": "random: canva / vi",
+    "notes": "Seed 2026: name ALL CAPS; phone +84 plain; contact icons-text; NFD source",
+    "fullName": "Lý Thu Dung",
+    "phone": "0894014675",
+    "email": "dung_ly20@yahoo.com"
+  },
+  {
+    "id": "holdout-r23-truong-minh-gia-nguyen",
+    "layout": "random: sidebar / vi",
+    "notes": "Seed 2026: sidebar right, name in main, refs in main; name as written; split; phone +84 spaced; email with capitals; contact labels-vi-long; personal: Mức lương mong muốn",
+    "fullName": "Trương Minh Gia Nguyên",
+    "phone": "0892885129",
+    "email": "nguyen.truong@yahoo.com.vn"
+  },
+  {
+    "id": "holdout-r24-cao-thanh-minh-duy",
+    "layout": "random: nameTitle / vi",
+    "notes": "Seed 2026: name as written; phone 4-3-3; contact plain; personal: Ngày sinh, Số CCCD; company contacts; multi-page",
+    "fullName": "Cao Thanh Minh Duy",
+    "phone": "0884208192",
+    "email": "duy_cao95@gmail.com"
+  },
+  {
+    "id": "holdout-r25-nguyen-huu-dinh-hien",
+    "layout": "random: vnw / vi",
+    "notes": "Seed 2026: 4-column info; name as written; phone dashes; contact icons; personal: Giới tính",
+    "fullName": "Nguyễn Hữu Đình Hiền",
+    "phone": "0388588961",
+    "email": "nguyenhuudinhhien90@gmail.com"
+  },
+  {
+    "id": "holdout-r26-ngo-cong-luan",
+    "layout": "random: sidebar / vi",
+    "notes": "Seed 2026: sidebar right, name in sidebar, refs in main; name as written; spaced-css; phone 4-2-2-2; contact icons; personal: Ngày sinh, Mức lương mong muốn; company contacts",
+    "fullName": "Ngô Công Luân",
+    "phone": "0975856012",
+    "email": "luanngo.work@gmail.com"
+  },
+  {
+    "id": "holdout-hard-photo-box-then-name",
+    "layout": "hard: one-column",
+    "notes": "Photo placeholder \"ẢNH THẺ 3 x 4\" (two capitalised words, looks like a name) comes before the real name",
+    "fullName": "Doãn Thị Bích Liên",
+    "phone": "0397528146",
+    "email": "bichlien.doan@gmail.com"
+  },
+  {
+    "id": "holdout-hard-ung-vien-label",
+    "layout": "hard: label form",
+    "notes": "Form titled \"PHIẾU THÔNG TIN ỨNG VIÊN\" with the name after \"Ứng viên:\"",
+    "fullName": "Khổng Văn Lợi",
+    "phone": "0763409251",
+    "email": "khongvanloi.kho@gmail.com"
+  },
+  {
+    "id": "holdout-hard-email-footer-only",
+    "layout": "hard: one-column",
+    "notes": "Candidate email only in a closing footer line; company emails appear earlier in the experience section",
+    "fullName": "Hoàng Kim Loan",
+    "phone": "0869302715",
+    "email": "hoangkimloan.96@gmail.com"
+  },
+  {
+    "id": "holdout-hard-cccd-then-phone-4-2-2-2",
+    "layout": "hard: one-column",
+    "notes": "CCCD right before a phone written 4-2-2-2 (\"0916 73 42 85\") on the same line",
+    "fullName": "Tăng Hữu Nghĩa",
+    "phone": "0916734285",
+    "email": "tanghuunghia.kd@gmail.com"
+  },
+  {
+    "id": "holdout-hard-office-tel-then-mobile-plus84",
+    "layout": "hard: english one-column",
+    "notes": "English: office \"Tel: +84-28-3822-1100\" before \"Mobile: +84-935-806-417\"; name without diacritics, rare surname Viên",
+    "fullName": "Vien Ngoc Ha",
+    "phone": "0935806417",
+    "email": "ngocha.vien@outlook.com"
+  },
+  {
+    "id": "holdout-hard-middle-initial",
+    "layout": "hard: one-column",
+    "notes": "Middle name abbreviated: \"TRẦN V. HÙNG\"",
+    "fullName": "Trần V. Hùng",
+    "phone": "0948216503",
+    "email": "tranvhung.acc@gmail.com"
+  },
+  {
+    "id": "holdout-hard-surname-mai",
+    "layout": "hard: banner",
+    "notes": "Surname that is also a common word / given name: \"MAI ANH TUẤN\"",
+    "fullName": "Mai Anh Tuấn",
+    "phone": "0332610874",
+    "email": "maianhtuan.sales@gmail.com"
+  },
+  {
+    "id": "holdout-hard-agency-caps-first-line",
+    "layout": "hard: one-column",
+    "notes": "First line is a staffing agency name in CAPS (\"CÔNG TY CỔ PHẦN NHÂN LỰC VIỆT TÂM\") plus a profile code",
+    "fullName": "Phùng Thị Ngọc Hoa",
+    "phone": "0857204639",
+    "email": "ngochoa.phung@yahoo.com"
+  },
+  {
+    "id": "holdout-hard-english-order",
+    "layout": "hard: english one-column",
+    "notes": "Vietnamese name in English order, given name first: \"KHOA NGUYEN DANG\" (Nguyễn Đăng Khoa); expected as written",
+    "fullName": "Khoa Nguyen Dang",
+    "phone": "0902418357",
+    "email": "khoa.nguyendang.dev@gmail.com"
+  },
+  {
+    "id": "holdout-hard-nickname",
+    "layout": "hard: sidebar",
+    "notes": "Name followed by an English nickname in brackets: \"Phùng Gia Khang (Kevin)\"; expected without the nickname (judgement call)",
+    "fullName": "Phùng Gia Khang",
+    "phone": "0786254019",
+    "email": "kevin.phunggiakhang@gmail.com"
+  },
+  {
+    "id": "holdout-hard-name-gender-year",
+    "layout": "hard: one-column",
+    "notes": "Gender and birth year on the name line: \"LẠI THU QUYÊN (Nữ – 1996)\"",
+    "fullName": "Lại Thu Quyên",
+    "phone": "0354871260",
+    "email": "laithuquyen.kt@gmail.com"
+  },
+  {
+    "id": "holdout-hard-two-phones-one-line",
+    "layout": "hard: one-column",
+    "notes": "Two mobiles on one line \"0389 157 640 – 0912 806 735\"; expected the first (ambiguous: both are the candidate’s)",
+    "fullName": "Lê Hoàng Diệu",
+    "phone": "0389157640",
+    "email": "hoangdieu.le.cs@gmail.com"
+  },
+  {
+    "id": "holdout-hard-name-only-in-signature",
+    "layout": "hard: one-column",
+    "notes": "No name in the header (only the job title); the name appears only in the closing signature, surname Từ (also a common word) | Decision: a name that appears only in the closing signature is not read (header has no name); null is preferred over guessing, HR types it.",
+    "fullName": null,
+    "phone": "0779341286",
+    "email": "tuhoangyen.cs@yahoo.com"
+  },
+  {
+    "id": "holdout-hard-email-all-caps-surname-ong",
+    "layout": "hard: one-column",
+    "notes": "Email entirely in capitals; surname Ông (also means \"Mr.\")",
+    "fullName": "Ông Thị Diệu Hiền",
+    "phone": "0829645130",
+    "email": "dieuhien.ong@gmail.com"
+  }
+]

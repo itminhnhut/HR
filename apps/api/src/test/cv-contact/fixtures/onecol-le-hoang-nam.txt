@@ -1,0 +1,33 @@
+LÊ HOÀNG NAM
+Lập trình viên Backend
+ĐT: 0386-772-145   |   E-mail: lehoangnam.dev@gmail.com   |   ĐC: Tổ 5, KP 3, P. Tân Hiệp, Biên Hoà, Đồng Nai   |
+GitHub: github.com/lehoangnam-dev   |   LinkedIn: linkedin.com/in/le-hoang-nam-1997
+MỤC TIÊU NGHỀ NGHIỆP
+Mong muốn làm việc trong môi trường chuyên nghiệp, phát huy kinh nghiệm để mang lại kết quả rõ ràng cho
+công ty và phát triển lên vị trí quản lý trong 2 năm tới.
+KINH NGHIỆM LÀM VIỆC
+Lập trình viên Backend   – Công ty TNHH Giáo dục Hạt Mầm
+07/2023 – nay
+Review code và hướng dẫn 2 bạn thực tập
+Viết unit test và integration test, độ phủ 85%
+Thiết kế cơ sở dữ liệu PostgreSQL, tối ưu truy vấn giảm 40% thời gian phản hồi
+Kỹ sư phần mềm   – Công ty CP Truyền thông Ánh Dương
+09/2021 – 11/2023
+Phát triển REST API bằng Node.js/TypeScript phục vụ 200.000 người dùng
+Review code và hướng dẫn 2 bạn thực tập
+Triển khai CI/CD với GitHub Actions và Docker
+HỌC VẤN
+Trường Đại học Kinh tế – Đại học Đà Nẵng
+2014 – 2018
+Chuyên ngành: Công nghệ thông tin
+KỸ NĂNG
+PostgreSQL
+Git
+React
+Docker
+TypeScript
+CHỨNG CHỈ
+TOEIC 750 (2023)
+IELTS 6.5
+SỞ THÍCH
+Chụp ảnh, Nấu ăn, Tình nguyện

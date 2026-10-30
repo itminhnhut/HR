@@ -1,0 +1,31 @@
+VU DINH TRONG   | Ky su xay dung
+Dien thoai: 0902 663 517   ·   Email: vudinhtrong.ksxd@gmail.com   ·   Dia chi: 45/7 Nguyen Trai, P.2, Q.5, TP. HCM
+MUC TIEU NGHE NGHIEP
+Mong muon lam viec trong moi truong chuyen nghiep, phat huy kinh nghiem de mang lai ket qua ro rang cho
+cong ty va phat trien len vi tri quan ly trong 2 nam toi.
+KINH NGHIEM LAM VIEC
+Lap trinh vien Backend   – Sieu thi Dien may Minh Khoa
+05/2023 – nay
+Phat trien REST API bang Node.js/TypeScript phuc vu 200.000 nguoi dung
+Review code va huong dan 2 ban thuc tap
+Viet unit test va integration test, do phu 85%
+Ky su phan mem   – Cong ty CP Dia oc Lam Son Xanh
+02/2021 – 11/2023
+Trien khai CI/CD voi GitHub Actions va Docker
+Viet unit test va integration test, do phu 85%
+Thiet ke co so du lieu PostgreSQL, toi uu truy van giam 40% thoi gian phan hoi
+HOC VAN
+Dai hoc Can Tho
+2009 – 2013
+Chuyen nganh: Cong nghe thong tin
+KY NANG
+Docker
+React
+TypeScript
+Node.js
+Git
+CHUNG CHI
+IELTS 6.5
+Chung chi Tin hoc ung dung co ban
+SO THICH
+Doc sach, Du lich, Tinh nguyen
