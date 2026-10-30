@@ -1,6 +1,8 @@
 import type {
   ApplicationDetailDto,
+  ApplicationSource,
   ContactChannel,
+  HrContactInput,
   HrNewsPostDto,
   JobInput,
   JobTemplate,
@@ -14,8 +16,10 @@ import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClie
 import { api, ApiError } from './index';
 import type {
   ApplicationPatch,
+  AddApplicationInput,
   ApplyInput,
   CandidatePatch,
+  CvInput,
   HrProfilePatch,
   JobAction,
   NewsListQuery,
@@ -172,10 +176,10 @@ export function useDeleteJob() {
   });
 }
 
-export const useApplications = (jobId?: string, q = '') =>
+export const useApplications = (jobId?: string, q = '', source?: ApplicationSource) =>
   useQuery({
-    queryKey: keys.hrApps(jobId, q),
-    queryFn: () => api.hrApplications(jobId, q),
+    queryKey: [...keys.hrApps(jobId, q), source ?? 'all-sources'],
+    queryFn: () => api.hrApplications(jobId, q, source),
     placeholderData: keepPreviousData,
   });
 
@@ -520,5 +524,40 @@ export function useReviewDone(token: string) {
   return useMutation({
     mutationFn: () => api.reviewDone(token),
     onSuccess: (page) => qc.setQueryData(keys.reviewPage(token), page),
+  });
+}
+
+// ── "Thêm và cập nhật CV" (spec-cv-intake.md) ───────────────────────────
+
+export function useAddApplication() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: AddApplicationInput) => api.hrAddApplication(input),
+    onSuccess: () => refreshApplications(qc),
+  });
+}
+
+/** HR changes a CV or contact details: the detail comes back, lists refresh. */
+export function useApplicationEdit(id: string) {
+  const qc = useQueryClient();
+  const done = (detail: ApplicationDetailDto) => {
+    qc.setQueryData(keys.hrApp(detail.id), detail);
+    refreshApplications(qc);
+  };
+  return {
+    replaceCv: useMutation({ mutationFn: (cv: CvInput) => api.hrReplaceCv(id, cv), onSuccess: done }),
+    updateContact: useMutation({
+      mutationFn: (input: HrContactInput) => api.hrUpdateContact(id, input),
+      onSuccess: done,
+    }),
+  };
+}
+
+export function useCandidateReplaceCv() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ applicationId, cv }: { applicationId: string; cv: CvInput }) =>
+      api.candidateReplaceCv(applicationId, cv),
+    onSuccess: (overview) => qc.setQueryData(keys.candidate, overview),
   });
 }

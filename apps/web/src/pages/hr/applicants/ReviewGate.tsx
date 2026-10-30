@@ -21,6 +21,11 @@ export function ReviewStatus({ app }: { app: ApplicationDetailDto }) {
           {review.title}
         </Link>
       </span>
+      {review.cvChangedAfterDecision && (
+        <span className="font-medium text-cat-amber">
+          CV đổi sau khi {review.reviewerName} quyết: nên gửi sếp xem lại trong đợt mới.
+        </span>
+      )}
       {review.reviewerComment && (
         <span className="text-ink">
           {review.reviewerName}: <i>“{review.reviewerComment}”</i>

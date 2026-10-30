@@ -1,4 +1,11 @@
-import { formatTimestamp, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
+import {
+  ALL_SOURCES,
+  APPLICATION_SOURCE_LABEL,
+  formatTimestamp,
+  isApplicationSource,
+  type ApplicationRowDto,
+  type ApplicationStatus,
+} from '@careers/shared';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useApplications, useScorePending } from '../../api/queries';
@@ -6,6 +13,7 @@ import { useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { Dialog, SheetHandle } from '../../ui/Dialog';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
+import { AddApplicationDialog } from './applicants/AddApplicationDialog';
 import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { percentTone } from './applicants/CvMatch';
 import { interviewLabel } from './applicants/InterviewField';
@@ -96,7 +104,7 @@ function ApplicantRow({
             </span>
           )}
           {row.noteLine && <span className="truncate text-xs italic text-muted">“{row.noteLine}”</span>}
-          {row.review && <ReviewMark review={row.review} />}
+          <RowMarks row={row} />
         </span>
         <span className="flex shrink-0 flex-col items-end gap-1">
           <StatusText status={row.status} />
@@ -119,6 +127,26 @@ function ApplicantRow({
         </span>
       </button>
     </li>
+  );
+}
+
+/** Review state, where it came from (when not the site) and "CV mới" from the candidate. */
+function RowMarks({ row }: { row: ApplicationRowDto }) {
+  if (!row.review && row.source === 'website' && !row.cvUpdatedByCandidate) return null;
+  return (
+    <span className="flex flex-wrap gap-1">
+      {row.review && <ReviewMark review={row.review} />}
+      {row.cvUpdatedByCandidate && (
+        <span className="w-fit rounded-full border border-cat-violet-line bg-cat-violet-soft px-2 py-0.5 text-[11px] font-semibold text-cat-violet">
+          Ứng viên vừa cập nhật CV
+        </span>
+      )}
+      {row.source !== 'website' && (
+        <span className="w-fit rounded-full border border-line bg-white px-2 py-0.5 text-[11px] text-slate">
+          HR thêm · {APPLICATION_SOURCE_LABEL[row.source]}
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -173,7 +201,10 @@ export function HrApplicantsPage() {
   const q = params.get('q') ?? '';
   const [draft, setDraft] = useState(q);
   const search = useDeferredValue(draft.trim());
-  const apps = useApplications(jobId, search);
+  const sourceParam = params.get('nguon');
+  const source = isApplicationSource(sourceParam) ? sourceParam : undefined;
+  const apps = useApplications(jobId, search, source);
+  const [adding, setAdding] = useState(false);
   // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
   const tab: TabKey = isTab(tabParam) ? tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
   const showSkeleton = useDelayedFlag(apps.isPending);
@@ -258,11 +289,34 @@ export function HrApplicantsPage() {
             Đang chấm CV, còn {scoring} hồ sơ…
           </span>
         )}
+        <label className="flex items-center gap-2 text-sm text-body sm:ml-auto">
+          <span className="sr-only sm:not-sr-only">Nguồn</span>
+          <select
+            value={source ?? ''}
+            onChange={(e) => setParam('nguon', e.target.value || null)}
+            className="min-h-11 rounded-control border border-field bg-white px-2.5 text-sm text-navy"
+          >
+            <option value="">Mọi nguồn</option>
+            {ALL_SOURCES.map((s) => (
+              <option key={s} value={s}>
+                {APPLICATION_SOURCE_LABEL[s]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="inline-flex min-h-11 items-center gap-2 rounded-control border-0 bg-navy px-3.5 text-sm font-semibold text-white hover:bg-accent"
+        >
+          <Icon name="plus" size={16} />
+          Thêm hồ sơ
+        </button>
         {!picking.active && (apps.data?.applications.length ?? 0) > 0 && (
           <button
             type="button"
             onClick={picking.start}
-            className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-control border border-navy bg-white px-3.5 text-sm font-semibold text-navy hover:bg-mist"
+            className="inline-flex min-h-11 items-center gap-2 rounded-control border border-navy bg-white px-3.5 text-sm font-semibold text-navy hover:bg-mist"
           >
             <Icon name="checkSquare" size={16} />
             Gửi sếp duyệt
@@ -344,6 +398,14 @@ export function HrApplicantsPage() {
       {picking.active && (
         <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />
       )}
+      <AddApplicationDialog
+        open={adding}
+        onClose={() => setAdding(false)}
+        onAdded={(id) => {
+          setAdding(false);
+          setParam('id', id);
+        }}
+      />
       <SendReviewDialog
         rows={picking.rows}
         open={picking.sending}

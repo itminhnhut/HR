@@ -29,6 +29,7 @@ const item = (over: Partial<ReviewItemPublicDto> = {}): ReviewItemPublicDto => (
   hrReply: null,
   hrRepliedAt: null,
   scheduled: false,
+  cvUpdated: false,
   ...over,
 });
 
@@ -139,6 +140,12 @@ describe('reviewer page', () => {
     show();
     expect(await screen.findByRole('heading', { name: 'Link không mở được' })).toBeTruthy();
     expect(screen.getByText(/Hỏi lại HR link mới/)).toBeTruthy();
+  });
+
+  it('should tell the reviewer when the CV was replaced after the batch was sent', async () => {
+    server.page = pageOf({ items: [item({ cvUpdated: true })] });
+    show();
+    expect(await screen.findByText(/CV vừa cập nhật/)).toBeTruthy();
   });
 
   it("should show HR's answer under the reviewer's question", async () => {

@@ -21,6 +21,7 @@ import { FieldError, TextField } from '../../ui/Field';
 import { EmptyState, ErrorState, LoadingStatus, Sk } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
 import { errorText } from './candidateUi';
+import { CvUpdate } from './CvUpdate';
 import { PhoneField } from '../../ui/PhoneField';
 
 /** Gender-marking middle names that are left out of a greeting ("Trần Thị Lan" → "Lan"). */
@@ -85,7 +86,7 @@ export function CandidateAccountPage() {
               title="Hồ sơ đã nộp"
               note={<span className="text-sm text-slate">{applications.length} hồ sơ</span>}
             />
-            <ApplicationsTab applications={applications} />
+            <ApplicationsTab applications={applications} savedFileName={me.cvFileName} />
           </section>
           <section aria-label="Thông tin, CV và dữ liệu">
             <InfoTab me={me} onLeave={() => setLeaving(data)} onStay={() => setLeaving(null)} />
@@ -111,7 +112,13 @@ function stageNote(stage: CandidateStage): string {
   }
 }
 
-function ApplicationsTab({ applications }: { applications: CandidateApplicationDto[] }) {
+function ApplicationsTab({
+  applications,
+  savedFileName,
+}: {
+  applications: CandidateApplicationDto[];
+  savedFileName: string | null;
+}) {
   if (applications.length === 0) {
     return (
       <EmptyState icon="inbox" title="Chưa có hồ sơ nào" actions={<ButtonLink to="/">Xem việc đang tuyển</ButtonLink>}>
@@ -122,7 +129,7 @@ function ApplicationsTab({ applications }: { applications: CandidateApplicationD
   return (
     <div className="flex flex-col gap-3 sm:gap-3.5">
       {applications.map((app) => (
-        <ApplicationCard key={app.id} app={app} note={stageNote(app.stage)} />
+        <ApplicationCard key={app.id} app={app} note={stageNote(app.stage)} savedFileName={savedFileName} />
       ))}
       <p className="m-0 mt-2 text-[13px] leading-relaxed text-muted">
         HR liên hệ qua số điện thoại hoặc Zalo bạn đã để lại. Trạng thái ở đây chỉ để bạn tiện theo dõi.
@@ -131,7 +138,15 @@ function ApplicationsTab({ applications }: { applications: CandidateApplicationD
   );
 }
 
-function ApplicationCard({ app, note }: { app: CandidateApplicationDto; note: string }) {
+function ApplicationCard({
+  app,
+  note,
+  savedFileName,
+}: {
+  app: CandidateApplicationDto;
+  note: string;
+  savedFileName: string | null;
+}) {
   return (
     <article className="card-hover grid gap-2.5 rounded-card border border-line bg-white p-[18px] sm:gap-5 sm:px-7 sm:py-[26px] md:grid-cols-[minmax(0,1fr)_300px] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="flex min-w-0 flex-col gap-1.5">
@@ -149,6 +164,9 @@ function ApplicationCard({ app, note }: { app: CandidateApplicationDto; note: st
       <div className="flex flex-col gap-2.5">
         <ApplicationStage stage={app.stage} />
         <span className="text-[13px] leading-relaxed text-body sm:text-sm">{note}</span>
+      </div>
+      <div className="md:col-span-2">
+        <CvUpdate app={app} savedFileName={savedFileName} />
       </div>
     </article>
   );
@@ -172,7 +190,7 @@ function cvProblem(file: File): string | null {
 
 function InfoTab({ me, onLeave, onStay }: { me: CandidateMe; onLeave: () => void; onStay: () => void }) {
   return (
-    <div className="grid items-start gap-3 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-3 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <ProfileForm me={me} />
       <aside className="flex flex-col gap-3 sm:gap-4">
         <DataCard onLeave={onLeave} onStay={onStay} />

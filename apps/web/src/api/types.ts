@@ -33,6 +33,9 @@ import type {
   ReviewCreateInput,
   ReviewDecisionInput,
   ReviewPageDto,
+  ApplicationSource,
+  HrApplicationInput,
+  HrContactInput,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -42,6 +45,8 @@ export class ApiError extends Error {
     public fieldErrors: Record<string, string> = {},
     /** Machine-readable reason, e.g. "job_closed". */
     public code?: string,
+    /** The rest of the error body, e.g. `existing` with a "duplicate" (read it with a type guard). */
+    public details: Record<string, unknown> = {},
   ) {
     super(message);
   }
@@ -76,6 +81,14 @@ export interface ApplicationPatch {
   meetingUrl?: string | null;
   /** "Vẫn hẹn": invite before the reviewer approved; the reason is logged for the reviewer. */
   reviewBypassReason?: string;
+}
+
+/** A new CV: a PDF, a link, or (candidate only) the CV saved in the account. */
+export type CvInput = { file: File } | { link: string } | { useSaved: true };
+
+/** "Thêm hồ sơ": the fields plus an optional PDF (spec-cv-intake.md). */
+export interface AddApplicationInput extends HrApplicationInput {
+  cvFile: File | null;
 }
 
 /** What HR does to a sent batch (spec-boss-review.md). */
@@ -130,6 +143,8 @@ export interface Api {
   /** Google is the only candidate sign-in. The account sees applications sent with its email. */
   googleSignIn(): Promise<CandidateMe>;
   candidateOverview(): Promise<CandidateOverview | null>;
+  /** "Cập nhật CV" of an own application; 409 with the reason when it is no longer allowed. */
+  candidateReplaceCv(applicationId: string, cv: CvInput): Promise<CandidateOverview>;
   updateCandidate(patch: CandidatePatch): Promise<CandidateMe>;
   deleteCandidateData(): Promise<{ ok: true }>;
   candidateLogout(): Promise<{ ok: true }>;
@@ -151,7 +166,13 @@ export interface Api {
   hrSetDeadline(id: string, deadline: string): Promise<{ ok: true }>;
   /** Only drafts can be deleted. */
   hrDeleteJob(id: string): Promise<{ ok: true }>;
-  hrApplications(jobId?: string, q?: string): Promise<ApplicationsResponse>;
+  hrApplications(jobId?: string, q?: string, source?: ApplicationSource): Promise<ApplicationsResponse>;
+  /** "Thêm hồ sơ". 409 { code: "duplicate", existing } when this phone already applied for this job. */
+  hrAddApplication(input: AddApplicationInput): Promise<{ id: string }>;
+  /** "Thêm CV" / "Đổi CV" on any application. */
+  hrReplaceCv(id: string, cv: CvInput): Promise<ApplicationDetailDto>;
+  /** Phone, email, source of an application HR added (409 for one the candidate sent). */
+  hrUpdateContact(id: string, input: HrContactInput): Promise<ApplicationDetailDto>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
   hrDeleteApplication(id: string): Promise<{ ok: true }>;

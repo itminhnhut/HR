@@ -22,6 +22,7 @@ import { Icon, type IconName } from '../../../ui/icons';
 import { apiMessage, Avatar, errorMessage } from '../parts';
 import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
 import { CvMatch } from './CvMatch';
+import { CvPanel } from './CvPanel';
 import { InterviewField } from './InterviewField';
 import { BypassForm, needsBypass, ReviewStatus } from './ReviewGate';
 
@@ -64,16 +65,6 @@ function BigActions({ app }: { app: ApplicationDetailDto }) {
           {app.cvFileName ? 'CV chỉ có ở web thật' : 'Chưa có CV'}
         </span>
       )}
-    </div>
-  );
-}
-
-function CvFileNote({ app }: { app: ApplicationDetailDto }) {
-  if (!app.cvFileName || app.cvLink) return null;
-  return (
-    <div className="flex items-center gap-2.5 rounded-control bg-mist px-3.5 py-2.5 text-[13px] text-body">
-      <Icon name="file" size={16} className="shrink-0 text-accent" />
-      <span className="min-w-0 flex-1 truncate font-medium text-navy">{app.cvFileName}</span>
     </div>
   );
 }
@@ -487,7 +478,7 @@ function DetailBody({
       <StatusButtons app={app} onError={setError} onCompose={setComposeRequest} />
       {app.status === 'interview' && <InterviewTime app={app} onError={setError} />}
       <ComposeMessage app={app} request={composeRequest} onRequestDone={() => setComposeRequest(null)} />
-      <CvFileNote app={app} />
+      <CvPanel app={app} />
       <CvMatch app={app} />
 
       <dl className="m-0 flex flex-col gap-3 text-sm">

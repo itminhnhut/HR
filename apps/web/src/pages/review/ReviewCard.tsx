@@ -250,6 +250,11 @@ export function ReviewCard({
           >
             {item.hrPick === 'yes' ? '★ HR đề xuất phỏng vấn' : 'HR: cân nhắc'}
           </span>
+          {item.cvUpdated && (
+            <span className="w-fit rounded-full border border-cat-violet-line bg-cat-violet-soft px-2.5 py-0.5 text-xs font-semibold text-cat-violet">
+              CV vừa cập nhật, xem lại bản mới
+            </span>
+          )}
         </div>
       </div>
       <MatchList items={item.matchItems} />
