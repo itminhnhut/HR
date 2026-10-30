@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { notFound } from '../lib/http-error.js';
 import { readJson, readMultipart } from '../lib/request.js';
-import { isApplicationSource } from '@careers/shared';
 import { addApplication, hrReplaceCv, updateContact } from '../services/hr-intake.js';
 import { readCvContact } from '../services/cv-contact.js';
 import { hrOf } from '../lib/hr-auth.js';
@@ -30,7 +29,7 @@ hrApplicationRoutes.get('/applications', async (c) => {
       c.get('deps').db,
       c.req.query('jobId') || undefined,
       c.req.query('q')?.slice(0, 100),
-      isApplicationSource(source) ? source : undefined,
+      source?.trim() || undefined,
     ),
   );
 });

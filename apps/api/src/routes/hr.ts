@@ -22,6 +22,7 @@ import { hrApplicationRoutes } from './hr-applications.js';
 import { hrJobRoutes } from './hr-jobs.js';
 import { hrNewsRoutes } from './hr-news.js';
 import { hrReviewRoutes } from './hr-reviews.js';
+import { hrSourceRoutes } from './hr-sources.js';
 
 export const hrRoutes = new Hono<Env>();
 
@@ -50,6 +51,7 @@ signedIn.use(requireHr);
 signedIn.route('/jobs', hrJobRoutes);
 signedIn.route('/news', hrNewsRoutes);
 signedIn.route('/reviews', hrReviewRoutes);
+signedIn.route('/sources', hrSourceRoutes);
 signedIn.get('/dashboard', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await dashboard(db, now()));

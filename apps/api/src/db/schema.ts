@@ -27,17 +27,7 @@ export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
 export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
-/** Where an application came from (spec-cv-intake.md); "website" = the public form. */
-export const applicationSource = pgEnum('application_source', [
-  'website',
-  'email',
-  'zalo',
-  'referral',
-  'topcv',
-  'vietnamworks',
-  'facebook',
-  'other',
-]);
+
 /** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
 export const newsStatus = pgEnum('news_status', ['draft', 'published', 'hidden']);
 
@@ -116,7 +106,11 @@ export const applications = pgTable(
     /** Consent evidence (BR-12). */
     consentAt: tz('consent_at').notNull(),
     policyVersion: text('policy_version').notNull(),
-    source: applicationSource('source').notNull().default('website'),
+    /** Key in application_sources (spec-custom-sources.md); "website" = the public form. */
+    source: text('source')
+      .notNull()
+      .default('website')
+      .references((): AnyPgColumn => applicationSources.key, { onDelete: 'restrict' }),
     /** "Ai giới thiệu", for a referral. */
     referrer: text('referrer'),
     /** HR who added it (spec-cv-intake.md); null = sent by the candidate. */
@@ -347,6 +341,28 @@ export type NewsPost = typeof newsPosts.$inferSelect;
 export type NewNewsPost = typeof newsPosts.$inferInsert;
 export type NewsTag = typeof newsTags.$inferSelect;
 
+export const sourceKind = pgEnum('source_kind', ['system', 'builtin', 'custom']);
+
+/**
+ * HR's list of application sources (spec-custom-sources.md). The key never changes, so renaming keeps every
+ * application and the statistics under the same source.
+ */
+export const applicationSources = pgTable(
+  'application_sources',
+  {
+    key: text('key').primaryKey(),
+    name: text('name').notNull(),
+    /** sourceNameKey(name): two sources can never have the "same" name (case, tones, spaces). */
+    nameKey: text('name_key').notNull(),
+    kind: sourceKind('kind').notNull().default('custom'),
+    hidden: boolean('hidden').notNull().default(false),
+    position: integer('position').notNull().default(0),
+    createdBy: text('created_by'),
+    createdAt,
+  },
+  (t) => [uniqueIndex('application_sources_name_key_idx').on(t.nameKey)],
+);
+
 /** "Lịch sử CV": who replaced an application's CV and what it was before (only the newest file is kept). */
 export const cvChanges = pgTable(
   'cv_changes',
@@ -448,4 +464,5 @@ export const reviewEvents = pgTable(
 );
 
 export type ReviewBatch = typeof reviewBatches.$inferSelect;
+export type ApplicationSourceRow = typeof applicationSources.$inferSelect;
 export type ReviewItem = typeof reviewItems.$inferSelect;
