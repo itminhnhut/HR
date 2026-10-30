@@ -1,3 +1,4 @@
+import type { SourceDto } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -42,8 +43,16 @@ beforeAll(() => {
     this.removeAttribute('open');
   };
 });
+let sourceList: SourceDto[];
 beforeEach(() => {
   posts = 0;
+  sourceList = [
+    { key: 'website', name: 'Website', kind: 'system', hidden: false, applications: 3 },
+    { key: 'email', name: 'Email', kind: 'builtin', hidden: false, applications: 0 },
+    { key: 'zalo', name: 'Zalo', kind: 'builtin', hidden: false, applications: 1 },
+    { key: 'topcv', name: 'TopCV', kind: 'builtin', hidden: true, applications: 0 },
+    { key: 'other', name: 'Khác', kind: 'builtin', hidden: false, applications: 0 },
+  ];
   parseReply = parsedCv();
   addReply = duplicate;
   vi.stubGlobal(
@@ -58,6 +67,12 @@ beforeEach(() => {
         });
       }
       if (url.endsWith('/hr/applications/parse-cv')) return parseReply();
+      if (url.endsWith('/hr/sources') && init?.method === 'POST') {
+        const { name } = JSON.parse(String(init.body)) as { name: string };
+        sourceList = [...sourceList, { key: 'linkedin', name, kind: 'custom', hidden: false, applications: 0 }];
+        return reply(201, sourceList[sourceList.length - 1]);
+      }
+      if (url.endsWith('/hr/sources')) return reply(200, sourceList);
       if (init?.method === 'POST') {
         posts += 1;
         return addReply();
@@ -216,5 +231,31 @@ describe('HR adds an application from a CV file', () => {
     // Assert
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.getByLabelText<HTMLInputElement>('Họ và tên').value).toBe('');
+  });
+});
+
+describe('HR picks the source', () => {
+  it('should offer visible sources only, never "Website" nor a hidden one', async () => {
+    show();
+    const select = await screen.findByLabelText('Nguồn hồ sơ');
+    await screen.findByRole('option', { name: 'Zalo' });
+    const names = [...select.querySelectorAll('option')].map((o) => o.textContent);
+    expect(names).toEqual(['Chọn nguồn…', 'Email', 'Zalo', 'Khác', '+ Thêm nguồn mới…']);
+  });
+
+  it('should add a new source and pick it at once', async () => {
+    // Arrange
+    show();
+    const select = await screen.findByLabelText('Nguồn hồ sơ');
+    await screen.findByRole('option', { name: 'Zalo' });
+
+    // Act
+    await userEvent.selectOptions(select, '+ Thêm nguồn mới…');
+    await userEvent.type(screen.getByLabelText('Tên nguồn mới'), 'LinkedIn');
+    await userEvent.click(screen.getByRole('button', { name: 'Thêm nguồn' }));
+
+    // Assert
+    await screen.findByRole('option', { name: 'LinkedIn' });
+    expect((screen.getByLabelText('Nguồn hồ sơ') as HTMLSelectElement).value).toBe('linkedin');
   });
 });

@@ -1,16 +1,15 @@
-import { APPLICATION_SOURCE_LABEL, HR_SOURCES, type ApplicationDetailDto, type HrSource } from '@careers/shared';
+import { REFERRAL_SOURCE, sourceName, type ApplicationDetailDto } from '@careers/shared';
 import { useState } from 'react';
 import { ApiError, type CvInput } from '../../../api';
-import { useApplicationEdit } from '../../../api/queries';
+import { useApplicationEdit, useSources } from '../../../api/queries';
 import { CvPicker } from '../../../site/CvPicker';
 import { Button } from '../../../ui/Button';
-import { SelectField, TextField } from '../../../ui/Field';
+import { TextField } from '../../../ui/Field';
 import { Icon } from '../../../ui/icons';
 import { PhoneField } from '../../../ui/PhoneField';
 import { errorMessage } from '../parts';
 import { shortTime } from '../reviews/reviewModel';
-
-const isHrSource = (v: string): v is HrSource => (HR_SOURCES as readonly string[]).includes(v);
+import { SourceSelect } from '../sources/SourceSelect';
 
 function ReplaceCv({ app, onDone }: { app: ApplicationDetailDto; onDone: () => void }) {
   const { replaceCv } = useApplicationEdit(app.id);
@@ -48,7 +47,7 @@ function EditContact({ app, onDone }: { app: ApplicationDetailDto; onDone: () =>
   const { updateContact } = useApplicationEdit(app.id);
   const [phone, setPhone] = useState(app.phone);
   const [email, setEmail] = useState(app.email ?? '');
-  const [source, setSource] = useState<HrSource>(isHrSource(app.source) ? app.source : 'other');
+  const [source, setSource] = useState(app.source);
   const [referrer, setReferrer] = useState(app.referrer ?? '');
   const errors = updateContact.error instanceof ApiError ? updateContact.error.fieldErrors : {};
   return (
@@ -68,18 +67,8 @@ function EditContact({ app, onDone }: { app: ApplicationDetailDto; onDone: () =>
         onChange={(e) => setEmail(e.target.value)}
         error={errors.email}
       />
-      <SelectField
-        label="Nguồn"
-        value={source}
-        onChange={(e) => isHrSource(e.target.value) && setSource(e.target.value)}
-      >
-        {HR_SOURCES.map((s) => (
-          <option key={s} value={s}>
-            {APPLICATION_SOURCE_LABEL[s]}
-          </option>
-        ))}
-      </SelectField>
-      {source === 'referral' && (
+      <SourceSelect label="Nguồn" value={source} onChange={setSource} current={app.source} error={errors.source} />
+      {source === REFERRAL_SOURCE && (
         <TextField
           label="Ai giới thiệu"
           value={referrer}
@@ -105,8 +94,9 @@ function EditContact({ app, onDone }: { app: ApplicationDetailDto; onDone: () =>
 }
 
 function Origin({ app }: { app: ApplicationDetailDto }) {
+  const sources = useSources().data ?? [];
   const parts = [
-    `Nguồn: ${APPLICATION_SOURCE_LABEL[app.source]}`,
+    `Nguồn: ${sourceName(sources, app.source)}`,
     app.referrer && `giới thiệu: ${app.referrer}`,
     app.addedBy && `HR thêm: ${app.addedBy}`,
     app.consentBy && `xác nhận đồng ý: ${app.consentBy}`,

@@ -1,14 +1,13 @@
 import {
-  ALL_SOURCES,
-  APPLICATION_SOURCE_LABEL,
+  sourceName,
+  WEBSITE_SOURCE,
   formatTimestamp,
-  isApplicationSource,
   type ApplicationRowDto,
   type ApplicationStatus,
 } from '@careers/shared';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { useApplications, useScorePending } from '../../api/queries';
+import { useApplications, useScorePending, useSources } from '../../api/queries';
 import { useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { Dialog, SheetHandle } from '../../ui/Dialog';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
@@ -20,6 +19,7 @@ import { interviewLabel } from './applicants/InterviewField';
 import { apiMessage, Avatar, FilterTabs, PageHeading, type TabItem } from './parts';
 import { canSendForReview, PickBar, ReviewMark, usePicking } from './reviews/PickForReview';
 import { SendReviewDialog } from './reviews/SendReviewDialog';
+import { SourceFilter } from './sources/SourceFilter';
 
 type TabKey = ApplicationStatus | 'all';
 
@@ -132,7 +132,8 @@ function ApplicantRow({
 
 /** Review state, where it came from (when not the site) and "CV mới" from the candidate. */
 function RowMarks({ row }: { row: ApplicationRowDto }) {
-  if (!row.review && row.source === 'website' && !row.cvUpdatedByCandidate) return null;
+  const sources = useSources().data ?? [];
+  if (!row.review && row.source === WEBSITE_SOURCE && !row.cvUpdatedByCandidate) return null;
   return (
     <span className="flex flex-wrap gap-1">
       {row.review && <ReviewMark review={row.review} />}
@@ -141,9 +142,9 @@ function RowMarks({ row }: { row: ApplicationRowDto }) {
           Ứng viên vừa cập nhật CV
         </span>
       )}
-      {row.source !== 'website' && (
+      {row.source !== WEBSITE_SOURCE && (
         <span className="w-fit rounded-full border border-line bg-white px-2 py-0.5 text-[11px] text-slate">
-          HR thêm · {APPLICATION_SOURCE_LABEL[row.source]}
+          HR thêm · {sourceName(sources, row.source)}
         </span>
       )}
     </span>
@@ -201,8 +202,7 @@ export function HrApplicantsPage() {
   const q = params.get('q') ?? '';
   const [draft, setDraft] = useState(q);
   const search = useDeferredValue(draft.trim());
-  const sourceParam = params.get('nguon');
-  const source = isApplicationSource(sourceParam) ? sourceParam : undefined;
+  const source = params.get('nguon') || undefined;
   const apps = useApplications(jobId, search, source);
   const [adding, setAdding] = useState(false);
   // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
@@ -247,7 +247,7 @@ export function HrApplicantsPage() {
             <select
               value={jobId ?? ''}
               onChange={(e) => setParam('tin', e.target.value || null)}
-              className="min-w-0 flex-1 appearance-none border-0 bg-transparent text-sm text-navy outline-none sm:min-w-[240px]"
+              className="min-w-0 flex-1 appearance-none self-stretch border-0 bg-transparent text-sm text-navy outline-none sm:min-w-[240px]"
             >
               <option value="">Tất cả vị trí</option>
               {(apps.data?.jobs ?? []).map((j) => (
@@ -289,21 +289,7 @@ export function HrApplicantsPage() {
             Đang chấm CV, còn {scoring} hồ sơ…
           </span>
         )}
-        <label className="flex items-center gap-2 text-sm text-body sm:ml-auto">
-          <span className="sr-only sm:not-sr-only">Nguồn</span>
-          <select
-            value={source ?? ''}
-            onChange={(e) => setParam('nguon', e.target.value || null)}
-            className="min-h-11 rounded-control border border-field bg-white px-2.5 text-sm text-navy"
-          >
-            <option value="">Mọi nguồn</option>
-            {ALL_SOURCES.map((s) => (
-              <option key={s} value={s}>
-                {APPLICATION_SOURCE_LABEL[s]}
-              </option>
-            ))}
-          </select>
-        </label>
+        <SourceFilter value={source} onChange={(key) => setParam('nguon', key)} />
         <button
           type="button"
           onClick={() => setAdding(true)}

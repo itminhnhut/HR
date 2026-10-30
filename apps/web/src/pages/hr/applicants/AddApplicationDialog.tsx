@@ -1,10 +1,8 @@
 import {
-  APPLICATION_SOURCE_LABEL,
+  REFERRAL_SOURCE,
   APPLICATION_STATUS_LABEL,
   formatTimestamp,
-  HR_SOURCES,
   type DuplicateApplicationDto,
-  type HrSource,
 } from '@careers/shared';
 import { useState, type FormEvent } from 'react';
 import { api, ApiError, type CvInput } from '../../../api';
@@ -16,6 +14,7 @@ import { Checkbox, FieldError, SelectField, TextArea, TextField } from '../../..
 import { Notice } from '../../../ui/feedback';
 import { PhoneField } from '../../../ui/PhoneField';
 import { errorMessage } from '../parts';
+import { SourceSelect } from '../sources/SourceSelect';
 import { FROM_CV_HINT, useCvAutofill, type CvField } from './useCvAutofill';
 
 /** The existing application the API points to when this phone already applied for this job. */
@@ -156,7 +155,7 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
   const jobs = (useHrJobs().data?.jobs ?? []).filter((j) => j.status !== 'draft');
   const add = useAddApplication();
   const autofill = useCvAutofill();
-  const [form, setForm] = useState({ jobId: '', source: '' as HrSource | '', referrer: '', note: '' });
+  const [form, setForm] = useState({ jobId: '', source: '', referrer: '', note: '' });
   const [cv, setCv] = useState<CvInput | null>(null);
   const [consent, setConsent] = useState(false);
   const set = (key: keyof typeof form) => (value: string) => setForm((f) => ({ ...f, [key]: value }));
@@ -212,18 +211,10 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
           </SelectField>
           <FieldError>{errors.jobId}</FieldError>
         </div>
-        <div className={`flex flex-col gap-1 ${form.source === 'referral' ? '' : 'sm:col-span-2'}`}>
-          <SelectField label="Nguồn hồ sơ" value={form.source} onChange={(e) => set('source')(e.target.value)}>
-            <option value="">Chọn nguồn…</option>
-            {HR_SOURCES.map((s) => (
-              <option key={s} value={s}>
-                {APPLICATION_SOURCE_LABEL[s]}
-              </option>
-            ))}
-          </SelectField>
-          <FieldError>{errors.source}</FieldError>
+        <div className={`flex flex-col gap-1 ${form.source === REFERRAL_SOURCE ? '' : 'sm:col-span-2'}`}>
+          <SourceSelect value={form.source} onChange={set('source')} error={errors.source} />
         </div>
-        {form.source === 'referral' && (
+        {form.source === REFERRAL_SOURCE && (
           <TextField
             label="Ai giới thiệu"
             value={form.referrer}

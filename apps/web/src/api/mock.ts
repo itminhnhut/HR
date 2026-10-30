@@ -903,9 +903,34 @@ export const mockApi: Api = {
   hrReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   hrUpdateContact: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   candidateReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrSources: async () =>
+    delay(
+      DEMO_SOURCES.map(([key, name], i) => ({
+        key,
+        name,
+        kind: i === 0 ? ('system' as const) : ('builtin' as const),
+        hidden: false,
+        applications: 0,
+      })),
+    ),
+  hrCreateSource: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrUpdateSource: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrDeleteSource: () => fail(501, NO_CV_CHANGES_IN_DEMO),
 };
 
 const NO_CV_CHANGES_IN_DEMO = 'Bản demo chưa hỗ trợ thêm hoặc đổi CV.';
+
+/** The sources the site ships with; the demo cannot add more. */
+const DEMO_SOURCES: [string, string][] = [
+  ['website', 'Website'],
+  ['email', 'Email'],
+  ['zalo', 'Zalo'],
+  ['referral', 'Người giới thiệu'],
+  ['topcv', 'TopCV'],
+  ['vietnamworks', 'VietnamWorks'],
+  ['facebook', 'Facebook'],
+  ['other', 'Khác'],
+];
 
 const NO_REVIEWS_IN_DEMO = 'Bản demo chưa có phần sếp duyệt ứng viên.';
 

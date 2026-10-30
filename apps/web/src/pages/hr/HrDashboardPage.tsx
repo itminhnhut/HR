@@ -1,7 +1,7 @@
-import { APPLICATION_SOURCE_LABEL, formatDate, STATUS_LABEL, type DashboardDto } from '@careers/shared';
+import { formatDate, sourceName, STATUS_LABEL, type DashboardDto } from '@careers/shared';
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { useDashboard } from '../../api/queries';
+import { useDashboard, useSources } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { ButtonLink } from '../../ui/Button';
 import { SelectField } from '../../ui/Field';
@@ -205,6 +205,7 @@ function EndingJobs({ data }: { data: DashboardDto }) {
 
 /** Where the last 30 days' applications came from (spec-cv-intake.md): a bar per source, each opens the list. */
 function Sources({ data }: { data: DashboardDto }) {
+  const names = useSources().data ?? [];
   const max = Math.max(1, ...data.bySource.map((s) => s.count));
   return (
     <Panel title="Hồ sơ 30 ngày qua theo nguồn">
@@ -218,7 +219,7 @@ function Sources({ data }: { data: DashboardDto }) {
                 to={`/hr/ho-so?nguon=${source}`}
                 className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-3 text-sm text-navy no-underline hover:underline"
               >
-                <span>{APPLICATION_SOURCE_LABEL[source]}</span>
+                <span className="truncate">{sourceName(names, source)}</span>
                 <span aria-hidden="true" className="h-2.5 overflow-hidden rounded-full bg-tint">
                   <span className="block h-full rounded-full bg-accent" style={{ width: `${(count / max) * 100}%` }} />
                 </span>
