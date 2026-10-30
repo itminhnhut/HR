@@ -1,15 +1,25 @@
-import { formatTimestamp, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
+import {
+  ALL_SOURCES,
+  APPLICATION_SOURCE_LABEL,
+  formatTimestamp,
+  isApplicationSource,
+  type ApplicationRowDto,
+  type ApplicationStatus,
+} from '@careers/shared';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useApplications, useScorePending } from '../../api/queries';
 import { useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { Dialog, SheetHandle } from '../../ui/Dialog';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
+import { AddApplicationDialog } from './applicants/AddApplicationDialog';
 import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { percentTone } from './applicants/CvMatch';
 import { interviewLabel } from './applicants/InterviewField';
 import { apiMessage, Avatar, FilterTabs, PageHeading, type TabItem } from './parts';
+import { canSendForReview, PickBar, ReviewMark, usePicking } from './reviews/PickForReview';
+import { SendReviewDialog } from './reviews/SendReviewDialog';
 
 type TabKey = ApplicationStatus | 'all';
 
@@ -43,17 +53,46 @@ function StatusText({ status }: { status: ApplicationStatus }) {
   }
 }
 
-function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; current: boolean; onPick: () => void }) {
+/** While picking for "Gửi sếp duyệt" a row is a checkbox; see canSendForReview for who cannot be picked. */
+interface RowPick {
+  on: boolean;
+  /** Already waiting for a reviewer, already invited, or already declined. */
+  blocked: boolean;
+  toggle: () => void;
+}
+
+function ApplicantRow({
+  row,
+  current,
+  onPick,
+  pick,
+}: {
+  row: ApplicationRowDto;
+  current: boolean;
+  onPick: () => void;
+  pick?: RowPick;
+}) {
   return (
     <li className="border-b border-line-soft last:border-b-0">
       <button
         type="button"
-        onClick={onPick}
-        aria-current={current ? 'true' : undefined}
-        className={`flex w-full items-center gap-3.5 border-0 border-l-2 px-4 py-3.5 text-left text-navy transition-colors hover:bg-hover sm:px-5 sm:py-4 ${
-          current ? 'border-navy bg-mist' : 'border-transparent bg-white'
+        onClick={pick ? pick.toggle : onPick}
+        disabled={pick?.blocked}
+        role={pick ? 'checkbox' : undefined}
+        aria-checked={pick ? pick.on : undefined}
+        aria-current={!pick && current ? 'true' : undefined}
+        className={`flex w-full items-center gap-3.5 border-0 border-l-2 px-4 py-3.5 text-left text-navy transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:py-4 ${
+          pick?.on ? 'border-ok bg-ok-soft' : !pick && current ? 'border-navy bg-mist' : 'border-transparent bg-white'
         }`}
       >
+        {pick && (
+          <span
+            aria-hidden="true"
+            className={`flex size-[22px] shrink-0 items-center justify-center rounded-[5px] border-2 ${pick.on ? 'border-ok bg-ok text-white' : 'border-silver bg-white'}`}
+          >
+            {pick.on && <Icon name="check" size={14} stroke={2.4} />}
+          </span>
+        )}
         <Avatar name={row.fullName} />
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-[15px] font-semibold">{row.fullName}</span>
@@ -65,6 +104,7 @@ function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; curren
             </span>
           )}
           {row.noteLine && <span className="truncate text-xs italic text-muted">“{row.noteLine}”</span>}
+          <RowMarks row={row} />
         </span>
         <span className="flex shrink-0 flex-col items-end gap-1">
           <StatusText status={row.status} />
@@ -87,6 +127,26 @@ function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; curren
         </span>
       </button>
     </li>
+  );
+}
+
+/** Review state, where it came from (when not the site) and "CV mới" from the candidate. */
+function RowMarks({ row }: { row: ApplicationRowDto }) {
+  if (!row.review && row.source === 'website' && !row.cvUpdatedByCandidate) return null;
+  return (
+    <span className="flex flex-wrap gap-1">
+      {row.review && <ReviewMark review={row.review} />}
+      {row.cvUpdatedByCandidate && (
+        <span className="w-fit rounded-full border border-cat-violet-line bg-cat-violet-soft px-2 py-0.5 text-[11px] font-semibold text-cat-violet">
+          Ứng viên vừa cập nhật CV
+        </span>
+      )}
+      {row.source !== 'website' && (
+        <span className="w-fit rounded-full border border-line bg-white px-2 py-0.5 text-[11px] text-slate">
+          HR thêm · {APPLICATION_SOURCE_LABEL[row.source]}
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -141,7 +201,10 @@ export function HrApplicantsPage() {
   const q = params.get('q') ?? '';
   const [draft, setDraft] = useState(q);
   const search = useDeferredValue(draft.trim());
-  const apps = useApplications(jobId, search);
+  const sourceParam = params.get('nguon');
+  const source = isApplicationSource(sourceParam) ? sourceParam : undefined;
+  const apps = useApplications(jobId, search, source);
+  const [adding, setAdding] = useState(false);
   // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
   const tab: TabKey = isTab(tabParam) ? tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
   const showSkeleton = useDelayedFlag(apps.isPending);
@@ -168,6 +231,8 @@ export function HrApplicantsPage() {
   // CV files without a percent yet are scored in the background so the list can be sorted by match.
   const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv && a.matchPercent == null));
   const tabs: TabItem<TabKey>[] = TABS.map(([key, label]) => ({ key, label, count: counts?.[key] }));
+  const navigate = useNavigate();
+  const picking = usePicking(apps.data?.applications ?? []);
 
   return (
     <div className="flex flex-col gap-[22px]">
@@ -224,6 +289,39 @@ export function HrApplicantsPage() {
             Đang chấm CV, còn {scoring} hồ sơ…
           </span>
         )}
+        <label className="flex items-center gap-2 text-sm text-body sm:ml-auto">
+          <span className="sr-only sm:not-sr-only">Nguồn</span>
+          <select
+            value={source ?? ''}
+            onChange={(e) => setParam('nguon', e.target.value || null)}
+            className="min-h-11 rounded-control border border-field bg-white px-2.5 text-sm text-navy"
+          >
+            <option value="">Mọi nguồn</option>
+            {ALL_SOURCES.map((s) => (
+              <option key={s} value={s}>
+                {APPLICATION_SOURCE_LABEL[s]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="inline-flex min-h-11 items-center gap-2 rounded-control border-0 bg-navy px-3.5 text-sm font-semibold text-white hover:bg-accent"
+        >
+          <Icon name="plus" size={16} />
+          Thêm hồ sơ
+        </button>
+        {!picking.active && (apps.data?.applications.length ?? 0) > 0 && (
+          <button
+            type="button"
+            onClick={picking.start}
+            className="inline-flex min-h-11 items-center gap-2 rounded-control border border-navy bg-white px-3.5 text-sm font-semibold text-navy hover:bg-mist"
+          >
+            <Icon name="checkSquare" size={16} />
+            Gửi sếp duyệt
+          </button>
+        )}
       </div>
 
       <FilterTabs
@@ -252,6 +350,15 @@ export function HrApplicantsPage() {
                 row={row}
                 current={row.id === selectedId}
                 onPick={() => setParam('id', row.id)}
+                pick={
+                  picking.active
+                    ? {
+                        on: picking.ids.has(row.id),
+                        blocked: !canSendForReview(row),
+                        toggle: () => picking.toggle(row.id),
+                      }
+                    : undefined
+                }
               />
             ))}
             {rows.length === 0 && (
@@ -288,8 +395,29 @@ export function HrApplicantsPage() {
         </div>
       )}
 
+      {picking.active && (
+        <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />
+      )}
+      <AddApplicationDialog
+        open={adding}
+        onClose={() => setAdding(false)}
+        onAdded={(id) => {
+          setAdding(false);
+          setParam('id', id);
+        }}
+      />
+      <SendReviewDialog
+        rows={picking.rows}
+        open={picking.sending}
+        onClose={() => picking.setSending(false)}
+        onSent={(batchId) => {
+          picking.stop();
+          navigate(`/hr/duyet/${batchId}`);
+        }}
+      />
+
       {!isDesktop && (
-        <Dialog open={!!selectedId} onClose={() => setParam('id', null)} label="Chi tiết ứng viên">
+        <Dialog open={!!selectedId && !picking.active} onClose={() => setParam('id', null)} label="Chi tiết ứng viên">
           <div className="max-h-[92dvh] overflow-y-auto px-[18px] pb-[26px] pt-2.5 sm:px-6 sm:pt-6">
             <SheetHandle />
             {selectedId && (

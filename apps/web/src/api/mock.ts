@@ -185,12 +185,20 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     matchPercent: null,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt,
+    review: null,
+    source: 'website',
+    cvUpdatedByCandidate: false,
   };
 }
 
 function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDetailDto {
   return {
     ...appRow(db, a),
+    reviewInfo: null,
+    referrer: null,
+    addedBy: null,
+    consentBy: null,
+    cvHistory: [],
     email: a.email,
     message: a.message,
     cvFileName: a.cvFileName,
@@ -363,6 +371,9 @@ export const mockApi: Api = {
             place: placeLabel(job.address),
             createdAt: a.createdAt,
             stage: candidateStage(a.status, !acceptsApplications(statusOf(job))),
+            hasCv: !!(a.cvFileName || a.cvLink),
+            cvBlock: NO_CV_CHANGES_IN_DEMO,
+            cvChangedAt: null,
           },
         ];
       });
@@ -478,6 +489,7 @@ export const mockApi: Api = {
     const waitSince = `${addDays(today, -3)}T00:00:00.000+07:00`;
     const due = dueJobIds(db, now);
     return delay({
+      bySource: [{ source: 'website' as const, count: perDay.reduce((n, d) => n + d.count, 0) }],
       newApplications: fresh.length,
       waitingOver3Days: fresh.filter((a) => new Date(a.createdAt) < new Date(waitSince)).length,
       perDay,
@@ -873,7 +885,27 @@ export const mockApi: Api = {
   },
 
   ...newsMockApi,
+
+  // "Sếp duyệt ứng viên" needs the real BE (a private link to share): the demo only says so.
+  hrReviews: async () => delay([]),
+  hrReview: () => fail(501, NO_REVIEWS_IN_DEMO),
+  hrCreateReview: () => fail(501, NO_REVIEWS_IN_DEMO),
+  hrReviewAction: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewPage: () => fail(404, NO_REVIEWS_IN_DEMO),
+  reviewDecide: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewDone: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewCvUrl: () => null,
+
+  // "Thêm và cập nhật CV" stores files: the real BE only.
+  hrAddApplication: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrUpdateContact: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  candidateReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
 };
+
+const NO_CV_CHANGES_IN_DEMO = 'Bản demo chưa hỗ trợ thêm hoặc đổi CV.';
+
+const NO_REVIEWS_IN_DEMO = 'Bản demo chưa có phần sếp duyệt ứng viên.';
 
 function messageTemplatesOf(db: MockDb) {
   const saved = new Map(db.messageTemplates.map((t) => [t.key, t]));

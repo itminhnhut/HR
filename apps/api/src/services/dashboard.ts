@@ -1,4 +1,4 @@
-import { addDays, effectiveStatus, todayInVietnam, type DashboardDto } from '@careers/shared';
+import { addDays, effectiveStatus, todayInVietnam, type ApplicationSource, type DashboardDto } from '@careers/shared';
 import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, jobs } from '../db/schema.js';
@@ -16,6 +16,13 @@ const firstLine = (text: string | null) =>
     .find((l) => l.trim())
     ?.trim() ?? null;
 
+/** Where the last 30 days' applications came from, biggest first (spec-cv-intake.md). */
+function countBySource(rows: { source: ApplicationSource }[]): DashboardDto['bySource'] {
+  const counts = new Map<ApplicationSource, number>();
+  for (const { source } of rows) counts.set(source, (counts.get(source) ?? 0) + 1);
+  return [...counts.entries()].map(([source, count]) => ({ source, count })).sort((a, b) => b.count - a.count);
+}
+
 /** The last 30 Vietnam days, oldest first. */
 function lastDays(now: Date): string[] {
   const today = todayInVietnam(now);
@@ -28,7 +35,7 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
   const [allJobs, recent, waiting, interviews] = await Promise.all([
     db.select().from(jobs),
     db
-      .select({ jobId: applications.jobId, createdAt: applications.createdAt })
+      .select({ jobId: applications.jobId, createdAt: applications.createdAt, source: applications.source })
       .from(applications)
       .where(gte(applications.createdAt, since)),
     db
@@ -84,6 +91,7 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
   const waitSince = new Date(`${addDays(today, -WAITING_DAYS)}T00:00:00.000+07:00`);
 
   return {
+    bySource: countBySource(recent),
     newApplications: waiting.length,
     waitingOver3Days: waiting.filter((a) => a.createdAt < waitSince).length,
     perDay,

@@ -27,6 +27,17 @@ export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
 export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
+/** Where an application came from (spec-cv-intake.md); "website" = the public form. */
+export const applicationSource = pgEnum('application_source', [
+  'website',
+  'email',
+  'zalo',
+  'referral',
+  'topcv',
+  'vietnamworks',
+  'facebook',
+  'other',
+]);
 /** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
 export const newsStatus = pgEnum('news_status', ['draft', 'published', 'hidden']);
 
@@ -105,6 +116,20 @@ export const applications = pgTable(
     /** Consent evidence (BR-12). */
     consentAt: tz('consent_at').notNull(),
     policyVersion: text('policy_version').notNull(),
+    source: applicationSource('source').notNull().default('website'),
+    /** "Ai giới thiệu", for a referral. */
+    referrer: text('referrer'),
+    /** HR who added it (spec-cv-intake.md); null = sent by the candidate. */
+    addedBy: text('added_by'),
+    /** HR who confirmed the candidate's consent for an added application. */
+    consentBy: text('consent_by'),
+    /** Times the candidate replaced the CV (CANDIDATE_CV_CHANGES_MAX). */
+    candidateCvChanges: integer('candidate_cv_changes').notNull().default(0),
+    cvChangedAt: tz('cv_changed_at'),
+    /** "candidate" or the HR's name. */
+    cvChangedBy: text('cv_changed_by'),
+    /** False after the candidate replaced the CV, until an HR opens the application. */
+    cvChangeSeen: boolean('cv_change_seen').notNull().default(true),
     /** Time of the latest submission; a re-apply within 30 days moves it (BR-07). */
     createdAt,
     updatedAt,
@@ -321,3 +346,106 @@ export type NewsCategory = typeof newsCategories.$inferSelect;
 export type NewsPost = typeof newsPosts.$inferSelect;
 export type NewNewsPost = typeof newsPosts.$inferInsert;
 export type NewsTag = typeof newsTags.$inferSelect;
+
+/** "Lịch sử CV": who replaced an application's CV and what it was before (only the newest file is kept). */
+export const cvChanges = pgTable(
+  'cv_changes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    /** "candidate" or the HR's name. */
+    changedBy: text('changed_by').notNull(),
+    /** File name or link of the replaced CV; null when there was none. */
+    previous: text('previous'),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('cv_changes_application_idx').on(t.applicationId, t.at)],
+);
+
+export const reviewDecision = pgEnum('review_decision', ['approve', 'reject', 'ask']);
+export const reviewPick = pgEnum('review_pick', ['yes', 'maybe']);
+
+/**
+ * "Sếp duyệt ứng viên" (spec-boss-review.md): a batch of applications sent to a reviewer through a private link,
+ * /duyet/<token>, that works without signing in until it expires or HR revokes it.
+ */
+export const reviewBatches = pgTable(
+  'review_batches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** 32 random bytes, base64url: the whole secret of the reviewer's link. */
+    token: text('token').notNull(),
+    title: text('title').notNull(),
+    /** As HR typed it, e.g. "Ngọc Anh (Phòng Nhân sự)". */
+    senderName: text('sender_name').notNull(),
+    /** Who the link is for, e.g. "anh Minh": shown on the page and in the CV watermark. */
+    reviewerName: text('reviewer_name').notNull(),
+    message: text('message'),
+    respondBy: tz('respond_by').notNull(),
+    /** respondBy + REVIEW_LINK_GRACE_DAYS: after it the page is read only. */
+    expiresAt: tz('expires_at').notNull(),
+    revokedAt: tz('revoked_at'),
+    /** First time the reviewer opened the link. */
+    openedAt: tz('opened_at'),
+    /** "Báo HR: đã xem xong". */
+    doneAt: tz('done_at'),
+    /** Name (or email) of the HR who sent it. */
+    createdBy: text('created_by').notNull(),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [uniqueIndex('review_batches_token_idx').on(t.token)],
+);
+
+/** One application in a batch: HR's view when sending, the reviewer's decision, HR's reply to a question. */
+export const reviewItems = pgTable(
+  'review_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    batchId: uuid('batch_id')
+      .notNull()
+      .references(() => reviewBatches.id, { onDelete: 'cascade' }),
+    /** Deleting an application (candidate's request, 30 days after the job) removes it from every batch. */
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    hrPick: reviewPick('hr_pick').notNull().default('maybe'),
+    hrComment: text('hr_comment'),
+    decision: reviewDecision('decision'),
+    reviewerComment: text('reviewer_comment'),
+    decidedAt: tz('decided_at'),
+    hrReply: text('hr_reply'),
+    hrRepliedAt: tz('hr_replied_at'),
+    createdAt,
+  },
+  (t) => [
+    unique('review_items_batch_application_unique').on(t.batchId, t.applicationId),
+    index('review_items_application_idx').on(t.applicationId),
+  ],
+);
+
+/** What happened to a batch, for HR's "Nhật ký". The application link is dropped if the application is deleted. */
+export const reviewEvents = pgTable(
+  'review_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    batchId: uuid('batch_id')
+      .notNull()
+      .references(() => reviewBatches.id, { onDelete: 'cascade' }),
+    applicationId: uuid('application_id').references(() => applications.id, { onDelete: 'set null' }),
+    /** ReviewEventKind from @careers/shared. */
+    kind: text('kind').notNull(),
+    decision: reviewDecision('decision'),
+    /** The reviewer's name or "HR: <name>". */
+    actor: text('actor').notNull(),
+    detail: text('detail'),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('review_events_batch_idx').on(t.batchId, t.at)],
+);
+
+export type ReviewBatch = typeof reviewBatches.$inferSelect;
+export type ReviewItem = typeof reviewItems.$inferSelect;

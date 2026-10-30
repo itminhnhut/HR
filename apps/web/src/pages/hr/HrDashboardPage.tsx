@@ -1,4 +1,4 @@
-import { formatDate, STATUS_LABEL, type DashboardDto } from '@careers/shared';
+import { APPLICATION_SOURCE_LABEL, formatDate, STATUS_LABEL, type DashboardDto } from '@careers/shared';
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useDashboard } from '../../api/queries';
@@ -203,6 +203,35 @@ function EndingJobs({ data }: { data: DashboardDto }) {
   );
 }
 
+/** Where the last 30 days' applications came from (spec-cv-intake.md): a bar per source, each opens the list. */
+function Sources({ data }: { data: DashboardDto }) {
+  const max = Math.max(1, ...data.bySource.map((s) => s.count));
+  return (
+    <Panel title="Hồ sơ 30 ngày qua theo nguồn">
+      {data.bySource.length === 0 ? (
+        <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong 30 ngày qua.</p>
+      ) : (
+        <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
+          {data.bySource.map(({ source, count }) => (
+            <li key={source}>
+              <Link
+                to={`/hr/ho-so?nguon=${source}`}
+                className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-3 text-sm text-navy no-underline hover:underline"
+              >
+                <span>{APPLICATION_SOURCE_LABEL[source]}</span>
+                <span aria-hidden="true" className="h-2.5 overflow-hidden rounded-full bg-tint">
+                  <span className="block h-full rounded-full bg-accent" style={{ width: `${(count / max) * 100}%` }} />
+                </span>
+                <span className="font-semibold tabular-nums">{count}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Panel>
+  );
+}
+
 function DashboardSkeleton() {
   return (
     <div aria-hidden="true" className="flex flex-col gap-5">
@@ -265,6 +294,7 @@ export function HrDashboardPage() {
           <div className="grid items-start gap-5 xl:grid-cols-2">
             <Interviews data={data} />
             <EndingJobs data={data} />
+            <Sources data={data} />
           </div>
         </div>
       )}

@@ -143,6 +143,13 @@ export const applicationUpdateSchema = z.object({
   /** ISO time of the interview; null clears it. */
   interviewAt: z.iso.datetime({ offset: true }).nullable().optional(),
   note: z.string().max(NOTE_MAX, `Ghi chú tối đa ${NOTE_MAX} ký tự.`).nullable().optional(),
+  /** "Vẫn hẹn": invite although the reviewer has not approved yet (spec-boss-review.md); logged for the reviewer. */
+  reviewBypassReason: z
+    .string()
+    .trim()
+    .min(5, 'Ghi lý do hẹn khi sếp chưa duyệt (ít nhất 5 ký tự).')
+    .max(300, 'Lý do tối đa 300 ký tự.')
+    .optional(),
 });
 
 export function fieldErrors(error: z.ZodError): Record<string, string> {

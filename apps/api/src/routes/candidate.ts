@@ -7,6 +7,7 @@ import { readJson, readMultipart } from '../lib/request.js';
 import { clearSession, setSession } from '../lib/session.js';
 import { deleteCandidateData, overview, updateCandidate } from '../services/candidate-account.js';
 import { currentCandidate, requireCandidate, signInWithGoogle, toCandidateMe } from '../services/candidate-auth.js';
+import { candidateReplaceCv } from '../services/candidate-cv.js';
 
 const idTokenSchema = z.object({ idToken: z.string().min(1) });
 
@@ -36,6 +37,14 @@ candidateRoutes.get('/me', async (c) => {
 candidateRoutes.patch('/me', async (c) => {
   const candidate = await requireCandidate(c);
   return c.json(await updateCandidate(c.get('deps'), candidate, await readMultipart(c, 'cv')));
+});
+
+/** "Cập nhật CV" of an application sent with this account's email (multipart: "cv" file, "cvLink" or "useSavedCv"). */
+candidateRoutes.put('/applications/:id/cv', async (c) => {
+  const candidate = await requireCandidate(c);
+  const deps = c.get('deps');
+  await candidateReplaceCv(deps, candidate, c.req.param('id'), await readMultipart(c, 'cv'));
+  return c.json(await overview(deps.db, candidate, deps.now()));
 });
 
 candidateRoutes.delete('/me', async (c) => {

@@ -9,7 +9,7 @@ import { fillSiteHtml } from './site-html';
 const DISABLE_KEY = `ga-disable-${GA_ID}` as const;
 
 describe('isUntrackedPath', () => {
-  it.each(['/hr', '/hr/', '/hr/ho-so', '/ho-so-cua-toi', '/HR/ho-so', '/Ho-So-Cua-Toi'])(
+  it.each(['/hr', '/hr/', '/hr/ho-so', '/ho-so-cua-toi', '/HR/ho-so', '/Ho-So-Cua-Toi', '/duyet/abc'])(
     'should not track %s, where addresses can carry candidate names or phone numbers',
     (path) => {
       expect(isUntrackedPath(path)).toBe(true);

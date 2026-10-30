@@ -6,6 +6,7 @@ import {
   type ApplicationDetailDto,
   type ApplicationRowDto,
   type ApplicationsResponse,
+  type ApplicationSource,
   type ApplicationStatus,
   type HrMe,
   type SubscriberDto,
@@ -13,9 +14,10 @@ import {
 import { and, desc, eq, getTableColumns, inArray, ne } from 'drizzle-orm';
 import type { Deps } from '../deps.js';
 import type { Db } from '../db/index.js';
-import { applications, contactLog, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
+import { applications, contactLog, cvChanges, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
 import { scoreApplication, storedScore } from './cv-score.js';
-import { invalid, notFound } from '../lib/http-error.js';
+import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './review-model.js';
+import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { dueJobIds } from './hr-jobs.js';
 
@@ -36,7 +38,7 @@ const firstLine = (text: string | null) =>
     .find((l) => l.trim())
     ?.trim() ?? null;
 
-function toRow(a: ApplicationWithJob): ApplicationRowDto {
+function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): ApplicationRowDto {
   return {
     id: a.id,
     jobId: a.jobId,
@@ -49,7 +51,23 @@ function toRow(a: ApplicationWithJob): ApplicationRowDto {
     matchPercent: a.matchPercent,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
+    review,
+    source: a.source,
+    cvUpdatedByCandidate: a.cvChangedBy === 'candidate' && !a.cvChangeSeen,
   };
+}
+
+async function cvHistoryOf(db: Db, applicationId: string): Promise<ApplicationDetailDto['cvHistory']> {
+  const rows = await db
+    .select()
+    .from(cvChanges)
+    .where(eq(cvChanges.applicationId, applicationId))
+    .orderBy(desc(cvChanges.at));
+  return rows.map((r) => ({
+    by: r.changedBy === 'candidate' ? 'Ứng viên' : r.changedBy,
+    at: r.at.toISOString(),
+    previous: r.previous,
+  }));
 }
 
 async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetailDto> {
@@ -61,8 +79,14 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
     .from(contactLog)
     .where(eq(contactLog.applicationId, a.id))
     .orderBy(desc(contactLog.createdAt));
+  const reviewInfo = await latestReview(db, a.id);
   return {
-    ...toRow(a),
+    ...toRow(a, reviewMark(reviewInfo)),
+    reviewInfo,
+    referrer: a.referrer,
+    addedBy: a.addedBy,
+    consentBy: a.consentBy,
+    cvHistory: await cvHistoryOf(db, a.id),
     interviewMode: a.interviewMode,
     meetingUrl: a.meetingUrl,
     cvScore: await storedScore(db, a.id),
@@ -92,7 +116,12 @@ const emptyCounts = (): ApplicationsResponse['counts'] =>
   ({ all: 0, ...Object.fromEntries(STATUSES.map((s) => [s, 0])) }) as ApplicationsResponse['counts'];
 
 /** `q`: name or phone, any order, without tones ("huy 0797" finds Phạm Quốc Huy, 0797 586 611). */
-export async function listApplications(db: Db, jobId: string | undefined, q = ''): Promise<ApplicationsResponse> {
+export async function listApplications(
+  db: Db,
+  jobId: string | undefined,
+  q = '',
+  source?: ApplicationSource,
+): Promise<ApplicationsResponse> {
   if (jobId !== undefined && !isUuid(jobId)) return { applications: [], counts: emptyCounts(), jobs: [] };
   const [rows, jobsWithApplications] = await Promise.all([
     withJobTitle(db)
@@ -107,12 +136,22 @@ export async function listApplications(db: Db, jobId: string | undefined, q = ''
   // "+84 933 111 999" from a caller ID finds 0933111999.
   const digits = q.replace(/\D/g, '').replace(/^84(?=\d{9}$)/, '0');
   const found = rows.filter(
-    (row) => matchesQuery(`${row.fullName} ${row.phone}`, q) || (digits.length >= 3 && row.phone.includes(digits)),
+    (row) =>
+      (!source || row.source === source) &&
+      (matchesQuery(`${row.fullName} ${row.phone}`, q) || (digits.length >= 3 && row.phone.includes(digits))),
   );
   const counts = emptyCounts();
   counts.all = found.length;
   for (const row of found) counts[row.status] += 1;
-  return { applications: found.map(toRow), counts, jobs: jobsWithApplications };
+  const reviews = await latestReviews(
+    db,
+    found.map((row) => row.id),
+  );
+  return {
+    applications: found.map((row) => toRow(row, reviewMark(reviews.get(row.id) ?? null))),
+    counts,
+    jobs: jobsWithApplications,
+  };
 }
 
 async function findApplication(db: Db, id: string): Promise<ApplicationWithJob> {
@@ -124,9 +163,11 @@ async function findApplication(db: Db, id: string): Promise<ApplicationWithJob> 
 /** Opening an application marks it "seen" (the candidate sees "HR đã xem"). */
 export async function openApplication(db: Db, id: string): Promise<ApplicationDetailDto> {
   const row = await findApplication(db, id);
-  if (row.status !== 'new') return toDetail(db, row);
-  await db.update(applications).set({ status: 'seen' }).where(eq(applications.id, id));
-  return toDetail(db, { ...row, status: 'seen' });
+  // An HR has now seen the candidate's new CV too.
+  if (row.status !== 'new' && row.cvChangeSeen) return toDetail(db, row);
+  const patch = { status: row.status === 'new' ? ('seen' as const) : row.status, cvChangeSeen: true };
+  await db.update(applications).set(patch).where(eq(applications.id, id));
+  return toDetail(db, { ...row, ...patch });
 }
 
 export async function updateApplication(
@@ -139,7 +180,8 @@ export async function updateApplication(
   const row = await findApplication(db, id);
   const parsed = applicationUpdateSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
-  const { status, note, interviewAt, interviewMode, meetingUrl } = parsed.data;
+  const { status, note, interviewAt, interviewMode, meetingUrl, reviewBypassReason } = parsed.data;
+  if (status === 'interview' && row.status !== 'interview') await checkReview(db, row, reviewBypassReason, hr, now);
   // An interview time only belongs to "Hẹn phỏng vấn".
   if (interviewAt && (status ?? row.status) !== 'interview') {
     throw invalid('Chỉ hồ sơ "Hẹn phỏng vấn" mới có giờ phỏng vấn.', { interviewAt: 'Chọn "Hẹn phỏng vấn" trước.' });
@@ -159,6 +201,35 @@ export async function updateApplication(
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
   return toDetail(db, { ...updated, jobTitle: row.jobTitle, matchPercent: row.matchPercent });
+}
+
+/**
+ * Sent to a reviewer and not approved yet: no interview, unless HR writes why ("Vẫn hẹn"); the reason goes into
+ * the batch's log, so the reviewer's decision is never skipped silently (spec-boss-review.md).
+ */
+async function checkReview(db: Db, row: ApplicationWithJob, bypassReason: string | undefined, hr: HrMe, now: Date) {
+  const review = await latestReview(db, row.id);
+  if (!review || review.decision === 'approve') return;
+  if (!bypassReason) {
+    const why =
+      review.decision === 'reject'
+        ? `${review.reviewerName} không duyệt phỏng vấn`
+        : `đang chờ ${review.reviewerName} duyệt`;
+    throw new HttpError(
+      409,
+      `Ứng viên ${why} (đợt "${review.title}"). Ghi lý do nếu vẫn muốn hẹn.`,
+      {},
+      'needs_review',
+    );
+  }
+  await logEvent(db, {
+    batchId: review.batchId,
+    kind: 'bypassed',
+    actor: hrActor(hr),
+    at: now,
+    applicationId: row.id,
+    detail: bypassReason,
+  });
 }
 
 /** Records that HR prepared a message for this person (the site cannot see whether it was really sent). */

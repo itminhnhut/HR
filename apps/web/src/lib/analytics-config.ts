@@ -8,10 +8,11 @@ export const CLARITY_ID = 'z3be4ov8ok';
 
 /**
  * Pages never sent to Analytics nor recorded: HR screens put candidate names and phone numbers in the address
- * (/hr/ho-so?q=0912…), and the candidate account is personal. Any letter case: the router opens /HR/… too.
+ * (/hr/ho-so?q=0912…), the candidate account is personal, and /duyet/<link> shows applicants to a reviewer.
+ * Any letter case: the router opens /HR/… too.
  * No React here: vite.config.ts uses it too.
  */
-export const UNTRACKED_PATHS = /^\/(hr|ho-so-cua-toi)(\/|$)/i;
+export const UNTRACKED_PATHS = /^\/(hr|ho-so-cua-toi|duyet)(\/|$)/i;
 
 export const isUntrackedPath = (path: string) => UNTRACKED_PATHS.test(path);
 

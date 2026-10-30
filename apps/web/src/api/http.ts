@@ -1,5 +1,5 @@
 import type { CandidateOverview, SignedOutResponse } from '@careers/shared';
-import { ApiError, type Api } from './types';
+import { ApiError, type Api, type CvInput } from './types';
 
 /**
  * Client for the real BE. Contract (all JSON unless noted, cookies for sessions):
@@ -50,6 +50,20 @@ import { ApiError, type Api } from './types';
  *   POST   /hr/news/categories  { name } → NewsCategoryDto  |  PATCH /hr/news/categories/:id { name }
  *   DELETE /hr/news/categories/:id      → { ok }   409 while it has posts
  *   POST   /hr/news/images  (multipart "file")  → { url, width, height }
+ *   GET    /hr/reviews                  → ReviewBatchRowDto[]
+ *   POST   /hr/reviews                  ReviewCreateInput → ReviewBatchDto   409 { code: "in_review" }
+ *   GET    /hr/reviews/:id              → ReviewBatchDto
+ *   POST   /hr/reviews/:id/(extend|revoke)  { respondBy } → ReviewBatchDto
+ *   POST   /hr/reviews/:id/items  { items }  |  DELETE /hr/reviews/:id/items/:itemId → ReviewBatchDto
+ *   POST   /hr/reviews/:id/items/:itemId/reply  { reply } → ReviewBatchDto
+ *   GET    /review/:token               → ReviewPageDto   (no sign-in; 404 unknown link)
+ *   PUT    /review/:token/items/:itemId { decision, comment } → ReviewPageDto   409 closed / scheduled
+ *   POST   /review/:token/done          → ReviewPageDto
+ *   GET    /review/:token/items/:itemId/cv → the PDF (inline)
+ *   POST   /hr/applications  (multipart, "cv" file) → { id }   409 { code: "duplicate", existing }
+ *   PUT    /hr/applications/:id/cv  (multipart: "cv" | cvLink) → ApplicationDetailDto
+ *   PATCH  /hr/applications/:id/contact  { phone, email, source, referrer } → ApplicationDetailDto
+ *   PUT    /candidate/applications/:id/cv  (multipart: "cv" | cvLink | useSavedCv) → CandidateOverview   409 cv_locked
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -68,9 +82,24 @@ async function request<T>(path: string, init: RequestInit = {}, allow401 = false
   if (allow401 && res.status === 401) return null as T;
   const body = res.headers.get('content-type')?.includes('json') ? await res.json() : null;
   if (!res.ok) {
-    throw new ApiError(res.status, body?.error ?? 'Có lỗi xảy ra, thử lại sau.', body?.fieldErrors ?? {}, body?.code);
+    throw new ApiError(
+      res.status,
+      body?.error ?? 'Có lỗi xảy ra, thử lại sau.',
+      body?.fieldErrors ?? {},
+      body?.code,
+      body ?? {},
+    );
   }
   return body as T;
+}
+
+/** A new CV as multipart: "cv" file, "cvLink", or "useSavedCv". */
+function cvForm(cv: CvInput): FormData {
+  const form = new FormData();
+  if ('file' in cv) form.append('cv', cv.file);
+  else if ('link' in cv) form.append('cvLink', cv.link);
+  else form.append('useSavedCv', 'true');
+  return form;
 }
 
 const json = (method: string, data?: unknown): RequestInit => ({
@@ -151,6 +180,8 @@ export const httpApi: Api = {
     return request('/candidate/me', { method: 'PATCH', body: form });
   },
   deleteCandidateData: () => request('/candidate/me', { method: 'DELETE' }),
+  candidateReplaceCv: (applicationId, cv) =>
+    request(`/candidate/applications/${encodeURIComponent(applicationId)}/cv`, { method: 'PUT', body: cvForm(cv) }),
   candidateLogout: () => request('/candidate/logout', { method: 'POST' }),
 
   hrMe: () => request('/hr/me', {}, true),
@@ -167,14 +198,25 @@ export const httpApi: Api = {
   hrJobAction: (id, action) => request(`/hr/jobs/${encodeURIComponent(id)}/${action}`, { method: 'POST' }),
   hrSetDeadline: (id, deadline) => request(`/hr/jobs/${encodeURIComponent(id)}/deadline`, json('POST', { deadline })),
   hrDeleteJob: (id) => request(`/hr/jobs/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  hrApplications: (jobId, q) => {
+  hrApplications: (jobId, q, source) => {
     const params = new URLSearchParams();
     if (jobId) params.set('jobId', jobId);
     if (q?.trim()) params.set('q', q.trim());
+    if (source) params.set('source', source);
     const query = params.toString();
     return request(`/hr/applications${query ? `?${query}` : ''}`);
   },
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
+  hrAddApplication: ({ cvFile, consent, ...fields }) => {
+    const form = new FormData();
+    for (const [key, value] of Object.entries(fields)) if (value) form.append(key, String(value));
+    form.append('consent', String(consent));
+    if (cvFile) form.append('cv', cvFile);
+    return request('/hr/applications', { method: 'POST', body: form });
+  },
+  hrReplaceCv: (id, cv) =>
+    request(`/hr/applications/${encodeURIComponent(id)}/cv`, { method: 'PUT', body: cvForm(cv) }),
+  hrUpdateContact: (id, input) => request(`/hr/applications/${encodeURIComponent(id)}/contact`, json('PATCH', input)),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
   hrScorePending: () => request('/hr/applications/score-pending', { method: 'POST' }),
   hrScoreCv: (id) => request(`/hr/applications/${encodeURIComponent(id)}/score`, { method: 'POST' }),
@@ -217,4 +259,31 @@ export const httpApi: Api = {
     form.append('file', file);
     return request('/hr/news/images', { method: 'POST', body: form });
   },
+
+  hrReviews: () => request('/hr/reviews'),
+  hrReview: (id) => request(`/hr/reviews/${encodeURIComponent(id)}`),
+  hrCreateReview: (input) => request('/hr/reviews', json('POST', input)),
+  hrReviewAction: (id, action) => {
+    const base = `/hr/reviews/${encodeURIComponent(id)}`;
+    switch (action.type) {
+      case 'extend':
+        return request(`${base}/extend`, json('POST', { respondBy: action.respondBy }));
+      case 'revoke':
+        return request(`${base}/revoke`, { method: 'POST' });
+      case 'add':
+        return request(`${base}/items`, json('POST', { items: action.items }));
+      case 'remove':
+        return request(`${base}/items/${encodeURIComponent(action.itemId)}`, { method: 'DELETE' });
+      case 'reply':
+        return request(
+          `${base}/items/${encodeURIComponent(action.itemId)}/reply`,
+          json('POST', { reply: action.reply }),
+        );
+    }
+  },
+  reviewPage: (token) => request(`/review/${encodeURIComponent(token)}`),
+  reviewDecide: (token, itemId, input) =>
+    request(`/review/${encodeURIComponent(token)}/items/${encodeURIComponent(itemId)}`, json('PUT', input)),
+  reviewDone: (token) => request(`/review/${encodeURIComponent(token)}/done`, { method: 'POST' }),
+  reviewCvUrl: (token, itemId) => `${BASE}/review/${encodeURIComponent(token)}/items/${encodeURIComponent(itemId)}/cv`,
 };

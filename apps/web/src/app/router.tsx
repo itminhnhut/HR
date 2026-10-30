@@ -37,6 +37,8 @@ const routes: RouteObject[] = [
     ],
   },
   { path: 'hr/dang-nhap', lazy: lazy(() => import('../pages/hr/HrLoginPage')) },
+  // The reviewer's private link (spec-boss-review.md): its own page, no site menu, no sign-in.
+  { path: 'duyet/:token', lazy: lazy(() => import('../pages/review/ReviewPage')) },
   {
     path: 'hr',
     lazy: lazy(() => import('../pages/hr/HrLayout')),
@@ -46,6 +48,8 @@ const routes: RouteObject[] = [
       { path: 'tin/moi', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'tin/:id', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'ho-so', lazy: lazy(() => import('../pages/hr/HrApplicantsPage')) },
+      { path: 'duyet', lazy: lazy(() => import('../pages/hr/reviews/HrReviewsPage')) },
+      { path: 'duyet/:id', lazy: lazy(() => import('../pages/hr/reviews/HrReviewPage')) },
       { path: 'mau-tin', lazy: lazy(() => import('../pages/hr/HrTemplatePage')) },
       { path: 'mau-thu', lazy: lazy(() => import('../pages/hr/HrMessagesPage')) },
       { path: 'tai-khoan', lazy: lazy(() => import('../pages/hr/HrAccountsPage')) },

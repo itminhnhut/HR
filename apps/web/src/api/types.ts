@@ -28,6 +28,14 @@ import type {
   NewsListResponse,
   NewsPostDto,
   NewsPostInput,
+  ReviewBatchDto,
+  ReviewBatchRowDto,
+  ReviewCreateInput,
+  ReviewDecisionInput,
+  ReviewPageDto,
+  ApplicationSource,
+  HrApplicationInput,
+  HrContactInput,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -37,6 +45,8 @@ export class ApiError extends Error {
     public fieldErrors: Record<string, string> = {},
     /** Machine-readable reason, e.g. "job_closed". */
     public code?: string,
+    /** The rest of the error body, e.g. `existing` with a "duplicate" (read it with a type guard). */
+    public details: Record<string, unknown> = {},
   ) {
     super(message);
   }
@@ -69,7 +79,25 @@ export interface ApplicationPatch {
   interviewMode?: InterviewMode | null;
   /** Empty string clears it. */
   meetingUrl?: string | null;
+  /** "Vẫn hẹn": invite before the reviewer approved; the reason is logged for the reviewer. */
+  reviewBypassReason?: string;
 }
+
+/** A new CV: a PDF, a link, or (candidate only) the CV saved in the account. */
+export type CvInput = { file: File } | { link: string } | { useSaved: true };
+
+/** "Thêm hồ sơ": the fields plus an optional PDF (spec-cv-intake.md). */
+export interface AddApplicationInput extends HrApplicationInput {
+  cvFile: File | null;
+}
+
+/** What HR does to a sent batch (spec-boss-review.md). */
+export type ReviewAction =
+  | { type: 'extend'; respondBy: string }
+  | { type: 'revoke' }
+  | { type: 'add'; items: ReviewCreateInput['items'] }
+  | { type: 'remove'; itemId: string }
+  | { type: 'reply'; itemId: string; reply: string };
 
 /** An uploaded article image: its public address and real size (for width/height, no layout shift). */
 export interface UploadedImage {
@@ -115,6 +143,8 @@ export interface Api {
   /** Google is the only candidate sign-in. The account sees applications sent with its email. */
   googleSignIn(): Promise<CandidateMe>;
   candidateOverview(): Promise<CandidateOverview | null>;
+  /** "Cập nhật CV" of an own application; 409 with the reason when it is no longer allowed. */
+  candidateReplaceCv(applicationId: string, cv: CvInput): Promise<CandidateOverview>;
   updateCandidate(patch: CandidatePatch): Promise<CandidateMe>;
   deleteCandidateData(): Promise<{ ok: true }>;
   candidateLogout(): Promise<{ ok: true }>;
@@ -136,7 +166,13 @@ export interface Api {
   hrSetDeadline(id: string, deadline: string): Promise<{ ok: true }>;
   /** Only drafts can be deleted. */
   hrDeleteJob(id: string): Promise<{ ok: true }>;
-  hrApplications(jobId?: string, q?: string): Promise<ApplicationsResponse>;
+  hrApplications(jobId?: string, q?: string, source?: ApplicationSource): Promise<ApplicationsResponse>;
+  /** "Thêm hồ sơ". 409 { code: "duplicate", existing } when this phone already applied for this job. */
+  hrAddApplication(input: AddApplicationInput): Promise<{ id: string }>;
+  /** "Thêm CV" / "Đổi CV" on any application. */
+  hrReplaceCv(id: string, cv: CvInput): Promise<ApplicationDetailDto>;
+  /** Phone, email, source of an application HR added (409 for one the candidate sent). */
+  hrUpdateContact(id: string, input: HrContactInput): Promise<ApplicationDetailDto>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
   hrDeleteApplication(id: string): Promise<{ ok: true }>;
@@ -185,4 +221,18 @@ export interface Api {
   hrDeleteNewsCategory(id: string): Promise<{ ok: true }>;
   /** JPEG/PNG/WebP up to NEWS_IMAGE_MAX_BYTES (4 MB); the editor shrinks big photos first. */
   hrUploadNewsImage(file: File): Promise<UploadedImage>;
+
+  // "Sếp duyệt ứng viên" (spec-boss-review.md). HR side needs a session; the reviewer's side only the link token.
+  hrReviews(): Promise<ReviewBatchRowDto[]>;
+  hrReview(id: string): Promise<ReviewBatchDto>;
+  /** 409 { code: "in_review" } when an application already waits in another batch. */
+  hrCreateReview(input: ReviewCreateInput): Promise<ReviewBatchDto>;
+  hrReviewAction(id: string, action: ReviewAction): Promise<ReviewBatchDto>;
+  /** 404 for an unknown link. Opening it tells HR the reviewer has seen it. */
+  reviewPage(token: string): Promise<ReviewPageDto>;
+  /** 409 when the link expired / was revoked, or HR already set the interview. */
+  reviewDecide(token: string, itemId: string, input: ReviewDecisionInput): Promise<ReviewPageDto>;
+  reviewDone(token: string): Promise<ReviewPageDto>;
+  /** The CV file through the review link, or null where files are not stored (demo). */
+  reviewCvUrl(token: string, itemId: string): string | null;
 }
