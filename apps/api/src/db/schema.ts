@@ -321,3 +321,89 @@ export type NewsCategory = typeof newsCategories.$inferSelect;
 export type NewsPost = typeof newsPosts.$inferSelect;
 export type NewNewsPost = typeof newsPosts.$inferInsert;
 export type NewsTag = typeof newsTags.$inferSelect;
+
+export const reviewDecision = pgEnum('review_decision', ['approve', 'reject', 'ask']);
+export const reviewPick = pgEnum('review_pick', ['yes', 'maybe']);
+
+/**
+ * "Sếp duyệt ứng viên" (spec-boss-review.md): a batch of applications sent to a reviewer through a private link,
+ * /duyet/<token>, that works without signing in until it expires or HR revokes it.
+ */
+export const reviewBatches = pgTable(
+  'review_batches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    /** 32 random bytes, base64url: the whole secret of the reviewer's link. */
+    token: text('token').notNull(),
+    title: text('title').notNull(),
+    /** As HR typed it, e.g. "Ngọc Anh (Phòng Nhân sự)". */
+    senderName: text('sender_name').notNull(),
+    /** Who the link is for, e.g. "anh Minh": shown on the page and in the CV watermark. */
+    reviewerName: text('reviewer_name').notNull(),
+    message: text('message'),
+    respondBy: tz('respond_by').notNull(),
+    /** respondBy + REVIEW_LINK_GRACE_DAYS: after it the page is read only. */
+    expiresAt: tz('expires_at').notNull(),
+    revokedAt: tz('revoked_at'),
+    /** First time the reviewer opened the link. */
+    openedAt: tz('opened_at'),
+    /** "Báo HR: đã xem xong". */
+    doneAt: tz('done_at'),
+    /** Name (or email) of the HR who sent it. */
+    createdBy: text('created_by').notNull(),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [uniqueIndex('review_batches_token_idx').on(t.token)],
+);
+
+/** One application in a batch: HR's view when sending, the reviewer's decision, HR's reply to a question. */
+export const reviewItems = pgTable(
+  'review_items',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    batchId: uuid('batch_id')
+      .notNull()
+      .references(() => reviewBatches.id, { onDelete: 'cascade' }),
+    /** Deleting an application (candidate's request, 30 days after the job) removes it from every batch. */
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    hrPick: reviewPick('hr_pick').notNull().default('maybe'),
+    hrComment: text('hr_comment'),
+    decision: reviewDecision('decision'),
+    reviewerComment: text('reviewer_comment'),
+    decidedAt: tz('decided_at'),
+    hrReply: text('hr_reply'),
+    hrRepliedAt: tz('hr_replied_at'),
+    createdAt,
+  },
+  (t) => [
+    unique('review_items_batch_application_unique').on(t.batchId, t.applicationId),
+    index('review_items_application_idx').on(t.applicationId),
+  ],
+);
+
+/** What happened to a batch, for HR's "Nhật ký". The application link is dropped if the application is deleted. */
+export const reviewEvents = pgTable(
+  'review_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    batchId: uuid('batch_id')
+      .notNull()
+      .references(() => reviewBatches.id, { onDelete: 'cascade' }),
+    applicationId: uuid('application_id').references(() => applications.id, { onDelete: 'set null' }),
+    /** ReviewEventKind from @careers/shared. */
+    kind: text('kind').notNull(),
+    decision: reviewDecision('decision'),
+    /** The reviewer's name or "HR: <name>". */
+    actor: text('actor').notNull(),
+    detail: text('detail'),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('review_events_batch_idx').on(t.batchId, t.at)],
+);
+
+export type ReviewBatch = typeof reviewBatches.$inferSelect;
+export type ReviewItem = typeof reviewItems.$inferSelect;

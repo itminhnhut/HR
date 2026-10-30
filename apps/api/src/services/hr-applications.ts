@@ -15,7 +15,8 @@ import type { Deps } from '../deps.js';
 import type { Db } from '../db/index.js';
 import { applications, contactLog, cvScores, jobs, subscribers, type Application } from '../db/schema.js';
 import { scoreApplication, storedScore } from './cv-score.js';
-import { invalid, notFound } from '../lib/http-error.js';
+import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './review-model.js';
+import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { dueJobIds } from './hr-jobs.js';
 
@@ -36,7 +37,7 @@ const firstLine = (text: string | null) =>
     .find((l) => l.trim())
     ?.trim() ?? null;
 
-function toRow(a: ApplicationWithJob): ApplicationRowDto {
+function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): ApplicationRowDto {
   return {
     id: a.id,
     jobId: a.jobId,
@@ -49,6 +50,7 @@ function toRow(a: ApplicationWithJob): ApplicationRowDto {
     matchPercent: a.matchPercent,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
+    review,
   };
 }
 
@@ -61,8 +63,10 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
     .from(contactLog)
     .where(eq(contactLog.applicationId, a.id))
     .orderBy(desc(contactLog.createdAt));
+  const reviewInfo = await latestReview(db, a.id);
   return {
-    ...toRow(a),
+    ...toRow(a, reviewMark(reviewInfo)),
+    reviewInfo,
     interviewMode: a.interviewMode,
     meetingUrl: a.meetingUrl,
     cvScore: await storedScore(db, a.id),
@@ -112,7 +116,15 @@ export async function listApplications(db: Db, jobId: string | undefined, q = ''
   const counts = emptyCounts();
   counts.all = found.length;
   for (const row of found) counts[row.status] += 1;
-  return { applications: found.map(toRow), counts, jobs: jobsWithApplications };
+  const reviews = await latestReviews(
+    db,
+    found.map((row) => row.id),
+  );
+  return {
+    applications: found.map((row) => toRow(row, reviewMark(reviews.get(row.id) ?? null))),
+    counts,
+    jobs: jobsWithApplications,
+  };
 }
 
 async function findApplication(db: Db, id: string): Promise<ApplicationWithJob> {
@@ -139,7 +151,8 @@ export async function updateApplication(
   const row = await findApplication(db, id);
   const parsed = applicationUpdateSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
-  const { status, note, interviewAt, interviewMode, meetingUrl } = parsed.data;
+  const { status, note, interviewAt, interviewMode, meetingUrl, reviewBypassReason } = parsed.data;
+  if (status === 'interview' && row.status !== 'interview') await checkReview(db, row, reviewBypassReason, hr, now);
   // An interview time only belongs to "Hẹn phỏng vấn".
   if (interviewAt && (status ?? row.status) !== 'interview') {
     throw invalid('Chỉ hồ sơ "Hẹn phỏng vấn" mới có giờ phỏng vấn.', { interviewAt: 'Chọn "Hẹn phỏng vấn" trước.' });
@@ -159,6 +172,35 @@ export async function updateApplication(
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
   return toDetail(db, { ...updated, jobTitle: row.jobTitle, matchPercent: row.matchPercent });
+}
+
+/**
+ * Sent to a reviewer and not approved yet: no interview, unless HR writes why ("Vẫn hẹn"); the reason goes into
+ * the batch's log, so the reviewer's decision is never skipped silently (spec-boss-review.md).
+ */
+async function checkReview(db: Db, row: ApplicationWithJob, bypassReason: string | undefined, hr: HrMe, now: Date) {
+  const review = await latestReview(db, row.id);
+  if (!review || review.decision === 'approve') return;
+  if (!bypassReason) {
+    const why =
+      review.decision === 'reject'
+        ? `${review.reviewerName} không duyệt phỏng vấn`
+        : `đang chờ ${review.reviewerName} duyệt`;
+    throw new HttpError(
+      409,
+      `Ứng viên ${why} (đợt "${review.title}"). Ghi lý do nếu vẫn muốn hẹn.`,
+      {},
+      'needs_review',
+    );
+  }
+  await logEvent(db, {
+    batchId: review.batchId,
+    kind: 'bypassed',
+    actor: hrActor(hr),
+    at: now,
+    applicationId: row.id,
+    detail: bypassReason,
+  });
 }
 
 /** Records that HR prepared a message for this person (the site cannot see whether it was really sent). */

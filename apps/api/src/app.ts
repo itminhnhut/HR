@@ -8,6 +8,7 @@ import { candidateRoutes } from './routes/candidate.js';
 import { hrRoutes } from './routes/hr.js';
 import { publicNewsRoutes } from './routes/public-news.js';
 import { publicRoutes } from './routes/public.js';
+import { reviewPublicRoutes } from './routes/review-public.js';
 import { shareNewsRoutes } from './routes/share-news.js';
 import { shareRoutes } from './routes/share.js';
 
@@ -43,6 +44,7 @@ export function createApp(deps: Deps) {
   api.get('/health', (c) => c.json({ ok: true }));
   api.route('/', publicRoutes);
   api.route('/', publicNewsRoutes);
+  api.route('/review', reviewPublicRoutes);
   api.route('/candidate', candidateRoutes);
   api.route('/hr', hrRoutes);
   app.route('/api', api);
