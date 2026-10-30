@@ -29,16 +29,16 @@ describe('hrApplicationSchema', () => {
     expect(result.error?.issues[0]?.path).toEqual(['consent']);
   });
 
+  it('should need a source', () => {
+    expect(hrApplicationSchema.safeParse({ ...valid, source: ' ' }).error?.issues[0]?.path).toEqual(['source']);
+  });
+
   it('should need the name of who referred a candidate', () => {
     const result = hrApplicationSchema.safeParse({ ...valid, source: 'referral' });
     expect(result.error?.issues.map((i) => i.path[0])).toEqual(['referrer']);
     expect(hrApplicationSchema.safeParse({ ...valid, source: 'referral', referrer: 'Anh Tuấn kho' }).success).toBe(
       true,
     );
-  });
-
-  it('should not let HR pick "Website", which only the form can set', () => {
-    expect(hrApplicationSchema.safeParse({ ...valid, source: 'website' }).success).toBe(false);
   });
 
   it('should refuse a CV link that is not a web address', () => {

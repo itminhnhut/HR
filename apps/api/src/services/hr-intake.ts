@@ -3,6 +3,7 @@ import {
   hrApplicationSchema,
   hrContactSchema,
   POLICY_VERSION,
+  REFERRAL_SOURCE,
   type DuplicateApplicationDto,
   type HrMe,
 } from '@careers/shared';
@@ -13,6 +14,7 @@ import { CV_PROBLEM_MESSAGE, checkCvFile, cvFileName, deleteFilesQuietly } from 
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
 import { newCvFrom, replaceCv } from './cv-replace.js';
+import { checkUsableSource } from './sources.js';
 
 /** HR's side of "Thêm và cập nhật CV" (spec-cv-intake.md). */
 
@@ -57,6 +59,7 @@ export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe):
   if (!job) throw notFound('Không tìm thấy tin tuyển dụng.');
   if (job.state === 'draft')
     throw invalid('Tin còn là nháp, đăng tin trước rồi thêm hồ sơ.', { jobId: 'Tin còn là nháp.' });
+  await checkUsableSource(deps.db, input.source);
   const duplicate = await existingFor(deps, job.id, input.phone);
   if (duplicate) throw duplicateError(duplicate);
   const at = deps.now();
@@ -77,7 +80,7 @@ export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe):
         noteUpdatedBy: input.note ? hrName(hr) : null,
         status: 'seen',
         source: input.source,
-        referrer: input.source === 'referral' ? input.referrer : null,
+        referrer: input.source === REFERRAL_SOURCE ? input.referrer : null,
         addedBy: hrName(hr),
         consentBy: hrName(hr),
         consentAt: at,
@@ -116,12 +119,13 @@ export async function updateContact(deps: Deps, id: string, raw: unknown): Promi
   const parsed = hrContactSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại các ô được đánh dấu.', fieldErrors(parsed.error));
   const { phone, email, source, referrer } = parsed.data;
+  await checkUsableSource(deps.db, source, app.source);
   if (phone !== app.phone) {
     const duplicate = await existingFor(deps, app.jobId, phone);
     if (duplicate) throw duplicateError(duplicate);
   }
   await deps.db
     .update(applications)
-    .set({ phone, email, source, referrer: source === 'referral' ? referrer : null })
+    .set({ phone, email, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
     .where(eq(applications.id, app.id));
 }

@@ -36,6 +36,7 @@ import type {
   ApplicationSource,
   HrApplicationInput,
   HrContactInput,
+  SourceDto,
   ParsedCvDto,
 } from '@careers/shared';
 
@@ -174,6 +175,14 @@ export interface Api {
   hrParseCv(file: File): Promise<ParsedCvDto>;
   /** "Thêm CV" / "Đổi CV" on any application. */
   hrReplaceCv(id: string, cv: CvInput): Promise<ApplicationDetailDto>;
+  /** HR's source list (spec-custom-sources.md), with the number of applications of each. */
+  hrSources(): Promise<SourceDto[]>;
+  /** 422 { fieldErrors: { name } } for a name that exists (case and tones ignored) or the 50th source. */
+  hrCreateSource(name: string): Promise<SourceDto>;
+  /** Rename and / or hide; returns the whole list. 409 for "Website" or hiding "Khác". */
+  hrUpdateSource(key: string, patch: { name?: string; hidden?: boolean }): Promise<SourceDto[]>;
+  /** Only a source HR added that no application uses (409 otherwise). */
+  hrDeleteSource(key: string): Promise<SourceDto[]>;
   /** Phone, email, source of an application HR added (409 for one the candidate sent). */
   hrUpdateContact(id: string, input: HrContactInput): Promise<ApplicationDetailDto>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;

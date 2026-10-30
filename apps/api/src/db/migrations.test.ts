@@ -238,3 +238,43 @@ describe('migration 0013: preferred qualifications on jobs', SLOW, () => {
     expect(job).toMatchObject({ slug: 'cu', requirements: 'Biết Excel', preferred: '' });
   });
 });
+
+describe('migration 0016: HR-managed sources', SLOW, () => {
+  it('keeps every application on its source and turns the old list into rows HR can edit', async () => {
+    // Arrange: an application from Zalo and one from the site, before the list exists.
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(16) });
+    await pg.exec(`
+      insert into jobs (slug, title, department, employment_type, deadline)
+        values ('ke-toan', 'Kế toán', 'Tài chính', 'full_time', '2099-01-01');
+      insert into applications (job_id, full_name, phone, consent_at, policy_version, source)
+        select id, 'Qua Zalo', '0912000001', now(), 'v', 'zalo' from jobs;
+      insert into applications (job_id, full_name, phone, consent_at, policy_version)
+        select id, 'Tự nộp', '0912000002', now(), 'v' from jobs;
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const apps = await db.select().from(schema.applications).orderBy(schema.applications.fullName);
+    expect(apps.map((a) => [a.fullName, a.source])).toEqual([
+      ['Qua Zalo', 'zalo'],
+      ['Tự nộp', 'website'],
+    ]);
+    const sources = await db.select().from(schema.applicationSources).orderBy(schema.applicationSources.position);
+    expect(sources.map((s) => [s.key, s.name, s.kind])).toEqual([
+      ['website', 'Website', 'system'],
+      ['email', 'Email', 'builtin'],
+      ['zalo', 'Zalo', 'builtin'],
+      ['referral', 'Người giới thiệu', 'builtin'],
+      ['topcv', 'TopCV', 'builtin'],
+      ['vietnamworks', 'VietnamWorks', 'builtin'],
+      ['facebook', 'Facebook', 'builtin'],
+      ['other', 'Khác', 'builtin'],
+    ]);
+    // A source that is not in the list cannot be stored.
+    await expect(pg.exec(`update applications set source = 'khong-co' where full_name = 'Qua Zalo'`)).rejects.toThrow();
+  });
+});

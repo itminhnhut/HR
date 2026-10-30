@@ -47,6 +47,7 @@ export const keys = {
   hrReviews: ['hr', 'reviews'] as const,
   hrReview: (id: string) => ['hr', 'review', id] as const,
   reviewPage: (token: string) => ['review', token] as const,
+  hrSources: ['hr', 'sources'] as const,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────
@@ -560,4 +561,33 @@ export function useCandidateReplaceCv() {
       api.candidateReplaceCv(applicationId, cv),
     onSuccess: (overview) => qc.setQueryData(keys.candidate, overview),
   });
+}
+
+// ── "Nguồn hồ sơ" (spec-custom-sources.md) ──────────────────────────────
+
+/** One list for every screen that names a source (filter, labels, dashboard, pickers). */
+export const useSources = () =>
+  useQuery({ queryKey: keys.hrSources, queryFn: () => api.hrSources(), staleTime: 60_000 });
+
+export function useSourceActions() {
+  const qc = useQueryClient();
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: keys.hrSources });
+    qc.invalidateQueries({ queryKey: keys.hrDashboard });
+  };
+  return {
+    create: useMutation({ mutationFn: (name: string) => api.hrCreateSource(name), onSuccess: refresh }),
+    update: useMutation({
+      mutationFn: ({ key, patch }: { key: string; patch: { name?: string; hidden?: boolean } }) =>
+        api.hrUpdateSource(key, patch),
+      onSuccess: (list) => {
+        qc.setQueryData(keys.hrSources, list);
+        refresh();
+      },
+    }),
+    remove: useMutation({
+      mutationFn: (key: string) => api.hrDeleteSource(key),
+      onSuccess: (list) => qc.setQueryData(keys.hrSources, list),
+    }),
+  };
 }

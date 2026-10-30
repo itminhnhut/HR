@@ -63,6 +63,8 @@ import { ApiError, type Api, type CvInput } from './types';
  *   POST   /hr/applications  (multipart, "cv" file) → { id }   409 { code: "duplicate", existing }
  *   POST   /hr/applications/parse-cv  (multipart, "cv" file) → ParsedCvDto   422 { fieldErrors.cv }   nothing stored
  *   PUT    /hr/applications/:id/cv  (multipart: "cv" | cvLink) → ApplicationDetailDto
+ *   GET    /hr/sources  |  POST { name } → SourceDto   422 duplicate name / 50 sources
+ *   PATCH  /hr/sources/:key  { name?, hidden? }  |  DELETE /hr/sources/:key → SourceDto[]   409 website / in use
  *   PATCH  /hr/applications/:id/contact  { phone, email, source, referrer } → ApplicationDetailDto
  *   PUT    /candidate/applications/:id/cv  (multipart: "cv" | cvLink | useSavedCv) → CandidateOverview   409 cv_locked
  */
@@ -222,6 +224,10 @@ export const httpApi: Api = {
   },
   hrReplaceCv: (id, cv) =>
     request(`/hr/applications/${encodeURIComponent(id)}/cv`, { method: 'PUT', body: cvForm(cv) }),
+  hrSources: () => request('/hr/sources'),
+  hrCreateSource: (name) => request('/hr/sources', json('POST', { name })),
+  hrUpdateSource: (key, patch) => request(`/hr/sources/${encodeURIComponent(key)}`, json('PATCH', patch)),
+  hrDeleteSource: (key) => request(`/hr/sources/${encodeURIComponent(key)}`, { method: 'DELETE' }),
   hrUpdateContact: (id, input) => request(`/hr/applications/${encodeURIComponent(id)}/contact`, json('PATCH', input)),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
   hrScorePending: () => request('/hr/applications/score-pending', { method: 'POST' }),
