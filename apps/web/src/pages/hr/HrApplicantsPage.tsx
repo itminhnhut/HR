@@ -1,6 +1,6 @@
 import { formatTimestamp, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
 import { useDeferredValue, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useApplications, useScorePending } from '../../api/queries';
 import { useMediaQuery, usePageMeta } from '../../lib/hooks';
 import { Dialog, SheetHandle } from '../../ui/Dialog';
@@ -10,6 +10,8 @@ import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { percentTone } from './applicants/CvMatch';
 import { interviewLabel } from './applicants/InterviewField';
 import { apiMessage, Avatar, FilterTabs, PageHeading, type TabItem } from './parts';
+import { canSendForReview, PickBar, ReviewMark, usePicking } from './reviews/PickForReview';
+import { SendReviewDialog } from './reviews/SendReviewDialog';
 
 type TabKey = ApplicationStatus | 'all';
 
@@ -43,17 +45,46 @@ function StatusText({ status }: { status: ApplicationStatus }) {
   }
 }
 
-function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; current: boolean; onPick: () => void }) {
+/** While picking for "Gửi sếp duyệt" a row is a checkbox; see canSendForReview for who cannot be picked. */
+interface RowPick {
+  on: boolean;
+  /** Already waiting for a reviewer, already invited, or already declined. */
+  blocked: boolean;
+  toggle: () => void;
+}
+
+function ApplicantRow({
+  row,
+  current,
+  onPick,
+  pick,
+}: {
+  row: ApplicationRowDto;
+  current: boolean;
+  onPick: () => void;
+  pick?: RowPick;
+}) {
   return (
     <li className="border-b border-line-soft last:border-b-0">
       <button
         type="button"
-        onClick={onPick}
-        aria-current={current ? 'true' : undefined}
-        className={`flex w-full items-center gap-3.5 border-0 border-l-2 px-4 py-3.5 text-left text-navy transition-colors hover:bg-hover sm:px-5 sm:py-4 ${
-          current ? 'border-navy bg-mist' : 'border-transparent bg-white'
+        onClick={pick ? pick.toggle : onPick}
+        disabled={pick?.blocked}
+        role={pick ? 'checkbox' : undefined}
+        aria-checked={pick ? pick.on : undefined}
+        aria-current={!pick && current ? 'true' : undefined}
+        className={`flex w-full items-center gap-3.5 border-0 border-l-2 px-4 py-3.5 text-left text-navy transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:py-4 ${
+          pick?.on ? 'border-ok bg-ok-soft' : !pick && current ? 'border-navy bg-mist' : 'border-transparent bg-white'
         }`}
       >
+        {pick && (
+          <span
+            aria-hidden="true"
+            className={`flex size-[22px] shrink-0 items-center justify-center rounded-[5px] border-2 ${pick.on ? 'border-ok bg-ok text-white' : 'border-silver bg-white'}`}
+          >
+            {pick.on && <Icon name="check" size={14} stroke={2.4} />}
+          </span>
+        )}
         <Avatar name={row.fullName} />
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="text-[15px] font-semibold">{row.fullName}</span>
@@ -65,6 +96,7 @@ function ApplicantRow({ row, current, onPick }: { row: ApplicationRowDto; curren
             </span>
           )}
           {row.noteLine && <span className="truncate text-xs italic text-muted">“{row.noteLine}”</span>}
+          {row.review && <ReviewMark review={row.review} />}
         </span>
         <span className="flex shrink-0 flex-col items-end gap-1">
           <StatusText status={row.status} />
@@ -168,6 +200,8 @@ export function HrApplicantsPage() {
   // CV files without a percent yet are scored in the background so the list can be sorted by match.
   const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv && a.matchPercent == null));
   const tabs: TabItem<TabKey>[] = TABS.map(([key, label]) => ({ key, label, count: counts?.[key] }));
+  const navigate = useNavigate();
+  const picking = usePicking(apps.data?.applications ?? []);
 
   return (
     <div className="flex flex-col gap-[22px]">
@@ -224,6 +258,16 @@ export function HrApplicantsPage() {
             Đang chấm CV, còn {scoring} hồ sơ…
           </span>
         )}
+        {!picking.active && (apps.data?.applications.length ?? 0) > 0 && (
+          <button
+            type="button"
+            onClick={picking.start}
+            className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-control border border-navy bg-white px-3.5 text-sm font-semibold text-navy hover:bg-mist"
+          >
+            <Icon name="checkSquare" size={16} />
+            Gửi sếp duyệt
+          </button>
+        )}
       </div>
 
       <FilterTabs
@@ -252,6 +296,15 @@ export function HrApplicantsPage() {
                 row={row}
                 current={row.id === selectedId}
                 onPick={() => setParam('id', row.id)}
+                pick={
+                  picking.active
+                    ? {
+                        on: picking.ids.has(row.id),
+                        blocked: !canSendForReview(row),
+                        toggle: () => picking.toggle(row.id),
+                      }
+                    : undefined
+                }
               />
             ))}
             {rows.length === 0 && (
@@ -288,8 +341,21 @@ export function HrApplicantsPage() {
         </div>
       )}
 
+      {picking.active && (
+        <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />
+      )}
+      <SendReviewDialog
+        rows={picking.rows}
+        open={picking.sending}
+        onClose={() => picking.setSending(false)}
+        onSent={(batchId) => {
+          picking.stop();
+          navigate(`/hr/duyet/${batchId}`);
+        }}
+      />
+
       {!isDesktop && (
-        <Dialog open={!!selectedId} onClose={() => setParam('id', null)} label="Chi tiết ứng viên">
+        <Dialog open={!!selectedId && !picking.active} onClose={() => setParam('id', null)} label="Chi tiết ứng viên">
           <div className="max-h-[92dvh] overflow-y-auto px-[18px] pb-[26px] pt-2.5 sm:px-6 sm:pt-6">
             <SheetHandle />
             {selectedId && (

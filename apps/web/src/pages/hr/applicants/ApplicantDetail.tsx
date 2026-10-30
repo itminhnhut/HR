@@ -23,6 +23,7 @@ import { apiMessage, Avatar, errorMessage } from '../parts';
 import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
 import { CvMatch } from './CvMatch';
 import { InterviewField } from './InterviewField';
+import { BypassForm, needsBypass, ReviewStatus } from './ReviewGate';
 
 const shortDate = (iso: string) => formatTimestamp(iso).slice(0, 5);
 
@@ -136,13 +137,19 @@ function StatusButtons({
   const update = useUpdateApplication();
   // Everything a status change can clear, so "Hoàn tác" brings back the Meet link and mode too.
   const [undo, setUndo] = useState<ApplicationPatch | null>(null);
+  const [bypassing, setBypassing] = useState(false);
   useEffect(() => {
     if (!undo) return;
     const t = setTimeout(() => setUndo(null), UNDO_MS);
     return () => clearTimeout(t);
   }, [undo]);
 
-  const change = (status: ApplicationStatus) => {
+  const change = (status: ApplicationStatus, reviewBypassReason?: string) => {
+    if (status === 'interview' && needsBypass(app) && !reviewBypassReason) {
+      setBypassing(true);
+      return;
+    }
+    setBypassing(false);
     const before: ApplicationPatch = {
       status: app.status,
       interviewAt: app.interviewAt,
@@ -150,7 +157,7 @@ function StatusButtons({
       meetingUrl: app.meetingUrl,
     };
     update.mutate(
-      { id: app.id, patch: { status } },
+      { id: app.id, patch: { status, ...(reviewBypassReason ? { reviewBypassReason } : {}) } },
       { onSuccess: () => setUndo(before), onError: (e) => onError(errorMessage(e)) },
     );
   };
@@ -186,6 +193,15 @@ function StatusButtons({
           </button>
         )}
       </div>
+      <ReviewStatus app={app} />
+      {bypassing && (
+        <BypassForm
+          app={app}
+          busy={update.isPending}
+          onConfirm={(reason) => change('interview', reason)}
+          onCancel={() => setBypassing(false)}
+        />
+      )}
       {undo && (
         <div
           role="status"

@@ -5,12 +5,22 @@ import type {
   JobInput,
   JobTemplate,
   NewsPostInput,
+  ReviewCreateInput,
+  ReviewDecisionInput,
   TemplateKey,
 } from '@careers/shared';
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from './index';
-import type { ApplicationPatch, ApplyInput, CandidatePatch, HrProfilePatch, JobAction, NewsListQuery } from './types';
+import type {
+  ApplicationPatch,
+  ApplyInput,
+  CandidatePatch,
+  HrProfilePatch,
+  JobAction,
+  NewsListQuery,
+  ReviewAction,
+} from './types';
 
 export const keys = {
   jobs: ['jobs'] as const,
@@ -30,6 +40,9 @@ export const keys = {
   hrNews: ['hr', 'news'] as const,
   hrNewsPost: (id: string) => ['hr', 'news', 'post', id] as const,
   hrNewsTags: (q: string) => ['hr', 'news', 'tags', q] as const,
+  hrReviews: ['hr', 'reviews'] as const,
+  hrReview: (id: string) => ['hr', 'review', id] as const,
+  reviewPage: (token: string) => ['review', token] as const,
 };
 
 // ── Public ───────────────────────────────────────────────────────────────
@@ -454,3 +467,58 @@ export const useNewsTagSuggestions = (q: string, enabled: boolean) =>
   });
 
 export const useUploadNewsImage = () => useMutation({ mutationFn: (file: File) => api.hrUploadNewsImage(file) });
+
+// ── "Sếp duyệt ứng viên" (spec-boss-review.md) ──────────────────────────
+
+/** HR sees the reviewer's choices without reloading: the list every 30 s, an open batch every 15 s. */
+export const useReviews = () =>
+  useQuery({ queryKey: keys.hrReviews, queryFn: () => api.hrReviews(), refetchInterval: 30_000 });
+
+export const useReview = (id: string) =>
+  useQuery({ queryKey: keys.hrReview(id), queryFn: () => api.hrReview(id), refetchInterval: 15_000 });
+
+export function useCreateReview() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ReviewCreateInput) => api.hrCreateReview(input),
+    onSuccess: (batch) => {
+      qc.setQueryData(keys.hrReview(batch.id), batch);
+      qc.invalidateQueries({ queryKey: keys.hrReviews });
+      qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+    },
+  });
+}
+
+export function useReviewAction(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (action: ReviewAction) => api.hrReviewAction(id, action),
+    onSuccess: (batch) => {
+      qc.setQueryData(keys.hrReview(id), batch);
+      qc.invalidateQueries({ queryKey: keys.hrReviews });
+      qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+      qc.invalidateQueries({ queryKey: ['hr', 'app'] });
+    },
+  });
+}
+
+/** The reviewer's page: a wrong or old link answers 404 at once, no retries. */
+export const useReviewPage = (token: string) =>
+  useQuery({ queryKey: keys.reviewPage(token), queryFn: () => api.reviewPage(token), retry: false });
+
+export function useReviewDecide(token: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ itemId, input }: { itemId: string; input: ReviewDecisionInput }) =>
+      api.reviewDecide(token, itemId, input),
+    onSuccess: (page) => qc.setQueryData(keys.reviewPage(token), page),
+  });
+}
+
+export function useReviewDone(token: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.reviewDone(token),
+    onSuccess: (page) => qc.setQueryData(keys.reviewPage(token), page),
+  });
+}

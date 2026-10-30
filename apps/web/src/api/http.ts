@@ -50,6 +50,16 @@ import { ApiError, type Api } from './types';
  *   POST   /hr/news/categories  { name } → NewsCategoryDto  |  PATCH /hr/news/categories/:id { name }
  *   DELETE /hr/news/categories/:id      → { ok }   409 while it has posts
  *   POST   /hr/news/images  (multipart "file")  → { url, width, height }
+ *   GET    /hr/reviews                  → ReviewBatchRowDto[]
+ *   POST   /hr/reviews                  ReviewCreateInput → ReviewBatchDto   409 { code: "in_review" }
+ *   GET    /hr/reviews/:id              → ReviewBatchDto
+ *   POST   /hr/reviews/:id/(extend|revoke)  { respondBy } → ReviewBatchDto
+ *   POST   /hr/reviews/:id/items  { items }  |  DELETE /hr/reviews/:id/items/:itemId → ReviewBatchDto
+ *   POST   /hr/reviews/:id/items/:itemId/reply  { reply } → ReviewBatchDto
+ *   GET    /review/:token               → ReviewPageDto   (no sign-in; 404 unknown link)
+ *   PUT    /review/:token/items/:itemId { decision, comment } → ReviewPageDto   409 closed / scheduled
+ *   POST   /review/:token/done          → ReviewPageDto
+ *   GET    /review/:token/items/:itemId/cv → the PDF (inline)
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -217,4 +227,31 @@ export const httpApi: Api = {
     form.append('file', file);
     return request('/hr/news/images', { method: 'POST', body: form });
   },
+
+  hrReviews: () => request('/hr/reviews'),
+  hrReview: (id) => request(`/hr/reviews/${encodeURIComponent(id)}`),
+  hrCreateReview: (input) => request('/hr/reviews', json('POST', input)),
+  hrReviewAction: (id, action) => {
+    const base = `/hr/reviews/${encodeURIComponent(id)}`;
+    switch (action.type) {
+      case 'extend':
+        return request(`${base}/extend`, json('POST', { respondBy: action.respondBy }));
+      case 'revoke':
+        return request(`${base}/revoke`, { method: 'POST' });
+      case 'add':
+        return request(`${base}/items`, json('POST', { items: action.items }));
+      case 'remove':
+        return request(`${base}/items/${encodeURIComponent(action.itemId)}`, { method: 'DELETE' });
+      case 'reply':
+        return request(
+          `${base}/items/${encodeURIComponent(action.itemId)}/reply`,
+          json('POST', { reply: action.reply }),
+        );
+    }
+  },
+  reviewPage: (token) => request(`/review/${encodeURIComponent(token)}`),
+  reviewDecide: (token, itemId, input) =>
+    request(`/review/${encodeURIComponent(token)}/items/${encodeURIComponent(itemId)}`, json('PUT', input)),
+  reviewDone: (token) => request(`/review/${encodeURIComponent(token)}/done`, { method: 'POST' }),
+  reviewCvUrl: (token, itemId) => `${BASE}/review/${encodeURIComponent(token)}/items/${encodeURIComponent(itemId)}/cv`,
 };

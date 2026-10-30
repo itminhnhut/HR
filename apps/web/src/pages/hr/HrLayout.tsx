@@ -21,6 +21,7 @@ const NAV: NavItem[] = [
   { to: '/hr', label: 'Tổng quan', icon: 'bars', end: true },
   { to: '/hr/tin', label: 'Tin tuyển dụng', icon: 'briefcase' },
   { to: '/hr/ho-so', label: 'Hồ sơ ứng viên', icon: 'inbox', badge: true },
+  { to: '/hr/duyet', label: 'Sếp duyệt', icon: 'checkSquare' },
   { to: '/hr/tin-tuc', label: 'Tin tức', icon: 'newspaper' },
   { to: '/hr/mau-tin', label: 'Mẫu tin', icon: 'file' },
   { to: '/hr/mau-thu', label: 'Mẫu thư', icon: 'mail' },

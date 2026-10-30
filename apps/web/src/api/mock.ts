@@ -185,12 +185,14 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     matchPercent: null,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt,
+    review: null,
   };
 }
 
 function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDetailDto {
   return {
     ...appRow(db, a),
+    reviewInfo: null,
     email: a.email,
     message: a.message,
     cvFileName: a.cvFileName,
@@ -873,7 +875,19 @@ export const mockApi: Api = {
   },
 
   ...newsMockApi,
+
+  // "Sếp duyệt ứng viên" needs the real BE (a private link to share): the demo only says so.
+  hrReviews: async () => delay([]),
+  hrReview: () => fail(501, NO_REVIEWS_IN_DEMO),
+  hrCreateReview: () => fail(501, NO_REVIEWS_IN_DEMO),
+  hrReviewAction: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewPage: () => fail(404, NO_REVIEWS_IN_DEMO),
+  reviewDecide: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewDone: () => fail(501, NO_REVIEWS_IN_DEMO),
+  reviewCvUrl: () => null,
 };
+
+const NO_REVIEWS_IN_DEMO = 'Bản demo chưa có phần sếp duyệt ứng viên.';
 
 function messageTemplatesOf(db: MockDb) {
   const saved = new Map(db.messageTemplates.map((t) => [t.key, t]));
