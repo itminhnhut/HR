@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { formatSalary, groupThousands, placeLabel } from './format.js';
+import { formatSalary, groupThousands } from './format.js';
+import { placeLabel } from './job-location.js';
 import { composeWorkingHours, parseWorkingHours } from './job-template.js';
 
 describe('formatSalary', () => {
@@ -34,5 +35,15 @@ describe('placeLabel', () => {
     expect(placeLabel(null)).toBe('Gò Vấp, TP. HCM');
     expect(placeLabel('  ')).toBe('Gò Vấp, TP. HCM');
     expect(placeLabel('Kho Bình Dương')).toBe('Kho Bình Dương');
+  });
+
+  it('should show the district and short city of a long TopCV address instead of the whole address', () => {
+    // Arrange
+    const address = 'Hồ Chí Minh: 110/20/2 Đường Số 30, Phường An Nhơn (Phường An Nhơn thuộc quận Gò Vấp cũ)';
+
+    // Act / Assert
+    expect(placeLabel(address)).toBe('Gò Vấp, TP. HCM');
+    expect(placeLabel('12 Bạch Đằng, Hải Châu, TP. Đà Nẵng')).toBe('Hải Châu, Đà Nẵng');
+    expect(placeLabel('Hải Châu, Đà Nẵng')).toBe('Hải Châu, Đà Nẵng');
   });
 });

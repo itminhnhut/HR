@@ -39,6 +39,7 @@ import {
 import { DEMO_CANDIDATE_EMAIL, DEMO_HR, randomPassword, type MockDb, type MockHrUser, type MockJob } from './mock-seed';
 import { delay, fail, load, requireHr, save, uid } from './mock-store';
 import { newsMockApi } from './mock-news';
+import { relatedPostsForJob } from './mock-news-model';
 import type { Api } from './types';
 
 const REPEAT_MS = 10 * 60_000; // same as the BE: an exact repeat this soon is a double click
@@ -253,7 +254,7 @@ export const mockApi: Api = {
     ]
       .slice(0, 3)
       .map(toCard);
-    return delay({ job: toDetail(job), similar });
+    return delay({ job: toDetail(job), similar, related: relatedPostsForJob(db, job) });
   },
 
   async apply(input) {

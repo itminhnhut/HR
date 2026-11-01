@@ -1,4 +1,10 @@
-import { NEWS_PAGE_SIZE, newsCategoryPath, newsTagPath, type NewsListResponse } from '@careers/shared';
+import {
+  NEWS_PAGE_SIZE,
+  newsCategoryPath,
+  newsListDescription,
+  newsTagPath,
+  type NewsListResponse,
+} from '@careers/shared';
 import { useEffect, useRef, type RefObject } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { ApiError } from '../../api';
@@ -42,13 +48,17 @@ function NotFound({ what }: { what: 'category' | 'tag' }) {
   );
 }
 
+/** The crawler page's meta description (newsListDescription); none until a filtered list has loaded. */
+function listDescription(data: NewsListResponse | undefined, filtered: boolean): string | undefined {
+  if (data?.tag) return newsListDescription({ kind: 'tag', name: data.tag.name }, SITE.company);
+  if (data?.category) return newsListDescription({ kind: 'category', name: data.category.name }, SITE.company);
+  return filtered ? undefined : newsListDescription({ kind: 'all' }, SITE.company);
+}
+
 /** Meta description and hero intro. The H1 already names the category or hashtag, so the intro does not. */
-function listingText(tag: string | undefined, name: string | undefined, isCategory: boolean) {
-  if (tag) return { description: `Các bài viết có hashtag ${name ?? ''}.`, intro: 'Các bài viết có hashtag này.' };
-  if (isCategory) {
-    return { description: `Các bài viết mới nhất trong chuyên mục ${name ?? ''}.`, intro: 'Bài mới nhất trước.' };
-  }
-  return { description: INTRO, intro: INTRO };
+function listingText(tag: string | undefined, data: NewsListResponse | undefined, filtered: boolean) {
+  const intro = tag ? 'Các bài viết có hashtag này.' : data?.category ? 'Bài mới nhất trước.' : INTRO;
+  return { description: listDescription(data, filtered), intro };
 }
 
 /**
@@ -86,7 +96,7 @@ function useListing() {
     filtered,
     current: slug,
     title: name ?? (notFound ? missing : undefined),
-    ...listingText(tag, name ?? undefined, !!query.data?.category),
+    ...listingText(tag, query.data, filtered),
     base: tag ? newsTagPath(tag) : slug ? newsCategoryPath(slug) : '/tin-tuc',
     crumbs: (filtered
       ? [{ label: 'Tin tức', to: '/tin-tuc' }, { label: name ?? '…' }]

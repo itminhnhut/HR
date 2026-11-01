@@ -53,7 +53,5 @@ export function cardPerkChips(perks: string, max = 2): string[] {
   return chips.slice(0, max);
 }
 
-/** "Gò Vấp, TP. Hồ Chí Minh" → "Gò Vấp, TP.HCM": short enough for the card's fact column. */
-export function shortPlace(place: string): string {
-  return place.replace(/(Thành phố|TP\.?)\s*(Hồ Chí Minh|HCM)\b/giu, 'TP.HCM');
-}
+/** "Gò Vấp, TP. Hồ Chí Minh" → "Gò Vấp, TP.HCM": shared with the crawler home page. */
+export { shortPlace } from '@careers/shared';

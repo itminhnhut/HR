@@ -6,10 +6,13 @@ import {
   JOB_SECTION,
   jobBreadcrumbData,
   jobPostingData,
+  jobSeoDescription,
+  jobSeoTitle,
   todayInVietnam,
   zaloLink,
   type JobCardDto,
   type JobDetailDto,
+  type RelatedPostDto,
 } from '@careers/shared';
 import { useRef, type RefObject } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
@@ -30,6 +33,7 @@ import { JobSidebar, SimilarJobs } from './job/JobAside';
 import { CheckList, TaskList } from './job/GroupedLists';
 import { Benefits, FactsCard, Roadmap, Section, Workplace } from './job/JobSections';
 import { JobSkeleton } from './job/JobSkeleton';
+import { RelatedPosts } from './job/RelatedPosts';
 
 export function JobPage() {
   const { slug = '' } = useParams();
@@ -37,9 +41,10 @@ export function JobPage() {
   const job = query.data?.job;
   const notFound = query.error instanceof ApiError && query.error.status === 404;
   // A missing job sets its own meta (NotFoundView: noindex, no canonical).
+  // The same title and description as the crawler page (packages/shared/src/job-seo.ts).
   usePageMeta(
-    job?.title ?? (query.isError && !notFound ? 'Chưa tải được tin tuyển dụng' : undefined),
-    job ? `${job.title} · ${formatSalary(job)} · ${job.place}` : undefined,
+    job ? jobSeoTitle(job) : query.isError && !notFound ? 'Chưa tải được tin tuyển dụng' : undefined,
+    job ? jobSeoDescription(job) : undefined,
   );
   useJsonLd(job ? jobBreadcrumbData(job, { name: SITE.company, url: SITE.url }) : null);
 
@@ -56,11 +61,13 @@ export function JobPage() {
     );
   }
   const { similar } = query.data;
+  // Older APIs send no related posts.
+  const related = query.data.related ?? [];
   // key: moving between two jobs must not carry form or subscribe state over.
   return acceptsApplications(job.status) ? (
-    <OpenJob key={slug} job={job} similar={similar} />
+    <OpenJob key={slug} job={job} similar={similar} related={related} />
   ) : (
-    <ClosedJob key={slug} job={job} similar={similar} />
+    <ClosedJob key={slug} job={job} similar={similar} related={related} />
   );
 }
 
@@ -107,7 +114,13 @@ function publishedLabel(publishedAt: string | null): string | null {
   return null;
 }
 
-function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] }) {
+interface JobLinks {
+  job: JobDetailDto;
+  similar: JobCardDto[];
+  related: RelatedPostDto[];
+}
+
+function OpenJob({ job, similar, related }: JobLinks) {
   const [applyOpen, setApplyOpen] = useApplyParam();
   const heroActions = useRef<HTMLDivElement>(null);
   // No observer (old browser, tests): keep the bar, so apply stays one tap away.
@@ -149,6 +162,7 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
           <JobSidebar deadline={job.deadline} onApply={apply} />
         </div>
 
+        <RelatedPosts posts={related} />
         <SimilarJobs jobs={similar} title="Việc làm tương tự" />
       </main>
 

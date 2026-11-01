@@ -106,13 +106,51 @@ describe('job page', () => {
     show('/viec-lam/nhan-vien-kinh-doanh-b2b');
 
     await waitFor(() => expect(jsonLd().map((d) => d['@type'])).toEqual(['JobPosting', 'BreadcrumbList']));
-    expect(document.title).toBe('Nhân viên Kinh doanh B2B · TOP FLOW');
+    expect(document.title).toBe('Tuyển Nhân viên Kinh doanh B2B – Gò Vấp, TP.HCM · TOP FLOW');
     expect(jsonLd()[1]).toMatchObject({
       itemListElement: [
         { position: 1, name: 'Việc làm' },
         { position: 2, name: 'Nhân viên Kinh doanh B2B' },
       ],
     });
+  });
+
+  it('should describe the job for search and previews starting with "Tuyển", the same as the crawler page', async () => {
+    // Act
+    show('/viec-lam/nhan-vien-kinh-doanh-b2b');
+
+    // Assert
+    await waitFor(() => expect(headMeta('meta[name="description"]')).toMatch(/^Tuyển Nhân viên Kinh doanh B2B tại /));
+    const description = headMeta('meta[name="description"]') ?? '';
+    expect(description).toContain('Lương 12 – 18 triệu');
+    expect(description).toMatch(/Hạn nộp \d{2}\/\d{2}\/\d{4}/);
+    expect(description.length).toBeLessThanOrEqual(160);
+    expect(headMeta('meta[property="og:description"]')).toBe(description);
+    expect(headMeta('meta[property="og:title"]')).toBe(document.title);
+  });
+
+  it('should link the related articles below the job, before the similar jobs', async () => {
+    // Act
+    show('/viec-lam/nhan-vien-kinh-doanh-b2b');
+
+    // Assert
+    const heading = await screen.findByRole('heading', { level: 2, name: 'Bài viết liên quan' });
+    const section = heading.closest('section');
+    if (!section) throw new Error('no related section');
+    const hrefs = within(section)
+      .getAllByRole('link')
+      .map((a) => a.getAttribute('href'));
+    expect(hrefs).toEqual(
+      expect.arrayContaining([
+        '/tin-tuc/mot-ngay-lam-viec-cua-ky-su-kinh-doanh-tai-top-flow',
+        '/tin-tuc/5-dieu-nen-chuan-bi-truoc-buoi-phong-van-tai-top-flow',
+      ]),
+    );
+    expect(
+      within(section).getByRole('heading', { level: 3, name: /Một ngày làm việc của kỹ sư kinh doanh/ }),
+    ).toBeTruthy();
+    const similar = screen.getByRole('heading', { level: 2, name: 'Việc làm tương tự' });
+    expect(heading.compareDocumentPosition(similar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('should keep a missing job out of search results, with a 404 title and no canonical address', async () => {

@@ -23,9 +23,9 @@ async function sharePage(c: Context<Env>, slug: string) {
   const { db, config, now } = c.get('deps');
   const site = { url: config.siteUrl, companyName: config.companyName };
   try {
-    const { job, similar } = await getJobPage(db, slug, now());
+    const { job, similar, related } = await getJobPage(db, slug, now());
     c.header('cache-control', 'public, s-maxage=300, stale-while-revalidate=600');
-    return c.html(jobBotPage(site, job, similar));
+    return c.html(jobBotPage(site, job, similar, related));
   } catch (error) {
     if (error instanceof HttpError && error.status === 404) {
       return c.html(notFoundHtml({ href: `${site.url}/`, text: 'Xem vị trí đang mở' }), 404);
@@ -50,6 +50,10 @@ shareRoutes.get('/robots.txt', (c) => {
       'User-agent: *',
       // HR and account pages are not blocked here on purpose: crawlers must read them to see their
       // noindex (X-Robots-Tag in vercel.json), otherwise a linked page can be listed by its address alone.
+      // Google renders the SPA and needs the public data behind its pages; the API itself stays out of
+      // results through its noindex header (vercel.json). The longest matching rule wins, so these beat /api.
+      'Allow: /api/jobs',
+      'Allow: /api/news',
       'Disallow: /api',
       `Sitemap: ${config.siteUrl}/sitemap.xml`,
       '',

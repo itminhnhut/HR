@@ -22,9 +22,22 @@ const GOOGLE_EMPLOYMENT_TYPE = {
   internship: 'INTERN',
 } as const;
 
-/** "Tin tức · TOP FLOW"; a title that already names the brand is left as it is. */
+/** Google shows about this many characters of a title; pageTitle drops the brand rather than pass it. */
+export const SEO_TITLE_MAX = 65;
+
+/** "Kế toán  ( Thuế )" → "Kế toán (Thuế)": HR's job title without stray spaces, for search engines only. */
+export function seoJobTitle(title: string): string {
+  return title.replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').trim();
+}
+
+/**
+ * "Tin tức · TOP FLOW"; a title that already names the brand is left as it is, and so is one the brand would
+ * push past SEO_TITLE_MAX characters (search results cut it there; the words of the page matter more).
+ */
 export function pageTitle(title: string, brand: string): string {
-  return foldVietnamese(title).includes(foldVietnamese(brand)) ? title : `${title} · ${brand}`;
+  if (foldVietnamese(title).includes(foldVietnamese(brand))) return title;
+  const branded = `${title} · ${brand}`;
+  return branded.length <= SEO_TITLE_MAX ? branded : title;
 }
 
 export const jobPath = (slug: string) => `/viec-lam/${slug}`;
@@ -130,7 +143,7 @@ export function jobPostingData(job: JobDetailDto, org: Org): Record<string, unkn
   return compact({
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
-    title: job.title,
+    title: seoJobTitle(job.title),
     description: jobDescriptionHtml(job),
     identifier: { '@type': 'PropertyValue', name: org.name, value: job.id },
     datePosted: job.publishedAt?.slice(0, 10),

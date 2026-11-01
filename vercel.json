@@ -4,14 +4,33 @@
   "buildCommand": "npm run build",
   "outputDirectory": "apps/web/dist",
   "regions": ["sin1"],
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/viec-lam",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
+        }
+      ],
+      "destination": "/api"
+    },
     {
       "source": "/viec-lam/:slug",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -22,7 +41,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -33,7 +52,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -44,7 +63,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -55,7 +74,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -66,7 +85,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"
@@ -77,7 +96,7 @@
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview).*"
+          "value": "(?i).*(facebookexternalhit|facebot|zalo|googlebot|bingbot|coccocbot|applebot|duckduckbot|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|whatsapp|skypeuripreview|google-inspectiontool|googleother).*"
         }
       ],
       "destination": "/api"

@@ -26,8 +26,10 @@ describe('GET /share/jobs/:slug', () => {
     const html = await res.text();
 
     expect(res.status).toBe(200);
-    expect(html).toContain('<title>Kỹ sư &lt;Backend&gt; · Công ty Test</title>');
-    expect(html).toContain('<meta property="og:title" content="Kỹ sư &lt;Backend&gt; · Công ty Test">');
+    expect(html).toContain('<title>Tuyển Kỹ sư &lt;Backend&gt; – Gò Vấp, TP.HCM · Công ty Test</title>');
+    expect(html).toContain(
+      '<meta property="og:title" content="Tuyển Kỹ sư &lt;Backend&gt; – Gò Vấp, TP.HCM · Công ty Test">',
+    );
     expect(html).toContain('<link rel="canonical" href="https://tuyendung.test/viec-lam/ky-su">');
     expect(html).toContain('20 – 30 triệu');
     expect(html).not.toContain('noindex');
@@ -235,6 +237,19 @@ describe('GET /robots.txt', () => {
     const text = await (await t.request('/robots.txt')).text();
     expect(text).toContain('Disallow: /api');
     expect(text).toContain('Sitemap: https://tuyendung.test/sitemap.xml');
+  });
+
+  it('should let crawlers fetch the public jobs and news data the pages render from', async () => {
+    // Act
+    const text = await (await t.request('/robots.txt')).text();
+
+    // Assert
+    const lines = text.split('\n');
+    const disallow = lines.indexOf('Disallow: /api');
+    expect(lines.indexOf('Allow: /api/jobs')).toBeGreaterThan(-1);
+    expect(lines.indexOf('Allow: /api/news')).toBeGreaterThan(-1);
+    expect(lines.indexOf('Allow: /api/jobs')).toBeLessThan(disallow);
+    expect(lines.indexOf('Allow: /api/news')).toBeLessThan(disallow);
   });
 
   it('should let crawlers read private pages, so they see the noindex that keeps them out of results', async () => {

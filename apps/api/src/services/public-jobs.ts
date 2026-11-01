@@ -3,6 +3,7 @@ import { and, desc, eq, gte } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { jobs, type Job } from '../db/schema.js';
 import { notFound } from '../lib/http-error.js';
+import { relatedNewsForJob } from './job-related-news.js';
 import { toCard, toDetail } from './job-mappers.js';
 
 const SIMILAR_MAX = 3;
@@ -22,7 +23,10 @@ export async function listJobs(db: Db, now: Date): Promise<JobListResponse> {
   return { jobs: cards };
 }
 
-/** BR-05: a closed job still renders (200) with up to 3 similar open jobs. Only drafts are hidden. */
+/**
+ * BR-05: a closed job still renders (200) with up to 3 similar open jobs. Only drafts are hidden.
+ * `related`: up to 3 news posts about the same work ("Bài viết liên quan").
+ */
 export async function getJobPage(db: Db, slug: string, now: Date): Promise<JobPageResponse> {
   const job = await db.query.jobs.findFirst({ where: eq(jobs.slug, slug) });
   if (!job || job.state === 'draft') throw notFound('Không tìm thấy tin tuyển dụng.');
@@ -35,5 +39,6 @@ export async function getJobPage(db: Db, slug: string, now: Date): Promise<JobPa
     .slice(0, SIMILAR_MAX)
     .map((other) => toCard(other, now));
 
-  return { job: toDetail(job, now), similar };
+  const related = await relatedNewsForJob(db, job);
+  return { job: toDetail(job, now), similar, related };
 }

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { siteJsonLd } from '@careers/shared';
 import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { useNoIndex, useNotFoundMeta, usePageMeta } from './hooks';
@@ -47,6 +49,18 @@ describe('usePageMeta titles and list pages', () => {
     window.history.replaceState(null, '', '/tin-tuc?trang=abc');
     renderHook(() => usePageMeta('Tin tức'));
     expect(canonical()).toBe(`${window.location.origin}/tin-tuc`);
+  });
+
+  it('should leave the brand out when asked, so a long article title is not cut in results', () => {
+    // Arrange
+    window.history.replaceState(null, '', '/tin-tuc/chuyen-da-ngoai');
+
+    // Act
+    renderHook(() => usePageMeta('Chuyến dã ngoại cuối năm của đội kinh doanh', 'Một ngày ở Ba Vì.', { brand: false }));
+
+    // Assert
+    expect(document.title).toBe('Chuyến dã ngoại cuối năm của đội kinh doanh');
+    expect(meta('meta[property="og:title"]')).toBe('Chuyến dã ngoại cuối năm của đội kinh doanh');
   });
 
   it('should not repeat the brand when the title already names it', () => {
@@ -111,5 +125,19 @@ describe('fillSiteHtml', () => {
 
   it('should fall back to the live address when none is set', () => {
     expect(fillSiteHtml('%SITE_URL%', {})).toBe('https://www.lee-hr.com');
+  });
+});
+
+describe('index.html structured data', () => {
+  it('should describe the company and site as the crawler home page does, logo included', () => {
+    // Arrange
+    const env = { VITE_SITE_URL: 'https://www.lee-hr.com', VITE_COMPANY_NAME: 'TOP FLOW' };
+    const html = fillSiteHtml(readFileSync('index.html', 'utf8'), env);
+
+    // Act
+    const block = /<script type="application\/ld\+json">(.*?)<\/script>/s.exec(html)?.[1] ?? '{}';
+
+    // Assert
+    expect(JSON.parse(block)).toEqual(siteJsonLd({ url: 'https://www.lee-hr.com', companyName: 'TOP FLOW' }));
   });
 });

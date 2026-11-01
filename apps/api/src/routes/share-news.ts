@@ -5,6 +5,7 @@ import {
   formatTimestamp,
   newsBreadcrumbData,
   newsCategoryPath,
+  newsListDescription,
   newsPath,
   newsTagPath,
   vietnamIso,
@@ -85,7 +86,7 @@ function listScope(site: Site, list: NewsListResponse): ListScope {
     const basePath = newsTagPath(list.tag.slug);
     return {
       heading,
-      description: `Bài viết gắn hashtag ${heading} của ${site.companyName}.`,
+      description: newsListDescription({ kind: 'tag', name: list.tag.name }, site.companyName),
       basePath,
       crumb: { name: heading, item: `${site.url}${basePath}` },
     };
@@ -94,14 +95,14 @@ function listScope(site: Site, list: NewsListResponse): ListScope {
     const basePath = newsCategoryPath(list.category.slug);
     return {
       heading: list.category.name,
-      description: `Bài viết chuyên mục ${list.category.name} của ${site.companyName}.`,
+      description: newsListDescription({ kind: 'category', name: list.category.name }, site.companyName),
       basePath,
       crumb: { name: list.category.name, item: `${site.url}${basePath}` },
     };
   }
   return {
     heading: 'Tin tức',
-    description: `Tin tức, đời sống và cẩm nang nghề nghiệp từ ${site.companyName}.`,
+    description: newsListDescription({ kind: 'all' }, site.companyName),
     basePath: NEWS_INDEX_PATH,
     crumb: null,
   };
@@ -180,6 +181,7 @@ async function articlePage(c: Context<Env>, slug: string) {
   const site = siteOf(c);
   const head: Head = {
     title: post.title,
+    brand: false,
     description: post.summary,
     path: newsPath(post.slug),
     type: 'article',

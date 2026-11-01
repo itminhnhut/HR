@@ -1,3 +1,4 @@
+import { newsListDescription } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createTestContext, TEST_INDEXNOW_KEY, type TestContext } from '../test/harness.js';
 import { coverImage, insertCategory, insertPost, tagPost } from '../test/news-fixtures.js';
@@ -38,7 +39,7 @@ describe('GET /tin-tuc/:slug for crawlers', () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get('cache-control')).toBe('public, s-maxage=60, stale-while-revalidate=300');
-    expect(html).toContain('<title>Chuyến dã ngoại · Công ty Test</title>');
+    expect(html).toContain('<title>Chuyến dã ngoại</title>');
     expect(html).toContain('<meta name="description" content="Một ngày ở Ba Vì.">');
     expect(html).toContain(`<link rel="canonical" href="${SITE}/tin-tuc/da-ngoai">`);
     expect(html).toContain('<meta name="robots" content="index, follow, max-image-preview:large">');
@@ -56,6 +57,20 @@ describe('GET /tin-tuc/:slug for crawlers', () => {
     expect(html).toContain(`<a href="${SITE}/tin-tuc">`);
     expect(jsonLdOf(html).map((d) => d['@type'])).toEqual(['BlogPosting', 'BreadcrumbList']);
     expect(jsonLdOf(html)[0]).toMatchObject({ headline: 'Chuyến dã ngoại', image: [cover.url] });
+  });
+
+  it('should title an article without the brand, so a long title is not cut in search results', async () => {
+    // Arrange
+    const category = await insertCategory(t);
+    const title = 'Kinh nghiệm phỏng vấn vị trí kỹ sư kinh doanh đường ống cho người mới ra trường';
+    await insertPost(t, category.id, { slug: 'kinh-nghiem', title });
+
+    // Act
+    const { html } = await page('/tin-tuc/kinh-nghiem');
+
+    // Assert
+    expect(html).toContain(`<title>${title}</title>`);
+    expect(html).toContain(`<meta property="og:title" content="${title}">`);
   });
 
   it('should not repeat the company name in the title of a post that already names it', async () => {
@@ -266,12 +281,27 @@ describe('hashtag pages for crawlers', () => {
     expect(html).toContain('<meta name="robots" content="noindex, follow">');
   });
 
-  it('should let search engines index a hashtag page from two published posts', async () => {
+  it('should keep a hashtag page out of search while it has fewer than five published posts', async () => {
+    // Arrange
     const category = await insertCategory(t);
-    for (const slug of ['mot', 'hai']) await tagPost(t, (await insertPost(t, category.id, { slug })).id, ['Đời sống']);
+    for (let i = 0; i < 4; i++) await tagPost(t, (await insertPost(t, category.id)).id, ['Đời sống']);
 
+    // Act
     const { html } = await page('/tin-tuc/the/doi-song');
 
+    // Assert
+    expect(html).toContain('<meta name="robots" content="noindex, follow">');
+  });
+
+  it('should let search engines index a hashtag page from five published posts', async () => {
+    // Arrange
+    const category = await insertCategory(t);
+    for (let i = 0; i < 5; i++) await tagPost(t, (await insertPost(t, category.id)).id, ['Đời sống']);
+
+    // Act
+    const { html } = await page('/tin-tuc/the/doi-song');
+
+    // Assert
     expect(html).toContain('<meta name="robots" content="index, follow, max-image-preview:large">');
   });
 
@@ -300,22 +330,55 @@ describe('GET /sitemap.xml hashtag entries', () => {
   const entryOf = (xml: string, path: string) =>
     xml.split('<url>').find((u) => u.includes(`<loc>${SITE}${path}</loc>`)) ?? '';
 
-  it('should list hashtags with two or more published posts, dated by the newest', async () => {
+  it('should list hashtags with five or more published posts, dated by the newest', async () => {
+    // Arrange
     const category = await insertCategory(t);
-    const a = await insertPost(t, category.id, { updatedAt: new Date('2026-10-10T00:00:00Z') });
-    const b = await insertPost(t, category.id, { updatedAt: new Date('2026-10-12T00:00:00Z') });
+    for (let day = 10; day <= 14; day++) {
+      const post = await insertPost(t, category.id, { updatedAt: new Date(`2026-10-${day}T00:00:00Z`) });
+      await tagPost(t, post.id, day <= 13 ? ['Phổ biến', 'Bốn bài'] : ['Phổ biến']);
+    }
     const draft = await insertPost(t, category.id, {
       status: 'draft',
       publishedAt: null,
       updatedAt: new Date('2026-10-19T00:00:00Z'),
     });
-    await tagPost(t, a.id, ['Phổ biến', 'Một bài']);
-    await tagPost(t, b.id, ['Phổ biến']);
-    await tagPost(t, draft.id, ['Phổ biến', 'Một bài']);
+    await tagPost(t, draft.id, ['Phổ biến', 'Bốn bài']);
 
+    // Act
     const xml = await (await t.request('/sitemap.xml')).text();
 
-    expect(entryOf(xml, '/tin-tuc/the/pho-bien')).toContain('<lastmod>2026-10-12T00:00:00Z</lastmod>');
-    expect(xml).not.toContain('/tin-tuc/the/mot-bai');
+    // Assert
+    expect(entryOf(xml, '/tin-tuc/the/pho-bien')).toContain('<lastmod>2026-10-14T00:00:00Z</lastmod>');
+    expect(xml).not.toContain('/tin-tuc/the/bon-bai');
+  });
+});
+
+describe('news list descriptions for crawlers', () => {
+  const descriptionOf = (html: string) => /<meta name="description" content="([^"]*)">/.exec(html)?.[1] ?? '';
+
+  it('should describe a category page in 120 to 160 characters from its name', async () => {
+    // Arrange
+    const category = await insertCategory(t, 'Tuyển dụng');
+    await insertPost(t, category.id);
+
+    // Act
+    const { html } = await page('/tin-tuc/chuyen-muc/tuyen-dung');
+
+    // Assert
+    const description = descriptionOf(html);
+    expect(description).toBe(newsListDescription({ kind: 'category', name: 'Tuyển dụng' }, 'Công ty Test'));
+    expect(description.length).toBeGreaterThanOrEqual(120);
+    expect(description.length).toBeLessThanOrEqual(160);
+  });
+
+  it('should describe the news page in 120 to 160 characters', async () => {
+    // Act
+    const { html } = await page('/tin-tuc');
+
+    // Assert
+    const description = descriptionOf(html);
+    expect(description).toBe(newsListDescription({ kind: 'all' }, 'Công ty Test'));
+    expect(description.length).toBeGreaterThanOrEqual(120);
+    expect(description.length).toBeLessThanOrEqual(160);
   });
 });
