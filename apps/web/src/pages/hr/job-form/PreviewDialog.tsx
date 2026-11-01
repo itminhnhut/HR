@@ -1,4 +1,12 @@
-import { EMPLOYMENT_TYPE_LABEL, formatDate, NO_REQUIREMENT, ROADMAP_MILESTONES, toLines } from '@careers/shared';
+import {
+  EMPLOYMENT_TYPE_LABEL,
+  formatDate,
+  NO_REQUIREMENT,
+  openingsLabel,
+  ROADMAP_MILESTONES,
+  toSections,
+  WORK_MODE_LABEL,
+} from '@careers/shared';
 import type { ReactNode } from 'react';
 import { SITE } from '../../../lib/site';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
@@ -14,15 +22,26 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+/** A grouped field as the job page shows it: each heading HR typed (lines without a bullet), then its items. */
 function Bullets({ text }: { text: string }) {
-  const items = toLines(text);
-  if (items.length === 0) return <p className="m-0 text-sm italic text-muted">Chưa nhập.</p>;
+  const sections = toSections(text);
+  if (sections.length === 0) return <p className="m-0 text-sm italic text-muted">Chưa nhập.</p>;
   return (
-    <ul className="m-0 flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-relaxed text-body marker:text-silver-soft">
-      {items.map((t) => (
-        <li key={t}>{t}</li>
+    <div className="flex flex-col gap-3">
+      {sections.map((section, group) => (
+        // Index keys: two groups or items may have the same text.
+        <div key={group} className="flex flex-col gap-1.5">
+          {section.title != null && <h4 className="m-0 text-[15px] font-semibold text-navy">{section.title}</h4>}
+          {section.items.length > 0 && (
+            <ul className="m-0 flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-relaxed text-body marker:text-silver-soft">
+              {section.items.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
 
@@ -31,6 +50,9 @@ export function PreviewDialog({ form, open, onClose }: { form: FormState; open: 
   const facts: [string, string | null][] = [
     ['Mức lương', salaryPreview(form)],
     ['Hình thức', EMPLOYMENT_TYPE_LABEL[form.employmentType]],
+    ['Hình thức làm việc', form.workMode ? WORK_MODE_LABEL[form.workMode] : null],
+    ['Cấp bậc', form.level.trim() || null],
+    ['Số lượng tuyển', form.openings ? openingsLabel(Number(form.openings)) : null],
     ['Kinh nghiệm', form.experience || null],
     ['Học vấn', form.education && form.education !== NO_REQUIREMENT ? form.education : null],
     ['Hạn nộp', form.deadline ? formatDate(form.deadline) : null],

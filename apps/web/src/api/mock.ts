@@ -24,7 +24,8 @@ import {
   normalizeVietnamPhone,
   POLICY_VERSION,
   todayInVietnam,
-  toLines,
+  toItems,
+  toSections,
   validateDeadline,
   type ApplicationDetailDto,
   type HrMe,
@@ -70,9 +71,17 @@ function toDetail(job: MockJob): JobDetailDto {
     workingHours: job.workingHours,
     experience: job.experience,
     education: job.education,
-    responsibilities: toLines(job.responsibilities),
-    requirements: toLines(job.requirements),
-    preferred: toLines(job.preferred),
+    level: job.level,
+    openings: job.openings,
+    workMode: job.workMode,
+    responsibilities: toItems(job.responsibilities),
+    requirements: toItems(job.requirements),
+    preferred: toItems(job.preferred),
+    sections: {
+      responsibilities: toSections(job.responsibilities),
+      requirements: toSections(job.requirements),
+      preferred: toSections(job.preferred),
+    },
     benefits: job.benefits,
     roadmap: job.roadmap,
   };
@@ -553,6 +562,7 @@ export const mockApi: Api = {
     return delay({
       template,
       departments: [...new Set([...template.departments, ...db.jobs.map((j) => j.department)])],
+      levels: [...new Set([...template.levels, ...db.jobs.flatMap((j) => (j.level ? [j.level] : []))])],
       experiences: [
         ...new Set([...template.experiences, ...db.jobs.flatMap((j) => (j.experience ? [j.experience] : []))]),
       ],

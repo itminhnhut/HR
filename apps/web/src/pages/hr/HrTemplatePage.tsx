@@ -196,9 +196,10 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
 
       <Section
         title="Lựa chọn trong form đăng tin"
-        hint="Các mục HR chọn ở Phòng ban, Kinh nghiệm, Học vấn, Yêu cầu và Ưu tiên."
+        hint="Các mục HR chọn ở Phòng ban, Cấp bậc, Kinh nghiệm, Học vấn, Yêu cầu và Ưu tiên."
       >
         <ChoiceList label="Phòng ban" items={template.departments} onChange={(departments) => patch({ departments })} />
+        <ChoiceList label="Cấp bậc" items={template.levels} onChange={(levels) => patch({ levels })} />
         <ChoiceList
           label="Kinh nghiệm"
           items={template.experiences}

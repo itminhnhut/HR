@@ -23,9 +23,13 @@ const job: JobDetailDto = {
   workingHours: null,
   experience: null,
   education: null,
+  level: null,
+  openings: null,
+  workMode: null,
   responsibilities: [],
   requirements: [],
   preferred: [],
+  sections: { responsibilities: [], requirements: [], preferred: [] },
   benefits: [],
   roadmap: [],
 };

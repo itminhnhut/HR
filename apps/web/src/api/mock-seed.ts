@@ -7,6 +7,7 @@ import {
   todayInVietnam,
   type ApplicationStatus,
   type EmploymentType,
+  type WorkMode,
   type JobState,
   type JobTemplate,
   type MessageTemplate,
@@ -28,6 +29,9 @@ export interface MockJob {
   workingHours: string | null;
   experience: string | null;
   education: string | null;
+  level: string | null;
+  openings: number | null;
+  workMode: WorkMode | null;
   /** VND per month. */
   salaryMin: number | null;
   salaryMax: number | null;
@@ -114,7 +118,7 @@ export interface MockDb {
   session: { hr: string | null; candidateEmail: string | null };
 }
 
-export const DB_VERSION = 11;
+export const DB_VERSION = 12;
 
 const STANDARD_BENEFITS = standardBenefits(DEFAULT_JOB_TEMPLATE);
 const HOURS = composeWorkingHours(
@@ -139,6 +143,9 @@ function job(
     workingHours: HOURS,
     experience: 'Từ 1 năm',
     education: 'Cao đẳng trở lên',
+    level: null,
+    openings: null,
+    workMode: null,
     salaryMin: null,
     salaryMax: null,
     responsibilities: '',
@@ -187,6 +194,45 @@ const JOBS: JobSeed[] = [
     benefits: [...STANDARD_BENEFITS, 'Cấp laptop làm việc'],
     deadlineIn: 43,
     publishedAgo: 3,
+    state: 'published',
+  }),
+  // Grouped duties (headings + "•" items) and the optional level, openings and work mode.
+  job({
+    id: 'j11',
+    slug: 'nhan-vien-chung-tu-logistics',
+    title: 'Nhân viên Chứng từ – Logistics',
+    department: 'Vận hành',
+    level: 'Nhân viên',
+    openings: 2,
+    workMode: 'hybrid',
+    salaryMin: 10 * M,
+    salaryMax: 14 * M,
+    responsibilities: [
+      '1. Quản lý đơn hàng & vận chuyển nhập khẩu',
+      '• Theo dõi lịch tàu, lịch bay và cập nhật tình trạng lô hàng cho khách.',
+      '• Liên hệ hãng tàu, đại lý để lấy lệnh giao hàng đúng hẹn.',
+      '• Sắp xếp xe kéo container từ cảng về kho.',
+      '2. Thủ tục hải quan',
+      '• Chuẩn bị bộ chứng từ: hợp đồng, hóa đơn, phiếu đóng gói, vận đơn.',
+      '• Khai báo hải quan điện tử và theo dõi phân luồng tờ khai.',
+      '3. Báo cáo',
+      '• Lưu hồ sơ từng lô hàng và báo cáo tuần cho trưởng phòng.',
+    ].join('\n'),
+    requirements: [
+      'Kiến thức',
+      '• Tốt nghiệp Cao đẳng trở lên ngành Xuất nhập khẩu, Logistics hoặc Ngoại thương.',
+      '• Hiểu quy trình làm chứng từ và thủ tục hải quan.',
+      'Kỹ năng',
+      '• Dùng thành thạo Excel.',
+      '• Đọc hiểu chứng từ tiếng Anh.',
+    ].join('\n'),
+    preferred: 'Đã dùng phần mềm khai báo hải quan ECUS.',
+    benefits: [
+      'Thưởng theo kết quả công việc mỗi quý, xét theo số lô hàng hoàn thành đúng hạn và đánh giá của khách hàng, cộng thêm thưởng nóng khi xử lý lô hàng gấp ngoài giờ',
+      ...STANDARD_BENEFITS,
+    ],
+    deadlineIn: 40,
+    publishedAgo: 1,
     state: 'published',
   }),
   job({

@@ -11,10 +11,12 @@ import {
   SALARY_MIN_VND,
   SALARY_STEP_VND,
   standardBenefits,
+  usesBullets,
   type EmploymentType,
   type HrJobDto,
   type JobInput,
   type JobTemplate,
+  type WorkMode,
 } from '@careers/shared';
 
 export const DEFAULT_OPEN_DAYS = 30;
@@ -31,6 +33,12 @@ export interface FormState {
   employmentType: EmploymentType;
   experience: string;
   education: string;
+  /** "Cấp bậc"; empty: not set. */
+  level: string;
+  /** "Số lượng tuyển", digits only; empty: not set. */
+  openings: string;
+  /** "Hình thức làm việc"; empty: not set. */
+  workMode: WorkMode | '';
   /** One of WORK_DAYS, or OTHER with the text in workingHoursOther. */
   workDays: string;
   startTime: string;
@@ -58,6 +66,9 @@ export function emptyForm(template: JobTemplate): FormState {
     employmentType: 'full_time',
     experience: EXPERIENCE_OPTIONS[0],
     education: EDUCATION_OPTIONS[0],
+    level: '',
+    openings: '',
+    workMode: '',
     workDays: template.workDays,
     startTime: template.startTime,
     endTime: template.endTime,
@@ -94,6 +105,9 @@ export function fromJob(job: HrJobDto, template: JobTemplate): FormState {
     employmentType: job.employmentType,
     experience: job.experience ?? NO_REQUIREMENT,
     education: job.education ?? NO_REQUIREMENT,
+    level: job.level ?? '',
+    openings: digits(job.openings),
+    workMode: job.workMode ?? '',
     ...hoursFields(job.workingHours, template),
     salaryMin: digits(job.salaryMin),
     salaryMax: digits(job.salaryMax),
@@ -124,6 +138,9 @@ export function toInput(f: FormState, intent: JobInput['intent']): JobInput {
     workingHours: workingHoursText(f),
     experience: f.experience.trim() || null,
     education: f.education.trim() || null,
+    level: f.level.trim() || null,
+    openings: f.openings === '' ? null : Number(f.openings),
+    workMode: f.workMode || null,
     salaryMin: f.negotiable ? null : toVnd(f.salaryMin),
     salaryMax: f.negotiable ? null : toVnd(f.salaryMax),
     responsibilities: f.responsibilities,
@@ -134,6 +151,31 @@ export function toInput(f: FormState, intent: JobInput['intent']): JobInput {
     deadline: f.deadline,
     intent,
   };
+}
+
+// ── Quick picks ─────────────────────────────────────────────────────────
+
+const BULLET = /^[-•*\s]+/;
+/** A line's text without its bullet marker, to match a quick pick however HR wrote it. */
+const lineText = (line: string) => line.replace(BULLET, '').trim();
+
+/** Drops empty lines at the end only, so paragraphs HR made stay as they are. */
+function trimTrailing(lines: string[]): string[] {
+  const end = lines.findLastIndex((l) => l.trim() !== '');
+  return lines.slice(0, end + 1);
+}
+
+/** The quick pick is already in the text, with or without a bullet. */
+export const hasPick = (text: string, option: string) => text.split('\n').some((l) => lineText(l) === option);
+
+/**
+ * Ticks or unticks a quick pick in "Yêu cầu" / "Ưu tiên". When HR writes the field with bullets, the line is
+ * added with "• " too: a line without one would read as a group heading.
+ */
+export function togglePick(text: string, option: string): string {
+  const lines = text.split('\n');
+  if (hasPick(text, option)) return lines.filter((l) => lineText(l) !== option).join('\n');
+  return [...trimTrailing(lines), usesBullets(text) ? `• ${option}` : option].join('\n');
 }
 
 // ── Salary ──────────────────────────────────────────────────────────────

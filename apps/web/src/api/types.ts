@@ -38,6 +38,7 @@ import type {
   HrContactInput,
   SourceDto,
   ParsedCvDto,
+  TemplateChoiceList,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -160,7 +161,7 @@ export interface Api {
   hrDashboard(): Promise<DashboardDto>;
   hrJobTemplate(): Promise<JobTemplateResponse>;
   hrSaveJobTemplate(template: JobTemplate): Promise<JobTemplateResponse>;
-  hrAddTemplateChoice(list: 'departments' | 'experiences' | 'educations', value: string): Promise<JobTemplateResponse>;
+  hrAddTemplateChoice(list: TemplateChoiceList, value: string): Promise<JobTemplateResponse>;
   hrJob(id: string): Promise<HrJobDto>;
   hrSaveJob(id: string | null, input: JobInput): Promise<HrJobDto>;
   hrJobAction(id: string, action: JobAction): Promise<{ ok: true }>;

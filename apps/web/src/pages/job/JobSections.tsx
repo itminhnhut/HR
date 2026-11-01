@@ -4,16 +4,20 @@ import {
   formatSalary,
   NO_REQUIREMENT,
   groupBenefits,
+  openingsLabel,
   ROADMAP_MILESTONES,
+  WORK_MODE_LABEL,
   type BenefitGroupKey,
   type JobDetailDto,
+  type JobSection,
 } from '@careers/shared';
 import type { ReactNode } from 'react';
 import { COLOR_CLASSES, type CategoryColor } from '../../lib/colors';
 import { SITE } from '../../lib/site';
 import { SectionHeading } from '../../site/SectionHeading';
 import { Icon, IconRing, type IconName } from '../../ui/icons';
-import { benefitLook, requirementLook, type ItemLook } from './itemIcons';
+import { ItemBadge } from './GroupedLists';
+import { benefitLook } from './itemIcons';
 
 export function Section({ icon, title, children }: { icon: IconName; title: string; children: ReactNode }) {
   return (
@@ -24,33 +28,53 @@ export function Section({ icon, title, children }: { icon: IconName; title: stri
   );
 }
 
-export function Bullets({ items, small }: { items: string[]; small?: boolean }) {
+/** A plain list of a grouped field (closed jobs): each heading HR typed, then its items. */
+export function Bullets({ sections, small }: { sections: JobSection[]; small?: boolean }) {
   return (
-    <ul
-      className={`m-0 flex list-disc flex-col gap-2.5 pl-5 leading-relaxed text-body marker:text-silver-soft ${small ? 'text-[14.5px]' : 'text-base'}`}
-    >
-      {items.map((t) => (
-        <li key={t}>{t}</li>
+    <div className={`flex flex-col gap-3 leading-relaxed text-body ${small ? 'text-[14.5px]' : 'text-base'}`}>
+      {sections.map((section, group) => (
+        <div key={group} className="flex flex-col gap-2">
+          {section.title != null && <p className="m-0 font-semibold text-navy">{section.title}</p>}
+          {section.items.length > 0 && (
+            <ul className="m-0 flex list-disc flex-col gap-2.5 pl-5 marker:text-silver-soft">
+              {section.items.map((t, i) => (
+                <li key={i}>{t}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }
 
 /**
- * Where each fact sits so every row is full: two columns on phones, six tracks from sm (3 + 2 for five
- * facts), one row from lg. With an odd number of facts, phones leave out the salary: the hero right above
- * shows it already.
+ * Where each fact sits so every row is full: two columns on phones; on six tracks from sm, rows of three and the
+ * last row(s) of two (5 facts: 3 + 2, 7: 3 + 2 + 2); from lg up to five facts share one row, more make two rows
+ * on twelve tracks (6: 3 + 3, 7: 4 + 3, 8: 4 + 4). With an odd number of facts, phones leave out the salary: the
+ * hero right above shows it already.
  */
 function factSpan(count: number, i: number, label: string): string {
   const phone = count % 2 === 1 && label === SALARY ? 'max-sm:hidden' : '';
-  let tablet = 'sm:col-span-3';
-  if (count === 5) tablet = i < 3 ? 'sm:col-span-2' : 'sm:col-span-3';
-  else if (count === 3) tablet = 'sm:col-span-2';
-  else if (count === 1) tablet = 'sm:col-span-6';
-  return `${phone} ${tablet} lg:col-span-1`;
+  return `${phone} ${tabletSpan(count, i)} ${desktopSpan(count, i)}`;
+}
+
+function desktopSpan(count: number, i: number): string {
+  if (count <= LG_ONE_ROW) return 'lg:col-span-1';
+  const firstRow = Math.ceil(count / 2);
+  const perRow = i < firstRow ? firstRow : count - firstRow;
+  return perRow === 4 ? 'lg:col-span-3' : 'lg:col-span-4';
+}
+
+function tabletSpan(count: number, i: number): string {
+  if (count === 1) return 'sm:col-span-6';
+  /** Facts at the end that go in rows of two. */
+  const inPairs = [0, 4, 2][count % 3];
+  return i >= count - inPairs ? 'sm:col-span-3' : 'sm:col-span-2';
 }
 
 const SALARY = 'Mức lương';
+const LG_ONE_ROW = 5;
 
 const LG_COLS: Record<number, string> = {
   1: 'lg:grid-cols-1',
@@ -59,20 +83,28 @@ const LG_COLS: Record<number, string> = {
   4: 'lg:grid-cols-4',
   5: 'lg:grid-cols-5',
 };
+const LG_TWO_ROWS = 'lg:grid-cols-12';
+
+const workModeLabel = (job: JobDetailDto) => (job.workMode ? WORK_MODE_LABEL[job.workMode] : null);
 
 export function FactsCard({ job }: { job: JobDetailDto }) {
   const facts = (
     [
       ['money', SALARY, formatSalary(job)],
       ['bars', 'Kinh nghiệm', job.experience],
-      ['briefcase', 'Hình thức', EMPLOYMENT_TYPE_LABEL[job.employmentType]],
+      ['award', 'Cấp bậc', job.level],
+      ['briefcase', 'Loại hình', EMPLOYMENT_TYPE_LABEL[job.employmentType]],
+      [job.workMode === 'onsite' ? 'building' : 'laptop', 'Hình thức làm việc', workModeLabel(job)],
       ['cap', 'Học vấn', job.education === NO_REQUIREMENT ? null : job.education],
+      ['users', 'Số lượng tuyển', job.openings ? openingsLabel(job.openings) : null],
       ['calendar', 'Hạn nộp', formatDate(job.deadline)],
     ] as [IconName, string, string | null][]
   ).filter(([, , v]) => v);
   return (
     <div className="-mt-12 rounded-card border border-line bg-white shadow-[0_8px_30px_rgba(11,31,58,0.06)] sm:-mt-14">
-      <dl className={`m-0 grid grid-cols-2 gap-x-4 gap-y-5 p-5 sm:grid-cols-6 sm:p-6 ${LG_COLS[facts.length] ?? ''}`}>
+      <dl
+        className={`m-0 grid grid-cols-2 gap-x-4 gap-y-5 p-5 sm:grid-cols-6 sm:p-6 ${LG_COLS[facts.length] ?? LG_TWO_ROWS}`}
+      >
         {facts.map(([icon, label, value], i) => (
           <div key={label} className={`flex min-w-0 items-start gap-3 ${factSpan(facts.length, i, label)}`}>
             <IconRing name={icon} size={16} className="max-sm:hidden" />
@@ -105,72 +137,6 @@ export function FactsCard({ job }: { job: JobDetailDto }) {
   );
 }
 
-/** "Mô tả công việc": numbered tasks in one card, so the job reads as a to-do list. */
-export function TaskList({ items }: { items: string[] }) {
-  return (
-    <ol className="m-0 list-none divide-y divide-line-soft overflow-hidden rounded-card border border-line bg-white p-0">
-      {items.map((t, i) => (
-        <li key={t} className="flex items-start gap-4 px-5 py-4 sm:px-6">
-          <span
-            aria-hidden="true"
-            className="flex size-8 shrink-0 items-center justify-center rounded-control bg-tint text-[13px] font-semibold tabular-nums text-accent"
-          >
-            {String(i + 1).padStart(2, '0')}
-          </span>
-          <span className="pt-1 text-[15px] leading-relaxed text-body">{t}</span>
-        </li>
-      ))}
-    </ol>
-  );
-}
-
-/** A coloured round badge with the line's own icon (see itemIcons). */
-function ItemBadge({ look, small }: { look: ItemLook; small?: boolean }) {
-  const tone = COLOR_CLASSES[look.color];
-  return (
-    <span
-      aria-hidden="true"
-      className={`flex shrink-0 items-center justify-center border ${tone.soft} ${tone.line} ${tone.text} ${
-        small ? 'size-7 rounded-lg' : 'size-9 rounded-[10px]'
-      }`}
-    >
-      <Icon name={look.icon} size={small ? 15 : 18} stroke={1.9} />
-    </span>
-  );
-}
-
-/**
- * "Yêu cầu" (must-haves: each line with an icon and colour for its topic: experience, degree, languages…) or
- * "Ưu tiên (không bắt buộc)" (nice-to-haves: stars on a soft amber card), so candidates tell at a glance what is
- * required and what is only a plus.
- */
-export function CheckList({ items, variant }: { items: string[]; variant: 'required' | 'preferred' }) {
-  const preferred = variant === 'preferred';
-  return (
-    <ul
-      className={`m-0 grid list-none gap-x-8 gap-y-3.5 rounded-card border p-5 sm:p-6 ${
-        preferred ? 'border-cat-amber-line bg-cat-amber-soft' : 'border-line bg-white'
-      } ${items.length > 3 ? 'md:grid-cols-2' : ''}`}
-    >
-      {items.map((t) => (
-        <li key={t} className="flex items-start gap-3 text-[15px] leading-relaxed text-body">
-          {preferred ? (
-            <span
-              aria-hidden="true"
-              className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-cat-amber"
-            >
-              <Icon name="star" size={13} stroke={2.2} />
-            </span>
-          ) : (
-            <ItemBadge look={requirementLook(t)} />
-          )}
-          <span className={preferred ? '' : 'pt-1.5'}>{t}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 /** Icon and colour of each benefit theme; "Khác" stays neutral. */
 const BENEFIT_LOOK: Record<BenefitGroupKey, { icon: IconName; color: CategoryColor | null }> = {
   income: { icon: 'money', color: 'emerald' },
@@ -185,10 +151,10 @@ const BENEFIT_LOOK: Record<BenefitGroupKey, { icon: IconName; color: CategoryCol
 function BenefitList({ items }: { items: string[] }) {
   return (
     <ul className="m-0 grid list-none gap-x-8 gap-y-3 rounded-card border border-line bg-white p-5 sm:grid-cols-2 sm:p-6">
-      {items.map((b) => (
-        <li key={b} className="flex items-start gap-3 text-[15px] leading-relaxed text-body">
+      {items.map((b, i) => (
+        <li key={i} className="flex items-start gap-3 text-[15px] leading-relaxed text-body">
           <ItemBadge look={benefitLook(b)} small />
-          <span className="pt-0.5">{b}</span>
+          <span className="min-w-0 pt-0.5">{b}</span>
         </li>
       ))}
     </ul>
@@ -223,15 +189,15 @@ export function Benefits({ job }: { job: JobDetailDto }) {
                   {group.title}
                 </h3>
                 <ul className="m-0 flex list-none flex-col gap-2 p-0">
-                  {group.items.map((b) => (
-                    <li key={b} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-body">
+                  {group.items.map((b, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-[15px] leading-relaxed text-body">
                       <Icon
                         name={benefitLook(b).icon}
                         size={16}
                         stroke={1.9}
                         className={`mt-[3px] shrink-0 ${tone ? tone.text : 'text-slate'}`}
                       />
-                      {b}
+                      <span className="min-w-0">{b}</span>
                     </li>
                   ))}
                 </ul>

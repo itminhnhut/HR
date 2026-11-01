@@ -27,7 +27,8 @@ import { ErrorState } from '../ui/feedback';
 import { Icon } from '../ui/icons';
 import { ClosedJob } from './job/ClosedJob';
 import { JobSidebar, SimilarJobs } from './job/JobAside';
-import { Benefits, FactsCard, Roadmap, Section, Workplace, TaskList, CheckList } from './job/JobSections';
+import { CheckList, TaskList } from './job/GroupedLists';
+import { Benefits, FactsCard, Roadmap, Section, Workplace } from './job/JobSections';
 import { JobSkeleton } from './job/JobSkeleton';
 
 export function JobPage() {
@@ -114,6 +115,7 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
   // Google for Jobs. Only for jobs that take applications (BR-16).
   useJsonLd(jobPostingData(job, { name: SITE.company, url: SITE.url }));
   const apply = () => setApplyOpen(true);
+  const { sections } = job;
 
   return (
     <>
@@ -124,19 +126,19 @@ function OpenJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] })
 
         <div className="flex flex-wrap items-start gap-10 lg:gap-12">
           <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-14">
-            {job.responsibilities.length > 0 && (
+            {sections.responsibilities.length > 0 && (
               <Section icon="checkSquare" title={JOB_SECTION.responsibilities}>
-                <TaskList items={job.responsibilities} />
+                <TaskList sections={sections.responsibilities} />
               </Section>
             )}
-            {job.requirements.length > 0 && (
+            {sections.requirements.length > 0 && (
               <Section icon="user" title={JOB_SECTION.requirements}>
-                <CheckList items={job.requirements} variant="required" />
+                <CheckList sections={sections.requirements} variant="required" />
               </Section>
             )}
-            {job.preferred.length > 0 && (
+            {sections.preferred.length > 0 && (
               <Section icon="star" title={JOB_SECTION.preferred}>
-                <CheckList items={job.preferred} variant="preferred" />
+                <CheckList sections={sections.preferred} variant="preferred" />
               </Section>
             )}
             <Benefits job={job} />
