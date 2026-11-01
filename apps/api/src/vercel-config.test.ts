@@ -23,6 +23,8 @@ const config = JSON.parse(readFileSync(new URL('../../../vercel.json', import.me
   rewrites: RewriteRule[];
   redirects?: RedirectRule[];
   trailingSlash?: boolean;
+  buildCommand: string;
+  outputDirectory: string;
 };
 
 /** Vercel `source` patterns used here: literal paths with "(.*)" wildcards. */
@@ -41,6 +43,16 @@ const robotsHeader = (path: string) =>
     .find((h) => h.key.toLowerCase() === 'x-robots-tag')?.value;
 
 describe('vercel.json', () => {
+  // Vercel serves a file that exists before it looks at rewrites, so a built "index.html" answers "/" for
+  // everyone and the crawler rule for "/" never runs. The SPA shell ships under another name instead.
+  it('should ship no index.html, so crawlers on the home page reach the server-rendered page', () => {
+    expect(config.buildCommand).toMatch(
+      new RegExp(`mv ${config.outputDirectory}/index\\.html ${config.outputDirectory}/app\\.html`),
+    );
+    expect(config.rewrites.at(-1)).toEqual({ source: '/((?!assets/).*)', destination: '/app.html' });
+    expect(config.rewrites.some((rule) => rule.destination === '/index.html')).toBe(false);
+  });
+
   it.each([
     '/hr',
     '/hr/dang-nhap',
@@ -137,13 +149,13 @@ describe('vercel.json rewrites', () => {
   });
 
   it('should give people the app for the same pages', () => {
-    for (const path of BOT_PAGES) expect(rewriteOf(path, PERSON), path).toBe('/index.html');
+    for (const path of BOT_PAGES) expect(rewriteOf(path, PERSON), path).toBe('/app.html');
   });
 
   it('should give bots the app for paths the API does not render', () => {
-    expect(rewriteOf('/tin-tuc/a/b/c', BOTS.google)).toBe('/index.html');
-    expect(rewriteOf('/tra-cuu-ho-so', BOTS.google)).toBe('/index.html');
-    expect(rewriteOf('/gioi-thieu/them', BOTS.google)).toBe('/index.html');
+    expect(rewriteOf('/tin-tuc/a/b/c', BOTS.google)).toBe('/app.html');
+    expect(rewriteOf('/tra-cuu-ho-so', BOTS.google)).toBe('/app.html');
+    expect(rewriteOf('/gioi-thieu/them', BOTS.google)).toBe('/app.html');
   });
 
   it('should use one crawler pattern for every server-rendered page', () => {
@@ -168,8 +180,8 @@ describe('vercel.json rewrites', () => {
   });
 
   it('should not send other text files or built assets to the API', () => {
-    expect(rewriteOf('/a.txt', PERSON)).toBe('/index.html');
-    expect(rewriteOf('/thu-muc/0f1e2d3c-4b5a.txt', PERSON)).toBe('/index.html');
+    expect(rewriteOf('/a.txt', PERSON)).toBe('/app.html');
+    expect(rewriteOf('/thu-muc/0f1e2d3c-4b5a.txt', PERSON)).toBe('/app.html');
     expect(rewriteOf('/assets/index-abc.js', PERSON)).toBeUndefined();
   });
 });
