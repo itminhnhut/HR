@@ -181,6 +181,29 @@ describe('jobPostingData', () => {
     });
   });
 
+  it('should give Google the street, district and city of a TopCV style address', () => {
+    // Arrange
+    const address = 'Hồ Chí Minh: 110/20/2 Đường Số 30, Phường An Nhơn (Phường An Nhơn thuộc quận Gò Vấp cũ)';
+
+    // Act
+    const postal = addressOf(jobPostingData({ ...job, address }, org));
+
+    // Assert
+    expect(postal).toEqual({
+      '@type': 'PostalAddress',
+      streetAddress: '110/20/2 Đường Số 30, Phường An Nhơn',
+      addressLocality: 'Gò Vấp',
+      addressRegion: 'TP. Hồ Chí Minh',
+      addressCountry: 'VN',
+    });
+  });
+
+  it('should give Google the job title without stray spaces inside parentheses', () => {
+    expect(jobPostingData({ ...job, title: 'Kế toán  ( Yêu Cầu Tiếng Anh )' }, org).title).toBe(
+      'Kế toán (Yêu Cầu Tiếng Anh)',
+    );
+  });
+
   it('should give a street address only when the job names a street', () => {
     const address = addressOf(jobPostingData({ ...job, address: '12 Phan Văn Trị, Gò Vấp, TP. Hồ Chí Minh' }, org));
 
@@ -213,5 +236,13 @@ describe('pageTitle', () => {
   it('should not repeat a brand the title already names', () => {
     expect(pageTitle('Một ngày làm việc tại TOP FLOW', 'TOP FLOW')).toBe('Một ngày làm việc tại TOP FLOW');
     expect(pageTitle('Top Flow tuyển dụng', 'TOP FLOW')).toBe('Top Flow tuyển dụng');
+  });
+
+  it('should leave the brand out when it would make the title longer than 65 characters', () => {
+    // Arrange
+    const long = 'Tuyển Kỹ sư Kinh doanh Thiết bị Đường ống – Gò Vấp, TP. HCM';
+
+    // Act / Assert
+    expect(pageTitle(long, 'TOP FLOW')).toBe(long);
   });
 });

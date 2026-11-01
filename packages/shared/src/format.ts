@@ -1,4 +1,3 @@
-import { OFFICE } from './job-template.js';
 import type { ApplicationStatus, EmploymentType, JobSection, SalaryFields, WorkMode } from './types.js';
 
 export const EMPLOYMENT_TYPE_LABEL: Record<EmploymentType, string> = {
@@ -108,11 +107,6 @@ export function toSections(text: string | null | undefined): JobSection[] {
 /** Every item of a multi-line field, headings left out: what is listed, scored or counted. */
 export function toItems(text: string | null | undefined): string[] {
   return toSections(text).flatMap((section) => section.items);
-}
-
-/** Short place for cards: the office, or the job's own address. */
-export function placeLabel(address: string | null): string {
-  return address?.trim() || OFFICE.label;
 }
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;

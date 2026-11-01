@@ -54,4 +54,59 @@ describe('jobLocation', () => {
     expect(jobLocation('Phường 5, Đà Lạt')).toEqual({ street: null, district: 'Phường 5', city: 'Đà Lạt' });
     expect(jobLocation('Huế')).toEqual({ street: null, district: null, city: 'Huế' });
   });
+
+  it('should read a TopCV address "City: street, ward (note naming the old district)"', () => {
+    // Arrange
+    const address = 'Hồ Chí Minh: 110/20/2 Đường Số 30, Phường An Nhơn (Phường An Nhơn thuộc quận Gò Vấp cũ)';
+
+    // Act
+    const place = jobLocation(address);
+
+    // Assert
+    expect(place).toEqual({
+      street: '110/20/2 Đường Số 30, Phường An Nhơn',
+      district: 'Gò Vấp',
+      city: 'TP. Hồ Chí Minh',
+    });
+  });
+
+  it.each([
+    ['12 Lê Lợi, Phường Sài Gòn (thuộc quận 1 cũ), TP. Hồ Chí Minh', '12 Lê Lợi, Phường Sài Gòn', 'Quận 1'],
+    [
+      'Bình Dương: 5 Đại lộ Bình Dương, Phường Phú Lợi (huyện Thuận An cũ)',
+      '5 Đại lộ Bình Dương, Phường Phú Lợi',
+      'Thuận An',
+    ],
+    [
+      'Bình Dương: 8 Yersin, Phường Chánh Nghĩa (thành phố Thủ Dầu Một cũ)',
+      '8 Yersin, Phường Chánh Nghĩa',
+      'Thủ Dầu Một',
+    ],
+  ])('should take the district from a note about the old district in "%s"', (address, street, district) => {
+    expect(jobLocation(address)).toMatchObject({ street, district });
+  });
+
+  it('should read the city before a colon and the rest from small to large', () => {
+    expect(jobLocation('Hà Nội: 12 Trần Duy Hưng, Cầu Giấy')).toEqual({
+      street: '12 Trần Duy Hưng',
+      district: 'Cầu Giấy',
+      city: 'Hà Nội',
+    });
+  });
+
+  it('should keep a lone street after the city prefix as the street, not the district', () => {
+    expect(jobLocation('Hồ Chí Minh: 110/20/2 Đường Số 30')).toEqual({
+      street: '110/20/2 Đường Số 30',
+      district: null,
+      city: 'TP. Hồ Chí Minh',
+    });
+  });
+
+  it('should leave notes in brackets out of the street', () => {
+    expect(jobLocation('12 Bạch Đằng (tầng 3), Hải Châu, Đà Nẵng')).toEqual({
+      street: '12 Bạch Đằng',
+      district: 'Hải Châu',
+      city: 'Đà Nẵng',
+    });
+  });
 });

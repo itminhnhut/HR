@@ -75,9 +75,19 @@ export interface JobListResponse {
   jobs: JobCardDto[];
 }
 
+/** A news post linked from a job page ("Bài viết liên quan"). */
+export interface RelatedPostDto {
+  slug: string;
+  title: string;
+  cover: import('./news/types.js').NewsImage | null;
+  category: { name: string; slug: string };
+}
+
 export interface JobPageResponse {
   job: JobDetailDto;
   similar: JobCardDto[];
+  /** Up to 3 published news posts about the same work (pickRelatedPosts). Older servers leave it out. */
+  related?: RelatedPostDto[];
 }
 
 /** Full editable job for the HR form. Multi-line fields are plain text, one item per line. */

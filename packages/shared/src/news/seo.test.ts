@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blogPostingData, newsBreadcrumbData, vietnamIso } from './seo.js';
+import { blogPostingData, newsBreadcrumbData, newsListDescription, vietnamIso } from './seo.js';
 import type { NewsCardDto } from './types.js';
 
 const post: NewsCardDto = {
@@ -34,6 +34,20 @@ describe('blogPostingData', () => {
   });
 });
 
+describe('blogPostingData publisher', () => {
+  it('should give the publisher the same raster logo as the job postings', () => {
+    // Act
+    const data = blogPostingData(post, site);
+
+    // Assert
+    expect(data.publisher).toMatchObject({
+      '@type': 'Organization',
+      name: 'TOP FLOW',
+      logo: { '@type': 'ImageObject', url: 'https://www.lee-hr.com/images/logo-512.png' },
+    });
+  });
+});
+
 describe('blogPostingData image address', () => {
   it('should give Google an absolute address for a cover stored under the site', () => {
     // Arrange
@@ -57,6 +71,46 @@ describe('newsBreadcrumbData', () => {
       'https://www.lee-hr.com/tin-tuc/chuyen-muc/doi-song-cong-ty',
       'https://www.lee-hr.com/tin-tuc/mot-ngay-o-top-flow',
     ]);
+  });
+});
+
+describe('newsListDescription', () => {
+  const inRange = (text: string) => text.length >= 120 && text.length <= 160;
+
+  it.each(['Tuyển dụng', 'Hướng nghiệp', 'Về TOP FLOW', 'Đời sống', 'Cẩm nang ứng viên'])(
+    'should describe the category %s in 120 to 160 characters, naming it and the company',
+    (name) => {
+      // Act
+      const text = newsListDescription({ kind: 'category', name }, 'TOP FLOW');
+
+      // Assert
+      expect(inRange(text), `${text.length}: ${text}`).toBe(true);
+      expect(text).toContain('TOP FLOW');
+    },
+  );
+
+  it('should write each known category its own text and fall back to a shared one for the others', () => {
+    // Act
+    const texts = ['Tuyển dụng', 'Hướng nghiệp', 'Về TOP FLOW'].map((name) =>
+      newsListDescription({ kind: 'category', name }, 'TOP FLOW'),
+    );
+    const other = newsListDescription({ kind: 'category', name: 'Đời sống' }, 'TOP FLOW');
+
+    // Assert
+    expect(new Set(texts).size).toBe(3);
+    expect(texts[0]).toMatch(/ứng tuyển/);
+    expect(other).toContain('Đời sống');
+  });
+
+  it('should describe the news page and a hashtag page in 120 to 160 characters', () => {
+    // Act
+    const all = newsListDescription({ kind: 'all' }, 'TOP FLOW');
+    const tag = newsListDescription({ kind: 'tag', name: 'Kinh doanh' }, 'TOP FLOW');
+
+    // Assert
+    expect(inRange(all), `${all.length}: ${all}`).toBe(true);
+    expect(inRange(tag), `${tag.length}: ${tag}`).toBe(true);
+    expect(tag).toContain('#Kinh doanh');
   });
 });
 
