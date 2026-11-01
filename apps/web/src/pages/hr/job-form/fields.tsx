@@ -1,7 +1,7 @@
-import { CHOICE_MAX, groupThousands, WORK_DAYS } from '@careers/shared';
+import { CHOICE_MAX, groupThousands, OPENINGS_MAX, WORK_DAYS, WORK_MODE_LABEL, type WorkMode } from '@careers/shared';
 import { useState } from 'react';
 import { SelectField, TextField } from '../../../ui/Field';
-import { OTHER, roundSalary, salaryDigits, salaryProblem, type FormState } from './model';
+import { hasPick, OTHER, roundSalary, salaryDigits, salaryProblem, togglePick, type FormState } from './model';
 
 const ADD_NEW = '__add__';
 
@@ -15,6 +15,7 @@ export function PickOrAdd({
   value,
   error,
   placeholder,
+  clearable,
   onChange,
   onAdd,
 }: {
@@ -23,6 +24,8 @@ export function PickOrAdd({
   value: string;
   error?: string;
   placeholder?: string;
+  /** Optional field: the empty choice stays in the list, so HR can clear it again. */
+  clearable?: boolean;
   onChange: (value: string) => void;
   onAdd?: (value: string) => void;
 }) {
@@ -48,7 +51,7 @@ export function PickOrAdd({
           onChange(e.target.value);
         }}
       >
-        {!value && !adding && <option value="">{placeholder ?? `Chọn ${label.toLowerCase()}`}</option>}
+        {((!value && !adding) || clearable) && <option value="">{placeholder ?? `Chọn ${label.toLowerCase()}`}</option>}
         {list.map((o) => (
           <option key={o} value={o}>
             {o}
@@ -90,13 +93,6 @@ export function PickOrAdd({
   );
 }
 
-/** Drops empty lines at the end only, so paragraphs HR made stay as they are. */
-function trimTrailing(lines: string[]): string[] {
-  const out = [...lines];
-  while (out.length > 0 && !out[out.length - 1].trim()) out.pop();
-  return out;
-}
-
 /** "Yêu cầu" quick picks: ticking adds the line, unticking removes it; the text stays free to edit. */
 export function RequirementPicks({
   options,
@@ -107,23 +103,19 @@ export function RequirementPicks({
   text: string;
   onChange: (text: string) => void;
 }) {
-  const lines = text.split('\n');
-  const has = (o: string) => lines.some((l) => l.trim() === o);
-  const toggle = (o: string) =>
-    onChange(has(o) ? lines.filter((l) => l.trim() !== o).join('\n') : [...trimTrailing(lines), o].join('\n'));
   if (options.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xs text-muted">Chọn nhanh (bấm để thêm hoặc bỏ):</span>
       <div className="flex flex-wrap gap-1.5">
         {options.map((o) => {
-          const on = has(o);
+          const on = hasPick(text, o);
           return (
             <button
               key={o}
               type="button"
               aria-pressed={on}
-              onClick={() => toggle(o)}
+              onClick={() => onChange(togglePick(text, o))}
               className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-ring bg-white text-navy hover:bg-mist'}`}
             >
               {on ? '✓' : '+'} {o}
@@ -132,6 +124,76 @@ export function RequirementPicks({
         })}
       </div>
     </div>
+  );
+}
+
+/** "Hình thức làm việc": three buttons; pressing the chosen one again clears it (the field is optional). */
+export function WorkModeField({
+  value,
+  error,
+  onChange,
+}: {
+  value: WorkMode | '';
+  error?: string;
+  onChange: (value: WorkMode | '') => void;
+}) {
+  return (
+    <fieldset className="m-0 flex min-w-0 flex-col gap-2 border-0 p-0">
+      <legend className="mb-2 p-0 text-sm font-medium text-navy">
+        Hình thức làm việc <span className="font-normal text-muted">(không bắt buộc)</span>
+      </legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {(Object.keys(WORK_MODE_LABEL) as WorkMode[]).map((mode) => {
+          const on = value === mode;
+          return (
+            <button
+              key={mode}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onChange(on ? '' : mode)}
+              className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-control border px-3 text-sm font-medium transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+            >
+              {on && <span aria-hidden="true">✓</span>}
+              {WORK_MODE_LABEL[mode]}
+            </button>
+          );
+        })}
+      </div>
+      {error && <span className="text-[13px] text-error">{error}</span>}
+    </fieldset>
+  );
+}
+
+/** "Số lượng tuyển": digits only, at most 3 so 1–100 fits; the server checks the range. */
+export function OpeningsInput({
+  value,
+  error,
+  onChange,
+}: {
+  value: string;
+  error?: string;
+  onChange: (digits: string) => void;
+}) {
+  return (
+    <TextField
+      label="Số lượng tuyển"
+      optional
+      inputMode="numeric"
+      autoComplete="off"
+      placeholder="vd: 2"
+      value={value}
+      error={error}
+      hint={`Từ 1 đến ${OPENINGS_MAX} người.`}
+      trailing={<span className="shrink-0 text-sm text-muted">người</span>}
+      onChange={(e) =>
+        onChange(
+          e.target.value
+            .replace(/\D/g, '')
+            .replace(/^0+(?=\d)/, '')
+            .slice(0, 3),
+        )
+      }
+    />
   );
 }
 

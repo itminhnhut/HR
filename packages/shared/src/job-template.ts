@@ -17,11 +17,17 @@ export const NO_REQUIREMENT = 'Không yêu cầu';
 export const EXPERIENCE_OPTIONS = [NO_REQUIREMENT, 'Từ 1 năm', 'Từ 2 năm', 'Từ 3 năm'];
 export const EDUCATION_OPTIONS = [NO_REQUIREMENT, 'THPT', 'Trung cấp trở lên', 'Cao đẳng trở lên', 'Đại học trở lên'];
 
+/** "Cấp bậc" choices of a new template; HR adds more like departments. */
+export const LEVEL_OPTIONS = ['Thực tập sinh', 'Nhân viên', 'Trưởng nhóm', 'Trưởng/Phó phòng', 'Quản lý', 'Giám đốc'];
+/** "Số lượng tuyển": people hired for one job. */
+export const OPENINGS_MIN = 1;
+export const OPENINGS_MAX = 100;
+
 export const WORK_DAYS = ['Thứ 2 – Thứ 6', 'Thứ 2 – Thứ 7', 'Thứ 2 – sáng Thứ 7', 'Làm theo ca'];
 
 export const ROADMAP_MILESTONES = ['Ngày đầu tiên', 'Sau 3 ngày', 'Sau 10 ngày', 'Sau 1 tháng', 'Sau 2 tháng'] as const;
 export const ROADMAP_ITEM_MAX = 200;
-export const BENEFIT_MAX = 80;
+export const BENEFIT_MAX = 200;
 export const MAX_BENEFITS = 20;
 
 export interface BenefitOption {
@@ -40,6 +46,8 @@ export interface JobTemplate {
   roadmap: string[];
   /** Choices in the job form; HR adds more there ("+ Thêm mới") or in "Mẫu tin". */
   departments: string[];
+  /** "Cấp bậc". */
+  levels: string[];
   experiences: string[];
   educations: string[];
   /** Common requirement lines HR ticks into "Yêu cầu" (one line each). */
@@ -74,6 +82,7 @@ export const DEFAULT_JOB_TEMPLATE: JobTemplate = {
     'Đánh giá cùng quản lý và ký hợp đồng chính thức.',
   ],
   departments: DEPARTMENT_SUGGESTIONS,
+  levels: LEVEL_OPTIONS,
   experiences: EXPERIENCE_OPTIONS,
   educations: EDUCATION_OPTIONS,
   requirementOptions: [

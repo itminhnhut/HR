@@ -19,9 +19,17 @@ const job: JobDetailDto = {
   workingHours: null,
   experience: null,
   education: null,
+  level: null,
+  openings: null,
+  workMode: null,
   responsibilities: ['Viết API'],
   requirements: ['Biết SQL'],
   preferred: [],
+  sections: {
+    responsibilities: [{ title: null, items: ['Viết API'] }],
+    requirements: [{ title: null, items: ['Biết SQL'] }],
+    preferred: [],
+  },
   benefits: [],
   roadmap: [],
 };
@@ -63,7 +71,12 @@ describe('jobPostingData', () => {
 
   it('should describe the job as HTML sections, benefits and nice-to-haves included', () => {
     const data = jobPostingData(
-      { ...job, preferred: ['Đã dùng CRM'], benefits: ['Lương tháng 13', 'Hoa hồng <20%>'] },
+      {
+        ...job,
+        preferred: ['Đã dùng CRM'],
+        sections: { ...job.sections, preferred: [{ title: null, items: ['Đã dùng CRM'] }] },
+        benefits: ['Lương tháng 13', 'Hoa hồng <20%>'],
+      },
       org,
     );
 
@@ -73,6 +86,44 @@ describe('jobPostingData', () => {
         '<p><strong>Ưu tiên (không bắt buộc)</strong></p><ul><li>Đã dùng CRM</li></ul>' +
         '<p><strong>Quyền lợi</strong></p><ul><li>Lương tháng 13</li><li>Hoa hồng &lt;20%&gt;</li></ul>',
     );
+  });
+
+  it('should show the headings HR grouped the duties under', () => {
+    // Arrange
+    const responsibilities = [
+      { title: '1. Đơn hàng', items: ['Theo dõi lịch tàu'] },
+      { title: '2. Hải quan', items: ['Khai báo <tờ khai>'] },
+    ];
+
+    // Act
+    const data = jobPostingData({ ...job, sections: { ...job.sections, responsibilities } }, org);
+
+    // Assert
+    expect(data.description).toContain(
+      '<p><strong>Mô tả công việc</strong></p>' +
+        '<p><em>1. Đơn hàng</em></p><ul><li>Theo dõi lịch tàu</li></ul>' +
+        '<p><em>2. Hải quan</em></p><ul><li>Khai báo &lt;tờ khai&gt;</li></ul>',
+    );
+  });
+
+  it('should state how many people are hired, and nothing when HR left it empty', () => {
+    expect(jobPostingData({ ...job, openings: 2 }, org).totalJobOpenings).toBe(2);
+    expect(jobPostingData(job, org)).not.toHaveProperty('totalJobOpenings');
+  });
+
+  it('should mark only a remote job as telecommute, open to applicants in Vietnam', () => {
+    // Arrange / Act
+    const remote = jobPostingData({ ...job, workMode: 'remote' }, org);
+    const hybrid = jobPostingData({ ...job, workMode: 'hybrid' }, org);
+
+    // Assert
+    expect(remote).toMatchObject({
+      jobLocationType: 'TELECOMMUTE',
+      applicantLocationRequirements: { '@type': 'Country', name: 'VN' },
+    });
+    expect(hybrid).not.toHaveProperty('jobLocationType');
+    expect(hybrid).not.toHaveProperty('applicantLocationRequirements');
+    expect(jobPostingData(job, org)).not.toHaveProperty('jobLocationType');
   });
 
   it('should leave empty sections out of the description', () => {

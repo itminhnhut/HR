@@ -2,7 +2,7 @@ import {
   CV_MATCH_VERSION,
   NO_REQUIREMENT,
   scoreCv,
-  toLines,
+  toItems,
   todayInVietnam,
   type CvScoreDto,
   type MatchItem,
@@ -13,13 +13,16 @@ import type { Db } from '../db/index.js';
 import { applications, cvScores, jobs, type Application, type Job } from '../db/schema.js';
 import { pdfText } from '../lib/pdf-text.js';
 
-/** The job's requirement lines, plus its "Kinh nghiệm" and "Học vấn" choices when they ask for something. */
+/**
+ * The job's requirement items (group headings are never scored), plus its "Kinh nghiệm" and "Học vấn" choices
+ * when they ask for something.
+ */
 export function requirementLines(job: Pick<Job, 'requirements' | 'experience' | 'education'>): string[] {
   const asks = (v: string | null) => !!v?.trim() && v.trim() !== NO_REQUIREMENT;
   return [
     ...(asks(job.experience) ? [`Kinh nghiệm: ${job.experience}`] : []),
     ...(asks(job.education) ? [`Học vấn: ${job.education}`] : []),
-    ...toLines(job.requirements),
+    ...toItems(job.requirements),
   ];
 }
 

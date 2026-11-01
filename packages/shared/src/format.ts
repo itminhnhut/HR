@@ -1,11 +1,20 @@
 import { OFFICE } from './job-template.js';
-import type { ApplicationStatus, EmploymentType, SalaryFields } from './types.js';
+import type { ApplicationStatus, EmploymentType, JobSection, SalaryFields, WorkMode } from './types.js';
 
 export const EMPLOYMENT_TYPE_LABEL: Record<EmploymentType, string> = {
   full_time: 'Toàn thời gian',
   part_time: 'Bán thời gian',
   internship: 'Thực tập',
 };
+
+export const WORK_MODE_LABEL: Record<WorkMode, string> = {
+  onsite: 'Tại văn phòng',
+  hybrid: 'Kết hợp (Hybrid)',
+  remote: 'Từ xa (Remote)',
+};
+
+/** "2 người" */
+export const openingsLabel = (openings: number) => `${openings} người`;
 
 export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   new: 'Mới',
@@ -58,12 +67,47 @@ export function formatTimestamp(iso: string): string {
   }).format(new Date(iso));
 }
 
-/** Split a multi-line field into bullet items. */
+const BULLET_MARKER = /^[-•*\s]+/;
+/** A line HR started with "•", "-" or "*" (spaces before it allowed). */
+const BULLETED = /^\s*[-•*]/;
+
+const stripMarker = (line: string) => line.replace(BULLET_MARKER, '').trim();
+
+/** Split a multi-line field into lines, bullet markers removed. Headings stay in: use toItems for "the items". */
 export function toLines(text: string | null | undefined): string[] {
-  return (text ?? '')
-    .split('\n')
-    .map((line) => line.replace(/^[-•*\s]+/, '').trim())
-    .filter(Boolean);
+  return (text ?? '').split('\n').map(stripMarker).filter(Boolean);
+}
+
+/** True when HR writes the field with bullet markers: lines without one are then headings. */
+export const usesBullets = (text: string | null | undefined): boolean =>
+  (text ?? '').split('\n').some((line) => BULLETED.test(line) && stripMarker(line) !== '');
+
+/** Adds one line to the groups: a heading opens a new group, an item joins the last one. */
+function addLine(sections: JobSection[], line: string): JobSection[] {
+  const content = stripMarker(line);
+  if (!content) return sections;
+  if (!BULLETED.test(line)) return [...sections, { title: content, items: [] }];
+  const last = sections.at(-1);
+  if (!last) return [{ title: null, items: [content] }];
+  return [...sections.slice(0, -1), { ...last, items: [...last.items, content] }];
+}
+
+/**
+ * Groups a multi-line field under its headings. Once any line starts with a bullet marker, lines without one
+ * are group headings ("1. Quản lý đơn hàng") and marked lines are the items. With no marker at all every line
+ * is an item of one untitled group, as before headings existed. Empty text has no groups.
+ */
+export function toSections(text: string | null | undefined): JobSection[] {
+  if (!usesBullets(text)) {
+    const items = toLines(text);
+    return items.length > 0 ? [{ title: null, items }] : [];
+  }
+  return (text ?? '').split('\n').reduce(addLine, []);
+}
+
+/** Every item of a multi-line field, headings left out: what is listed, scored or counted. */
+export function toItems(text: string | null | undefined): string[] {
+  return toSections(text).flatMap((section) => section.items);
 }
 
 /** Short place for cards: the office, or the job's own address. */

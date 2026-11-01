@@ -57,6 +57,21 @@ describe('job card', () => {
     expect(screen.getByText('Gò Vấp, TP.HCM')).toBeTruthy();
   });
 
+  it('should keep a long benefit to its short name on one chip', () => {
+    // Arrange
+    const perks =
+      'Thưởng theo kết quả công việc mỗi quý, xét theo số lô hàng hoàn thành đúng hạn và đánh giá của khách hàng, cộng thêm thưởng nóng khi xử lý lô hàng gấp ngoài giờ, Lương tháng 13';
+
+    // Act
+    show({ ...job, perks });
+
+    // Assert
+    const chip = screen.getByText('Thưởng');
+    expect(chip.getAttribute('title')).toBe('Thưởng');
+    expect(screen.getByText('Lương tháng 13')).toBeTruthy();
+    expect(screen.queryByText(/mỗi quý/)).toBeNull();
+  });
+
   it('should show perks that are not the salary', () => {
     show();
     expect(screen.getByText('Hoa hồng theo doanh số')).toBeTruthy();

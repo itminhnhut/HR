@@ -114,11 +114,13 @@ export function JobCard({ job }: { job: JobCardDto }) {
           <span className="flex min-w-0 items-center gap-2">
             <Icon name="gift" size={16} className="shrink-0 text-cat-rose" />
             <span className="sr-only">Quyền lợi: </span>
-            <span className="flex min-w-0 flex-wrap gap-1.5">
-              {perks.map((chip) => (
+            {/* One line, one chip high: a chip that does not fit wraps out of sight, one too long ends in "…". */}
+            <span className="flex h-[22px] min-w-0 flex-wrap gap-x-1.5 overflow-hidden">
+              {perks.map((chip, i) => (
                 <span
-                  key={chip}
-                  className="whitespace-nowrap rounded-full border border-line-soft bg-tint px-2.5 py-0.5 text-xs font-medium text-accent"
+                  key={i}
+                  title={chip}
+                  className="max-w-full truncate rounded-full border border-line-soft bg-tint px-2.5 py-0.5 text-xs font-medium text-accent"
                 >
                   {chip}
                 </span>

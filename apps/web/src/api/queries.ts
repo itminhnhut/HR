@@ -10,6 +10,7 @@ import type {
   ReviewCreateInput,
   ReviewDecisionInput,
   TemplateKey,
+  TemplateChoiceList,
 } from '@careers/shared';
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -327,8 +328,7 @@ export function useLogContact() {
 export function useAddTemplateChoice() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ list, value }: { list: 'departments' | 'experiences' | 'educations'; value: string }) =>
-      api.hrAddTemplateChoice(list, value),
+    mutationFn: ({ list, value }: { list: TemplateChoiceList; value: string }) => api.hrAddTemplateChoice(list, value),
     onSuccess: (data) => qc.setQueryData(keys.hrJobTemplate, data),
   });
 }

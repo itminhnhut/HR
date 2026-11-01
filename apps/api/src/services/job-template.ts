@@ -32,7 +32,12 @@ export async function jobTemplate(db: Db): Promise<JobTemplateResponse> {
   const [template, used, benefits] = await Promise.all([
     storedTemplate(db),
     db
-      .selectDistinct({ department: jobs.department, experience: jobs.experience, education: jobs.education })
+      .selectDistinct({
+        department: jobs.department,
+        level: jobs.level,
+        experience: jobs.experience,
+        education: jobs.education,
+      })
       .from(jobs),
     db
       .select({
@@ -49,6 +54,10 @@ export async function jobTemplate(db: Db): Promise<JobTemplateResponse> {
     departments: merge(
       template.departments,
       used.map((u) => u.department),
+    ),
+    levels: merge(
+      template.levels,
+      used.map((u) => u.level),
     ),
     experiences: merge(
       template.experiences,

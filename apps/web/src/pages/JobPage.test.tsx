@@ -58,6 +58,50 @@ describe('job page', () => {
     expect(requirements?.textContent).not.toContain('CRM');
   });
 
+  it('should show the duty groups HR typed, numbering the duties from 01 in each group', async () => {
+    // Act
+    show('/viec-lam/nhan-vien-chung-tu-logistics');
+
+    // Assert
+    const duties = (await screen.findByRole('heading', { level: 2, name: 'Mô tả công việc' })).closest('section');
+    const groups = within(duties ?? document.body).getAllByRole('heading', { level: 3 });
+    expect(groups.map((h) => h.textContent)).toEqual([
+      '1Quản lý đơn hàng & vận chuyển nhập khẩu',
+      '2Thủ tục hải quan',
+      '3Báo cáo',
+    ]);
+    const firstDuties = within(duties ?? document.body).getAllByRole('list')[1];
+    expect(within(firstDuties ?? document.body).getAllByRole('listitem')[0]?.textContent).toBe(
+      '01Chuẩn bị bộ chứng từ: hợp đồng, hóa đơn, phiếu đóng gói, vận đơn.',
+    );
+  });
+
+  it('should show level, openings and work mode beside the other facts when HR set them', async () => {
+    // Act
+    show('/viec-lam/nhan-vien-chung-tu-logistics');
+
+    // Assert
+    await screen.findByRole('heading', { level: 1, name: 'Nhân viên Chứng từ – Logistics' });
+    const fact = (term: string) => screen.getByText(term, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(fact('Cấp bậc')).toBe('Nhân viên');
+    expect(fact('Số lượng tuyển')).toBe('2 người');
+    expect(fact('Hình thức làm việc')).toBe('Kết hợp (Hybrid)');
+    expect(fact('Loại hình')).toBe('Toàn thời gian');
+  });
+
+  it('should show a job without groups or new facts as before', async () => {
+    // Act
+    show('/viec-lam/nhan-vien-kinh-doanh-b2b');
+
+    // Assert
+    const duties = (await screen.findByRole('heading', { level: 2, name: 'Mô tả công việc' })).closest('section');
+    expect(within(duties ?? document.body).queryByRole('heading', { level: 3 })).toBeNull();
+    expect(within(duties ?? document.body).getAllByRole('listitem')).toHaveLength(5);
+    expect(screen.queryByText('Cấp bậc')).toBeNull();
+    expect(screen.queryByText('Số lượng tuyển')).toBeNull();
+    expect(screen.queryByText('Hình thức làm việc')).toBeNull();
+  });
+
   it('should give Google the job posting and a breadcrumb, with one title separator', async () => {
     show('/viec-lam/nhan-vien-kinh-doanh-b2b');
 

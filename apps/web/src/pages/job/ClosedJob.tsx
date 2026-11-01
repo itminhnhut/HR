@@ -43,7 +43,7 @@ export function ClosedJob({ job, similar }: { job: JobDetailDto; similar: JobCar
             Xem lại mô tả công việc cũ
           </summary>
           <div className="flex flex-col gap-4 pt-2 leading-relaxed">
-            {job.responsibilities.length > 0 && <Bullets items={job.responsibilities} small />}
+            {job.sections.responsibilities.length > 0 && <Bullets sections={job.sections.responsibilities} small />}
           </div>
         </details>
       </main>

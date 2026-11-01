@@ -1,6 +1,7 @@
 import {
   EMPLOYMENT_TYPE_LABEL,
   type EmploymentType,
+  type TemplateChoiceList,
   type HrJobDto,
   type JobInput,
   type JobTemplateResponse,
@@ -15,7 +16,14 @@ import { Checkbox, SelectField, TextArea, TextField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, IconRing } from '../../ui/icons';
 import { DeadlineField } from './job-form/DeadlineField';
-import { PickOrAdd, RequirementPicks, SalaryInput, WorkingHoursField } from './job-form/fields';
+import {
+  OpeningsInput,
+  PickOrAdd,
+  RequirementPicks,
+  SalaryInput,
+  WorkingHoursField,
+  WorkModeField,
+} from './job-form/fields';
 import {
   emptyForm,
   fromJob,
@@ -129,7 +137,7 @@ function JobForm({
   const editsLiveJob = mode === 'edit' && !!job && job.status !== 'draft';
   const addToList = useAddTemplateChoice();
   /** "+ Thêm mới" in a dropdown also keeps the value in "Mẫu tin" for next time (appended on the server). */
-  const addChoice = (list: 'departments' | 'experiences' | 'educations', value: string) =>
+  const addChoice = (list: TemplateChoiceList, value: string) =>
     addToList.mutate(
       { list, value },
       // The job still uses the value; only keeping it in the list failed.
@@ -237,6 +245,17 @@ function JobForm({
               ))}
             </SelectField>
             <PickOrAdd
+              label="Cấp bậc"
+              options={options.levels}
+              value={form.level}
+              error={errors.level}
+              placeholder="Chưa chọn"
+              clearable
+              onChange={(v) => set('level', v)}
+              onAdd={(v) => addChoice('levels', v)}
+            />
+            <OpeningsInput value={form.openings} error={errors.openings} onChange={(v) => set('openings', v)} />
+            <PickOrAdd
               label="Kinh nghiệm"
               options={options.experiences}
               value={form.experience}
@@ -253,6 +272,7 @@ function JobForm({
               onAdd={(v) => addChoice('educations', v)}
             />
           </div>
+          <WorkModeField value={form.workMode} error={errors.workMode} onChange={(v) => set('workMode', v)} />
           <WorkingHoursField form={form} error={errors.workingHours} onChange={patch} />
           <AddressField value={form.address} error={errors.address} onChange={(v) => set('address', v)} />
         </Section>

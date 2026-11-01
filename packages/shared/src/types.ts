@@ -2,6 +2,26 @@ import type { EffectiveStatus, StoredState } from './job-status.js';
 
 export type JobState = StoredState;
 export type EmploymentType = 'full_time' | 'part_time' | 'internship';
+/** "Hình thức làm việc": where the work is done. */
+export type WorkMode = 'onsite' | 'hybrid' | 'remote';
+
+/**
+ * One group of a multi-line job field ("Mô tả công việc", "Yêu cầu", "Ưu tiên"): a heading line HR typed without
+ * a bullet, then its bullet lines. title null: lines before the first heading, or a field with no bullets at all.
+ */
+export interface JobSection {
+  title: string | null;
+  items: string[];
+}
+
+/** Fields HR may leave empty (null on jobs saved before they existed). */
+export interface JobExtraFields {
+  /** "Cấp bậc", one of the template's levels or typed by HR. */
+  level: string | null;
+  /** "Số lượng tuyển", 1–100 people. */
+  openings: number | null;
+  workMode: WorkMode | null;
+}
 export type ApplicationStatus = 'new' | 'seen' | 'interview' | 'rejected';
 
 /** What the candidate sees about their own application (BA board: "HR thấy / ứng viên thấy"). */
@@ -29,16 +49,23 @@ export interface JobCardDto extends SalaryFields {
   perks: string;
 }
 
-export interface JobDetailDto extends JobCardDto {
+export interface JobDetailDto extends JobCardDto, JobExtraFields {
   /** null: the company office (map and directions are shown). */
   address: string | null;
   workingHours: string | null;
   experience: string | null;
   education: string | null;
+  /** Items only, headings left out (older clients read these); `sections` keeps the groups. */
   responsibilities: string[];
   requirements: string[];
   /** "Ưu tiên (không bắt buộc)": nice to have, never required. */
   preferred: string[];
+  /** The same three fields grouped under their headings (see JobSection). */
+  sections: {
+    responsibilities: JobSection[];
+    requirements: JobSection[];
+    preferred: JobSection[];
+  };
   benefits: string[];
   /** One text per ROADMAP_MILESTONES entry; empty when the job has no roadmap. */
   roadmap: string[];
@@ -54,7 +81,7 @@ export interface JobPageResponse {
 }
 
 /** Full editable job for the HR form. Multi-line fields are plain text, one item per line. */
-export interface HrJobDto extends SalaryFields {
+export interface HrJobDto extends SalaryFields, JobExtraFields {
   id: string;
   slug: string;
   title: string;
@@ -80,6 +107,7 @@ export interface JobTemplateResponse {
   template: import('./job-template.js').JobTemplate;
   /** Template choices plus values used on earlier jobs. */
   departments: string[];
+  levels: string[];
   experiences: string[];
   educations: string[];
   /** Benefits typed by hand on earlier jobs. */

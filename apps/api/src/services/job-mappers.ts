@@ -1,7 +1,8 @@
 import {
   effectiveStatus,
   placeLabel,
-  toLines,
+  toItems,
+  toSections,
   type HrJobDto,
   type JobCardDto,
   type JobDetailDto,
@@ -37,9 +38,18 @@ export function toDetail(job: Job, now: Date): JobDetailDto {
     workingHours: job.workingHours,
     experience: job.experience,
     education: job.education,
-    responsibilities: toLines(job.responsibilities),
-    requirements: toLines(job.requirements),
-    preferred: toLines(job.preferred),
+    level: job.level,
+    openings: job.openings,
+    workMode: job.workMode,
+    // Items only in the flat lists, so older clients never show a heading as a duty.
+    responsibilities: toItems(job.responsibilities),
+    requirements: toItems(job.requirements),
+    preferred: toItems(job.preferred),
+    sections: {
+      responsibilities: toSections(job.responsibilities),
+      requirements: toSections(job.requirements),
+      preferred: toSections(job.preferred),
+    },
     benefits: job.benefits,
     roadmap: job.roadmap,
   };
