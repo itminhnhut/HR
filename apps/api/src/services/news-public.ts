@@ -81,6 +81,9 @@ export async function queryPublicNews(db: Db, query: NewsQuery): Promise<{ list:
 
 export const listPublicNews = async (db: Db, query: NewsQuery) => (await queryPublicNews(db, query)).list;
 
+/** The newest published posts (the crawler home page links them). */
+export const latestPublicNews = (db: Db, limit: number): Promise<NewsCardDto[]> => cards(db, undefined, limit);
+
 const RELATED_COUNT = 3;
 
 /** Related posts: most hashtags in common first, then the same category, then the newest. */

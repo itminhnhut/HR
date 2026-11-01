@@ -26,8 +26,8 @@ function canonicalUrl(): string {
   return `${SITE.url}${window.location.pathname}${query}`;
 }
 
-function setTitle(title: string) {
-  const full = pageTitle(title, SITE.company);
+function setTitle(title: string, brand = true) {
+  const full = brand ? pageTitle(title, SITE.company) : title;
   document.title = full;
   metaTag('property', 'og:title').content = full;
 }
@@ -37,16 +37,21 @@ function setDescription(description: string) {
   metaTag('property', 'og:description').content = description;
 }
 
+interface PageMetaOptions {
+  /** Default true: " · <company>" after the title. News articles leave it out (their titles are long). */
+  brand?: boolean;
+}
+
 /**
  * Sets <title>, description, canonical address and share preview tags (Open Graph) for the current screen.
  * Google reads them after running the page; Zalo/Facebook get the server pages (routes/share*.ts in the API).
  */
-export function usePageMeta(title: string | undefined, description?: string) {
+export function usePageMeta(title: string | undefined, description?: string, { brand = true }: PageMetaOptions = {}) {
   // Read on every render: moving between two pages with the same title still updates the address.
   const address = window.location.pathname + window.location.search;
   useEffect(() => {
     if (!title) return;
-    setTitle(title);
+    setTitle(title, brand);
     if (description) setDescription(description);
     const url = canonicalUrl();
     metaTag('property', 'og:url').content = url;
@@ -57,7 +62,7 @@ export function usePageMeta(title: string | undefined, description?: string) {
       document.head.appendChild(link);
     }
     link.href = url;
-  }, [title, description, address]);
+  }, [title, description, address, brand]);
 }
 
 const NOT_FOUND_DESCRIPTION = 'Trang này không tồn tại hoặc đã bị gỡ. Xem các vị trí đang tuyển và tin tức mới.';

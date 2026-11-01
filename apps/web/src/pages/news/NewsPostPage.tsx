@@ -178,7 +178,8 @@ export function NewsPostPage() {
   const query = useNewsPost(slug);
   const post = query.data;
   const notFound = query.error instanceof ApiError && query.error.status === 404;
-  usePageMeta(post?.title, post?.summary);
+  // Article titles are long: no " · TOP FLOW", as on the crawler page (articlePage in the API, routes/share-news.ts).
+  usePageMeta(post?.title, post?.summary, { brand: false });
 
   if (query.isPending) return <PostSkeleton />;
   if (notFound) return <PostMissing />;

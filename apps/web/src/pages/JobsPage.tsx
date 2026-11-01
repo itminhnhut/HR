@@ -1,4 +1,4 @@
-import type { JobCardDto } from '@careers/shared';
+import { homeDescription, homeTitle, type JobCardDto } from '@careers/shared';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useJobs } from '../api/queries';
 import { useMediaQuery, usePageMeta } from '../lib/hooks';
@@ -43,8 +43,8 @@ function useJobsBoard() {
 }
 
 export function JobsPage() {
-  // "· TOP FLOW" is added after the title.
-  usePageMeta('Tuyển dụng – việc làm đang mở', INTRO);
+  // The same title and description as the crawler home page (apps/api/src/services/home-bot-page.ts).
+  usePageMeta(homeTitle(SITE.company), homeDescription(SITE.company));
   const { jobs, all, filtered, visible, filters, update, searchRef, showAll, clearAll } = useJobsBoard();
 
   return (

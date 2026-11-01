@@ -17,8 +17,10 @@ export interface PageImage {
 }
 
 export interface Head {
-  /** Without the brand: pageTitle adds " · <company>". */
+  /** Without the brand: pageTitle adds " · <company>" (unless `brand` is false). */
   title: string;
+  /** Default true. News articles leave the brand out: their titles are long enough to be cut in results. */
+  brand?: boolean;
   description: string;
   /** Path on the site, query included. */
   path: string;
@@ -61,7 +63,7 @@ function imageMeta(site: Site, image: PageImage | null | undefined): string[] {
 
 export function renderPage(site: Site, head: Head, body: string): string {
   const url = `${site.url}${head.path}`;
-  const title = pageTitle(head.title, site.companyName);
+  const title = head.brand === false ? head.title : pageTitle(head.title, site.companyName);
   return `<!doctype html>
 <html lang="vi">
 <head>

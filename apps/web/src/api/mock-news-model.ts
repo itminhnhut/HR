@@ -5,6 +5,7 @@ import {
   newsCategoryInputSchema,
   newsPostInputSchema,
   parseArticleContent,
+  pickRelatedPosts,
   readingMinutes,
   renderArticle,
   toSlug,
@@ -15,6 +16,7 @@ import {
   type NewsCategoryDto,
   type NewsPostInput,
   type NewsTagDto,
+  type RelatedPostDto,
 } from '@careers/shared';
 import { SAMPLE_IMAGES, siteOrigin, type MockNewsPost } from './mock-news-seed';
 import type { MockDb } from './mock-seed';
@@ -89,6 +91,24 @@ export const published = (db: MockDb) =>
   db.newsPosts
     .filter((p) => p.status === 'published')
     .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
+
+/** "Bài viết liên quan" of a job page: the same matcher as the BE (pickRelatedPosts). */
+export function relatedPostsForJob(db: MockDb, job: { title: string; department: string }): RelatedPostDto[] {
+  const candidates = published(db).map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    cover: post.cover,
+    tags: post.tags,
+    category: { name: categoryOf(db, post)?.name ?? '', slug: categoryOf(db, post)?.slug ?? '' },
+    publishedAt: post.publishedAt ?? post.updatedAt,
+  }));
+  return pickRelatedPosts(job, candidates).map(({ slug, title, cover, category }) => ({
+    slug,
+    title,
+    cover,
+    category,
+  }));
+}
 
 export function uniqueSlug(db: MockDb, wanted: string, selfId: string | null): string {
   const base = toSlug(wanted);

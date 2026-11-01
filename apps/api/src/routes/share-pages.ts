@@ -2,9 +2,12 @@ import { escapeHtml } from '@careers/shared';
 import { Hono, type Context } from 'hono';
 import type { Env } from '../app.js';
 import { breadcrumbNav, link, renderPage, type Site } from '../lib/bot-page.js';
+import { homeBotPage } from '../services/home-bot-page.js';
+import { latestPublicNews } from '../services/news-public.js';
+import { listJobs } from '../services/public-jobs.js';
 
 /**
- * "Về chúng tôi" and the privacy policy for crawlers and link previews (vercel.json sends bot user-agents here),
+ * The home page, "Về chúng tôi" and the privacy policy for crawlers and link previews (vercel.json sends bot user-agents here),
  * so a shared link shows the page's own title instead of the home page's. A short version of the SPA pages
  * (AboutPage.tsx, PrivacyPage.tsx); people always get the SPA.
  */
@@ -86,6 +89,18 @@ function staticPage(c: Context<Env>, page: StaticPage) {
   );
 }
 
+/** How many of the newest articles the home page links. */
+const HOME_NEWS_COUNT = 6;
+
+async function homePage(c: Context<Env>) {
+  const { db, config, now } = c.get('deps');
+  const site = { url: config.siteUrl, companyName: config.companyName };
+  const [{ jobs }, posts] = await Promise.all([listJobs(db, now()), latestPublicNews(db, HOME_NEWS_COUNT)]);
+  c.header('cache-control', 'public, s-maxage=300, stale-while-revalidate=600');
+  return c.html(homeBotPage(site, jobs, posts));
+}
+
 /** These paths only arrive here for crawler user-agents (see vercel.json). */
+sharePagesRoutes.get('/', homePage);
 sharePagesRoutes.get(ABOUT.path, (c) => staticPage(c, ABOUT));
 sharePagesRoutes.get(PRIVACY.path, (c) => staticPage(c, PRIVACY));

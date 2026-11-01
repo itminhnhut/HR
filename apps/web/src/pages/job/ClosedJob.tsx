@@ -1,13 +1,22 @@
-import type { JobCardDto, JobDetailDto } from '@careers/shared';
+import type { JobCardDto, JobDetailDto, RelatedPostDto } from '@careers/shared';
 import { DepartmentChip } from '../../site/JobCard';
 import { PAGE_WIDTH, PageHero } from '../../site/PageHero';
 import { ButtonLink } from '../../ui/Button';
 import { Icon } from '../../ui/icons';
 import { SimilarJobs } from './JobAside';
 import { Bullets } from './JobSections';
+import { RelatedPosts } from './RelatedPosts';
 
 /** BR-05: a closed job is never an error page. */
-export function ClosedJob({ job, similar }: { job: JobDetailDto; similar: JobCardDto[] }) {
+export function ClosedJob({
+  job,
+  similar,
+  related = [],
+}: {
+  job: JobDetailDto;
+  similar: JobCardDto[];
+  related?: RelatedPostDto[];
+}) {
   return (
     <>
       <PageHero
@@ -37,6 +46,7 @@ export function ClosedJob({ job, similar }: { job: JobDetailDto; similar: JobCar
         </div>
 
         <SimilarJobs jobs={similar} title="Vị trí tương tự đang tuyển" />
+        <RelatedPosts posts={related} />
 
         <details className="text-[15px] text-slate">
           <summary className="flex min-h-11 cursor-pointer items-center gap-2 font-medium text-body">

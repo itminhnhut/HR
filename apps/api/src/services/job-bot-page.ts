@@ -8,6 +8,9 @@ import {
   jobBreadcrumbData,
   jobPath,
   jobPostingData,
+  jobSeoDescription,
+  jobSeoTitle,
+  newsPath,
   NO_REQUIREMENT,
   OFFICE,
   openingsLabel,
@@ -17,6 +20,7 @@ import {
   type JobCardDto,
   type JobDetailDto,
   type JobSection,
+  type RelatedPostDto,
 } from '@careers/shared';
 import { breadcrumbNav, link, renderPage, type Site } from '../lib/bot-page.js';
 
@@ -68,6 +72,13 @@ function similarHtml(site: Site, jobs: JobCardDto[], heading: string): string {
   return section(heading, `<ul>${items.join('')}</ul>`);
 }
 
+/** "Bài viết liên quan": real links into the news, so crawlers move from jobs to articles. */
+function relatedHtml(site: Site, posts: RelatedPostDto[]): string {
+  if (posts.length === 0) return '';
+  const items = posts.map((post) => `<li>${link(`${site.url}${newsPath(post.slug)}`, post.title)}</li>`);
+  return section('Bài viết liên quan', `<ul>${items.join('')}</ul>`);
+}
+
 function openJobSections(job: JobDetailDto): string {
   return [
     ...(['responsibilities', 'requirements', 'preferred'] as const).map((key) =>
@@ -79,7 +90,12 @@ function openJobSections(job: JobDetailDto): string {
   ].join('\n');
 }
 
-function bodyHtml(site: Site, job: JobDetailDto, similar: JobCardDto[], summary: string): string {
+interface Links {
+  similar: JobCardDto[];
+  related: RelatedPostDto[];
+}
+
+function bodyHtml(site: Site, job: JobDetailDto, { similar, related }: Links, summary: string): string {
   const url = `${site.url}${jobPath(job.slug)}`;
   const listed = isListed(job.status);
   return `${breadcrumbNav([{ name: 'Việc làm', href: `${site.url}/` }, { name: job.title }])}
@@ -89,26 +105,33 @@ function bodyHtml(site: Site, job: JobDetailDto, similar: JobCardDto[], summary:
 ${factsHtml(job)}
 ${listed ? openJobSections(job) : section('Vị trí này đã ngừng nhận hồ sơ', '<p>Các vị trí đang tuyển ở bên dưới.</p>')}
 ${listed ? `<p>${link(url, 'Ứng tuyển ngay')}</p>` : ''}
+${relatedHtml(site, related)}
 ${similarHtml(site, similar, listed ? 'Việc làm tương tự' : 'Vị trí tương tự đang tuyển')}
 <p>${link(`${site.url}/`, 'Xem tất cả việc làm')}</p>
 </main>`;
 }
 
-export function jobBotPage(site: Site, job: JobDetailDto, similar: JobCardDto[]): string {
+export function jobBotPage(
+  site: Site,
+  job: JobDetailDto,
+  similar: JobCardDto[],
+  related: RelatedPostDto[] = [],
+): string {
   const listed = isListed(job.status);
   const summary = `${formatSalary(job)} · ${placeLabel(job.address)} · ${EMPLOYMENT_TYPE_LABEL[job.employmentType]} · Hạn nộp ${formatDate(job.deadline)}`;
   const org = { name: site.companyName, url: site.url };
   return renderPage(
     site,
     {
-      title: job.title,
-      // BR-05: a closed job keeps its page; BR-16: but drops out of Google for Jobs.
-      description: listed ? summary : `Vị trí này đã ngừng nhận hồ sơ. ${summary}`,
+      // The same title and description as the site's JobPage (packages/shared/src/job-seo.ts).
+      title: jobSeoTitle(job),
+      // BR-05: a closed job keeps its page (its description says so); BR-16: but drops out of Google for Jobs.
+      description: jobSeoDescription(job),
       path: jobPath(job.slug),
       type: 'website',
       robots: listed ? undefined : 'noindex, follow',
       jsonLd: listed ? [jobPostingData(job, org), jobBreadcrumbData(job, org)] : [jobBreadcrumbData(job, org)],
     },
-    bodyHtml(site, job, similar, summary),
+    bodyHtml(site, job, { similar, related }, summary),
   );
 }

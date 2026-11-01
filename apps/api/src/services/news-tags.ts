@@ -16,10 +16,10 @@ export interface NewsTagCount extends NewsTagDto {
 const SUGGESTIONS = 20;
 
 /**
- * A hashtag page needs this many published posts to be indexed and listed in the sitemap; a page with a
- * single post is thin content (noindex, follow).
+ * A hashtag page needs this many published posts to be indexed and listed in the sitemap; a page with fewer
+ * is thin content that repeats the posts' own pages (noindex, follow).
  */
-export const TAG_INDEX_MIN_POSTS = 2;
+export const TAG_INDEX_MIN_POSTS = 5;
 
 /** Replaces a post's tags with `names` (already cleaned by cleanTags), creating missing ones by slug. */
 export async function setPostTags(db: Db, postId: string, names: readonly string[]): Promise<void> {

@@ -12,9 +12,17 @@ interface RewriteRule {
   has?: { type: string; key: string; value: string }[];
 }
 
+interface RedirectRule {
+  source: string;
+  destination: string;
+  permanent?: boolean;
+}
+
 const config = JSON.parse(readFileSync(new URL('../../../vercel.json', import.meta.url), 'utf8')) as {
   headers: HeaderRule[];
   rewrites: RewriteRule[];
+  redirects?: RedirectRule[];
+  trailingSlash?: boolean;
 };
 
 /** Vercel `source` patterns used here: literal paths with "(.*)" wildcards. */
@@ -33,12 +41,18 @@ const robotsHeader = (path: string) =>
     .find((h) => h.key.toLowerCase() === 'x-robots-tag')?.value;
 
 describe('vercel.json', () => {
-  it.each(['/hr', '/hr/dang-nhap', '/hr/ho-so', '/ho-so-cua-toi', '/dang-nhap', '/tra-cuu-ho-so', '/api/jobs'])(
-    'should tell search engines not to index %s',
-    (path) => {
-      expect(robotsHeader(path)).toMatch(/noindex/);
-    },
-  );
+  it.each([
+    '/hr',
+    '/hr/dang-nhap',
+    '/hr/ho-so',
+    '/ho-so-cua-toi',
+    '/dang-nhap',
+    '/tra-cuu-ho-so',
+    '/api/jobs',
+    '/api/news',
+  ])('should tell search engines not to index %s', (path) => {
+    expect(robotsHeader(path)).toMatch(/noindex/);
+  });
 
   it.each(['/', '/gioi-thieu', '/viec-lam/nhan-vien-kinh-doanh', '/hrm-khong-lien-quan'])(
     'should leave public page %s indexable',
@@ -101,9 +115,13 @@ const BOTS = {
   bing: 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)',
   zalo: 'Mozilla/5.0 (compatible; Zalo/1.0)',
   facebook: 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+  googleInspection:
+    'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36 (compatible; Google-InspectionTool/1.0;)',
+  googleOther: 'Mozilla/5.0 (compatible; GoogleOther)',
 };
 const PERSON = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile Safari';
 const BOT_PAGES = [
+  '/',
   '/viec-lam/ke-toan',
   '/tin-tuc',
   '/tin-tuc/mot-ngay-o-cong-ty',
@@ -136,6 +154,13 @@ describe('vercel.json rewrites', () => {
     expect(patterns.size).toBe(1);
   });
 
+  it('should send API calls to the API for people and crawlers alike', () => {
+    for (const userAgent of [PERSON, BOTS.google, BOTS.googleInspection]) {
+      expect(rewriteOf('/api/jobs', userAgent)).toBe('/api');
+      expect(rewriteOf('/api/news/mot-bai', userAgent)).toBe('/api');
+    }
+  });
+
   it('should send the IndexNow key file, robots.txt and the sitemap to the API', () => {
     expect(rewriteOf('/0f1e2d3c-4b5a-6978-abcd-ef0123456789.txt', PERSON)).toBe('/api');
     expect(rewriteOf('/robots.txt', PERSON)).toBe('/api');
@@ -146,5 +171,23 @@ describe('vercel.json rewrites', () => {
     expect(rewriteOf('/a.txt', PERSON)).toBe('/index.html');
     expect(rewriteOf('/thu-muc/0f1e2d3c-4b5a.txt', PERSON)).toBe('/index.html');
     expect(rewriteOf('/assets/index-abc.js', PERSON)).toBeUndefined();
+  });
+});
+
+describe('vercel.json duplicate addresses', () => {
+  it('should move addresses ending in a slash to the address without it', () => {
+    // Act
+    const trailingSlash = config.trailingSlash;
+
+    // Assert
+    expect(trailingSlash).toBe(false);
+  });
+
+  it('should send /viec-lam without a job to the home page for good', () => {
+    // Act
+    const redirect = (config.redirects ?? []).find((rule) => rule.source === '/viec-lam');
+
+    // Assert
+    expect(redirect).toMatchObject({ destination: '/', permanent: true });
   });
 });

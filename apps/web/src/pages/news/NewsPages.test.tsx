@@ -1,3 +1,4 @@
+import { newsListDescription } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
@@ -53,6 +54,24 @@ describe('public news pages (demo data)', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Cẩm nang ứng viên' })).toBeTruthy();
     const titles = await screen.findAllByRole('heading', { level: 2 });
     expect(titles).toHaveLength(1);
+  });
+
+  it('should give the news page and a category page the same full description as the crawler pages', async () => {
+    // Arrange
+    const description = () => document.head.querySelector('meta[name="description"]')?.getAttribute('content');
+    show('/tin-tuc');
+
+    // Act
+    await screen.findAllByRole('heading', { level: 2 });
+
+    // Assert
+    await waitFor(() => expect(description()).toBe(newsListDescription({ kind: 'all' }, 'TOP FLOW')));
+    cleanup();
+    show('/tin-tuc/chuyen-muc/cam-nang-ung-vien');
+    await screen.findByRole('heading', { level: 1, name: 'Cẩm nang ứng viên' });
+    await waitFor(() =>
+      expect(description()).toBe(newsListDescription({ kind: 'category', name: 'Cẩm nang ứng viên' }, 'TOP FLOW')),
+    );
   });
 
   it('should show a not-found message for an unknown category', async () => {
