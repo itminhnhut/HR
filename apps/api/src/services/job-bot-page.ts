@@ -10,10 +10,13 @@ import {
   jobPostingData,
   NO_REQUIREMENT,
   OFFICE,
+  openingsLabel,
   placeLabel,
   ROADMAP_MILESTONES,
+  WORK_MODE_LABEL,
   type JobCardDto,
   type JobDetailDto,
+  type JobSection,
 } from '@careers/shared';
 import { breadcrumbNav, link, renderPage, type Site } from '../lib/bot-page.js';
 
@@ -24,13 +27,21 @@ import { breadcrumbNav, link, renderPage, type Site } from '../lib/bot-page.js';
 
 const list = (lines: string[]) => `<ul>${lines.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`;
 const section = (heading: string, inner: string) => `<section><h2>${escapeHtml(heading)}</h2>${inner}</section>`;
+/** A grouped field: each heading HR typed as an h3, then its items. */
+const groups = (sections: JobSection[]) =>
+  sections
+    .map((s) => `${s.title == null ? '' : `<h3>${escapeHtml(s.title)}</h3>`}${s.items.length > 0 ? list(s.items) : ''}`)
+    .join('');
 
 function factsHtml(job: JobDetailDto): string {
   const facts: [string, string | null][] = [
     ['Mức lương', formatSalary(job)],
     ['Kinh nghiệm', job.experience],
+    ['Cấp bậc', job.level],
     ['Hình thức', EMPLOYMENT_TYPE_LABEL[job.employmentType]],
+    ['Hình thức làm việc', job.workMode ? WORK_MODE_LABEL[job.workMode] : null],
     ['Học vấn', job.education === NO_REQUIREMENT ? null : job.education],
+    ['Số lượng tuyển', job.openings ? openingsLabel(job.openings) : null],
     ['Hạn nộp', formatDate(job.deadline)],
     ['Nơi làm việc', job.address ?? `Văn phòng công ty, ${OFFICE.district}, ${OFFICE.city}`],
     ['Giờ làm', job.workingHours],
@@ -59,9 +70,9 @@ function similarHtml(site: Site, jobs: JobCardDto[], heading: string): string {
 
 function openJobSections(job: JobDetailDto): string {
   return [
-    job.responsibilities.length > 0 ? section(JOB_SECTION.responsibilities, list(job.responsibilities)) : '',
-    job.requirements.length > 0 ? section(JOB_SECTION.requirements, list(job.requirements)) : '',
-    job.preferred.length > 0 ? section(JOB_SECTION.preferred, list(job.preferred)) : '',
+    ...(['responsibilities', 'requirements', 'preferred'] as const).map((key) =>
+      job.sections[key].length > 0 ? section(JOB_SECTION[key], groups(job.sections[key])) : '',
+    ),
     job.benefits.length > 0 ? section(JOB_SECTION.benefits, list(job.benefits)) : '',
     roadmapHtml(job.roadmap),
     section('Nơi bạn sẽ làm việc', `<p>${escapeHtml(job.address ?? placeLabel(null))}</p>`),

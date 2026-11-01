@@ -1,4 +1,4 @@
-import type { ArticleHeadingRef, ArticleState, JobTemplate, MatchItem, NewsImage } from '@careers/shared';
+import type { ArticleHeadingRef, ArticleState, JobTemplate, MatchItem, NewsImage, WorkMode } from '@careers/shared';
 import {
   boolean,
   jsonb,
@@ -52,6 +52,10 @@ export const jobs = pgTable(
     workingHours: text('working_hours'),
     experience: text('experience'),
     education: text('education'),
+    /** "Cấp bậc", "Số lượng tuyển" (1–100), "Hình thức làm việc": null when HR left them empty or on older jobs. */
+    level: text('level'),
+    openings: integer('openings'),
+    workMode: text('work_mode').$type<WorkMode>(),
     /** VND per month. Both null means "Thỏa thuận". */
     salaryMin: integer('salary_min'),
     salaryMax: integer('salary_max'),

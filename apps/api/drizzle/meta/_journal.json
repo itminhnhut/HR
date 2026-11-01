@@ -120,6 +120,13 @@
       "when": 1793345577791,
       "tag": "0016_custom_sources",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1793521893359,
+      "tag": "0017_job_topcv_fields",
+      "breakpoints": true
     }
   ]
 }

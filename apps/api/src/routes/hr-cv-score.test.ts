@@ -78,6 +78,27 @@ describe('POST /api/hr/applications/:id/score', () => {
     expect(cvScore?.percent).toBe(100);
   });
 
+  it('should score the requirement items and never a group heading', async () => {
+    // Arrange: the same requirements, grouped under headings with bullets.
+    const grouped = 'Kỹ năng\n• Thành thạo Excel\n• Có kinh nghiệm sử dụng CRM\nTố chất\n• Chịu được áp lực công việc';
+    const app = await applyWith(await insertJob(t, { ...SALES_JOB, requirements: grouped }), {
+      file: 'cv-simple-vi.pdf',
+    });
+
+    // Act
+    const { cvScore } = await score(app.id);
+
+    // Assert
+    expect(cvScore?.items.map((i) => i.requirement)).toEqual([
+      'Kinh nghiệm: Từ 2 năm',
+      'Học vấn: Đại học',
+      'Thành thạo Excel',
+      'Có kinh nghiệm sử dụng CRM',
+      'Chịu được áp lực công việc',
+    ]);
+    expect(cvScore?.percent).toBe(100);
+  });
+
   it('should mark a requirement the CV falls short of as unmet and lower the percent', async () => {
     const app = await applyWith(await insertJob(t, { ...SALES_JOB, experience: 'Từ 10 năm' }), {
       file: 'cv-simple-vi.pdf',

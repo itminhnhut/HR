@@ -351,6 +351,7 @@ describe('"Mẫu tin" job template', () => {
     ],
     roadmap: ['a', 'b', 'c', 'd', 'e'],
     departments: ['Kinh doanh'],
+    levels: ['Nhân viên'],
     experiences: ['Không yêu cầu'],
     educations: ['Không yêu cầu'],
     requirementOptions: ['Giao tiếp tốt'],
@@ -391,7 +392,7 @@ describe('"Mẫu tin" job template', () => {
       customTemplate({ startTime: '25:00' }),
       customTemplate({ workDays: ' ' }),
       customTemplate({ roadmap: ['chỉ một mốc'] }),
-      customTemplate({ benefits: [{ label: 'x'.repeat(81), standard: true }] }),
+      customTemplate({ benefits: [{ label: 'x'.repeat(201), standard: true }] }),
       {},
     ];
 

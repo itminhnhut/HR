@@ -278,3 +278,29 @@ describe('migration 0016: HR-managed sources', SLOW, () => {
     await expect(pg.exec(`update applications set source = 'khong-co' where full_name = 'Qua Zalo'`)).rejects.toThrow();
   });
 });
+
+describe('migration 0017: level, openings and work mode on jobs', SLOW, () => {
+  it('should keep existing jobs as they were, with the three new fields empty', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(17) });
+    await pg.exec(`
+      insert into jobs (slug, title, department, employment_type, requirements, deadline)
+        values ('cu', 'Cũ', 'Kinh doanh', 'full_time', 'Biết Excel', '2026-12-01');
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [job] = await db.select().from(schema.jobs);
+    expect(job).toMatchObject({
+      slug: 'cu',
+      requirements: 'Biết Excel',
+      level: null,
+      openings: null,
+      workMode: null,
+    });
+  });
+});
