@@ -5,6 +5,8 @@ import {
   CHOICES_MAX,
   DEFAULT_JOB_TEMPLATE,
   MAX_BENEFITS,
+  OPENINGS_MAX,
+  OPENINGS_MIN,
   ROADMAP_ITEM_MAX,
   ROADMAP_MILESTONES,
 } from './job-template.js';
@@ -80,6 +82,8 @@ const money = z
   .max(SALARY_MAX_VND, 'Tối đa 500.000.000 đ.')
   .nullable();
 
+const OPENINGS_MESSAGE = `Số lượng tuyển từ ${OPENINGS_MIN} đến ${OPENINGS_MAX} người.`;
+
 export const jobInputSchema = z
   .object({
     title: z.string().trim().min(3, 'Tên vị trí cần ít nhất 3 ký tự.').max(120, 'Tên vị trí tối đa 120 ký tự.'),
@@ -90,6 +94,24 @@ export const jobInputSchema = z
     workingHours: optionalText(100),
     experience: optionalText(60),
     education: optionalText(60),
+    /** "Cấp bậc", "Số lượng tuyển", "Hình thức làm việc": optional; older clients send none. */
+    level: z
+      .string()
+      .trim()
+      .max(CHOICE_MAX, `Cấp bậc tối đa ${CHOICE_MAX} ký tự.`)
+      .nullish()
+      .transform((v) => (v ? v : null)),
+    openings: z
+      .number({ message: OPENINGS_MESSAGE })
+      .int(OPENINGS_MESSAGE)
+      .min(OPENINGS_MIN, OPENINGS_MESSAGE)
+      .max(OPENINGS_MAX, OPENINGS_MESSAGE)
+      .nullish()
+      .transform((v) => v ?? null),
+    workMode: z
+      .enum(['onsite', 'hybrid', 'remote'], { message: 'Chọn Tại văn phòng, Kết hợp hoặc Từ xa.' })
+      .nullish()
+      .transform((v) => v ?? null),
     salaryMin: money,
     salaryMax: money,
     responsibilities: z.string().trim().max(4000, 'Tối đa 4000 ký tự.'),
@@ -186,6 +208,7 @@ export const jobTemplateSchema = z.object({
     .length(ROADMAP_MILESTONES.length),
   // Older saved templates have no lists yet: they get the built-in ones.
   departments: choiceList.default(DEFAULT_JOB_TEMPLATE.departments),
+  levels: choiceList.default(DEFAULT_JOB_TEMPLATE.levels),
   experiences: choiceList.default(DEFAULT_JOB_TEMPLATE.experiences),
   educations: choiceList.default(DEFAULT_JOB_TEMPLATE.educations),
   requirementOptions: z
@@ -226,6 +249,9 @@ export const contactLogSchema = z.object({
 
 /** "+ Thêm mới" in a job form dropdown: one value appended to one list of the job template, on the server. */
 export const addChoiceSchema = z.object({
-  list: z.enum(['departments', 'experiences', 'educations']),
+  list: z.enum(['departments', 'levels', 'experiences', 'educations']),
   value: z.string().trim().min(1).max(CHOICE_MAX, `Tối đa ${CHOICE_MAX} ký tự.`),
 });
+
+/** The template lists a job form dropdown can add to. */
+export type TemplateChoiceList = z.infer<typeof addChoiceSchema>['list'];

@@ -2,7 +2,7 @@ import { foldVietnamese, hasSalary } from './format.js';
 import { jobLocation } from './job-location.js';
 import { NO_REQUIREMENT } from './job-template.js';
 import { escapeHtml } from './news/render.js';
-import type { JobDetailDto } from './types.js';
+import type { JobDetailDto, JobSection } from './types.js';
 
 /** The company's main website (sameAs of the hiring organisation; the careers site is its own url). */
 export const COMPANY_WEBSITE = 'https://topflow.vn';
@@ -37,15 +37,27 @@ export const JOB_SECTION = {
   benefits: 'Quyền lợi',
 } as const;
 
-const JOB_SECTION_KEYS = ['responsibilities', 'requirements', 'preferred', 'benefits'] as const;
+const GROUPED_KEYS = ['responsibilities', 'requirements', 'preferred'] as const;
+
+const listHtml = (items: string[]) =>
+  items.length > 0 ? `<ul>${items.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>` : '';
+
+/** A grouped field as HTML: each heading HR typed, then its items. */
+export function sectionsHtml(sections: JobSection[]): string {
+  return sections
+    .map((s) => `${s.title == null ? '' : `<p><em>${escapeHtml(s.title)}</em></p>`}${listHtml(s.items)}`)
+    .join('');
+}
 
 /** The job's text sections as HTML (Google asks for the full description, formatted). */
 export function jobDescriptionHtml(job: JobDetailDto): string {
-  return JOB_SECTION_KEYS.filter((key) => job[key].length > 0)
-    .map(
-      (key) =>
-        `<p><strong>${JOB_SECTION[key]}</strong></p><ul>${job[key].map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>`,
-    )
+  const blocks: [string, string][] = [
+    ...GROUPED_KEYS.map((key): [string, string] => [JOB_SECTION[key], sectionsHtml(job.sections[key])]),
+    [JOB_SECTION.benefits, listHtml(job.benefits)],
+  ];
+  return blocks
+    .filter(([, inner]) => inner)
+    .map(([heading, inner]) => `<p><strong>${heading}</strong></p>${inner}`)
     .join('');
 }
 
@@ -97,6 +109,15 @@ function baseSalary(job: JobDetailDto): unknown {
   };
 }
 
+/** Google marks a job as remote only with these two; hybrid and office jobs are placed at their address. */
+function remoteWork(job: JobDetailDto): Record<string, unknown> {
+  if (job.workMode !== 'remote') return {};
+  return {
+    jobLocationType: 'TELECOMMUTE',
+    applicantLocationRequirements: { '@type': 'Country', name: 'VN' },
+  };
+}
+
 /** Keys whose value is undefined are dropped, so optional properties are absent rather than empty. */
 const compact = (data: Record<string, unknown>) =>
   Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined));
@@ -125,6 +146,8 @@ export function jobPostingData(job: JobDetailDto, org: Org): Record<string, unkn
     experienceRequirements: experienceRequirements(job.experience),
     educationRequirements: educationRequirements(job.education),
     baseSalary: baseSalary(job),
+    totalJobOpenings: job.openings ?? undefined,
+    ...remoteWork(job),
     directApply: true,
   });
 }
