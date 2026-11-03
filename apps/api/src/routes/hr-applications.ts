@@ -45,8 +45,7 @@ hrApplicationRoutes.post('/applications', async (c) => {
  * Registered before /applications/:id so "parse-cv" is not read as an id.
  */
 hrApplicationRoutes.post('/applications/parse-cv', async (c) => {
-  const { file } = await readMultipart(c, 'cv');
-  return c.json(await readCvContact(file));
+  return c.json(await readCvContact(await readMultipart(c, 'cv')));
 });
 
 /** Registered before /applications/:id so "due" is not read as an id. */

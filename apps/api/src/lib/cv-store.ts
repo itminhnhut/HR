@@ -37,6 +37,15 @@ export const CV_PROBLEM_MESSAGE: Record<CvProblem, string> = {
 
 /** How far from the end a real PDF writes its "%%EOF" marker (some writers add a few bytes after it). */
 const EOF_WINDOW = 1024;
+/** NUL, tab, line feed, carriage return and space: what writers and mail gateways pad a finished file with. */
+const PADDING_BYTES = new Set([0x00, 0x09, 0x0a, 0x0d, 0x20]);
+
+/** Where the file's content ends, padding after it aside. */
+function contentEnd(bytes: Uint8Array): number {
+  let end = bytes.length;
+  while (end > 0 && PADDING_BYTES.has(bytes[end - 1] ?? 0)) end -= 1;
+  return end;
+}
 
 /**
  * Checks size, the PDF header and the end-of-file marker, not just the browser-supplied name or MIME type.
@@ -46,7 +55,9 @@ export async function checkCvFile(file: File): Promise<CvProblem | null> {
   if (file.size > CV_MAX_BYTES) return 'too_large';
   const head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
   if (String.fromCharCode(...head) !== '%PDF-') return 'not_pdf';
-  const tail = new TextDecoder('latin1').decode(await file.slice(Math.max(0, file.size - EOF_WINDOW)).arrayBuffer());
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const end = contentEnd(bytes);
+  const tail = new TextDecoder('latin1').decode(bytes.subarray(Math.max(0, end - EOF_WINDOW), end));
   return tail.includes('%%EOF') ? null : 'broken_pdf';
 }
 

@@ -5,7 +5,7 @@
 import { findEmail } from './email.js';
 import { findName } from './name.js';
 import { findPhone } from './phone.js';
-import { toContactLines } from './text.js';
+import { isLegacyEncoded, toContactLines } from './text.js';
 
 export interface CvContact {
   fullName: string | null;
@@ -16,5 +16,7 @@ export interface CvContact {
 /** Reads the candidate's full name, phone (0xxxxxxxxx) and email (lowercase) from a CV's plain text. */
 export function parseCvContact(text: string): CvContact {
   const lines = toContactLines(text);
-  return { fullName: findName(lines), phone: findPhone(lines), email: findEmail(lines) };
+  const email = findEmail(lines);
+  const fullName = isLegacyEncoded(text) ? null : findName(lines, email);
+  return { fullName, phone: findPhone(lines), email };
 }

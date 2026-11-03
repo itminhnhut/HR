@@ -1,0 +1,7064 @@
+[
+ {
+  "label": {
+   "id": "o001",
+   "file": "o001.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Nguyễn Thị Hồng Nhung",
+   "phone": "0912384756",
+   "email": "nhunghn.ketoan@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thị Hồng",
+   "phone": "0912384756",
+   "email": "nhunghn.ketoan@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thị Hồng Nhung",
+    "returned": "Nguyễn Thị Hồng",
+    "outcome": "wrong",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0912384756",
+    "returned": "0912384756",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "nhunghn.ketoan@gmail.com",
+    "returned": "nhunghn.ketoan@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o002",
+   "file": "o002.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Trần Văn Khánh",
+   "phone": "0987125436",
+   "email": "khanhtran.sales@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Văn Khánh",
+   "phone": "0987125436",
+   "email": "khanhtran.sales@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Văn Khánh",
+    "returned": "Trần Văn Khánh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0987125436",
+    "returned": "0987125436",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khanhtran.sales@gmail.com",
+    "returned": "khanhtran.sales@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o003",
+   "file": "o003.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Lê Hoàng Phúc",
+   "phone": "0356781294",
+   "email": "lehoangphuc2000@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Hoàng Phúc",
+   "phone": "0356781294",
+   "email": "lehoangphuc2000@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Hoàng Phúc",
+    "returned": "Lê Hoàng Phúc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0356781294",
+    "returned": "0356781294",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lehoangphuc2000@gmail.com",
+    "returned": "lehoangphuc2000@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o004",
+   "file": "o004.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Phạm Thị Ngọc Ánh",
+   "phone": "0778345120",
+   "email": "ngocanh.hr96@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Thị Ngọc Ánh",
+   "phone": "0778345120",
+   "email": "ngocanh.hr96@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Thị Ngọc Ánh",
+    "returned": "Phạm Thị Ngọc Ánh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0778345120",
+    "returned": "0778345120",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngocanh.hr96@gmail.com",
+    "returned": "ngocanh.hr96@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o005",
+   "file": "o005.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Hoàng Đức Thắng",
+   "phone": "0903418827",
+   "email": "thang.hoangduc@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Đức Thắng",
+   "phone": "0903418827",
+   "email": "thang.hoangduc@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Đức Thắng",
+    "returned": "Hoàng Đức Thắng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0903418827",
+    "returned": "0903418827",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thang.hoangduc@yahoo.com",
+    "returned": "thang.hoangduc@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o006",
+   "file": "o006.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Vũ Thị Thu Hà",
+   "phone": "0869204517",
+   "email": "vuthuha.mkt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vũ Thị Thu Hà",
+   "phone": "0869204517",
+   "email": "vuthuha.mkt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vũ Thị Thu Hà",
+    "returned": "Vũ Thị Thu Hà",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0869204517",
+    "returned": "0869204517",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "vuthuha.mkt@gmail.com",
+    "returned": "vuthuha.mkt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o007",
+   "file": "o007.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Đặng Quốc Bảo",
+   "phone": "0945671023",
+   "email": "dangquocbao99@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đặng Quốc Bảo",
+   "phone": "0945671023",
+   "email": "dangquocbao99@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đặng Quốc Bảo",
+    "returned": "Đặng Quốc Bảo",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0945671023",
+    "returned": "0945671023",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "dangquocbao99@gmail.com",
+    "returned": "dangquocbao99@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o008",
+   "file": "o008.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Bùi Thị Mỹ Duyên",
+   "phone": "0328907165",
+   "email": "myduyen.bui@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Bùi Thị Mỹ Duyên",
+   "phone": "0328907165",
+   "email": "myduyen.bui@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Bùi Thị Mỹ Duyên",
+    "returned": "Bùi Thị Mỹ Duyên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0328907165",
+    "returned": "0328907165",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "myduyen.bui@outlook.com",
+    "returned": "myduyen.bui@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o009",
+   "file": "o009.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Đỗ Minh Tuấn",
+   "phone": "0975312684",
+   "email": "minhtuan.do@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đỗ Minh Tuấn",
+   "phone": "0975312684",
+   "email": "minhtuan.do@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đỗ Minh Tuấn",
+    "returned": "Đỗ Minh Tuấn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0975312684",
+    "returned": "0975312684",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhtuan.do@gmail.com",
+    "returned": "minhtuan.do@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o010",
+   "file": "o010.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Hồ Thị Kim Oanh",
+   "phone": "0708162539",
+   "email": "kimoanh.ho@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hồ Thị Kim Oanh",
+   "phone": "0708162539",
+   "email": "kimoanh.ho@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hồ Thị Kim Oanh",
+    "returned": "Hồ Thị Kim Oanh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0708162539",
+    "returned": "0708162539",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "kimoanh.ho@gmail.com",
+    "returned": "kimoanh.ho@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o011",
+   "file": "o011.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Ngô Thanh Sơn",
+   "phone": "0839415720",
+   "email": "thanhson.ngo1995@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ngô Thanh Sơn",
+   "phone": "0839415720",
+   "email": "thanhson.ngo1995@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ngô Thanh Sơn",
+    "returned": "Ngô Thanh Sơn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0839415720",
+    "returned": "0839415720",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thanhson.ngo1995@gmail.com",
+    "returned": "thanhson.ngo1995@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o012",
+   "file": "o012.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Dương Thị Lan Anh",
+   "phone": "0916250384",
+   "email": "lananh.duong@yahoo.com.vn",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Dương Thị Lan Anh",
+   "phone": "0916250384",
+   "email": "lananh.duong@yahoo.com.vn",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Dương Thị Lan Anh",
+    "returned": "Dương Thị Lan Anh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0916250384",
+    "returned": "0916250384",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lananh.duong@yahoo.com.vn",
+    "returned": "lananh.duong@yahoo.com.vn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o013",
+   "file": "o013.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Lý Gia Hân",
+   "phone": "0382640917",
+   "email": "giahan.ly@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lý Gia Hân",
+   "phone": "0382640917",
+   "email": "giahan.ly@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lý Gia Hân",
+    "returned": "Lý Gia Hân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0382640917",
+    "returned": "0382640917",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "giahan.ly@gmail.com",
+    "returned": "giahan.ly@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o014",
+   "file": "o014.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Phan Nguyễn Thảo Vy",
+   "phone": "0933728105",
+   "email": "thaovy.pn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phan Nguyễn Thảo Vy",
+   "phone": "0933728105",
+   "email": "thaovy.pn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phan Nguyễn Thảo Vy",
+    "returned": "Phan Nguyễn Thảo Vy",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0933728105",
+    "returned": "0933728105",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thaovy.pn@gmail.com",
+    "returned": "thaovy.pn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o015",
+   "file": "o015.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Mai Xuân Trường",
+   "phone": "0584120763",
+   "email": "xuantruong.mai@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Mai Xuân Trường",
+   "phone": "0584120763",
+   "email": "xuantruong.mai@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Mai Xuân Trường",
+    "returned": "Mai Xuân Trường",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0584120763",
+    "returned": "0584120763",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "xuantruong.mai@gmail.com",
+    "returned": "xuantruong.mai@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o016",
+   "file": "o016.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Tạ Thị Phương Linh",
+   "phone": "0798453162",
+   "email": "linhtp2001@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tạ Thị Phương Linh",
+   "phone": "0798453162",
+   "email": "linhtp2001@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tạ Thị Phương Linh",
+    "returned": "Tạ Thị Phương Linh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0798453162",
+    "returned": "0798453162",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "linhtp2001@gmail.com",
+    "returned": "linhtp2001@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o017",
+   "file": "o017.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Trịnh Công Hậu",
+   "phone": "0961847203",
+   "email": "conghau.trinh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trịnh Công Hậu",
+   "phone": "0961847203",
+   "email": "conghau.trinh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trịnh Công Hậu",
+    "returned": "Trịnh Công Hậu",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0961847203",
+    "returned": "0961847203",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "conghau.trinh@gmail.com",
+    "returned": "conghau.trinh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o018",
+   "file": "o018.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Giàng Thị Mỷ",
+   "phone": "0345128970",
+   "email": "giangmy.sapa@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Giàng Thị Mỷ",
+   "phone": "0345128970",
+   "email": "giangmy.sapa@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Giàng Thị Mỷ",
+    "returned": "Giàng Thị Mỷ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0345128970",
+    "returned": "0345128970",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "giangmy.sapa@gmail.com",
+    "returned": "giangmy.sapa@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o019",
+   "file": "o019.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Lò Văn Tuấn",
+   "phone": "0373649028",
+   "email": "lovantuan96@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lò Văn Tuấn",
+   "phone": "0373649028",
+   "email": "lovantuan96@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lò Văn Tuấn",
+    "returned": "Lò Văn Tuấn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0373649028",
+    "returned": "0373649028",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lovantuan96@gmail.com",
+    "returned": "lovantuan96@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o020",
+   "file": "o020.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Hà Thị Khuyên",
+   "phone": "0855027134",
+   "email": "khuyenha.hb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hà Thị Khuyên",
+   "phone": "0855027134",
+   "email": "khuyenha.hb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hà Thị Khuyên",
+    "returned": "Hà Thị Khuyên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0855027134",
+    "returned": "0855027134",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khuyenha.hb@gmail.com",
+    "returned": "khuyenha.hb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o021",
+   "file": "o021.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Nông Thị Thắm",
+   "phone": "0392718456",
+   "email": "nongtham.cb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nông Thị Thắm",
+   "phone": "0392718456",
+   "email": "nongtham.cb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nông Thị Thắm",
+    "returned": "Nông Thị Thắm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0392718456",
+    "returned": "0392718456",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "nongtham.cb@gmail.com",
+    "returned": "nongtham.cb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o022",
+   "file": "o022.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Y Nguyên Byă",
+   "phone": "0824519307",
+   "email": "ynguyen.bya@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Y Nguyên Byă",
+   "phone": "0824519307",
+   "email": "ynguyen.bya@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Y Nguyên Byă",
+    "returned": "Y Nguyên Byă",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0824519307",
+    "returned": "0824519307",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ynguyen.bya@gmail.com",
+    "returned": "ynguyen.bya@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o023",
+   "file": "o023.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Thạch Thị Sa Rinh",
+   "phone": "0767204815",
+   "email": "sarinh.thach@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Thạch Thị Sa Rinh",
+   "phone": "0767204815",
+   "email": "sarinh.thach@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Thạch Thị Sa Rinh",
+    "returned": "Thạch Thị Sa Rinh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0767204815",
+    "returned": "0767204815",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "sarinh.thach@gmail.com",
+    "returned": "sarinh.thach@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o024",
+   "file": "o024.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Đàng Thị Mỹ Hạnh",
+   "phone": "0908563421",
+   "email": "myhanh.dang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đàng Thị Mỹ Hạnh",
+   "phone": "0908563421",
+   "email": "myhanh.dang@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đàng Thị Mỹ Hạnh",
+    "returned": "Đàng Thị Mỹ Hạnh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0908563421",
+    "returned": "0908563421",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "myhanh.dang@gmail.com",
+    "returned": "myhanh.dang@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o025",
+   "file": "o025.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Châu Ngọc Trâm",
+   "phone": "0799120468",
+   "email": "tramchau.ag@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Châu Ngọc Trâm",
+   "phone": "0799120468",
+   "email": "tramchau.ag@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Châu Ngọc Trâm",
+    "returned": "Châu Ngọc Trâm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0799120468",
+    "returned": "0799120468",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tramchau.ag@gmail.com",
+    "returned": "tramchau.ag@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o026",
+   "file": "o026.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Cao Thị Bích Phượng",
+   "phone": "0947035182",
+   "email": "bichphuong.cao@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Cao Thị Bích Phượng",
+   "phone": "0947035182",
+   "email": "bichphuong.cao@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Cao Thị Bích Phượng",
+    "returned": "Cao Thị Bích Phượng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0947035182",
+    "returned": "0947035182",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "bichphuong.cao@yahoo.com",
+    "returned": "bichphuong.cao@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o027",
+   "file": "o027.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Trương Gia Huy",
+   "phone": "0902746315",
+   "email": "giahuy.truong@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trương Gia Huy",
+   "phone": "0902746315",
+   "email": "giahuy.truong@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trương Gia Huy",
+    "returned": "Trương Gia Huy",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0902746315",
+    "returned": "0902746315",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "giahuy.truong@gmail.com",
+    "returned": "giahuy.truong@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o028",
+   "file": "o028.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Lưu Thị Yến Nhi",
+   "phone": "0358214796",
+   "email": "yennhi2002@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lưu Thị Yến Nhi",
+   "phone": "0358214796",
+   "email": "yennhi2002@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lưu Thị Yến Nhi",
+    "returned": "Lưu Thị Yến Nhi",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0358214796",
+    "returned": "0358214796",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "yennhi2002@gmail.com",
+    "returned": "yennhi2002@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o029",
+   "file": "o029.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Tô Văn Hưng",
+   "phone": "0386015729",
+   "email": "hungtv.xaydung@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tô Văn Hưng",
+   "phone": "0386015729",
+   "email": "hungtv.xaydung@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tô Văn Hưng",
+    "returned": "Tô Văn Hưng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0386015729",
+    "returned": "0386015729",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hungtv.xaydung@gmail.com",
+    "returned": "hungtv.xaydung@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o030",
+   "file": "o030.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Kiều Anh Dũng",
+   "phone": "0814693270",
+   "email": "kieuanhdung@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Kiều Anh Dũng",
+   "phone": "0814693270",
+   "email": "kieuanhdung@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Kiều Anh Dũng",
+    "returned": "Kiều Anh Dũng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0814693270",
+    "returned": "0814693270",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "kieuanhdung@outlook.com",
+    "returned": "kieuanhdung@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o031",
+   "file": "o031.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Nguyễn Hữu Phước",
+   "phone": "0978456012",
+   "email": "huuphuoc.dn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Hữu Phước",
+   "phone": "0978456012",
+   "email": "huuphuoc.dn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Hữu Phước",
+    "returned": "Nguyễn Hữu Phước",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0978456012",
+    "returned": "0978456012",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "huuphuoc.dn@gmail.com",
+    "returned": "huuphuoc.dn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o032",
+   "file": "o032.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "La Thị Thanh Xuân",
+   "phone": "0562981347",
+   "email": "xuanla.kt@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "La Thị Thanh Xuân",
+   "phone": "0562981347",
+   "email": "xuanla.kt@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "La Thị Thanh Xuân",
+    "returned": "La Thị Thanh Xuân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0562981347",
+    "returned": "0562981347",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "xuanla.kt@hopthu.example",
+    "returned": "xuanla.kt@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o033",
+   "file": "o033.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Võ Thị Cẩm Tú",
+   "phone": "0937204681",
+   "email": "camtu.vo@icloud.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Võ Thị Cẩm Tú",
+   "phone": "0937204681",
+   "email": "camtu.vo@icloud.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Võ Thị Cẩm Tú",
+    "returned": "Võ Thị Cẩm Tú",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0937204681",
+    "returned": "0937204681",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "camtu.vo@icloud.com",
+    "returned": "camtu.vo@icloud.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o034",
+   "file": "o034.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_side",
+   "fullName": "Huỳnh Tấn Phát",
+   "phone": "0766318204",
+   "email": "tanphat.huynh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Huỳnh Tấn Phát",
+   "phone": "0766318204",
+   "email": "tanphat.huynh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Huỳnh Tấn Phát",
+    "returned": "Huỳnh Tấn Phát",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0766318204",
+    "returned": "0766318204",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tanphat.huynh@gmail.com",
+    "returned": "tanphat.huynh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o035",
+   "file": "o035.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_head",
+   "fullName": "Đinh Thị Ka",
+   "phone": "0334970156",
+   "email": "dinhka.tb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đinh Thị Ka",
+   "phone": "0334970156",
+   "email": "dinhka.tb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đinh Thị Ka",
+    "returned": "Đinh Thị Ka",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0334970156",
+    "returned": "0334970156",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "dinhka.tb@gmail.com",
+    "returned": "dinhka.tb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o036",
+   "file": "o036.pdf",
+   "group": "ordinary",
+   "family": "topcv",
+   "template": "topcv_min",
+   "fullName": "Sầm Văn Lợi",
+   "phone": "0852306147",
+   "email": "samvanloi@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Sầm Văn Lợi",
+   "phone": "0852306147",
+   "email": "samvanloi@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Sầm Văn Lợi",
+    "returned": "Sầm Văn Lợi",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0852306147",
+    "returned": "0852306147",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "samvanloi@gmail.com",
+    "returned": "samvanloi@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o037",
+   "file": "o037.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Trần Thị Minh Khuê",
+   "phone": "0913508274",
+   "email": "minhkhue.tran@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thị Minh Khuê",
+   "phone": "0913508274",
+   "email": "minhkhue.tran@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thị Minh Khuê",
+    "returned": "Trần Thị Minh Khuê",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0913508274",
+    "returned": "0913508274",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhkhue.tran@gmail.com",
+    "returned": "minhkhue.tran@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o038",
+   "file": "o038.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_en",
+   "fullName": "Nguyễn Đức Anh",
+   "phone": "0904172365",
+   "email": "ducanh.ng.ftu@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Đức Anh",
+   "phone": "0904172365",
+   "email": "ducanh.ng.ftu@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Đức Anh",
+    "returned": "Nguyễn Đức Anh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0904172365",
+    "returned": "0904172365",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ducanh.ng.ftu@gmail.com",
+    "returned": "ducanh.ng.ftu@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o039",
+   "file": "o039.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Lê Thị Quỳnh Trang",
+   "phone": "0989340125",
+   "email": "quynhtrang.le@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Thị Quỳnh Trang",
+   "phone": "0989340125",
+   "email": "quynhtrang.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Thị Quỳnh Trang",
+    "returned": "Lê Thị Quỳnh Trang",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0989340125",
+    "returned": "0989340125",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "quynhtrang.le@gmail.com",
+    "returned": "quynhtrang.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o040",
+   "file": "o040.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Phạm Văn Hiếu",
+   "phone": "0326547801",
+   "email": "hieupham.auto@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Văn Hiếu",
+   "phone": "0326547801",
+   "email": "hieupham.auto@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Văn Hiếu",
+    "returned": "Phạm Văn Hiếu",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0326547801",
+    "returned": "0326547801",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hieupham.auto@gmail.com",
+    "returned": "hieupham.auto@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o041",
+   "file": "o041.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Vương Thị Hải Yến",
+   "phone": "0944087123",
+   "email": "haiyen.vuong@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vương Thị Hải Yến",
+   "phone": "0944087123",
+   "email": "haiyen.vuong@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vương Thị Hải Yến",
+    "returned": "Vương Thị Hải Yến",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0944087123",
+    "returned": "0944087123",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "haiyen.vuong@yahoo.com",
+    "returned": "haiyen.vuong@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o042",
+   "file": "o042.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_en",
+   "fullName": "Nguyễn Tấn Lộc",
+   "phone": "0770641928",
+   "email": "tanloc.ng@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Tấn Lộc",
+   "phone": "0770641928",
+   "email": "tanloc.ng@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Tấn Lộc",
+    "returned": "Nguyễn Tấn Lộc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0770641928",
+    "returned": "0770641928",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tanloc.ng@outlook.com",
+    "returned": "tanloc.ng@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o043",
+   "file": "o043.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Hoàng Thị Thu Thủy",
+   "phone": "0915736240",
+   "email": "thuthuy.hoang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Thị Thu Thủy",
+   "phone": "0915736240",
+   "email": "thuthuy.hoang@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Thị Thu Thủy",
+    "returned": "Hoàng Thị Thu Thủy",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0915736240",
+    "returned": "0915736240",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuthuy.hoang@gmail.com",
+    "returned": "thuthuy.hoang@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o044",
+   "file": "o044.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_en",
+   "fullName": "Đoàn Minh Nhật",
+   "phone": "0368124509",
+   "email": "minhnhat.doan@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đoàn Minh Nhật",
+   "phone": "0368124509",
+   "email": "minhnhat.doan@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đoàn Minh Nhật",
+    "returned": "Đoàn Minh Nhật",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0368124509",
+    "returned": "0368124509",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhnhat.doan@gmail.com",
+    "returned": "minhnhat.doan@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o045",
+   "file": "o045.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Tống Thị Hoa",
+   "phone": "0829573041",
+   "email": "hoatong.kt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tống Thị Hoa",
+   "phone": "0829573041",
+   "email": "hoatong.kt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tống Thị Hoa",
+    "returned": "Tống Thị Hoa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0829573041",
+    "returned": "0829573041",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoatong.kt@gmail.com",
+    "returned": "hoatong.kt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o046",
+   "file": "o046.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Lâm Chí Cường",
+   "phone": "0907259418",
+   "email": "chicuong.lam@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lâm Chí Cường",
+   "phone": "0907259418",
+   "email": "chicuong.lam@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lâm Chí Cường",
+    "returned": "Lâm Chí Cường",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0907259418",
+    "returned": "0907259418",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "chicuong.lam@gmail.com",
+    "returned": "chicuong.lam@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o047",
+   "file": "o047.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Phùng Thanh Bình",
+   "phone": "0982640317",
+   "email": "binhphung.tb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phùng Thanh Bình",
+   "phone": "0982640317",
+   "email": "binhphung.tb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phùng Thanh Bình",
+    "returned": "Phùng Thanh Bình",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0982640317",
+    "returned": "0982640317",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "binhphung.tb@gmail.com",
+    "returned": "binhphung.tb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o048",
+   "file": "o048.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Nguyễn Phúc Bảo Trâm",
+   "phone": "0935408261",
+   "email": "baotram.np@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Phúc Bảo Trâm",
+   "phone": "0935408261",
+   "email": "baotram.np@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Phúc Bảo Trâm",
+    "returned": "Nguyễn Phúc Bảo Trâm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0935408261",
+    "returned": "0935408261",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baotram.np@gmail.com",
+    "returned": "baotram.np@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o049",
+   "file": "o049.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Tôn Nữ Minh Châu",
+   "phone": "0774213906",
+   "email": "minhchau.tonnu@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tôn Nữ Minh Châu",
+   "phone": "0774213906",
+   "email": "minhchau.tonnu@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tôn Nữ Minh Châu",
+    "returned": "Tôn Nữ Minh Châu",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0774213906",
+    "returned": "0774213906",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhchau.tonnu@gmail.com",
+    "returned": "minhchau.tonnu@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o050",
+   "file": "o050.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Hoàng Phủ Khánh Linh",
+   "phone": "0397150428",
+   "email": "khanhlinh.hp@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Phủ Khánh Linh",
+   "phone": "0397150428",
+   "email": "khanhlinh.hp@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Phủ Khánh Linh",
+    "returned": "Hoàng Phủ Khánh Linh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0397150428",
+    "returned": "0397150428",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khanhlinh.hp@hopthu.example",
+    "returned": "khanhlinh.hp@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o051",
+   "file": "o051.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Âu Dương Thành",
+   "phone": "0587320194",
+   "email": "thanhauduong@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Âu Dương Thành",
+   "phone": "0587320194",
+   "email": "thanhauduong@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Âu Dương Thành",
+    "returned": "Âu Dương Thành",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0587320194",
+    "returned": "0587320194",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thanhauduong@gmail.com",
+    "returned": "thanhauduong@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o052",
+   "file": "o052.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Ma Thị Ngân",
+   "phone": "0342816097",
+   "email": "mangan.tq@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ma Thị Ngân",
+   "phone": "0342816097",
+   "email": "mangan.tq@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ma Thị Ngân",
+    "returned": "Ma Thị Ngân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0342816097",
+    "returned": "0342816097",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "mangan.tq@gmail.com",
+    "returned": "mangan.tq@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o053",
+   "file": "o053.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Hầu Văn Chứ",
+   "phone": "0862417350",
+   "email": "hauvanchu92@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hầu Văn Chứ",
+   "phone": "0862417350",
+   "email": "hauvanchu92@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hầu Văn Chứ",
+    "returned": "Hầu Văn Chứ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0862417350",
+    "returned": "0862417350",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hauvanchu92@gmail.com",
+    "returned": "hauvanchu92@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o054",
+   "file": "o054.pdf",
+   "group": "ordinary",
+   "family": "vietnamworks",
+   "template": "vnw_profile",
+   "fullName": "Triệu Thị Mùi",
+   "phone": "0378052946",
+   "email": "trieumui.bk@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Triệu Thị Mùi",
+   "phone": "0378052946",
+   "email": "trieumui.bk@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Triệu Thị Mùi",
+    "returned": "Triệu Thị Mùi",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0378052946",
+    "returned": "0378052946",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "trieumui.bk@gmail.com",
+    "returned": "trieumui.bk@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o055",
+   "file": "o055.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Phạm Hồng Sơn",
+   "phone": "0918273045",
+   "email": "hongson.pham68@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Hồng Sơn",
+   "phone": "0918273045",
+   "email": "hongson.pham68@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Hồng Sơn",
+    "returned": "Phạm Hồng Sơn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0918273045",
+    "returned": "0918273045",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hongson.pham68@gmail.com",
+    "returned": "hongson.pham68@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o056",
+   "file": "o056.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Nguyễn Thị Tuyết Mai",
+   "phone": "0976130482",
+   "email": "tuyetmai.ngt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thị Tuyết Mai",
+   "phone": "0976130482",
+   "email": "tuyetmai.ngt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thị Tuyết Mai",
+    "returned": "Nguyễn Thị Tuyết Mai",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0976130482",
+    "returned": "0976130482",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tuyetmai.ngt@gmail.com",
+    "returned": "tuyetmai.ngt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o057",
+   "file": "o057.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Trần Quang Vinh",
+   "phone": "0909182736",
+   "email": "vinhtq.xd@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Quang Vinh",
+   "phone": "0909182736",
+   "email": "vinhtq.xd@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Quang Vinh",
+    "returned": "Trần Quang Vinh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0909182736",
+    "returned": "0909182736",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "vinhtq.xd@gmail.com",
+    "returned": "vinhtq.xd@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o058",
+   "file": "o058.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Đào Thị Hương",
+   "phone": "0355620847",
+   "email": "huongdao1990@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đào Thị Hương",
+   "phone": "0355620847",
+   "email": "huongdao1990@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đào Thị Hương",
+    "returned": "Đào Thị Hương",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0355620847",
+    "returned": "0355620847",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "huongdao1990@yahoo.com",
+    "returned": "huongdao1990@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o059",
+   "file": "o059.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Bạch Văn Tài",
+   "phone": "0888341276",
+   "email": "bachvantai@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Bạch Văn Tài",
+   "phone": "0888341276",
+   "email": "bachvantai@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Bạch Văn Tài",
+    "returned": "Bạch Văn Tài",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0888341276",
+    "returned": "0888341276",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "bachvantai@gmail.com",
+    "returned": "bachvantai@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o060",
+   "file": "o060.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Lê Thị Ngọc Bích",
+   "phone": "0912670348",
+   "email": "ngocbich.le84@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Thị Ngọc Bích",
+   "phone": "0912670348",
+   "email": "ngocbich.le84@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Thị Ngọc Bích",
+    "returned": "Lê Thị Ngọc Bích",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0912670348",
+    "returned": "0912670348",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngocbich.le84@gmail.com",
+    "returned": "ngocbich.le84@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o061",
+   "file": "o061.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Hoàng Văn Nam",
+   "phone": "0379014625",
+   "email": "hoangnam.hd@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Văn Nam",
+   "phone": "0379014625",
+   "email": "hoangnam.hd@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Văn Nam",
+    "returned": "Hoàng Văn Nam",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0379014625",
+    "returned": "0379014625",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoangnam.hd@gmail.com",
+    "returned": "hoangnam.hd@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o062",
+   "file": "o062.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Vi Thị Thủy",
+   "phone": "0833195602",
+   "email": "vithuy.ls@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vi Thị Thủy",
+   "phone": "0833195602",
+   "email": "vithuy.ls@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vi Thị Thủy",
+    "returned": "Vi Thị Thủy",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0833195602",
+    "returned": "0833195602",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "vithuy.ls@gmail.com",
+    "returned": "vithuy.ls@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o063",
+   "file": "o063.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Nguyễn Văn Đạt",
+   "phone": "0963287410",
+   "email": "nguyendat.bn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Văn Đạt",
+   "phone": "0963287410",
+   "email": "nguyendat.bn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Văn Đạt",
+    "returned": "Nguyễn Văn Đạt",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0963287410",
+    "returned": "0963287410",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "nguyendat.bn@gmail.com",
+    "returned": "nguyendat.bn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o064",
+   "file": "o064.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Cù Thị Hằng",
+   "phone": "0792064183",
+   "email": "cuhang.na@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Cù Thị Hằng",
+   "phone": "0792064183",
+   "email": "cuhang.na@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Cù Thị Hằng",
+    "returned": "Cù Thị Hằng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0792064183",
+    "returned": "0792064183",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "cuhang.na@gmail.com",
+    "returned": "cuhang.na@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o065",
+   "file": "o065.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Phan Thanh Tùng",
+   "phone": "0941538267",
+   "email": "tungphan.qn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phan Thanh Tùng",
+   "phone": "0941538267",
+   "email": "tungphan.qn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phan Thanh Tùng",
+    "returned": "Phan Thanh Tùng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0941538267",
+    "returned": "0941538267",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tungphan.qn@gmail.com",
+    "returned": "tungphan.qn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o066",
+   "file": "o066.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Thái Thị Diệu Linh",
+   "phone": "0327610954",
+   "email": "dieulinh.thai@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Thái Thị Diệu Linh",
+   "phone": "0327610954",
+   "email": "dieulinh.thai@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Thái Thị Diệu Linh",
+    "returned": "Thái Thị Diệu Linh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0327610954",
+    "returned": "0327610954",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "dieulinh.thai@outlook.com",
+    "returned": "dieulinh.thai@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o067",
+   "file": "o067.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Lương Văn Cường",
+   "phone": "0846172093",
+   "email": "luongcuong.sl@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lương Văn Cường",
+   "phone": "0846172093",
+   "email": "luongcuong.sl@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lương Văn Cường",
+    "returned": "Lương Văn Cường",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0846172093",
+    "returned": "0846172093",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "luongcuong.sl@gmail.com",
+    "returned": "luongcuong.sl@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o068",
+   "file": "o068.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Mạc Thị Ngọc Hân",
+   "phone": "0906341578",
+   "email": "ngochan.mac@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Mạc Thị Ngọc Hân",
+   "phone": "0906341578",
+   "email": "ngochan.mac@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Mạc Thị Ngọc Hân",
+    "returned": "Mạc Thị Ngọc Hân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0906341578",
+    "returned": "0906341578",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngochan.mac@gmail.com",
+    "returned": "ngochan.mac@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o069",
+   "file": "o069.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Nghiêm Xuân Hoàng",
+   "phone": "0983057261",
+   "email": "nghiemhoang@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nghiêm Xuân Hoàng",
+   "phone": "0983057261",
+   "email": "nghiemhoang@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nghiêm Xuân Hoàng",
+    "returned": "Nghiêm Xuân Hoàng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0983057261",
+    "returned": "0983057261",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "nghiemhoang@yahoo.com",
+    "returned": "nghiemhoang@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o070",
+   "file": "o070.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Quách Thị Mai Phương",
+   "phone": "0563408129",
+   "email": "maiphuong.quach@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Quách Thị Mai Phương",
+   "phone": "0563408129",
+   "email": "maiphuong.quach@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Quách Thị Mai Phương",
+    "returned": "Quách Thị Mai Phương",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0563408129",
+    "returned": "0563408129",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "maiphuong.quach@gmail.com",
+    "returned": "maiphuong.quach@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o071",
+   "file": "o071.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Văn Thị Hoài Thương",
+   "phone": "0774580932",
+   "email": "hoaithuong.van@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Văn Thị Hoài Thương",
+   "phone": "0774580932",
+   "email": "hoaithuong.van@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Văn Thị Hoài Thương",
+    "returned": "Văn Thị Hoài Thương",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0774580932",
+    "returned": "0774580932",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoaithuong.van@gmail.com",
+    "returned": "hoaithuong.van@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o072",
+   "file": "o072.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Khổng Minh Đức",
+   "phone": "0357819620",
+   "email": "khongduc.vp@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Khổng Minh Đức",
+   "phone": "0357819620",
+   "email": "khongduc.vp@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Khổng Minh Đức",
+    "returned": "Khổng Minh Đức",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0357819620",
+    "returned": "0357819620",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khongduc.vp@gmail.com",
+    "returned": "khongduc.vp@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o073",
+   "file": "o073.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Ông Thị Thanh Nga",
+   "phone": "0918046237",
+   "email": "ngaong.tg@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ông Thị Thanh Nga",
+   "phone": "0918046237",
+   "email": "ngaong.tg@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ông Thị Thanh Nga",
+    "returned": "Ông Thị Thanh Nga",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0918046237",
+    "returned": "0918046237",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngaong.tg@hopthu.example",
+    "returned": "ngaong.tg@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o074",
+   "file": "o074.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Kim Thị Sóc Khá",
+   "phone": "0364791028",
+   "email": "sockha.kim@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Kim Thị Sóc Khá",
+   "phone": "0364791028",
+   "email": "sockha.kim@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Kim Thị Sóc Khá",
+    "returned": "Kim Thị Sóc Khá",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0364791028",
+    "returned": "0364791028",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "sockha.kim@gmail.com",
+    "returned": "sockha.kim@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o075",
+   "file": "o075.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Danh Thị Hồng Thắm",
+   "phone": "0846502917",
+   "email": "hongtham.danh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Danh Thị Hồng Thắm",
+   "phone": "0846502917",
+   "email": "hongtham.danh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Danh Thị Hồng Thắm",
+    "returned": "Danh Thị Hồng Thắm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0846502917",
+    "returned": "0846502917",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hongtham.danh@gmail.com",
+    "returned": "hongtham.danh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o076",
+   "file": "o076.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Rơ Châm H'Lip",
+   "phone": "0767518240",
+   "email": "hlip.rocham@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Rơ Châm H'Lip",
+   "phone": "0767518240",
+   "email": "hlip.rocham@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Rơ Châm H'Lip",
+    "returned": "Rơ Châm H'Lip",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0767518240",
+    "returned": "0767518240",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hlip.rocham@gmail.com",
+    "returned": "hlip.rocham@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o077",
+   "file": "o077.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "K'Thuận",
+   "phone": "0814302967",
+   "email": "kthuan.ld@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0814302967",
+   "email": "kthuan.ld@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "K'Thuận",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0814302967",
+    "returned": "0814302967",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "kthuan.ld@gmail.com",
+    "returned": "kthuan.ld@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o078",
+   "file": "o078.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Sùng Thị Dua",
+   "phone": "0338120745",
+   "email": "sungdua.dv@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Sùng Thị Dua",
+   "phone": "0338120745",
+   "email": "sungdua.dv@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Sùng Thị Dua",
+    "returned": "Sùng Thị Dua",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0338120745",
+    "returned": "0338120745",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "sungdua.dv@gmail.com",
+    "returned": "sungdua.dv@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o079",
+   "file": "o079.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Bế Thị Nhung",
+   "phone": "0859437120",
+   "email": "benhung.cb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Bế Thị Nhung",
+   "phone": "0859437120",
+   "email": "benhung.cb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Bế Thị Nhung",
+    "returned": "Bế Thị Nhung",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0859437120",
+    "returned": "0859437120",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "benhung.cb@gmail.com",
+    "returned": "benhung.cb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o080",
+   "file": "o080.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Pơloong Thị Bốn",
+   "phone": "0783649201",
+   "email": "bonpoloong@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Pơloong Thị Bốn",
+   "phone": "0783649201",
+   "email": "bonpoloong@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Pơloong Thị Bốn",
+    "returned": "Pơloong Thị Bốn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0783649201",
+    "returned": "0783649201",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "bonpoloong@gmail.com",
+    "returned": "bonpoloong@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o081",
+   "file": "o081.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Nguyễn Thị Hoà",
+   "phone": "0934157802",
+   "email": "hoanguyen.qb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thị Hoà",
+   "phone": "0934157802",
+   "email": "hoanguyen.qb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thị Hoà",
+    "returned": "Nguyễn Thị Hoà",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0934157802",
+    "returned": "0934157802",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoanguyen.qb@gmail.com",
+    "returned": "hoanguyen.qb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o082",
+   "file": "o082.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Trần Thị Thuỷ Tiên",
+   "phone": "0708953416",
+   "email": "thuytien.tran@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thị Thuỷ Tiên",
+   "phone": "0708953416",
+   "email": "thuytien.tran@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thị Thuỷ Tiên",
+    "returned": "Trần Thị Thuỷ Tiên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0708953416",
+    "returned": "0708953416",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuytien.tran@gmail.com",
+    "returned": "thuytien.tran@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o083",
+   "file": "o083.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Lê Na",
+   "phone": "0383401256",
+   "email": "lena.dn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Na",
+   "phone": "0383401256",
+   "email": "lena.dn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Na",
+    "returned": "Lê Na",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0383401256",
+    "returned": "0383401256",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lena.dn@gmail.com",
+    "returned": "lena.dn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o084",
+   "file": "o084.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_lyl",
+   "fullName": "Ngô Thế Vinh",
+   "phone": "0836014275",
+   "email": "ngothevinh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ngô Thế Vinh",
+   "phone": "0836014275",
+   "email": "ngothevinh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ngô Thế Vinh",
+    "returned": "Ngô Thế Vinh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0836014275",
+    "returned": "0836014275",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngothevinh@gmail.com",
+    "returned": "ngothevinh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o085",
+   "file": "o085.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Nguyễn Lê Hoàng Bảo Ngọc",
+   "phone": "0922481035",
+   "email": "baongoc.nlh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Lê Hoàng Bảo Ngọc",
+   "phone": "0922481035",
+   "email": "baongoc.nlh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Lê Hoàng Bảo Ngọc",
+    "returned": "Nguyễn Lê Hoàng Bảo Ngọc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0922481035",
+    "returned": "0922481035",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baongoc.nlh@gmail.com",
+    "returned": "baongoc.nlh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o086",
+   "file": "o086.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Lê Văn Nguyên",
+   "phone": "0944320176",
+   "email": "levannguyen@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Văn Nguyên",
+   "phone": "0944320176",
+   "email": "levannguyen@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Văn Nguyên",
+    "returned": "Lê Văn Nguyên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0944320176",
+    "returned": "0944320176",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "levannguyen@gmail.com",
+    "returned": "levannguyen@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o087",
+   "file": "o087.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_cv",
+   "fullName": "Hồ Nguyễn Trung Kiên",
+   "phone": "0917204635",
+   "email": "trungkien.hn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hồ Nguyễn Trung Kiên",
+   "phone": "0917204635",
+   "email": "trungkien.hn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hồ Nguyễn Trung Kiên",
+    "returned": "Hồ Nguyễn Trung Kiên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0917204635",
+    "returned": "0917204635",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "trungkien.hn@gmail.com",
+    "returned": "trungkien.hn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o088",
+   "file": "o088.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Nguyen Minh Khoa",
+   "phone": "0968123047",
+   "email": "minhkhoa.nguyen@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyen Minh Khoa",
+   "phone": "0968123047",
+   "email": "minhkhoa.nguyen@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyen Minh Khoa",
+    "returned": "Nguyen Minh Khoa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0968123047",
+    "returned": "0968123047",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhkhoa.nguyen@gmail.com",
+    "returned": "minhkhoa.nguyen@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o089",
+   "file": "o089.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_table",
+   "fullName": "Tran Thi Bao Chau",
+   "phone": "0347915062",
+   "email": "baochau.tran@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tran Thi Bao Chau",
+   "phone": "0347915062",
+   "email": "baochau.tran@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tran Thi Bao Chau",
+    "returned": "Tran Thi Bao Chau",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0347915062",
+    "returned": "0347915062",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baochau.tran@gmail.com",
+    "returned": "baochau.tran@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o090",
+   "file": "o090.pdf",
+   "group": "ordinary",
+   "family": "word",
+   "template": "word_classic",
+   "fullName": "Lê Phương Thảo",
+   "phone": "0903617284",
+   "email": "phuongthao.le@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Phương Thảo",
+   "phone": "0903617284",
+   "email": "phuongthao.le@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Phương Thảo",
+    "returned": "Lê Phương Thảo",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0903617284",
+    "returned": "0903617284",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "phuongthao.le@outlook.com",
+    "returned": "phuongthao.le@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o091",
+   "file": "o091.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Nguyễn Khánh Ly",
+   "phone": "0397218640",
+   "email": "khanhly.design@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Khánh Ly",
+   "phone": "0397218640",
+   "email": "khanhly.design@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Khánh Ly",
+    "returned": "Nguyễn Khánh Ly",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0397218640",
+    "returned": "0397218640",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khanhly.design@gmail.com",
+    "returned": "khanhly.design@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o092",
+   "file": "o092.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Trần Bảo Ngân",
+   "phone": "0813042796",
+   "email": "baongan.tr@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Bảo Ngân",
+   "phone": "0813042796",
+   "email": "baongan.tr@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Bảo Ngân",
+    "returned": "Trần Bảo Ngân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0813042796",
+    "returned": "0813042796",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baongan.tr@gmail.com",
+    "returned": "baongan.tr@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o093",
+   "file": "o093.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Đỗ Thị Thanh Trúc",
+   "phone": "0776190423",
+   "email": "thanhtruc.do@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đỗ Thị Thanh Trúc",
+   "phone": "0776190423",
+   "email": "thanhtruc.do@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đỗ Thị Thanh Trúc",
+    "returned": "Đỗ Thị Thanh Trúc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0776190423",
+    "returned": "0776190423",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thanhtruc.do@gmail.com",
+    "returned": "thanhtruc.do@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o094",
+   "file": "o094.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Lê Hải Đăng",
+   "phone": "0364207195",
+   "email": "haidang.le@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Hải Đăng",
+   "phone": "0364207195",
+   "email": "haidang.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Hải Đăng",
+    "returned": "Lê Hải Đăng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0364207195",
+    "returned": "0364207195",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "haidang.le@gmail.com",
+    "returned": "haidang.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o095",
+   "file": "o095.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Phạm Gia Khiêm",
+   "phone": "0936412807",
+   "email": "giakhiem.pham@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Gia Khiêm",
+   "phone": "0936412807",
+   "email": "giakhiem.pham@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Gia Khiêm",
+    "returned": "Phạm Gia Khiêm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0936412807",
+    "returned": "0936412807",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "giakhiem.pham@hopthu.example",
+    "returned": "giakhiem.pham@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o096",
+   "file": "o096.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Vũ Ngọc Diệp",
+   "phone": "0327584160",
+   "email": "ngocdiep.vu@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vũ Ngọc Diệp",
+   "phone": "0327584160",
+   "email": "ngocdiep.vu@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vũ Ngọc Diệp",
+    "returned": "Vũ Ngọc Diệp",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0327584160",
+    "returned": "0327584160",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngocdiep.vu@gmail.com",
+    "returned": "ngocdiep.vu@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o097",
+   "file": "o097.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Hoàng Mai Chi",
+   "phone": "0889120354",
+   "email": "maichi.hoang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Mai Chi",
+   "phone": "0889120354",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Mai Chi",
+    "returned": "Hoàng Mai Chi",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0889120354",
+    "returned": "0889120354",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "maichi.hoang@gmail.com",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o098",
+   "file": "o098.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Nguyễn Thùy Linh",
+   "phone": "0974605182",
+   "email": "thuylinh.ng98@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thùy Linh",
+   "phone": "0974605182",
+   "email": "thuylinh.ng98@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thùy Linh",
+    "returned": "Nguyễn Thùy Linh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0974605182",
+    "returned": "0974605182",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuylinh.ng98@gmail.com",
+    "returned": "thuylinh.ng98@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o099",
+   "file": "o099.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Mã Thị Hoa",
+   "phone": "0585209176",
+   "email": "mahoa.lc@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Mã Thị Hoa",
+   "phone": null,
+   "email": "mahoa.lc@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Mã Thị Hoa",
+    "returned": "Mã Thị Hoa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0585209176",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "mahoa.lc@gmail.com",
+    "returned": "mahoa.lc@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o100",
+   "file": "o100.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Lầu Thị Xía",
+   "phone": "0348216750",
+   "email": "lauxia.hg@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0348216750",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lầu Thị Xía",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0348216750",
+    "returned": "0348216750",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lauxia.hg@gmail.com",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o101",
+   "file": "o101.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Ksor H'Ni",
+   "phone": "0795130864",
+   "email": "hni.ksor@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ksor H'Ni",
+   "phone": "0795130864",
+   "email": "hni.ksor@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ksor H'Ni",
+    "returned": "Ksor H'Ni",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0795130864",
+    "returned": "0795130864",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hni.ksor@gmail.com",
+    "returned": "hni.ksor@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o102",
+   "file": "o102.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "H'Bia Êban",
+   "phone": "0853407129",
+   "email": "hbia.eban@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "H'Bia Êban",
+   "phone": "0853407129",
+   "email": "hbia.eban@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "H'Bia Êban",
+    "returned": "H'Bia Êban",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0853407129",
+    "returned": "0853407129",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hbia.eban@gmail.com",
+    "returned": "hbia.eban@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o103",
+   "file": "o103.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Điểu Thị Lành",
+   "phone": "0823106974",
+   "email": "lanhdieu.bp@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Điểu Thị Lành",
+   "phone": "0823106974",
+   "email": "lanhdieu.bp@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Điểu Thị Lành",
+    "returned": "Điểu Thị Lành",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0823106974",
+    "returned": "0823106974",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lanhdieu.bp@gmail.com",
+    "returned": "lanhdieu.bp@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o104",
+   "file": "o104.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Quảng Đại Tuấn",
+   "phone": "0919073528",
+   "email": "daituan.quang@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Quảng Đại Tuấn",
+   "phone": "0919073528",
+   "email": "daituan.quang@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Quảng Đại Tuấn",
+    "returned": "Quảng Đại Tuấn",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0919073528",
+    "returned": "0919073528",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "daituan.quang@hopthu.example",
+    "returned": "daituan.quang@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o105",
+   "file": "o105.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Sơn Chanh Đa",
+   "phone": "0776430951",
+   "email": "chanhda.son@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Sơn Chanh Đa",
+   "phone": null,
+   "email": "chanhda.son@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Sơn Chanh Đa",
+    "returned": "Sơn Chanh Đa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0776430951",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "chanhda.son@gmail.com",
+    "returned": "chanhda.son@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o106",
+   "file": "o106.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Chu Thị Thu Hằng",
+   "phone": "0342905178",
+   "email": "thuhang.chu@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Chu Thị Thu Hằng",
+   "phone": "0342905178",
+   "email": "thuhang.chu@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Chu Thị Thu Hằng",
+    "returned": "Chu Thị Thu Hằng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0342905178",
+    "returned": "0342905178",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuhang.chu@yahoo.com",
+    "returned": "thuhang.chu@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o107",
+   "file": "o107.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Tiêu Ngọc Hiền",
+   "phone": "0918357026",
+   "email": "ngochien.tieu@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tiêu Ngọc Hiền",
+   "phone": "0918357026",
+   "email": "ngochien.tieu@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tiêu Ngọc Hiền",
+    "returned": "Tiêu Ngọc Hiền",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0918357026",
+    "returned": "0918357026",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ngochien.tieu@gmail.com",
+    "returned": "ngochien.tieu@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o108",
+   "file": "o108.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Diệp Bảo Trân",
+   "phone": "0938120574",
+   "email": "baotran.diep@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Diệp Bảo Trân",
+   "phone": null,
+   "email": "baotran.diep@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Diệp Bảo Trân",
+    "returned": "Diệp Bảo Trân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0938120574",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baotran.diep@gmail.com",
+    "returned": "baotran.diep@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o109",
+   "file": "o109.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Trần Anh Thư",
+   "phone": "0336781042",
+   "email": "anhthu.tr@outlook.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Anh Thư",
+   "phone": "0336781042",
+   "email": "anhthu.tr@outlook.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Anh Thư",
+    "returned": "Trần Anh Thư",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0336781042",
+    "returned": "0336781042",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "anhthu.tr@outlook.com",
+    "returned": "anhthu.tr@outlook.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o110",
+   "file": "o110.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_center",
+   "fullName": "Bùi Hoàng Yến",
+   "phone": "0973216840",
+   "email": "hoangyen.bui@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Bùi Hoàng Yến",
+   "phone": "0973216840",
+   "email": "hoangyen.bui@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Bùi Hoàng Yến",
+    "returned": "Bùi Hoàng Yến",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0973216840",
+    "returned": "0973216840",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoangyen.bui@gmail.com",
+    "returned": "hoangyen.bui@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o111",
+   "file": "o111.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_band",
+   "fullName": "Lê Minh Quân",
+   "phone": "0816039275",
+   "email": "minhquan.le@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Minh Quân",
+   "phone": "0816039275",
+   "email": "minhquan.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Minh Quân",
+    "returned": "Lê Minh Quân",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0816039275",
+    "returned": "0816039275",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhquan.le@gmail.com",
+    "returned": "minhquan.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "o112",
+   "file": "o112.pdf",
+   "group": "ordinary",
+   "family": "canva",
+   "template": "canva_side",
+   "fullName": "Phan Thị Trà My",
+   "phone": "0907412356",
+   "email": "tramy.phan@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phan Thị Trà My",
+   "phone": "0907412356",
+   "email": "tramy.phan@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phan Thị Trà My",
+    "returned": "Phan Thị Trà My",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0907412356",
+    "returned": "0907412356",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tramy.phan@gmail.com",
+    "returned": "tramy.phan@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h001",
+   "file": "h001.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_y",
+   "fullName": "Nguyễn Thị Thanh Hằng",
+   "phone": "0386120475",
+   "email": "thanhhang.ntt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thị Thanh Hằng",
+   "phone": "0386120475",
+   "email": "thanhhang.ntt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thị Thanh Hằng",
+    "returned": "Nguyễn Thị Thanh Hằng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0386120475",
+    "returned": "0386120475",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thanhhang.ntt@gmail.com",
+    "returned": "thanhhang.ntt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h002",
+   "file": "h002.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_y",
+   "fullName": "Trần Đình Trọng",
+   "phone": "0912035764",
+   "email": "dinhtrong.tr@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Đình Trọng",
+   "phone": "0912035764",
+   "email": "dinhtrong.tr@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Đình Trọng",
+    "returned": "Trần Đình Trọng",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0912035764",
+    "returned": "0912035764",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "dinhtrong.tr@gmail.com",
+    "returned": "dinhtrong.tr@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h003",
+   "file": "h003.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_mainfirst",
+   "fullName": "Lê Thị Bảo Yến",
+   "phone": "0934781206",
+   "email": "baoyen.le@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Thị Bảo Yến",
+   "phone": "0934781206",
+   "email": "baoyen.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Thị Bảo Yến",
+    "returned": "Lê Thị Bảo Yến",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0934781206",
+    "returned": "0934781206",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baoyen.le@gmail.com",
+    "returned": "baoyen.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h004",
+   "file": "h004.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_mainfirst",
+   "fullName": "Hà Văn Quyết",
+   "phone": "0853027614",
+   "email": "havanquyet@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hà Văn Quyết",
+   "phone": "0853027614",
+   "email": "havanquyet@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hà Văn Quyết",
+    "returned": "Hà Văn Quyết",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0853027614",
+    "returned": "0853027614",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "havanquyet@yahoo.com",
+    "returned": "havanquyet@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h005",
+   "file": "h005.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_cell",
+   "fullName": "Phạm Thu Trang",
+   "phone": "0775204816",
+   "email": "thutrang.pham@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Thu Trang",
+   "phone": "0775204816",
+   "email": "thutrang.pham@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Thu Trang",
+    "returned": "Phạm Thu Trang",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0775204816",
+    "returned": "0775204816",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thutrang.pham@gmail.com",
+    "returned": "thutrang.pham@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h006",
+   "file": "h006.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_y",
+   "fullName": "Vo Hoang Long",
+   "phone": "0965283017",
+   "email": "hoanglong.vo@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vo Hoang Long",
+   "phone": "0965283017",
+   "email": "hoanglong.vo@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vo Hoang Long",
+    "returned": "Vo Hoang Long",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0965283017",
+    "returned": "0965283017",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "hoanglong.vo@gmail.com",
+    "returned": "hoanglong.vo@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h007",
+   "file": "h007.pdf",
+   "group": "hard",
+   "family": "two_column",
+   "template": "two_col_cell",
+   "fullName": "Y Bhuôn Niê",
+   "phone": "0834720165",
+   "email": "ybhuon.nie@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0834720165",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Y Bhuôn Niê",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0834720165",
+    "returned": "0834720165",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ybhuon.nie@gmail.com",
+    "returned": null,
+    "outcome": "missing",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h008",
+   "file": "h008.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "word_classic",
+   "fullName": "Đinh Công Minh",
+   "phone": "0987340216",
+   "email": "congminh.dinh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đinh Công Minh",
+   "phone": "0987340216",
+   "email": "congminh.dinh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đinh Công Minh",
+    "returned": "Đinh Công Minh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0987340216",
+    "returned": "0987340216",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "congminh.dinh@gmail.com",
+    "returned": "congminh.dinh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h009",
+   "file": "h009.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "canva_side",
+   "fullName": "Ngô Thị Lệ Quyên",
+   "phone": "0708321945",
+   "email": "lequyen.ngo@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Ngô Thị Lệ Quyên",
+   "phone": "0708321945",
+   "email": "lequyen.ngo@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Ngô Thị Lệ Quyên",
+    "returned": "Ngô Thị Lệ Quyên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0708321945",
+    "returned": "0708321945",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lequyen.ngo@gmail.com",
+    "returned": "lequyen.ngo@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h010",
+   "file": "h010.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "word_cv",
+   "fullName": "Trương Thị Ánh Tuyết",
+   "phone": null,
+   "email": "anhtuyet.truong@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trương Thị Ánh Tuyết",
+   "phone": null,
+   "email": "anhtuyet.truong@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trương Thị Ánh Tuyết",
+    "returned": "Trương Thị Ánh Tuyết",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "anhtuyet.truong@gmail.com",
+    "returned": "anhtuyet.truong@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h011",
+   "file": "h011.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "topcv_head",
+   "fullName": "Lục Văn Thành",
+   "phone": "0364901275",
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lục Văn Thành",
+   "phone": "0364901275",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lục Văn Thành",
+    "returned": "Lục Văn Thành",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0364901275",
+    "returned": "0364901275",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h012",
+   "file": "h012.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "word_lyl",
+   "fullName": "Khúc Thị Hải",
+   "phone": "0905318427",
+   "email": "khuchai.hd@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Khúc Thị Hải",
+   "phone": "0905318427",
+   "email": "khuchai.hd@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Khúc Thị Hải",
+    "returned": "Khúc Thị Hải",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0905318427",
+    "returned": "0905318427",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "khuchai.hd@gmail.com",
+    "returned": "khuchai.hd@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h013",
+   "file": "h013.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "vnw_en",
+   "fullName": "Dinh Thu Huong",
+   "phone": "0941720365",
+   "email": "thuhuong.dinh@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Dinh Thu Huong",
+   "phone": "0941720365",
+   "email": "thuhuong.dinh@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Dinh Thu Huong",
+    "returned": "Dinh Thu Huong",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0941720365",
+    "returned": "0941720365",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuhuong.dinh@gmail.com",
+    "returned": "thuhuong.dinh@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h014",
+   "file": "h014.pdf",
+   "group": "hard",
+   "family": "references",
+   "template": "word_classic",
+   "fullName": "Mai Thế Hiển",
+   "phone": "0372184069",
+   "email": "thehien.mai@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Văn Sơn",
+   "phone": "0372184069",
+   "email": "thehien.mai@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Mai Thế Hiển",
+    "returned": "Trần Văn Sơn",
+    "outcome": "wrong",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0372184069",
+    "returned": "0372184069",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thehien.mai@gmail.com",
+    "returned": "thehien.mai@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h015",
+   "file": "h015.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "word_lyl",
+   "fullName": "Hoàng Thị Bích Ngọc",
+   "phone": "0819362074",
+   "email": "bichngoc.hoang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hoàng Thị Bích Ngọc",
+   "phone": "0819362074",
+   "email": "bichngoc.hoang@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hoàng Thị Bích Ngọc",
+    "returned": "Hoàng Thị Bích Ngọc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0819362074",
+    "returned": "0819362074",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "bichngoc.hoang@gmail.com",
+    "returned": "bichngoc.hoang@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h016",
+   "file": "h016.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "canva_center",
+   "fullName": "Lê Trung Kiên",
+   "phone": "0936107284",
+   "email": "trungkien.le@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Trung Kiên",
+   "phone": "0989021763",
+   "email": "trungkien.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Trung Kiên",
+    "returned": "Lê Trung Kiên",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0936107284",
+    "returned": "0989021763",
+    "outcome": "wrong",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "trungkien.le@gmail.com",
+    "returned": "trungkien.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h017",
+   "file": "h017.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "word_cv",
+   "fullName": "Vàng Thị Sủa",
+   "phone": null,
+   "email": "vangsua.yb@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vàng Thị Sủa",
+   "phone": null,
+   "email": "vangsua.yb@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vàng Thị Sủa",
+    "returned": "Vàng Thị Sủa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "vangsua.yb@gmail.com",
+    "returned": "vangsua.yb@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h018",
+   "file": "h018.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "word_classic",
+   "fullName": "Nguyễn Văn Thọ",
+   "phone": "0977204156",
+   "email": "vantho.ng@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Văn Thọ",
+   "phone": "0977204156",
+   "email": "vantho.ng@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Văn Thọ",
+    "returned": "Nguyễn Văn Thọ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0977204156",
+    "returned": "0977204156",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "vantho.ng@gmail.com",
+    "returned": "vantho.ng@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h019",
+   "file": "h019.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "word_cv",
+   "fullName": "Trần Thị Hải Lý",
+   "phone": "0397024186",
+   "email": "haily.tr@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thị Hải Lý",
+   "phone": "0397024186",
+   "email": "haily.tr@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thị Hải Lý",
+    "returned": "Trần Thị Hải Lý",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0397024186",
+    "returned": "0397024186",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "haily.tr@gmail.com",
+    "returned": "haily.tr@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h020",
+   "file": "h020.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "word_table",
+   "fullName": "Phùng Thị Mến",
+   "phone": "0364120875",
+   "email": "phungmen.pt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phùng Thị Mến",
+   "phone": "0364120875",
+   "email": "phungmen.pt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phùng Thị Mến",
+    "returned": "Phùng Thị Mến",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0364120875",
+    "returned": "0364120875",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "phungmen.pt@gmail.com",
+    "returned": "phungmen.pt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h021",
+   "file": "h021.pdf",
+   "group": "hard",
+   "family": "relatives_or_company",
+   "template": "topcv_min",
+   "fullName": "Tăng Minh Khoa",
+   "phone": "0902137648",
+   "email": "minhkhoa.tang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Tăng Minh Khoa",
+   "phone": "0902137648",
+   "email": "minhkhoa.tang@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Tăng Minh Khoa",
+    "returned": "Tăng Minh Khoa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0902137648",
+    "returned": "0902137648",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhkhoa.tang@gmail.com",
+    "returned": "minhkhoa.tang@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h022",
+   "file": "h022.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "word_classic",
+   "fullName": "Đoàn Thị Kim Chi",
+   "phone": "0948120367",
+   "email": "kimchi.doan@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đoàn Thị Kim Chi",
+   "phone": "0948120367",
+   "email": "kimchi.doan@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đoàn Thị Kim Chi",
+    "returned": "Đoàn Thị Kim Chi",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0948120367",
+    "returned": "0948120367",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "kimchi.doan@gmail.com",
+    "returned": "kimchi.doan@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h023",
+   "file": "h023.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "topcv_head",
+   "fullName": "Lê Hữu Nghĩa",
+   "phone": "0962013847",
+   "email": "huunghia.le@gmail.com",
+   "ambiguous": {
+    "email": "two personal addresses listed with equal standing"
+   }
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Hữu Nghĩa",
+   "phone": "0962013847",
+   "email": "huunghia.le@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Hữu Nghĩa",
+    "returned": "Lê Hữu Nghĩa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0962013847",
+    "returned": "0962013847",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "huunghia.le@gmail.com",
+    "returned": "huunghia.le@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": "two personal addresses listed with equal standing"
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h024",
+   "file": "h024.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "word_cv",
+   "fullName": "Nguyễn Hà Phương",
+   "phone": "0332148760",
+   "email": "ha.phuong.nguyen@gmail.com",
+   "ambiguous": {
+    "email": "personal and student addresses are both her own"
+   }
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Hà Phương",
+   "phone": "0332148760",
+   "email": "ha.phuong.nguyen@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Hà Phương",
+    "returned": "Nguyễn Hà Phương",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0332148760",
+    "returned": "0332148760",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ha.phuong.nguyen@gmail.com",
+    "returned": "ha.phuong.nguyen@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": "personal and student addresses are both her own"
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h025",
+   "file": "h025.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "canva_band",
+   "fullName": "Lý Minh Trí",
+   "phone": "0767084213",
+   "email": "minhtri.ly@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lý Minh Trí",
+   "phone": "0767084213",
+   "email": "minhtri.ly@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lý Minh Trí",
+    "returned": "Lý Minh Trí",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0767084213",
+    "returned": "0767084213",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhtri.ly@gmail.com",
+    "returned": "minhtri.ly@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h026",
+   "file": "h026.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "word_cv",
+   "fullName": "Thân Thị Hạnh",
+   "phone": "0859021746",
+   "email": "thanhanh.than@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Thân Thị Hạnh",
+   "phone": "0859021746",
+   "email": "thanhanh.than@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Thân Thị Hạnh",
+    "returned": "Thân Thị Hạnh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0859021746",
+    "returned": "0859021746",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thanhanh.than@gmail.com",
+    "returned": "thanhanh.than@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h027",
+   "file": "h027.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "two_col_mainfirst",
+   "fullName": "Nguyễn Thị Phương Thảo",
+   "phone": "0915026743",
+   "email": "nguyenthiphuongthao.ketoan1997@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Thị Phương Thảo",
+   "phone": "0915026743",
+   "email": "nguyenthiphuongthao.ketoan1997@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Thị Phương Thảo",
+    "returned": "Nguyễn Thị Phương Thảo",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0915026743",
+    "returned": "0915026743",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "nguyenthiphuongthao.ketoan1997@gmail.com",
+    "returned": "nguyenthiphuongthao.ketoan1997@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h028",
+   "file": "h028.pdf",
+   "group": "hard",
+   "family": "several_emails",
+   "template": "word_table",
+   "fullName": "Vũ Đức Mạnh",
+   "phone": "0983610247",
+   "email": "ducmanh.vu@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Vũ Đức Mạnh",
+   "phone": "0983610247",
+   "email": "ducmanh.vu@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Vũ Đức Mạnh",
+    "returned": "Vũ Đức Mạnh",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0983610247",
+    "returned": "0983610247",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ducmanh.vu@gmail.com",
+    "returned": "ducmanh.vu@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h029",
+   "file": "h029.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "canva_band",
+   "fullName": "Trần Thị Cúc",
+   "phone": "0913760284",
+   "email": "cuctran.kt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thị Cúc",
+   "phone": "0913760284",
+   "email": "cuctran.kt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thị Cúc",
+    "returned": "Trần Thị Cúc",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0913760284",
+    "returned": "0913760284",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "cuctran.kt@gmail.com",
+    "returned": "cuctran.kt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h030",
+   "file": "h030.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "word_classic",
+   "fullName": "Nguyễn Trọng Nghĩa",
+   "phone": "0372410865",
+   "email": "trongnghia.ng@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Trọng Nghĩa",
+   "phone": "0372410865",
+   "email": "trongnghia.ng@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Trọng Nghĩa",
+    "returned": "Nguyễn Trọng Nghĩa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0372410865",
+    "returned": "0372410865",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "trongnghia.ng@gmail.com",
+    "returned": "trongnghia.ng@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h031",
+   "file": "h031.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "word_lyl",
+   "fullName": "Lê Văn Bền",
+   "phone": "0907321468",
+   "email": "levanben@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Văn Bền",
+   "phone": "0907321468",
+   "email": "levanben@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Văn Bền",
+    "returned": "Lê Văn Bền",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0907321468",
+    "returned": "0907321468",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "levanben@gmail.com",
+    "returned": "levanben@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h032",
+   "file": "h032.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "canva_side",
+   "fullName": "Trần Nguyễn Bảo Châu",
+   "phone": "0845120367",
+   "email": "baochau.tn@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Nguyễn Bảo Châu",
+   "phone": "0845120367",
+   "email": "baochau.tn@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Nguyễn Bảo Châu",
+    "returned": "Trần Nguyễn Bảo Châu",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0845120367",
+    "returned": "0845120367",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "baochau.tn@gmail.com",
+    "returned": "baochau.tn@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h033",
+   "file": "h033.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "canva_center",
+   "fullName": "Lê Thị Hoa",
+   "phone": "0372084915",
+   "email": "lehoa.design@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Thị Hoa",
+   "phone": "0372084915",
+   "email": "lehoa.design@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Thị Hoa",
+    "returned": "Lê Thị Hoa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0372084915",
+    "returned": "0372084915",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lehoa.design@gmail.com",
+    "returned": "lehoa.design@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h034",
+   "file": "h034.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "word_classic",
+   "fullName": "Đặng Thu Thảo",
+   "phone": "0909713245",
+   "email": "thuthao.dang@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Đặng Thu Thảo",
+   "phone": "0909713245",
+   "email": "thuthao.dang@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Đặng Thu Thảo",
+    "returned": "Đặng Thu Thảo",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0909713245",
+    "returned": "0909713245",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thuthao.dang@gmail.com",
+    "returned": "thuthao.dang@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h035",
+   "file": "h035.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "vnw_en",
+   "fullName": "Linh Pham",
+   "phone": "0353201876",
+   "email": "linh.pham.work@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Linh Pham",
+   "phone": "0353201876",
+   "email": "linh.pham.work@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Linh Pham",
+    "returned": "Linh Pham",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0353201876",
+    "returned": "0353201876",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "linh.pham.work@gmail.com",
+    "returned": "linh.pham.work@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h036",
+   "file": "h036.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "topcv_min",
+   "fullName": "Trần Thanh Tùng",
+   "phone": "0919320476",
+   "email": "tony.tran@gmail.com",
+   "ambiguous": {
+    "fullName": "whether the nickname belongs in the name is debatable"
+   }
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thanh Tùng",
+   "phone": "0919320476",
+   "email": "tony.tran@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thanh Tùng",
+    "returned": "Trần Thanh Tùng",
+    "outcome": "correct",
+    "ambiguousReason": "whether the nickname belongs in the name is debatable"
+   },
+   {
+    "field": "phone",
+    "expected": "0919320476",
+    "returned": "0919320476",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "tony.tran@gmail.com",
+    "returned": "tony.tran@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h037",
+   "file": "h037.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "canva_side",
+   "fullName": null,
+   "phone": "0398120754",
+   "email": "lamhoangnam.work@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0398120754",
+   "email": "lamhoangnam.work@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0398120754",
+    "returned": "0398120754",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "lamhoangnam.work@gmail.com",
+    "returned": "lamhoangnam.work@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h038",
+   "file": "h038.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "vnw_profile",
+   "fullName": null,
+   "phone": "0326401975",
+   "email": "ungvien.a20931@hopthu.example",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0326401975",
+   "email": "ungvien.a20931@hopthu.example",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0326401975",
+    "returned": "0326401975",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "ungvien.a20931@hopthu.example",
+    "returned": "ungvien.a20931@hopthu.example",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h039",
+   "file": "h039.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "word_cv",
+   "fullName": null,
+   "phone": "0845206713",
+   "email": "kho.nhanvien2024@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": null,
+   "phone": "0845206713",
+   "email": "kho.nhanvien2024@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0845206713",
+    "returned": "0845206713",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "kho.nhanvien2024@gmail.com",
+    "returned": "kho.nhanvien2024@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h040",
+   "file": "h040.pdf",
+   "group": "hard",
+   "family": "name_position",
+   "template": "word_classic",
+   "fullName": "Phạm Minh Trí",
+   "phone": "0934208176",
+   "email": "minhtri.ph@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Minh Trí",
+   "phone": "0934208176",
+   "email": "minhtri.ph@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Minh Trí",
+    "returned": "Phạm Minh Trí",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0934208176",
+    "returned": "0934208176",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "minhtri.ph@gmail.com",
+    "returned": "minhtri.ph@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h041",
+   "file": "h041.pdf",
+   "group": "hard",
+   "family": "no_email",
+   "template": "word_cv",
+   "fullName": "Nguyễn Văn Sáu",
+   "phone": "0948201736",
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Văn Sáu",
+   "phone": "0948201736",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Văn Sáu",
+    "returned": "Nguyễn Văn Sáu",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0948201736",
+    "returned": "0948201736",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h042",
+   "file": "h042.pdf",
+   "group": "hard",
+   "family": "no_email",
+   "template": "topcv_side",
+   "fullName": "Hờ Thị Sông",
+   "phone": "0793401268",
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Hờ Thị Sông",
+   "phone": "0793401268",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Hờ Thị Sông",
+    "returned": "Hờ Thị Sông",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0793401268",
+    "returned": "0793401268",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h043",
+   "file": "h043.pdf",
+   "group": "hard",
+   "family": "no_email",
+   "template": "canva_center",
+   "fullName": "Lâm Nhật Hào",
+   "phone": "0934026718",
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lâm Nhật Hào",
+   "phone": "0934026718",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lâm Nhật Hào",
+    "returned": "Lâm Nhật Hào",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0934026718",
+    "returned": "0934026718",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h044",
+   "file": "h044.pdf",
+   "group": "hard",
+   "family": "no_email",
+   "template": "word_lyl",
+   "fullName": "Cao Văn Lực",
+   "phone": "0868127403",
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Cao Văn Lực",
+   "phone": "0868127403",
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Cao Văn Lực",
+    "returned": "Cao Văn Lực",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0868127403",
+    "returned": "0868127403",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h045",
+   "file": "h045.pdf",
+   "group": "hard",
+   "family": "no_phone",
+   "template": "word_classic",
+   "fullName": "Trần Thị Mỹ Lệ",
+   "phone": null,
+   "email": "myle.tran@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Thị Mỹ Lệ",
+   "phone": null,
+   "email": "myle.tran@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Thị Mỹ Lệ",
+    "returned": "Trần Thị Mỹ Lệ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "myle.tran@gmail.com",
+    "returned": "myle.tran@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h046",
+   "file": "h046.pdf",
+   "group": "hard",
+   "family": "no_phone",
+   "template": "word_cv",
+   "fullName": "Nguyễn Viết Hòa",
+   "phone": null,
+   "email": "viethoa.ng@yahoo.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Viết Hòa",
+   "phone": null,
+   "email": "viethoa.ng@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Viết Hòa",
+    "returned": "Nguyễn Viết Hòa",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "viethoa.ng@yahoo.com",
+    "returned": "viethoa.ng@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h047",
+   "file": "h047.pdf",
+   "group": "hard",
+   "family": "no_phone",
+   "template": "topcv_head",
+   "fullName": "Phạm Thị Thơm",
+   "phone": null,
+   "email": "thompham.kt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Phạm Thị Thơm",
+   "phone": null,
+   "email": "thompham.kt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Phạm Thị Thơm",
+    "returned": "Phạm Thị Thơm",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thompham.kt@gmail.com",
+    "returned": "thompham.kt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h048",
+   "file": "h048.pdf",
+   "group": "hard",
+   "family": "no_phone",
+   "template": "word_lyl",
+   "fullName": "Lường Thị Nga",
+   "phone": null,
+   "email": null,
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lường Thị Nga",
+   "phone": null,
+   "email": null,
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lường Thị Nga",
+    "returned": "Lường Thị Nga",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h049",
+   "file": "h049.pdf",
+   "group": "hard",
+   "family": "no_phone",
+   "template": "word_table",
+   "fullName": "Chung Văn Tỷ",
+   "phone": null,
+   "email": "chungty88@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Chung Văn Tỷ",
+   "phone": null,
+   "email": "chungty88@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Chung Văn Tỷ",
+    "returned": "Chung Văn Tỷ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": null,
+    "returned": null,
+    "outcome": "true_null",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "chungty88@gmail.com",
+    "returned": "chungty88@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h050",
+   "file": "h050.pdf",
+   "group": "hard",
+   "family": "phone_oddity",
+   "template": "word_classic",
+   "fullName": "Nguyễn Hoàng Long",
+   "phone": "0912640387",
+   "email": "hoanglong.ng@gmail.com",
+   "ambiguous": {
+    "phone": "two own mobiles listed with equal standing"
+   }
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Nguyễn Hoàng Long",
+   "phone": "0912640387",
+   "email": "hoanglong.ng@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Nguyễn Hoàng Long",
+    "returned": "Nguyễn Hoàng Long",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0912640387",
+    "returned": "0912640387",
+    "outcome": "correct",
+    "ambiguousReason": "two own mobiles listed with equal standing"
+   },
+   {
+    "field": "email",
+    "expected": "hoanglong.ng@gmail.com",
+    "returned": "hoanglong.ng@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h051",
+   "file": "h051.pdf",
+   "group": "hard",
+   "family": "phone_oddity",
+   "template": "word_cv",
+   "fullName": "Lê Thị Tám",
+   "phone": "0383402715",
+   "email": "letam1985@yahoo.com",
+   "ambiguous": {
+    "phone": "old 11-digit number; the label is its 2018 conversion, which the CV does not show"
+   }
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Lê Thị Tám",
+   "phone": "0383402715",
+   "email": "letam1985@yahoo.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Lê Thị Tám",
+    "returned": "Lê Thị Tám",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0383402715",
+    "returned": "0383402715",
+    "outcome": "correct",
+    "ambiguousReason": "old 11-digit number; the label is its 2018 conversion, which the CV does not show"
+   },
+   {
+    "field": "email",
+    "expected": "letam1985@yahoo.com",
+    "returned": "letam1985@yahoo.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ },
+ {
+  "label": {
+   "id": "h052",
+   "file": "h052.pdf",
+   "group": "hard",
+   "family": "phone_oddity",
+   "template": "two_col_mainfirst",
+   "fullName": "Trần Phước Thọ",
+   "phone": "0936240185",
+   "email": "thotran.pt@gmail.com",
+   "ambiguous": {}
+  },
+  "status": 200,
+  "raw": {
+   "fullName": "Trần Phước Thọ",
+   "phone": "0936240185",
+   "email": "thotran.pt@gmail.com",
+   "readable": true
+  },
+  "fields": [
+   {
+    "field": "fullName",
+    "expected": "Trần Phước Thọ",
+    "returned": "Trần Phước Thọ",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "phone",
+    "expected": "0936240185",
+    "returned": "0936240185",
+    "outcome": "correct",
+    "ambiguousReason": null
+   },
+   {
+    "field": "email",
+    "expected": "thotran.pt@gmail.com",
+    "returned": "thotran.pt@gmail.com",
+    "outcome": "correct",
+    "ambiguousReason": null
+   }
+  ]
+ }
+]

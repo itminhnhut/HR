@@ -9,10 +9,17 @@ export interface NameShape {
   nameCase: NameCase;
 }
 
-const WORD = /^\p{L}+(?:-\p{L}+)?$/u;
+/** "Thao-Vy", and the apostrophe of ethnic-minority names: "H'Blin". */
+const WORD = /^\p{L}+(?:['’-]\p{L}+)?$/u;
 /** A middle initial inside a name: "TRẦN V. HÙNG". */
 const INITIAL = /^\p{Lu}\.$/u;
-const SEPARATOR = /\s*(?:[|•·,;:(/\[{]|\s-\s|\s-|-\s)\s*/;
+const SEPARATOR = /\s*(?:[|•·,;:(/\[{…]|\.{2,}|\s-\s|\s-|-\s)\s*/;
+/** A gap wide enough to be another column or run: "Trần Mộng Thường   Di động: …". */
+const COLUMN_GAP = /\s{2,}/;
+/** Middle names that cannot end a name, so a name cut right after one is not whole. */
+const NAME_NEVER_ENDS = new Set(['thị', 'văn', 'thi', 'van']);
+/** A family name and one of these make the next word a given name whatever it means: "Nguyễn Hữu Bằng". */
+const FIRM_MIDDLE = new Set(['thị', 'văn', 'hữu', 'đức']);
 /** "Nguyễn thị Hoa": a lowercase middle name inside an otherwise capitalized name. */
 const LOWER_MIDDLE = new Set(['thị', 'văn', 'thi', 'van']);
 const FINAL_CONSONANT = /^(?:n|ng|nh|c|ch|m|p|t)$/iu;
@@ -84,8 +91,8 @@ export function headSegment(text: string): string {
   return segments(text)[0] ?? '';
 }
 
-/** Words of a possible name in `segment`, cut before the first heading/job/org word; null when it cannot be one. */
-export function shapeName(segment: string): NameShape | null {
+/** Words of `segment` that can be a name, joined letters and all, before any heading/job/org word is looked at. */
+export function nameWords(segment: string): string[] | null {
   if (/[\d@]/.test(segment)) return null;
   const raw = segment
     .replace(/[.,:;!?]+$/, '')
@@ -93,15 +100,33 @@ export function shapeName(segment: string): NameShape | null {
     .split(/\s+/)
     .filter(Boolean);
   const isWordAt = (w: string, i: number) => WORD.test(w) || (i > 0 && i < raw.length - 1 && INITIAL.test(w));
-  if (raw.length === 0 || !raw.every(isWordAt)) return null;
-  const merged = mergeFragments(raw);
-  if (isHonorificLead(merged)) return null;
+  return raw.length > 0 && raw.every(isWordAt) ? mergeFragments(raw) : null;
+}
+
+/** "Y Bhim Niê": Y opens Ê-đê men's names; any other bare ASCII letter is only an initial in the middle. */
+function isMisplacedInitial(word: string, i: number, count: number): boolean {
+  if (!/^[A-Za-z]$/.test(word) || (i !== 0 && i !== count - 1)) return false;
+  return !(i === 0 && word.toUpperCase() === 'Y' && count >= 3);
+}
+
+/** "Nguyễn Hữu Bằng": a word that alone looks like a heading word is the given name after a firm middle name. */
+function isGivenNameAfterFirmMiddle(words: readonly string[], stop: number): boolean {
+  if (stop !== 2 || words.length !== 3 || !isSurname(words[0] ?? '')) return false;
+  return FIRM_MIDDLE.has((words[1] ?? '').toLowerCase());
+}
+
+/** Words of a possible name in `segment`, cut before the first heading/job/org word; null when it cannot be one. */
+export function shapeName(segment: string): NameShape | null {
+  const merged = nameWords(segment);
+  if (!merged || isHonorificLead(merged)) return null;
   const stop = firstStopIndex(merged, hasDiacritics(segment));
-  const words = stop >= 0 ? merged.slice(0, stop) : merged;
+  const isCut = stop >= 0 && !isGivenNameAfterFirmMiddle(merged, stop);
+  const chunks = isCut ? segment.split(COLUMN_GAP) : [];
+  if (chunks.length > 1 && chunks[0]) return shapeName(chunks[0]);
+  const words = isCut ? merged.slice(0, stop) : merged;
   if (words.length < 2 || words.length > 5) return null;
-  // A bare ASCII letter is only an initial in the middle ("TRẦN V HÙNG"); a toned one can be a name ("Phạm Văn Ý").
-  const isEdge = (i: number) => i === 0 || i === words.length - 1;
-  if (words.some((w, i) => /^[A-Za-z]$/.test(w) && isEdge(i))) return null;
+  if (isCut && NAME_NEVER_ENDS.has((words[words.length - 1] ?? '').toLowerCase())) return null;
+  if (words.some((w, i) => isMisplacedInitial(w, i, words.length))) return null;
   const nameCase = caseOf(words);
   return nameCase ? { words, nameCase } : null;
 }
@@ -115,6 +140,6 @@ function capitalize(word: string): string {
 export function titleCase(words: readonly string[]): string {
   return words
     .map((w) => (w === w.toUpperCase() || w === w.toLowerCase() ? capitalize(w) : w))
-    .map((w) => w.replace(/-(\p{Ll})/gu, (_m: string, c: string) => `-${c.toUpperCase()}`))
+    .map((w) => w.replace(/(['’-])(\p{Ll})/gu, (_m: string, mark: string, c: string) => mark + c.toUpperCase()))
     .join(' ');
 }

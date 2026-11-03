@@ -1,6 +1,6 @@
 import type { ParsedCvDto } from '@careers/shared';
 import { useCallback, useReducer, useRef } from 'react';
-import { api } from '../../../api';
+import { api, ApiError } from '../../../api';
 import { formatPhoneInput } from '../../../lib/phone-input';
 
 /** The "Thêm hồ sơ" boxes a CV can fill. */
@@ -17,7 +17,9 @@ type Reading =
   | { step: 'idle' }
   | { step: 'reading' }
   | { step: 'failed' }
-  | { step: 'done'; readable: boolean; filled: CvField[]; missing: CvField[] };
+  /** The server refused this file; saving it would be refused the same way. */
+  | { step: 'refused'; reason: string }
+  | { step: 'done'; readable: boolean; problem?: string; filled: CvField[]; missing: CvField[] };
 
 interface State {
   values: ContactValues;
@@ -31,6 +33,7 @@ type Action =
   | { type: 'start' }
   | { type: 'stop' }
   | { type: 'fail' }
+  | { type: 'refuse'; reason: string }
   | { type: 'read'; parsed: ParsedCvDto };
 
 const INITIAL: State = { values: { fullName: '', phone: '', email: '' }, fromCv: [], reading: { step: 'idle' } };
@@ -51,7 +54,8 @@ function applyParsed(state: State, parsed: ParsedCvDto): State {
   );
   const filled = fillable.filter(found);
   const missing = CV_FIELDS.filter((f) => !found(f));
-  return { values, fromCv: filled, reading: { step: 'done', readable: parsed.readable, filled, missing } };
+  const reading: Reading = { step: 'done', readable: parsed.readable, problem: parsed.problem, filled, missing };
+  return { values, fromCv: filled, reading };
 }
 
 function reduce(state: State, action: Action): State {
@@ -68,6 +72,8 @@ function reduce(state: State, action: Action): State {
       return { ...state, reading: { step: 'idle' } };
     case 'fail':
       return { ...state, reading: { step: 'failed' } };
+    case 'refuse':
+      return { ...state, reading: { step: 'refused', reason: action.reason } };
     case 'read':
       return applyParsed(state, action.parsed);
   }
@@ -80,6 +86,8 @@ export function autofillNote(reading: Reading): string | null {
   if (reading.step === 'idle') return null;
   if (reading.step === 'reading') return 'Đang đọc CV…';
   if (reading.step === 'failed') return 'Không đọc được CV lúc này, nhập tay giúp. Vẫn lưu hồ sơ được.';
+  if (reading.step === 'refused') return reading.reason;
+  if (reading.problem) return reading.problem;
   if (!reading.readable) return 'Không đọc được chữ trong CV (ảnh scan), nhập tay giúp.';
   const lines = [
     reading.filled.length > 0 ? `Đã điền sẵn ${listOf(reading.filled)} từ CV — kiểm tra lại trước khi lưu.` : '',
@@ -104,9 +112,11 @@ export function useCvAutofill() {
     try {
       const parsed = await api.hrParseCv(file);
       if (current.current === file) dispatch({ type: 'read', parsed });
-    } catch {
-      // Reading is a convenience: the note asks HR to type the details, saving still works.
-      if (current.current === file) dispatch({ type: 'fail' });
+    } catch (error) {
+      if (current.current !== file) return;
+      // The file itself is refused: say why, saving it would fail too. Otherwise reading is only a convenience.
+      const reason = error instanceof ApiError ? error.fieldErrors.cv : undefined;
+      dispatch(reason ? { type: 'refuse', reason } : { type: 'fail' });
     }
   }, []);
 

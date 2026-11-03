@@ -1,0 +1,3205 @@
+[
+  {
+    "id": "la-topcv-01",
+    "layout": "TopCV-style one column",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đào Thị Kim Oanh",
+    "phone": "0387216540",
+    "email": "kimoanh.dao96@gmail.com"
+  },
+  {
+    "id": "la-topcv-02",
+    "layout": "TopCV-style one column",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nghiêm Xuân Trường",
+    "phone": "0912604388",
+    "email": "nghiemtruong.cd@yahoo.com"
+  },
+  {
+    "id": "la-topcv-03",
+    "layout": "TopCV-style one column",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phí Thùy Dương",
+    "phone": "0962781305",
+    "email": "phithuyduong99@gmail.com"
+  },
+  {
+    "id": "la-topcv-04",
+    "layout": "TopCV-style one column",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bach Thanh Tung",
+    "phone": "0349860217",
+    "email": "tung.bach.dev@outlook.com"
+  },
+  {
+    "id": "la-topcv-05",
+    "layout": "TopCV-style one column",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tiêu Mỹ Linh",
+    "phone": "0778340926",
+    "email": "tieumylinh@gmail.com"
+  },
+  {
+    "id": "la-topcv2-01",
+    "layout": "TopCV-style two columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hứa Quốc Thịnh",
+    "phone": "0935702164",
+    "email": "huaquocthinh@gmail.com"
+  },
+  {
+    "id": "la-topcv2-02",
+    "layout": "TopCV-style two columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tòng Thị Phóng",
+    "phone": "0325418790",
+    "email": "tongphong.ta@gmail.com"
+  },
+  {
+    "id": "la-topcv2-03",
+    "layout": "TopCV-style two columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lã Hoàng Nam",
+    "phone": "0888263591",
+    "email": "lahoangnam.art@gmail.com"
+  },
+  {
+    "id": "la-topcv2-04",
+    "layout": "TopCV-style two columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mai Phuong Thao Vu",
+    "phone": "0901337482",
+    "email": "thaovu.ba@gmail.com"
+  },
+  {
+    "id": "la-topcv2-05",
+    "layout": "TopCV-style two columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Diệp Gia Bảo",
+    "phone": "0704815263",
+    "email": "diepgiabao.it@gmail.com"
+  },
+  {
+    "id": "la-vnw-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đàm Quang Vinh",
+    "phone": "0983520471",
+    "email": "damquangvinh@gmail.com"
+  },
+  {
+    "id": "la-vnw-02",
+    "layout": "VietnamWorks-style export",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Sầm Ngọc Anh",
+    "phone": "0359014682",
+    "email": "samngocanh.kt@yahoo.com"
+  },
+  {
+    "id": "la-vnw-03",
+    "layout": "VietnamWorks-style export",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Khong Minh Duc",
+    "phone": "0977406218",
+    "email": "khongminhduc@gmail.com"
+  },
+  {
+    "id": "la-vnw-04",
+    "layout": "VietnamWorks-style export",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thiều Bích Hằng",
+    "phone": "0816273940",
+    "email": "thieubichhang@gmail.com"
+  },
+  {
+    "id": "la-vnw-05",
+    "layout": "VietnamWorks-style export",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Uông Đình Khôi",
+    "phone": "0868195037",
+    "email": "uongdinhkhoi@outlook.com"
+  },
+  {
+    "id": "la-canva-01",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vương Khánh Linh",
+    "phone": "0394620871",
+    "email": "vuongkhanhlinh@gmail.com"
+  },
+  {
+    "id": "la-canva-02",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tào Minh Phúc",
+    "phone": "0852714390",
+    "email": "taominhphuc@gmail.com"
+  },
+  {
+    "id": "la-canva-03",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nhan Tu Anh",
+    "phone": "0912870356",
+    "email": "tuanh.nhan@gmail.com"
+  },
+  {
+    "id": "la-canva-04",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cổ Hải Đăng",
+    "phone": "0799310628",
+    "email": "cohaidang.photo@gmail.com"
+  },
+  {
+    "id": "la-canva-05",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ôn Bảo Ngân",
+    "phone": "0345901276",
+    "email": "onbaongan@yahoo.com"
+  },
+  {
+    "id": "la-canva-06",
+    "layout": "Canva free text boxes",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Kha Trúc Quỳnh",
+    "phone": "0763482019",
+    "email": "khatrucquynh@gmail.com"
+  },
+  {
+    "id": "la-hero-01",
+    "layout": "Canva big-name hero",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lạc Thiên Ân",
+    "phone": "0933170284",
+    "email": "lacthienan@gmail.com"
+  },
+  {
+    "id": "la-hero-02",
+    "layout": "Canva big-name hero",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mẫn Nhật Hạ",
+    "phone": "0376208145",
+    "email": "mannhatha@gmail.com"
+  },
+  {
+    "id": "la-hero-03",
+    "layout": "Canva big-name hero",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thach Ngoc Sang",
+    "phone": "0356742810",
+    "email": "sang.thach@gmail.com"
+  },
+  {
+    "id": "la-hero-04",
+    "layout": "Canva big-name hero",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Chung Mỹ Duyên",
+    "phone": "0827519360",
+    "email": "chungmyduyen@gmail.com"
+  },
+  {
+    "id": "la-hero-05",
+    "layout": "Canva big-name hero",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bành Gia Hưng",
+    "phone": "0924086713",
+    "email": "banhgiahung@yahoo.com"
+  },
+  {
+    "id": "la-word-01",
+    "layout": "Word plain",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "font lacks some Vietnamese glyphs",
+    "fullName": "Cù Thị Mơ",
+    "phone": "0987340615",
+    "email": "cuthimo@gmail.com"
+  },
+  {
+    "id": "la-word-02",
+    "layout": "Word plain",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "font lacks some Vietnamese glyphs",
+    "fullName": "Vi Văn Thắng",
+    "phone": "0338625017",
+    "email": "vivanthang.laixe@gmail.com"
+  },
+  {
+    "id": "la-word-03",
+    "layout": "Word plain",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mã Thúy Vân",
+    "phone": "0702917438",
+    "email": "mathuyvan@gmail.com"
+  },
+  {
+    "id": "la-word-04",
+    "layout": "Word plain",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Do Khac Hieu",
+    "phone": "0917208346",
+    "email": "dokhachieu@gmail.com"
+  },
+  {
+    "id": "la-wtable-01",
+    "layout": "Word table",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Phủ Minh Khôi",
+    "phone": "0908613275",
+    "email": "hoangphu.khoi@gmail.com"
+  },
+  {
+    "id": "la-wtable-02",
+    "layout": "Word table",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nông Thị Thu",
+    "phone": "0343790621",
+    "email": "nongthithu.yta@gmail.com"
+  },
+  {
+    "id": "la-wtable-03",
+    "layout": "Word table",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Quan Bao Tram",
+    "phone": "0931475802",
+    "email": "quanbaotram@gmail.com"
+  },
+  {
+    "id": "la-wtable-04",
+    "layout": "Word table",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trà Thị Hồng Nhung",
+    "phone": "0869234170",
+    "email": "trahongnhung@gmail.com"
+  },
+  {
+    "id": "la-3col-01",
+    "layout": "three columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lục Thanh Tâm",
+    "phone": "0921640738",
+    "email": "lucthanhtam@gmail.com"
+  },
+  {
+    "id": "la-3col-02",
+    "layout": "three columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bế Văn Sơn",
+    "phone": "0398105762",
+    "email": "bevanson@gmail.com"
+  },
+  {
+    "id": "la-3col-03",
+    "layout": "three columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ưng Hoài Thương",
+    "phone": "0836720941",
+    "email": "unghoaithuong@yahoo.com"
+  },
+  {
+    "id": "la-3col-04",
+    "layout": "three columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tong Gia Khanh",
+    "phone": "0968351207",
+    "email": "giakhanh.tong@gmail.com"
+  },
+  {
+    "id": "la-3col-05",
+    "layout": "three columns",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cấn Thị Thanh Hoa",
+    "phone": "0946208571",
+    "email": "canthanhhoa@gmail.com"
+  },
+  {
+    "id": "la-right-01",
+    "layout": "right sidebar",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Giáp Văn Thuận",
+    "phone": "0379846120",
+    "email": "giapvanthuan@gmail.com"
+  },
+  {
+    "id": "la-right-02",
+    "layout": "right sidebar",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ly Hanh Nguyen",
+    "phone": "0909142683",
+    "email": "hanhnguyen.ly@gmail.com"
+  },
+  {
+    "id": "la-right-03",
+    "layout": "right sidebar",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lường Thị Ngoan",
+    "phone": "0332907164",
+    "email": "luongngoan98@gmail.com"
+  },
+  {
+    "id": "la-icon-01",
+    "layout": "vector icons, no labels",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thi Thành Lợi",
+    "phone": "0947136280",
+    "email": "thithanhloi@gmail.com"
+  },
+  {
+    "id": "la-icon-02",
+    "layout": "vector icons, no labels",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Điêu Chính Quân",
+    "phone": "0702481396",
+    "email": "dieuchinhquan@outlook.com"
+  },
+  {
+    "id": "la-icon-03",
+    "layout": "vector icons, no labels",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Xa Bao Long",
+    "phone": "0363952807",
+    "email": "xabaolong@gmail.com"
+  },
+  {
+    "id": "la-icon-04",
+    "layout": "vector icons, no labels",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mạch Tú Uyên",
+    "phone": "0853671024",
+    "email": "machtuuyen@yahoo.com"
+  },
+  {
+    "id": "la-ats-01",
+    "layout": "English ATS",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trieu Anh Khoa",
+    "phone": "0976520318",
+    "email": "khoa.trieu.dev@gmail.com"
+  },
+  {
+    "id": "la-ats-02",
+    "layout": "English ATS",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ninh Quynh Chi",
+    "phone": "0395108276",
+    "email": "chi.ninhq@outlook.com"
+  },
+  {
+    "id": "la-ats-03",
+    "layout": "English ATS",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phung Duc Tri",
+    "phone": "0914360285",
+    "email": "phungductri@gmail.com"
+  },
+  {
+    "id": "la-form-01",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thân Thị Thủy",
+    "phone": "0326759014",
+    "email": "thanthithuy93@gmail.com"
+  },
+  {
+    "id": "la-form-02",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Quàng Văn Páo",
+    "phone": "0853247106",
+    "email": "quangvanpao88@gmail.com"
+  },
+  {
+    "id": "la-form-03",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "layout",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Thị Xuân Mai",
+    "phone": "0941620873",
+    "email": "lexuanmai.tm@gmail.com"
+  },
+  {
+    "id": "nm-two-01",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mã Lan",
+    "phone": "0392601475",
+    "email": "malan.letan@gmail.com"
+  },
+  {
+    "id": "nm-two-02",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lò Pắn",
+    "phone": "0374821096",
+    "email": "lopan.ck@gmail.com"
+  },
+  {
+    "id": "nm-two-03",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ung Vy",
+    "phone": "0795230648",
+    "email": "ungvy.tuvan@gmail.com"
+  },
+  {
+    "id": "nm-two-04",
+    "layout": "Canva free text boxes",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hầu Dính",
+    "phone": "0832519764",
+    "email": "haudinh.gh@gmail.com"
+  },
+  {
+    "id": "nm-five-01",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Phúc Bảo Châu Anh",
+    "phone": "0909316824",
+    "email": "baochauanh.np@gmail.com"
+  },
+  {
+    "id": "nm-five-02",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tôn Thất Minh Quang Huy",
+    "phone": "0368247910",
+    "email": "minhquanghuy.tt@gmail.com"
+  },
+  {
+    "id": "nm-five-03",
+    "layout": "Canva big-name hero",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Công Tằng Tôn Nữ Hoa",
+    "phone": "0918402763",
+    "email": "ctnhoa.gv@gmail.com"
+  },
+  {
+    "id": "nm-five-04",
+    "layout": "Word table",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Lê Nguyễn Thảo Vy",
+    "phone": "0345180627",
+    "email": "thaovy.tln@gmail.com"
+  },
+  {
+    "id": "nm-five-05",
+    "layout": "right sidebar",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoang Phu Ngoc Bao Tram",
+    "phone": "0817690253",
+    "email": "baotram.hp@gmail.com"
+  },
+  {
+    "id": "nm-rare-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ksor H'Blin",
+    "phone": "0386702519",
+    "email": "ksorhblin@gmail.com"
+  },
+  {
+    "id": "nm-rare-02",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Y Bhim Niê",
+    "phone": "0777362041",
+    "email": "ybhimnie@gmail.com"
+  },
+  {
+    "id": "nm-rare-03",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Rơ Châm Hờ Nhiên",
+    "phone": "0335847120",
+    "email": "rocham.nhien@gmail.com"
+  },
+  {
+    "id": "nm-rare-04",
+    "layout": "English ATS",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Giang A Pao",
+    "phone": "0859104736",
+    "email": "giangapao@gmail.com"
+  },
+  {
+    "id": "nm-rare-05",
+    "layout": "three columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Sùng Thị Mỷ",
+    "phone": "0365972480",
+    "email": "sungthimy@gmail.com"
+  },
+  {
+    "id": "nm-rare-06",
+    "layout": "vector icons, no labels",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Danh Sóc Kha",
+    "phone": "0792638105",
+    "email": "danhsockha@gmail.com"
+  },
+  {
+    "id": "nm-rare-07",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mùa Xuân Chi",
+    "phone": "0827340196",
+    "email": "muaxuanchi@gmail.com"
+  },
+  {
+    "id": "nm-rare-08",
+    "layout": "Canva free text boxes",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Khổng Tú Quyên",
+    "phone": "0913760482",
+    "email": "khongtuquyen@gmail.com"
+  },
+  {
+    "id": "nm-latin-01",
+    "layout": "English ATS",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thu Ha Pham",
+    "phone": "0984206713",
+    "email": "thuha.pham.work@gmail.com"
+  },
+  {
+    "id": "nm-latin-02",
+    "layout": "Canva big-name hero",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Duc Minh Hoang",
+    "phone": "0356410928",
+    "email": "ducminh.hoang.ux@gmail.com"
+  },
+  {
+    "id": "nm-latin-03",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vy Le",
+    "phone": "0705239164",
+    "email": "vy.le.ae@gmail.com"
+  },
+  {
+    "id": "nm-latin-04",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "surname, comma, given names: expected without the comma",
+    "fullName": "Nguyen Van Toan",
+    "phone": "0962408175",
+    "email": "vantoan.ng@gmail.com"
+  },
+  {
+    "id": "nm-latin-05",
+    "layout": "right sidebar",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Kevin Tran",
+    "phone": "0903625481",
+    "email": "kevin.tran.sales@gmail.com"
+  },
+  {
+    "id": "nm-latin-06",
+    "layout": "vector icons, no labels",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Anna Lê Thảo",
+    "phone": "0931806247",
+    "email": "anna.lethao@gmail.com"
+  },
+  {
+    "id": "nm-latin-07",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "hyphen kept as written",
+    "fullName": "Thao-Vy Dang",
+    "phone": "0334720186",
+    "email": "thaovy.dang.hr@gmail.com"
+  },
+  {
+    "id": "nm-latin-08",
+    "layout": "VietnamWorks-style export",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trinh Thi Ngoc Diep",
+    "phone": "0813572940",
+    "email": "ngocdiep.tt@gmail.com"
+  },
+  {
+    "id": "nm-latin-09",
+    "layout": "three columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Luu Bao Khanh",
+    "phone": "0345216708",
+    "email": "baokhanh.luu@gmail.com"
+  },
+  {
+    "id": "nm-latin-10",
+    "layout": "Word table",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mac Dinh Quy",
+    "phone": "0975643180",
+    "email": "dinhquy.mac@gmail.com"
+  },
+  {
+    "id": "nm-latin-11",
+    "layout": "Canva free text boxes",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cu Thi Hang",
+    "phone": "0388450917",
+    "email": "cuthihang@gmail.com"
+  },
+  {
+    "id": "nm-prefix-01",
+    "layout": "English ATS",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tran Quoc Dung",
+    "phone": "0986271503",
+    "email": "quocdung.tran.rd@gmail.com"
+  },
+  {
+    "id": "nm-prefix-02",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phạm Hồng Loan",
+    "phone": "0916503748",
+    "email": "hongloan.ths@gmail.com"
+  },
+  {
+    "id": "nm-prefix-03",
+    "layout": "Word table",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đặng Công Thành",
+    "phone": "0342816075",
+    "email": "congthanh.ks@gmail.com"
+  },
+  {
+    "id": "nm-prefix-04",
+    "layout": "Canva big-name hero",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Hoàng Yến",
+    "phone": "0708924316",
+    "email": "hoangyen.noithat@gmail.com"
+  },
+  {
+    "id": "nm-prefix-05",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bùi Tuấn Kiệt",
+    "phone": "0869301572",
+    "email": "tuankiet.bui.it@gmail.com"
+  },
+  {
+    "id": "nm-prefix-06",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "underscores in the visible title; a human reads the name",
+    "fullName": "Nguyen Hoai Phuong",
+    "phone": "0396584017",
+    "email": "hoaiphuong.tham@gmail.com"
+  },
+  {
+    "id": "nm-prefix-07",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trương Minh Trí",
+    "phone": "0947026381",
+    "email": "minhtri.ktt@gmail.com"
+  },
+  {
+    "id": "nm-prefix-08",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hồ Lệ Quyên",
+    "phone": "0376481502",
+    "email": "lequyen.ho@gmail.com"
+  },
+  {
+    "id": "nm-prefix-09",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ngô Thanh Tùng",
+    "phone": "0912750346",
+    "email": "ngothanhtung.kt@gmail.com"
+  },
+  {
+    "id": "nm-header-01",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trịnh Bảo Châu",
+    "phone": "0983417260",
+    "email": "baochau.trinh@gmail.com"
+  },
+  {
+    "id": "nm-header-02",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Thị Hương Giang",
+    "phone": "0356021794",
+    "email": "huonggiang.vu@gmail.com"
+  },
+  {
+    "id": "nm-header-03",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Le Khanh Toan",
+    "phone": "0937582610",
+    "email": "khanhtoan.le.scp@gmail.com"
+  },
+  {
+    "id": "nm-header-04",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "name only in the page footer",
+    "fullName": "Đoàn Thu Thảo",
+    "phone": "0795180324",
+    "email": "thuthao.doan.td@gmail.com"
+  },
+  {
+    "id": "nm-header-05",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "staffing agency's name in the page header",
+    "fullName": "Phan Anh Dũng",
+    "phone": "0868349072",
+    "email": "anhdung.phan.sx@gmail.com"
+  },
+  {
+    "id": "nm-header-06",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "name only in PDF metadata, not in the text layer",
+    "fullName": null,
+    "phone": "0334906815",
+    "email": "quangminh.ketoan@gmail.com"
+  },
+  {
+    "id": "nm-word-01",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Văn Phòng",
+    "phone": "0964208317",
+    "email": "vanphong.nguyen@gmail.com"
+  },
+  {
+    "id": "nm-word-02",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Thị Trường",
+    "phone": "0345716028",
+    "email": "thitruong.tran@gmail.com"
+  },
+  {
+    "id": "nm-word-03",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phan Kế Toán",
+    "phone": "0702395186",
+    "email": "ketoan.phan@gmail.com"
+  },
+  {
+    "id": "nm-word-04",
+    "layout": "Canva free text boxes",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mai Nhân Sự",
+    "phone": "0817420365",
+    "email": "mainhansu@gmail.com"
+  },
+  {
+    "id": "nm-word-05",
+    "layout": "Canva big-name hero",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Bảo Hiểm",
+    "phone": "0975013642",
+    "email": "baohiem.vu@gmail.com"
+  },
+  {
+    "id": "nm-word-06",
+    "layout": "VietnamWorks-style export",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đoàn Thanh Niên",
+    "phone": "0398620417",
+    "email": "doanthanhnien.cb@gmail.com"
+  },
+  {
+    "id": "nm-word-07",
+    "layout": "three columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lâm Thiết Kế",
+    "phone": "0932574806",
+    "email": "lamthietke@gmail.com"
+  },
+  {
+    "id": "nm-word-08",
+    "layout": "Word table",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phạm Học Vấn",
+    "phone": "0869742051",
+    "email": "hocvan.pham@gmail.com"
+  },
+  {
+    "id": "nm-word-09",
+    "layout": "right sidebar",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bùi Kinh Doanh",
+    "phone": "0356907214",
+    "email": "kinhdoanh.bui@gmail.com"
+  },
+  {
+    "id": "nm-word-10",
+    "layout": "vector icons, no labels",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hồ Mục Tiêu",
+    "phone": "0784216390",
+    "email": "muctieu.ho@gmail.com"
+  },
+  {
+    "id": "nm-word-11",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Bình Dương",
+    "phone": "0902714386",
+    "email": "binhduong.ng@gmail.com"
+  },
+  {
+    "id": "nm-word-12",
+    "layout": "English ATS",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Le Van Thu",
+    "phone": "0921350847",
+    "email": "levanthu.clerk@gmail.com"
+  },
+  {
+    "id": "nm-word-13",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Kim Ngân Hà",
+    "phone": "0339482106",
+    "email": "kimnganha.gdv@gmail.com"
+  },
+  {
+    "id": "nm-first-01",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Thị Lành",
+    "phone": "0845930216",
+    "email": "nguyenthilanh.kt@gmail.com"
+  },
+  {
+    "id": "nm-first-02",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Võ Thanh Phong",
+    "phone": "0916374028",
+    "email": "thanhphong.vo.tl@gmail.com"
+  },
+  {
+    "id": "nm-first-03",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đinh Thị Nở",
+    "phone": "0363208549",
+    "email": "dinhthino.bh@gmail.com"
+  },
+  {
+    "id": "nm-first-04",
+    "layout": "Canva free text boxes",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lý Thu Trang",
+    "phone": "0797516304",
+    "email": "thutrang.ly.tt@gmail.com"
+  },
+  {
+    "id": "nm-first-05",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "company name in title case above the candidate",
+    "fullName": "Đỗ Thị Hải",
+    "phone": "0986340712",
+    "email": "dothihai.ct@gmail.com"
+  },
+  {
+    "id": "nm-first-06",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Đại Nghĩa",
+    "phone": "0912605437",
+    "email": "dainghia.kt@gmail.com"
+  },
+  {
+    "id": "nm-first-07",
+    "layout": "Word page header",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tạ Quốc Bảo",
+    "phone": "0325790184",
+    "email": "quocbao.ta@gmail.com"
+  },
+  {
+    "id": "nm-first-08",
+    "layout": "TopCV-style two columns",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "referrer's name in the sidebar, before the candidate",
+    "fullName": "Nghiêm Hồng Sơn",
+    "phone": "0702136485",
+    "email": "hongson.nghiem@gmail.com"
+  },
+  {
+    "id": "nm-first-09",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ninh Thế Anh",
+    "phone": "0335610784",
+    "email": "theanh.ninh.it@gmail.com"
+  },
+  {
+    "id": "nm-where-01",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "parents' names before the candidate's",
+    "fullName": "Ngô Bá Khá",
+    "phone": "0855407321",
+    "email": "ngobakha.work@gmail.com"
+  },
+  {
+    "id": "nm-where-02",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "name only in the closing signature",
+    "fullName": "Lưu Hạnh Nguyên",
+    "phone": "0348561720",
+    "email": "hanhnguyen.kd@gmail.com"
+  },
+  {
+    "id": "nm-where-03",
+    "layout": "TopCV-style one column",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "name is an image",
+    "fullName": null,
+    "phone": "0987260351",
+    "email": "tuanminh.hoang.pt@gmail.com"
+  },
+  {
+    "id": "nm-where-04",
+    "layout": "vector icons, no labels",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "name is an image, title case job line remains",
+    "fullName": null,
+    "phone": "0836104275",
+    "email": "thuylinh.tong.kh@gmail.com"
+  },
+  {
+    "id": "nm-where-05",
+    "layout": "Word plain",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "no name anywhere, only heading and job title in title case",
+    "fullName": null,
+    "phone": "0966725408",
+    "email": "giamsat.banhang.mt@gmail.com"
+  },
+  {
+    "id": "nm-where-06",
+    "layout": "cover letter + CV",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ngô Đức Anh",
+    "phone": "0978613025",
+    "email": "ducanh.ngo.hr@gmail.com"
+  },
+  {
+    "id": "nm-where-07",
+    "layout": "cover letter + CV",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Thái Minh Hiếu",
+    "phone": "0347825610",
+    "email": "minhhieu.thai.dev@gmail.com"
+  },
+  {
+    "id": "nm-where-08",
+    "layout": "cover letter + CV",
+    "focus": "name",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lam Bich Ngoc",
+    "phone": "0868420137",
+    "email": "bichngoc.lam.cs@gmail.com"
+  },
+  {
+    "id": "ph-intl-01",
+    "layout": "TopCV-style one column",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lương Trọng Hiển",
+    "phone": "0386524917",
+    "email": "tronghien.luong@gmail.com"
+  },
+  {
+    "id": "ph-intl-02",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hà Mỹ Tâm",
+    "phone": "0397105264",
+    "email": "mytam.ha.work@gmail.com"
+  },
+  {
+    "id": "ph-intl-03",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đặng Phú Quý",
+    "phone": "0973186402",
+    "email": "phuquy.dang@gmail.com"
+  },
+  {
+    "id": "ph-intl-04",
+    "layout": "Canva free text boxes",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Mộng Thường",
+    "phone": "0703118264",
+    "email": "mongthuong.tran@gmail.com"
+  },
+  {
+    "id": "ph-intl-05",
+    "layout": "three columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Võ Tấn Lộc",
+    "phone": "0936207518",
+    "email": "tanloc.vo.work@gmail.com"
+  },
+  {
+    "id": "ph-intl-06",
+    "layout": "right sidebar",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Bảo Trâm",
+    "phone": "0587423190",
+    "email": "baotram.tran58@gmail.com"
+  },
+  {
+    "id": "ph-intl-07",
+    "layout": "vector icons, no labels",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phan Đình Lâm",
+    "phone": "0889640271",
+    "email": "dinhlam.phan@gmail.com"
+  },
+  {
+    "id": "ph-intl-08",
+    "layout": "Word table",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ngô Xuân Nghi",
+    "phone": "0913552076",
+    "email": "xuannghi.ngo@gmail.com"
+  },
+  {
+    "id": "ph-intl-09",
+    "layout": "Canva big-name hero",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Trung Kiên",
+    "phone": "0832719046",
+    "email": "trungkien.hg@gmail.com"
+  },
+  {
+    "id": "ph-intl-10",
+    "layout": "VietnamWorks-style export",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Thái Sơn",
+    "phone": "0775301682",
+    "email": "thaison.le.tech@gmail.com"
+  },
+  {
+    "id": "ph-intl-11",
+    "layout": "English ATS",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bùi Yến Nhi",
+    "phone": "0796114853",
+    "email": "yennhi.bui.vn@gmail.com"
+  },
+  {
+    "id": "ph-group-01",
+    "layout": "TopCV-style one column",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phạm Quang Hải",
+    "phone": "0394281765",
+    "email": "quanghai.pham21@gmail.com"
+  },
+  {
+    "id": "ph-group-02",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Khánh Vân",
+    "phone": "0845162907",
+    "email": "khanhvan.ng@gmail.com"
+  },
+  {
+    "id": "ph-group-03",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Đức Trọng",
+    "phone": "0763182945",
+    "email": "ductrong.vu@gmail.com"
+  },
+  {
+    "id": "ph-group-04",
+    "layout": "Canva free text boxes",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đỗ Hiền Lương",
+    "phone": "0909417236",
+    "email": "hienluong.do@gmail.com"
+  },
+  {
+    "id": "ph-group-05",
+    "layout": "three columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hồ Tấn Tài",
+    "phone": "0904175563",
+    "email": "tantai.ho@gmail.com"
+  },
+  {
+    "id": "ph-group-06",
+    "layout": "right sidebar",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Dương Thục Quyên",
+    "phone": "0378256109",
+    "email": "thucquyen.duong@gmail.com"
+  },
+  {
+    "id": "ph-group-07",
+    "layout": "vector icons, no labels",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Trí Dũng",
+    "phone": "0982317740",
+    "email": "tridung.le@gmail.com"
+  },
+  {
+    "id": "ph-group-08",
+    "layout": "Word table",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Thu Sương",
+    "phone": "0964281735",
+    "email": "thusuong.tran@gmail.com"
+  },
+  {
+    "id": "ph-group-09",
+    "layout": "Canva big-name hero",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mai Hữu Phước",
+    "phone": "0355849612",
+    "email": "huuphuoc.mai@gmail.com"
+  },
+  {
+    "id": "ph-group-10",
+    "layout": "VietnamWorks-style export",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Đăng Khoa",
+    "phone": "0942680173",
+    "email": "dangkhoa.ng.work@gmail.com"
+  },
+  {
+    "id": "ph-group-11",
+    "layout": "English ATS",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cao Thùy Dung",
+    "phone": "0961348205",
+    "email": "thuydung.cao@gmail.com"
+  },
+  {
+    "id": "ph-group-12",
+    "layout": "TopCV-style one column",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tô Hoài Nam",
+    "phone": "0923614708",
+    "email": "hoainam.to@gmail.com"
+  },
+  {
+    "id": "ph-group-13",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "no-break spaces between the groups",
+    "fullName": "Trương Mỹ Lan Chi",
+    "phone": "0327604918",
+    "email": "mylanchi.tr@gmail.com"
+  },
+  {
+    "id": "ph-group-14",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "digits typed apart",
+    "fullName": "Đinh Gia Huy",
+    "phone": "0867319524",
+    "email": "giahuy.dinh.dt@gmail.com"
+  },
+  {
+    "id": "ph-group-15",
+    "layout": "Canva free text boxes",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "full-width digits",
+    "fullName": "Lý Nhã Uyên",
+    "phone": "0705218463",
+    "email": "nhauyen.ly@gmail.com"
+  },
+  {
+    "id": "ph-old-01",
+    "layout": "three columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "old 11-digit number: the 2018 10-digit form is expected, the number as printed is accepted too",
+    "fullName": "Trần Tuấn Vũ",
+    "phone": "0362418903",
+    "email": "tuanvu.tran.old@gmail.com",
+    "alsoAccept": {
+      "phone": [
+        "01662418903"
+      ]
+    }
+  },
+  {
+    "id": "ph-old-02",
+    "layout": "right sidebar",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "old 11-digit number: the 2018 10-digit form is expected, the number as printed is accepted too",
+    "fullName": "Lê Thị Bích Thủy",
+    "phone": "0776547180",
+    "email": "bichthuy.le.old@gmail.com",
+    "alsoAccept": {
+      "phone": [
+        "01226547180"
+      ]
+    }
+  },
+  {
+    "id": "ph-old-03",
+    "layout": "vector icons, no labels",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "old 11-digit number: the 2018 10-digit form is expected, the number as printed is accepted too",
+    "fullName": "Phạm Ngọc Sáng",
+    "phone": "0396205481",
+    "email": "ngocsang.pham.old@gmail.com",
+    "alsoAccept": {
+      "phone": [
+        "01696205481"
+      ]
+    }
+  },
+  {
+    "id": "ph-old-04",
+    "layout": "Word table",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "old 11-digit number: the 2018 10-digit form is expected, the number as printed is accepted too",
+    "fullName": "Hà Thanh Bình",
+    "phone": "0389274510",
+    "email": "thanhbinh.ha.old@gmail.com",
+    "alsoAccept": {
+      "phone": [
+        "01689274510"
+      ]
+    }
+  },
+  {
+    "id": "ph-old-05",
+    "layout": "Canva big-name hero",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "old 11-digit number: the 2018 10-digit form is expected, the number as printed is accepted too",
+    "fullName": "Nguyễn Hữu Tín",
+    "phone": "0828830417",
+    "email": "huutin.ng.old@gmail.com",
+    "alsoAccept": {
+      "phone": [
+        "01298830417"
+      ]
+    }
+  },
+  {
+    "id": "ph-land-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đặng Minh Thư",
+    "phone": "0934508261",
+    "email": "minhthu.dang.hr@gmail.com"
+  },
+  {
+    "id": "ph-land-02",
+    "layout": "English ATS",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Tiến Đạt",
+    "phone": "0981275430",
+    "email": "tiendat.vu.it@gmail.com"
+  },
+  {
+    "id": "ph-land-03",
+    "layout": "TopCV-style one column",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bùi Hạnh Dung",
+    "phone": "0356902174",
+    "email": "hanhdung.bui@gmail.com"
+  },
+  {
+    "id": "ph-land-04",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Quốc Toản",
+    "phone": "0817360295",
+    "email": "quoctoan.hoang@gmail.com"
+  },
+  {
+    "id": "ph-land-05",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "only a home landline: README says mobile or null",
+    "fullName": "Phan Thúy Nga",
+    "phone": null,
+    "email": "thuynga.phan@gmail.com"
+  },
+  {
+    "id": "ph-land-06",
+    "layout": "Canva free text boxes",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "only a landline; 028 3910 4475 written as 0283 910 4475 looks like a mobile group",
+    "fullName": "Nguyễn Trường Giang",
+    "phone": null,
+    "email": "truonggiang.ng.kt@gmail.com"
+  },
+  {
+    "id": "ph-two-01",
+    "layout": "three columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Bảo Long",
+    "phone": "0916402785",
+    "email": "baolong.le.sale@gmail.com"
+  },
+  {
+    "id": "ph-two-02",
+    "layout": "right sidebar",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Ánh Nguyệt",
+    "phone": "0908336127",
+    "email": "anhnguyet.tran@gmail.com"
+  },
+  {
+    "id": "ph-two-03",
+    "layout": "vector icons, no labels",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đào Duy Tùng",
+    "phone": "0392775016",
+    "email": "duytung.dao@gmail.com"
+  },
+  {
+    "id": "ph-two-04",
+    "layout": "Word table",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Võ Thị Ngọc Hân",
+    "phone": "0857240391",
+    "email": "ngochan.vo@gmail.com"
+  },
+  {
+    "id": "ph-two-05",
+    "layout": "Canva big-name hero",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "a freelancer labels his own mobile \"Hotline\"",
+    "fullName": "Hồ Sỹ Mạnh",
+    "phone": "0902418376",
+    "email": "symanh.ho@gmail.com"
+  },
+  {
+    "id": "ph-glue-01",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "phone and email glued on one line",
+    "fullName": "Hà Hoàng Long",
+    "phone": "0979420861",
+    "email": "hoanglong.ha.kt@gmail.com"
+  },
+  {
+    "id": "ph-glue-02",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "number wrapped mid-way",
+    "fullName": "Nguyễn Tường Vi",
+    "phone": "0334718205",
+    "email": "tuongvi.ng.tk@gmail.com"
+  },
+  {
+    "id": "ph-glue-03",
+    "layout": "three columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "prefix on its own line",
+    "fullName": "Trần Thế Hiển",
+    "phone": "0964170825",
+    "email": "thehien.tran.bt@gmail.com"
+  },
+  {
+    "id": "ph-bad-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "template placeholder left in; 012x is no longer a mobile prefix",
+    "fullName": "Lê Ngọc Diệp",
+    "phone": null,
+    "email": "ngocdiep.le.mt@gmail.com"
+  },
+  {
+    "id": "ph-bad-02",
+    "layout": "English ATS",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "typo: one digit short",
+    "fullName": "Nguyễn Công Danh",
+    "phone": null,
+    "email": "congdanh.ng.td@gmail.com"
+  },
+  {
+    "id": "ph-bad-03",
+    "layout": "TopCV-style one column",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "typo: 11 digits with a 09x prefix, no old 11-digit number looked like this",
+    "fullName": "Trần Hải Triều",
+    "phone": null,
+    "email": "haitrieu.tran.td@gmail.com"
+  },
+  {
+    "id": "ph-bad-04",
+    "layout": "TopCV-style two columns",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "masked by the site",
+    "fullName": "Phạm Hà My",
+    "phone": null,
+    "email": "hamy.pham.td@gmail.com"
+  },
+  {
+    "id": "ph-bad-05",
+    "layout": "Word plain",
+    "focus": "phone",
+    "path": "pdf",
+    "notes": "placeholder",
+    "fullName": "Đoàn Quý Mão",
+    "phone": null,
+    "email": "quymao.doan@gmail.com"
+  },
+  {
+    "id": "no-hot-01",
+    "layout": "right sidebar",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Đức Thọ",
+    "phone": "0379516240",
+    "email": "ducto.nguyen.gn@gmail.com"
+  },
+  {
+    "id": "no-hot-02",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "company letterhead above the candidate",
+    "fullName": "Trần Hồng Quân",
+    "phone": "0345802917",
+    "email": "hongquan.tran.tk@gmail.com"
+  },
+  {
+    "id": "no-hot-03",
+    "layout": "Canva free text boxes",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Thị Thanh Xuân",
+    "phone": "0762405139",
+    "email": "thanhxuan.le.dd@gmail.com"
+  },
+  {
+    "id": "no-hot-04",
+    "layout": "VietnamWorks-style export",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "site hotline above the name",
+    "fullName": "Đặng Hoài An",
+    "phone": "0398240716",
+    "email": "hoaian.dang.td@gmail.com"
+  },
+  {
+    "id": "no-hot-05",
+    "layout": "TopCV-style one column",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phạm Công Luận",
+    "phone": null,
+    "email": "congluan.pham.kt@gmail.com"
+  },
+  {
+    "id": "no-hot-06",
+    "layout": "English ATS",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ta Minh Hanh",
+    "phone": null,
+    "email": "minhhanh.ta@gmail.com"
+  },
+  {
+    "id": "no-hot-07",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Ngọc Thạch",
+    "phone": null,
+    "email": "ngocthach.hoang@gmail.com"
+  },
+  {
+    "id": "no-agent-01",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "agency contacts; candidate contacts withheld",
+    "fullName": "Vũ Thanh Bình",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "no-agent-02",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lương Thị Hiền",
+    "phone": "0342690815",
+    "email": "hien.luong.ktt@gmail.com"
+  },
+  {
+    "id": "no-id-01",
+    "layout": "TopCV-style one column",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "10-digit tax code that looks like a mobile, no phone",
+    "fullName": "Đỗ Hoàng Việt",
+    "phone": null,
+    "email": "hoangviet.do.ktt@gmail.com"
+  },
+  {
+    "id": "no-id-02",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Thị Thu Cúc",
+    "phone": "0917438205",
+    "email": "thucuc.ng.kt@gmail.com"
+  },
+  {
+    "id": "no-id-03",
+    "layout": "VietnamWorks-style export",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "company-branch tax code, no phone",
+    "fullName": "Trần Việt Anh",
+    "phone": null,
+    "email": "vietanh.tran.thue@gmail.com"
+  },
+  {
+    "id": "no-id-04",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "12-digit ID, no phone",
+    "fullName": "Hoàng Thị Mai Hoa",
+    "phone": null,
+    "email": "maihoa.hoang@gmail.com"
+  },
+  {
+    "id": "no-id-05",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "ID glued as 12 digits right before the phone",
+    "fullName": "Lâm Tuấn Anh",
+    "phone": "0356470182",
+    "email": "tuananh.lam.td@gmail.com"
+  },
+  {
+    "id": "no-id-06",
+    "layout": "TopCV-style two columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "9-digit old ID card before the phone",
+    "fullName": "Dương Hồng Hạnh",
+    "phone": "0868217490",
+    "email": "dhonghanh.nh@gmail.com"
+  },
+  {
+    "id": "no-id-07",
+    "layout": "Word table",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "a 12-digit ID grouped 4-4-4, starting with 0912, no phone",
+    "fullName": "Phan Xuân Trường",
+    "phone": null,
+    "email": "xuantruong.phan.bv@gmail.com"
+  },
+  {
+    "id": "no-id-08",
+    "layout": "three columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "10-digit social-insurance number, no phone",
+    "fullName": "Nguyễn Hải Sơn",
+    "phone": null,
+    "email": "haison.ng.pd@gmail.com"
+  },
+  {
+    "id": "no-id-09",
+    "layout": "Canva big-name hero",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "student number shaped like a mobile, no phone",
+    "fullName": "Trần Thị Mỹ Hạnh",
+    "phone": null,
+    "email": "myhanh.tran.sv@gmail.com"
+  },
+  {
+    "id": "no-id-10",
+    "layout": "Canva big-name hero",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "student number before the real phone",
+    "fullName": "Đỗ Minh Nhật",
+    "phone": "0325170948",
+    "email": "minhnhat.do.sv@gmail.com"
+  },
+  {
+    "id": "no-bank-01",
+    "layout": "TopCV-style one column",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "bank account shaped like a mobile, no phone",
+    "fullName": "Phạm Hoàng Phúc",
+    "phone": null,
+    "email": "hoangphuc.pham.tn@gmail.com"
+  },
+  {
+    "id": "no-bank-02",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Khánh Hòa",
+    "phone": "0394806217",
+    "email": "khanhhoa.tran.tq@gmail.com"
+  },
+  {
+    "id": "no-bank-03",
+    "layout": "TopCV-style two columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "account before the phone, both 10 digits",
+    "fullName": "Bùi Quang Vinh",
+    "phone": "0912063748",
+    "email": "quangvinh.bui.ctv@gmail.com"
+  },
+  {
+    "id": "no-date-01",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "date of birth, no phone",
+    "fullName": "Lê Thành Đạt",
+    "phone": null,
+    "email": "thanhdat.le.ktv@gmail.com"
+  },
+  {
+    "id": "no-date-02",
+    "layout": "TopCV-style one column",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "no phone, dates run together",
+    "fullName": "Ngô Tuyết Mai",
+    "phone": null,
+    "email": "tuyetmai.ngo.kho@gmail.com"
+  },
+  {
+    "id": "no-date-03",
+    "layout": "VietnamWorks-style export",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "revenue and odd dates, no phone",
+    "fullName": "Hoàng Bảo Lâm",
+    "phone": null,
+    "email": "baolam.hoang.bh@gmail.com"
+  },
+  {
+    "id": "no-date-04",
+    "layout": "vector icons, no labels",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "address digits, no phone",
+    "fullName": "Trịnh Xuân Nam",
+    "phone": null,
+    "email": "xuannam.trinh.sx@gmail.com"
+  },
+  {
+    "id": "no-date-05",
+    "layout": "English ATS",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "certificate numbers shaped like mobiles, no phone",
+    "fullName": "Vo Hoang Yen",
+    "phone": null,
+    "email": "hoangyen.vo.tr@gmail.com"
+  },
+  {
+    "id": "no-date-06",
+    "layout": "TopCV-style two columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "digits inside links, no phone",
+    "fullName": "Thái Bảo Trung",
+    "phone": null,
+    "email": "baotrung.thai.it@gmail.com"
+  },
+  {
+    "id": "no-ref-01",
+    "layout": "TopCV-style two columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Thanh Tùng",
+    "phone": "0385410926",
+    "email": "thanhtung.tran.bh@gmail.com"
+  },
+  {
+    "id": "no-ref-02",
+    "layout": "TopCV-style two columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "only the referee has contact details",
+    "fullName": "Nguyễn Thị Ánh",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "no-ref-03",
+    "layout": "Canva free text boxes",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "unlabelled manager line first, no candidate phone",
+    "fullName": "Dương Tiến Mạnh",
+    "phone": null,
+    "email": "tienmanh.duong.kd@gmail.com"
+  },
+  {
+    "id": "no-ref-04",
+    "layout": "right sidebar",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "referee directly after the candidate",
+    "fullName": "Hoang Tuan Kiet",
+    "phone": "0369150742",
+    "email": "tuankiet.hoang.sl@gmail.com"
+  },
+  {
+    "id": "no-ref-05",
+    "layout": "three columns",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "referee first; no candidate phone",
+    "fullName": "Phạm Mạnh Cường",
+    "phone": null,
+    "email": "manhcuong.pham.tx@gmail.com"
+  },
+  {
+    "id": "no-ref-06",
+    "layout": "Word table",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "referee phone in the same cell as the candidate phone",
+    "fullName": "Đinh Tuấn Tú",
+    "phone": "0836410275",
+    "email": "tuantu.dinh.bt@gmail.com"
+  },
+  {
+    "id": "no-ref-07",
+    "layout": "Word plain",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "referee phone before own phone, in the contact block",
+    "fullName": "Bùi Anh Thư",
+    "phone": "0793186402",
+    "email": "anhthu.bui.hc@gmail.com"
+  },
+  {
+    "id": "no-fam-01",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trịnh Quang Khải",
+    "phone": "0347602918",
+    "email": "quangkhai.trinh@gmail.com"
+  },
+  {
+    "id": "no-fam-02",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "only the father's phone",
+    "fullName": "Trịnh Thị Thanh Vân",
+    "phone": null,
+    "email": "thanhvan.trinh@gmail.com"
+  },
+  {
+    "id": "no-fam-03",
+    "layout": "TopCV-style one column",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Võ Minh Tâm",
+    "phone": "0332840617",
+    "email": "minhtam.vo.kho@gmail.com"
+  },
+  {
+    "id": "no-fam-04",
+    "layout": "English ATS",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "emergency contact only",
+    "fullName": "Le Quynh Mai",
+    "phone": null,
+    "email": "quynhmai.le.ba@gmail.com"
+  },
+  {
+    "id": "no-misc-01",
+    "layout": "Word table",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "company fax and office line, no own phone",
+    "fullName": "Trần Đình Hòa",
+    "phone": null,
+    "email": "dinhhoa.tran.kt@gmail.com"
+  },
+  {
+    "id": "no-misc-02",
+    "layout": "Canva big-name hero",
+    "focus": "noise",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Thị Ngân",
+    "phone": "0705360142",
+    "email": "thingan.vu.gs@gmail.com"
+  },
+  {
+    "id": "em-many-01",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Võ Đăng Quang",
+    "phone": "0382640915",
+    "email": "dangquang.vo91@gmail.com"
+  },
+  {
+    "id": "em-many-02",
+    "layout": "TopCV-style one column",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lý Thanh Thảo",
+    "phone": "0945170362",
+    "email": "thanhthao.ly.vp@gmail.com"
+  },
+  {
+    "id": "em-many-03",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hồ Minh Châu",
+    "phone": "0817250493",
+    "email": "chauho.personal@outlook.com"
+  },
+  {
+    "id": "em-many-04",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phan Gia Linh",
+    "phone": "0962504713",
+    "email": "gialinh.phan@yahoo.com"
+  },
+  {
+    "id": "em-many-05",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "two own addresses, no label: first expected, second accepted",
+    "fullName": "Tạ Hữu Nghĩa",
+    "phone": "0356281047",
+    "email": "huunghia.ta@gmail.com",
+    "alsoAccept": {
+      "email": [
+        "huunghia.ta@outlook.com"
+      ]
+    }
+  },
+  {
+    "id": "em-many-06",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "company addresses in the main column, before the contact block",
+    "fullName": "Mai Quốc Khánh",
+    "phone": "0703142865",
+    "email": "quockhanh.mai.vp@gmail.com"
+  },
+  {
+    "id": "em-many-07",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "referee's address comes out before the name",
+    "fullName": "Trần Thị Kiều",
+    "phone": "0398571206",
+    "email": "kieu.tran.vp@gmail.com"
+  },
+  {
+    "id": "em-many-08",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "only the referee has an address",
+    "fullName": "Đỗ Bình An",
+    "phone": "0935460187",
+    "email": null
+  },
+  {
+    "id": "em-many-09",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "only company addresses",
+    "fullName": "Lê Hải Nam",
+    "phone": "0772046183",
+    "email": null
+  },
+  {
+    "id": "em-many-10",
+    "layout": "Canva free text boxes",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "own work address only",
+    "fullName": "Hoàng Thúy Hiền",
+    "phone": "0327640581",
+    "email": "thuyhien@phukhangland.example"
+  },
+  {
+    "id": "em-many-11",
+    "layout": "Word table",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "school address only",
+    "fullName": "Vi Đức Hạnh",
+    "phone": "0918206475",
+    "email": "19520481@sv.saokhue.edu.example"
+  },
+  {
+    "id": "em-many-12",
+    "layout": "Canva big-name hero",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "own personal domain",
+    "fullName": "Trần Tuệ Minh",
+    "phone": "0868570214",
+    "email": "contact@tuemin.example"
+  },
+  {
+    "id": "em-mailto-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Ung Tiến Phát",
+    "phone": "0342590718",
+    "email": "tienphat.ung@gmail.com"
+  },
+  {
+    "id": "em-mailto-02",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lê Như Ý",
+    "phone": "0853147260",
+    "email": "nhuy.le@gmail.com"
+  },
+  {
+    "id": "em-mailto-03",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "address only in the link target, not in the text layer",
+    "fullName": "Đặng Lan Hương",
+    "phone": "0917482603",
+    "email": null
+  },
+  {
+    "id": "em-mailto-04",
+    "layout": "TopCV-style one column",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "visible text and link differ; a human reads the visible one",
+    "fullName": "Nghiêm Thị Hải",
+    "phone": "0359702148",
+    "email": "haihiem.bt@gmail.com"
+  },
+  {
+    "id": "em-wrap-01",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Hoàng Thiên Kim",
+    "phone": "0394150728",
+    "email": "nguyenhoangthienkim.dulich@gmail.com"
+  },
+  {
+    "id": "em-wrap-02",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trương Thành Công",
+    "phone": "0907361548",
+    "email": "truongthanhcong.kinhdoanh2019@gmail.com"
+  },
+  {
+    "id": "em-wrap-03",
+    "layout": "Word table",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mai Phương Trinh",
+    "phone": "0764218035",
+    "email": "maiphuongtrinh.vn@gmail.com"
+  },
+  {
+    "id": "em-wrap-04",
+    "layout": "Canva free text boxes",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lý Tiểu Long Vân",
+    "phone": "0322805417",
+    "email": "tieulongvan.design@outlook.com"
+  },
+  {
+    "id": "em-wrap-05",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "CSS breaks the long address anywhere",
+    "fullName": "Phạm Thị Hồng Nhung",
+    "phone": "0975208164",
+    "email": "phamthihongnhung.giaodichvien2021@gmail.com"
+  },
+  {
+    "id": "em-wrap-06",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Mạnh Hùng",
+    "phone": "0348921760",
+    "email": "hoangmanhhung.khovan@yahoo.com.vn"
+  },
+  {
+    "id": "em-space-01",
+    "layout": "TopCV-style one column",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vi Thị Lan",
+    "phone": "0985316740",
+    "email": "thilan.vi@gmail.com"
+  },
+  {
+    "id": "em-space-02",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Nhật Nam",
+    "phone": "0373620918",
+    "email": "hoang.nam@gmail.com"
+  },
+  {
+    "id": "em-space-03",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đào Minh Quân",
+    "phone": "0796402185",
+    "email": "minh.quan@gmail.com"
+  },
+  {
+    "id": "em-space-04",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Bạch Tuyết Mai",
+    "phone": "0924508671",
+    "email": "tuyet.mai@gmail.com"
+  },
+  {
+    "id": "em-space-05",
+    "layout": "Canva free text boxes",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Giáp Thanh Bình",
+    "phone": "0839017264",
+    "email": "binh.giap@yahoo.com"
+  },
+  {
+    "id": "em-space-06",
+    "layout": "Word table",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lục Ngọc Diệp",
+    "phone": "0354720619",
+    "email": "ngoc.diep.luc@gmail.com"
+  },
+  {
+    "id": "em-space-07",
+    "layout": "Canva big-name hero",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lã Trường Giang",
+    "phone": "0906182537",
+    "email": "truonggiang.la@gmail.com"
+  },
+  {
+    "id": "em-space-08",
+    "layout": "VietnamWorks-style export",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cao Phương Uyên",
+    "phone": "0784061325",
+    "email": "phuonguyen.cao@outlook.com"
+  },
+  {
+    "id": "em-space-09",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "comma typed instead of the dot",
+    "fullName": "Bạch Thanh Bình",
+    "phone": "0327185046",
+    "email": "thanh.bach@gmail.com"
+  },
+  {
+    "id": "em-space-10",
+    "layout": "TopCV-style one column",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hoàng Hải Yến",
+    "phone": "0912640375",
+    "email": "hai.yen92@gmail.com"
+  },
+  {
+    "id": "em-space-11",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Mã Linh Đan",
+    "phone": "0345708162",
+    "email": "linh.ma@yahoo.com"
+  },
+  {
+    "id": "em-space-12",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Tô Trung Kiên",
+    "phone": "0869305714",
+    "email": "kien.to+jobs@gmail.com"
+  },
+  {
+    "id": "em-space-13",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Khổng Anh Tú",
+    "phone": "0705926183",
+    "email": "anh-tu.khong@outlook.com"
+  },
+  {
+    "id": "em-space-14",
+    "layout": "Canva free text boxes",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "full-width at sign",
+    "fullName": "Ngô Hà Thu",
+    "phone": "0386240195",
+    "email": "hoa.ngo@gmail.com"
+  },
+  {
+    "id": "em-space-15",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "next label glued to the address",
+    "fullName": "Thạch Thị Huệ",
+    "phone": "0916038572",
+    "email": "hue.thach@gmail.com"
+  },
+  {
+    "id": "em-space-16",
+    "layout": "Word table",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lương Tú Anh",
+    "phone": "0394570126",
+    "email": "tuanh.luong@hotmail.com"
+  },
+  {
+    "id": "em-space-17",
+    "layout": "Canva big-name hero",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đinh Hải Phong",
+    "phone": "0833120694",
+    "email": "haiphong.dinh@icloud.com"
+  },
+  {
+    "id": "em-digit-01",
+    "layout": "VietnamWorks-style export",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "address starts with other digits; the labelled phone differs",
+    "fullName": "Vũ Hoàng Ánh",
+    "phone": "0386014275",
+    "email": "0916480273.ha@gmail.com"
+  },
+  {
+    "id": "em-digit-02",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "the address is a mobile number; no phone listed, so phone stays null (judgement call)",
+    "fullName": "Trần Quỳnh Như",
+    "phone": null,
+    "email": "0916480275@gmail.com"
+  },
+  {
+    "id": "em-none-01",
+    "layout": "TopCV-style one column",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "handles only",
+    "fullName": "Phạm Tú Oanh",
+    "phone": "0918730254",
+    "email": null
+  },
+  {
+    "id": "em-none-02",
+    "layout": "TopCV-style two columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đặng Tuấn Tài",
+    "phone": "0347201856",
+    "email": null
+  },
+  {
+    "id": "em-none-03",
+    "layout": "right sidebar",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "template placeholder left in",
+    "fullName": "Trần Ngọc Bích",
+    "phone": "0902457316",
+    "email": null
+  },
+  {
+    "id": "em-none-04",
+    "layout": "three columns",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "template placeholder left in",
+    "fullName": "Lê Duy Khánh",
+    "phone": "0352407189",
+    "email": null
+  },
+  {
+    "id": "em-none-05",
+    "layout": "Canva free text boxes",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "contact masked by the site; nothing usable",
+    "fullName": "Nguyễn Hữu Bằng",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "em-none-06",
+    "layout": "Word table",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "incomplete address",
+    "fullName": "Võ Kim Chi",
+    "phone": "0816203749",
+    "email": null
+  },
+  {
+    "id": "em-foot-01",
+    "layout": "Word plain",
+    "focus": "email",
+    "path": "pdf",
+    "notes": "address only in the closing line",
+    "fullName": "Phạm Thanh Lam",
+    "phone": "0962073148",
+    "email": "thanhlam.pham@gmail.com"
+  },
+  {
+    "id": "zz-nocontact-01",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Trần Thanh Hiền",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-nocontact-02",
+    "layout": "TopCV-style one column",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Nguyễn Thị Thùy Linh",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-nocontact-03",
+    "layout": "Canva free text boxes",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Cao Minh Đức",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-nocontact-04",
+    "layout": "English ATS",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Lam Thuy Tien",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-nocontact-05",
+    "layout": "TopCV-style two columns",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Hồ Văn Khải",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-nocontact-06",
+    "layout": "three columns",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Đỗ Mai Phương",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-noname-01",
+    "layout": "vector icons, no labels",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "no name in the text",
+    "fullName": null,
+    "phone": "0345906271",
+    "email": "taixe.haidang@gmail.com"
+  },
+  {
+    "id": "zz-noname-02",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "name appears only inside the address",
+    "fullName": null,
+    "phone": "0792106348",
+    "email": "nguyenvanan8899@gmail.com"
+  },
+  {
+    "id": "zz-empty-01",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "experience page only",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-empty-02",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "experience page only, English",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-empty-03",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "blank form",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-empty-04",
+    "layout": "Vietnamese form (SYLL)",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "template with its labels only",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-empty-05",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "a certificate, no person named",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-scan-01",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "image only: text layer is empty",
+    "fullName": null,
+    "phone": null,
+    "email": null,
+    "readable": false
+  },
+  {
+    "id": "zz-scan-02",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "image only: text layer is empty",
+    "fullName": null,
+    "phone": null,
+    "email": null,
+    "readable": false
+  },
+  {
+    "id": "zz-scan-03",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "image only: text layer is empty",
+    "fullName": null,
+    "phone": null,
+    "email": null,
+    "readable": false
+  },
+  {
+    "id": "zz-scan-04",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "image plus a scanner stamp in the text layer",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-scan-05",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "scanner stamp in title case",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-scan-06",
+    "layout": "scanned image",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "page number only",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "zz-long-01",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Phạm Trung Hiếu",
+    "phone": "0903481276",
+    "email": "trunghieu.pham.gd@gmail.com"
+  },
+  {
+    "id": "zz-long-02",
+    "layout": "Word plain",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "contact only on the last page, beyond the 6 pages pdfText reads",
+    "fullName": "Lê Hoài Vũ",
+    "phone": "0987205364",
+    "email": "hoaivu.le.kt@gmail.com"
+  },
+  {
+    "id": "zz-long-03",
+    "layout": "TopCV-style one column",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "",
+    "fullName": "Vũ Thị Yên",
+    "phone": "0334620197",
+    "email": "thiyen.vu.hc@gmail.com"
+  },
+  {
+    "id": "zz-restricted-01",
+    "layout": "owner-restricted PDF",
+    "focus": "none",
+    "path": "pdf",
+    "notes": "RC4 40-bit, empty user password",
+    "fullName": "Cu Hoang Thach",
+    "phone": "0396251840",
+    "email": "hoangthach.cu@gmail.com"
+  },
+  {
+    "id": "tx-pua-01",
+    "layout": "text: icon font",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Ngô Thanh Vân",
+    "phone": "0376180942",
+    "email": "thanhvan.ngo.tt@gmail.com"
+  },
+  {
+    "id": "tx-pua-02",
+    "layout": "text: icon font",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Phạm Đình Khiêm",
+    "phone": "0917042385",
+    "email": "dinhkhiem.pham@gmail.com"
+  },
+  {
+    "id": "tx-pua-03",
+    "layout": "text: icon font",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Trần Như Quỳnh",
+    "phone": "0905318276",
+    "email": "quynh.tran.hr@gmail.com"
+  },
+  {
+    "id": "tx-word-01",
+    "layout": "text: Word artefact",
+    "focus": "text",
+    "path": "text",
+    "notes": "fi ligature inside the address",
+    "fullName": "Lê Thị Phương",
+    "phone": "0962170348",
+    "email": "lethiphuong.finance@gmail.com"
+  },
+  {
+    "id": "tx-word-02",
+    "layout": "text: Word artefact",
+    "focus": "text",
+    "path": "text",
+    "notes": "Word field code leaked into the text",
+    "fullName": "Trần Hữu Đạt",
+    "phone": "0348216750",
+    "email": "huudat.tran@gmail.com"
+  },
+  {
+    "id": "tx-word-03",
+    "layout": "text: Word artefact",
+    "focus": "text",
+    "path": "text",
+    "notes": "CRLF, tabs, no-break spaces, a zero-width space in the address",
+    "fullName": "Hoàng Mỹ Linh",
+    "phone": "0792640318",
+    "email": "mylinh.hoang@gmail.com"
+  },
+  {
+    "id": "tx-word-04",
+    "layout": "text: Word artefact",
+    "focus": "text",
+    "path": "text",
+    "notes": "non-breaking hyphens in the phone, soft hyphen in the address",
+    "fullName": "Vũ Quốc Đạt",
+    "phone": "0918560274",
+    "email": "quocdat.vu@gmail.com"
+  },
+  {
+    "id": "tx-word-05",
+    "layout": "text: Word artefact",
+    "focus": "text",
+    "path": "text",
+    "notes": "en dashes in the phone",
+    "fullName": "Nguyễn Ngọc Trâm",
+    "phone": "0355742108",
+    "email": "ngoctram.ng@gmail.com"
+  },
+  {
+    "id": "tx-frag-01",
+    "layout": "text: fragmented runs",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Nguyễn Thị Hoa",
+    "phone": "0394270186",
+    "email": "thihoa.nguyen@gmail.com"
+  },
+  {
+    "id": "tx-frag-02",
+    "layout": "text: fragmented runs",
+    "focus": "text",
+    "path": "text",
+    "notes": "runs broken by kerning",
+    "fullName": "Trần Minh Tuấn",
+    "phone": "0932451706",
+    "email": "minhtuan.tran@gmail.com"
+  },
+  {
+    "id": "tx-frag-03",
+    "layout": "text: fragmented runs",
+    "focus": "text",
+    "path": "text",
+    "notes": "split inside accented syllables",
+    "fullName": "Phạm Thị Quỳnh",
+    "phone": "0869125407",
+    "email": "quynh.pham@yahoo.com.vn"
+  },
+  {
+    "id": "tx-merge-01",
+    "layout": "text: merged columns",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Lê Hữu Phước",
+    "phone": "0384165702",
+    "email": "huuphuoc.le@gmail.com"
+  },
+  {
+    "id": "tx-merge-02",
+    "layout": "text: merged columns",
+    "focus": "text",
+    "path": "text",
+    "notes": "company on the left of the same line",
+    "fullName": "Phan Thị Ngọc Lan",
+    "phone": "0342705169",
+    "email": "ngoclan.phan@gmail.com"
+  },
+  {
+    "id": "tx-merge-03",
+    "layout": "text: merged columns",
+    "focus": "text",
+    "path": "text",
+    "notes": "referee column on the left",
+    "fullName": "Đặng Hồng Sơn",
+    "phone": "0859026713",
+    "email": "hongson.dang.kt@gmail.com"
+  },
+  {
+    "id": "tx-merge-04",
+    "layout": "text: merged columns",
+    "focus": "text",
+    "path": "text",
+    "notes": "whole contact block on one line, no separators",
+    "fullName": "Vũ Minh Đăng",
+    "phone": "0986204517",
+    "email": "minhdang.vu@gmail.com"
+  },
+  {
+    "id": "tx-legacy-01",
+    "layout": "text: legacy font",
+    "focus": "text",
+    "path": "text",
+    "notes": "VNI font: name garbled; filling the garbage counts as a false fill",
+    "fullName": null,
+    "phone": "0912406735",
+    "email": "vantu.nguyen.vni@gmail.com"
+  },
+  {
+    "id": "tx-legacy-02",
+    "layout": "text: legacy font",
+    "focus": "text",
+    "path": "text",
+    "notes": "TCVN3 font: name garbled",
+    "fullName": null,
+    "phone": "0347180526",
+    "email": "thuthu.tcvn@gmail.com"
+  },
+  {
+    "id": "tx-legacy-03",
+    "layout": "text: legacy font",
+    "focus": "text",
+    "path": "text",
+    "notes": "diacritics lost as question marks",
+    "fullName": null,
+    "phone": "0978051362",
+    "email": "minhhai.tr@gmail.com"
+  },
+  {
+    "id": "tx-legacy-04",
+    "layout": "text: legacy font",
+    "focus": "text",
+    "path": "text",
+    "notes": "no ToUnicode: only CID codes",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-ocr-01",
+    "layout": "text: OCR layer",
+    "focus": "text",
+    "path": "text",
+    "notes": "OCR misread digits and domain: the number and address in the text are not the real ones",
+    "fullName": "Nguyen Van Khanh",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-ocr-02",
+    "layout": "text: OCR layer",
+    "focus": "text",
+    "path": "text",
+    "notes": "letter O for zero: a human reads the number",
+    "fullName": "Tran Thi Mai",
+    "phone": "0903714268",
+    "email": "mai.tran@gmail.com"
+  },
+  {
+    "id": "tx-ocr-03",
+    "layout": "text: OCR layer",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Le Van Hau",
+    "phone": "0359871206",
+    "email": null
+  },
+  {
+    "id": "tx-short-01",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-short-02",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-short-03",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": null,
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-short-04",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": "Đặng Thế Phong",
+    "phone": null,
+    "email": null
+  },
+  {
+    "id": "tx-short-05",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": null,
+    "phone": "0935271846",
+    "email": null
+  },
+  {
+    "id": "tx-short-06",
+    "layout": "text: short text",
+    "focus": "text",
+    "path": "text",
+    "notes": "",
+    "fullName": null,
+    "phone": null,
+    "email": "hanhphuc.trinh@gmail.com"
+  },
+  {
+    "id": "tx-script-01",
+    "layout": "text: other script",
+    "focus": "text",
+    "path": "text",
+    "notes": "name also in Chinese above",
+    "fullName": "Nguyễn Văn Hùng Cường",
+    "phone": "0916307482",
+    "email": "hungcuong.zh@gmail.com"
+  },
+  {
+    "id": "tx-script-02",
+    "layout": "text: other script",
+    "focus": "text",
+    "path": "text",
+    "notes": "Japanese-style CV, labels in Japanese",
+    "fullName": "Nguyễn Thị Hạ Mai",
+    "phone": "0394180672",
+    "email": "hamai.jp@gmail.com"
+  }
+]

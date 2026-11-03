@@ -186,6 +186,34 @@ describe('HR adds an application from a CV file', () => {
     expect(screen.getAllByText('Lấy từ CV')).toHaveLength(2);
   });
 
+  it('should say a CV is locked rather than a scan when the server gives that reason', async () => {
+    // Arrange
+    const problem = 'CV có đặt mật khẩu nên không đọc được, nhập tay giúp.';
+    parseReply = parsedCv({ fullName: null, phone: null, email: null, readable: false, problem });
+    show();
+
+    // Act
+    await pickCv();
+
+    // Assert
+    expect(await screen.findByText(problem)).toBeTruthy();
+    expect(screen.queryByText(/ảnh scan/)).toBeNull();
+  });
+
+  it('should show why the server refused a file and not promise it can be saved', async () => {
+    // Arrange
+    const reason = 'CV cần là file PDF.';
+    parseReply = () => reply(422, { error: reason, fieldErrors: { cv: reason } });
+    show();
+
+    // Act
+    await pickCv();
+
+    // Assert
+    expect(await screen.findByText(reason)).toBeTruthy();
+    expect(screen.queryByText(/Vẫn lưu hồ sơ được/)).toBeNull();
+  });
+
   it('should ask HR to type the details when the CV is a scan without text', async () => {
     // Arrange
     parseReply = parsedCv({ fullName: null, phone: null, email: null, readable: false });
