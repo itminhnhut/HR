@@ -6,7 +6,8 @@ import { Icon } from './icons';
  * `variant="sheet"` slides up from the bottom on phones (and stays a
  * centered panel on wide screens); `variant="panel"` is the big two-column
  * apply modal that turns full-screen on phones; `variant="drawer"` is the
- * full-screen menu that slides in from the left.
+ * full-screen menu that slides in from the left; `variant="side"` is a work
+ * area that slides in from the right, full-screen on phones.
  */
 export function Dialog({
   open,
@@ -16,15 +17,18 @@ export function Dialog({
   variant = 'sheet',
   className = '',
   keepMounted = false,
+  closeOnBackdrop = true,
 }: {
   open: boolean;
   onClose: () => void;
   label: string;
   children: ReactNode;
-  variant?: 'sheet' | 'panel' | 'drawer';
+  variant?: 'sheet' | 'panel' | 'drawer' | 'side';
   className?: string;
   /** Keep children (and their state) alive while closed. */
   keepMounted?: boolean;
+  /** Off where a stray click outside would throw away typed text. */
+  closeOnBackdrop?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -60,8 +64,11 @@ export function Dialog({
     sheet:
       'mb-0 mt-auto w-full max-w-none rounded-t-[14px] sm:m-auto sm:w-[min(480px,calc(100vw-32px))] sm:rounded-[10px]',
     drawer: 'm-0 h-dvh max-h-none w-full max-w-none rounded-none',
+    side: 'my-0 ml-auto mr-0 h-dvh max-h-none w-full max-w-none rounded-none sm:w-[90vw]',
   }[variant];
-  const motion = { panel: 'animate-pop', sheet: 'animate-sheet', drawer: 'animate-drawer' }[variant];
+  const motion = { panel: 'animate-pop', sheet: 'animate-sheet', drawer: 'animate-drawer', side: 'animate-side' }[
+    variant
+  ];
 
   return (
     <dialog
@@ -73,7 +80,7 @@ export function Dialog({
         onClose();
       }}
       onClick={(e) => {
-        if (e.target === ref.current) onClose();
+        if (closeOnBackdrop && e.target === ref.current) onClose();
       }}
       className={`overflow-hidden border-0 bg-white p-0 outline-none text-navy shadow-[0_30px_80px_rgba(3,10,24,0.45)] ${motion} ${shape} ${className}`}
     >

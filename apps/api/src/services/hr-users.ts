@@ -16,6 +16,8 @@ const toDto = (user: HrUser, me: HrMe): HrUserDto => ({
   isMe: user.id === me.id,
   phone: user.phone,
   contactEmail: user.contactEmail,
+  jobTitle: user.jobTitle,
+  alias: user.alias,
 });
 
 export async function listHrUsers(db: Db, me: HrMe): Promise<HrUserDto[]> {
@@ -97,14 +99,20 @@ export async function changeOwnPassword(db: Db, raw: unknown, me: HrMe): Promise
   return updated;
 }
 
-/** "Thông tin người gửi": the name, phone and real mailbox put into message templates. */
+/** "Thông tin người gửi": what message templates and the mail signature show about this HR. */
 export async function updateMyProfile(db: Db, raw: unknown, me: HrMe): Promise<HrMe> {
   const parsed = hrProfileSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại thông tin.', fieldErrors(parsed.error));
-  const { name, phone, contactEmail } = parsed.data;
+  const { name, phone, contactEmail, jobTitle, alias } = parsed.data;
   const [user] = await db
     .update(hrUsers)
-    .set({ name: name || null, phone: phone || null, contactEmail: contactEmail.toLowerCase() || null })
+    .set({
+      name: name || null,
+      phone: phone || null,
+      contactEmail: contactEmail.toLowerCase() || null,
+      ...(jobTitle !== undefined ? { jobTitle: jobTitle || null } : {}),
+      ...(alias !== undefined ? { alias: alias || null } : {}),
+    })
     .where(eq(hrUsers.id, me.id))
     .returning();
   if (!user) throw notFound('Không tìm thấy tài khoản.');

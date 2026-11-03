@@ -36,6 +36,8 @@ describe('HR sign-in with own password', () => {
       name: 'Phòng Nhân sự',
       phone: null,
       contactEmail: null,
+      jobTitle: 'HR Generalist',
+      alias: null,
     });
     expect(user.lastLoginAt).toEqual(t.clock.now);
     const setCookie = res.headers.getSetCookie()[0];
@@ -49,6 +51,8 @@ describe('HR sign-in with own password', () => {
       name: 'Phòng Nhân sự',
       phone: null,
       contactEmail: null,
+      jobTitle: 'HR Generalist',
+      alias: null,
     });
   });
 

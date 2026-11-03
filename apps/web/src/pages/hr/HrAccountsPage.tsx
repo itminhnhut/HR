@@ -144,13 +144,15 @@ function AddUser({ onCreated }: { onCreated: (r: TempPasswordResponse) => void }
   );
 }
 
-/** What goes into {Tên HR} / {SĐT HR}, and the mailbox Gmail should send from. */
+/** What goes into the mail signature and {Tên HR} / {SĐT HR}, and the mailbox Gmail should send from. */
 function SenderProfile() {
   const me = useHrMe();
   const update = useUpdateProfile();
   const [name, setName] = useState(me.data?.name ?? '');
   const [phone, setPhone] = useState(me.data?.phone ?? '');
   const [contactEmail, setContactEmail] = useState(me.data?.contactEmail ?? '');
+  const [jobTitle, setJobTitle] = useState(me.data?.jobTitle ?? '');
+  const [alias, setAlias] = useState(me.data?.alias ?? '');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
   const submit = (e: FormEvent) => {
@@ -158,7 +160,7 @@ function SenderProfile() {
     setErrors({});
     setDone(false);
     update.mutate(
-      { name, phone, contactEmail },
+      { name, phone, contactEmail, jobTitle, alias },
       {
         onSuccess: () => setDone(true),
         onError: (err) => setErrors(err instanceof ApiError ? err.fieldErrors : { form: errorMessage(err) }),
@@ -174,7 +176,7 @@ function SenderProfile() {
       <div className="flex flex-col gap-1">
         <h2 className="m-0 font-serif text-xl font-medium">Thông tin người gửi của bạn</h2>
         <p className="m-0 text-[13px] text-slate">
-          Điền vào chữ ký mẫu thư: {'{Tên HR}'}, {'{SĐT HR}'}.
+          Điền vào chữ ký mẫu thư: {'{Tên HR}'}, {'{SĐT HR}'}, {'{Chức danh HR}'}, {'{Tên gọi khác}'}.
         </p>
       </div>
       <div className="grid gap-3.5 sm:grid-cols-3">
@@ -194,6 +196,21 @@ function SenderProfile() {
           value={contactEmail}
           error={errors.contactEmail}
           onChange={(e) => setContactEmail(e.target.value)}
+        />
+        <TextField
+          label="Chức danh"
+          placeholder="HR Generalist"
+          value={jobTitle}
+          error={errors.jobTitle}
+          onChange={(e) => setJobTitle(e.target.value)}
+        />
+        <TextField
+          label="Tên gọi khác"
+          optional
+          placeholder="Ms. Lee"
+          value={alias}
+          error={errors.alias}
+          onChange={(e) => setAlias(e.target.value)}
         />
       </div>
       <FieldError>{errors.form}</FieldError>

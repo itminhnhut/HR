@@ -35,9 +35,10 @@ import { ApiError, type Api, type CvInput } from './types';
  *   POST   /hr/users/:id/reset-password → TempPasswordResponse
  *   DELETE /hr/users/:id                → { ok }
  *   POST   /hr/me/password              { current, next } → HrMe
- *   PATCH  /hr/me                       { name, phone, contactEmail } → HrMe
+ *   PATCH  /hr/me                       { name, phone, contactEmail, jobTitle, alias } → HrMe
  *   GET    /hr/message-templates        → MessageTemplatesResponse
- *   PUT    /hr/message-templates/:key   { subject, body } → MessageTemplatesResponse   DELETE resets
+ *   PUT    /hr/message-templates/:key   { subject, body, note, calloutTitle, callout, closing } → MessageTemplatesResponse
+ *                                       DELETE resets
  *   POST   /hr/applications/:id/contacts { templateKey, channel } → ApplicationDetailDto
  *   GET    /news?page=&category=<slug>&tag=<slug> → NewsListResponse   404 unknown category/tag
  *   GET    /news/:slug                  → NewsPostDto   404 for drafts

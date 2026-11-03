@@ -128,6 +128,7 @@
   --animate-pop: pop 0.35s ease-out both;
   --animate-sheet: sheet 0.3s ease-out both;
   --animate-drawer: drawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-side: side 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-fade: fade 0.25s ease both;
   --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
   --animate-page: page-in 0.2s ease-out both;
@@ -166,6 +167,14 @@
   @keyframes drawer {
     from {
       transform: translateX(-100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes side {
+    from {
+      transform: translateX(100%);
     }
     to {
       transform: none;

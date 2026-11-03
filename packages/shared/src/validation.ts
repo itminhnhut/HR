@@ -10,7 +10,7 @@ import {
   ROADMAP_ITEM_MAX,
   ROADMAP_MILESTONES,
 } from './job-template.js';
-import { SUBJECT_MAX, TEMPLATE_BODY_MAX } from './message-templates.js';
+import { CALLOUT_TITLE_MAX, SUBJECT_MAX, TEMPLATE_BODY_MAX, TEMPLATE_SECTION_MAX } from './message-templates.js';
 import { normalizeVietnamPhone } from './phone.js';
 
 const optionalText = (max: number) =>
@@ -223,6 +223,9 @@ export const jobTemplateSchema = z.object({
     .default(DEFAULT_JOB_TEMPLATE.preferredOptions),
 });
 
+const templateSection = (label: string, max: number) =>
+  z.string().trim().max(max, `${label} tối đa ${max} ký tự.`).default('');
+
 export const messageTemplateSchema = z.object({
   subject: z.string().trim().min(1, 'Nhập tiêu đề.').max(SUBJECT_MAX, `Tiêu đề tối đa ${SUBJECT_MAX} ký tự.`),
   body: z
@@ -230,6 +233,11 @@ export const messageTemplateSchema = z.object({
     .trim()
     .min(1, 'Nhập nội dung.')
     .max(TEMPLATE_BODY_MAX, `Nội dung tối đa ${TEMPLATE_BODY_MAX} ký tự để link Gmail không bị cắt.`),
+  // Clients from before the mail design send only subject and body.
+  note: templateSection('Đoạn sau khối thông tin', TEMPLATE_SECTION_MAX),
+  calloutTitle: templateSection('Tiêu đề khối nổi bật', CALLOUT_TITLE_MAX),
+  callout: templateSection('Khối nổi bật', TEMPLATE_SECTION_MAX),
+  closing: templateSection('Phần kết', TEMPLATE_SECTION_MAX),
 });
 
 /** "Thông tin người gửi": what an HR fills in about themselves. */
@@ -240,11 +248,14 @@ export const hrProfileSchema = z.object({
     .string()
     .trim()
     .pipe(z.union([z.literal(''), z.email('Email chưa đúng.').max(200)])),
+  // Left out by clients that do not know these fields yet: the saved values stay. Empty or null clears them.
+  jobTitle: z.string().trim().max(100, 'Chức danh tối đa 100 ký tự.').nullable().optional(),
+  alias: z.string().trim().max(100, 'Tên gọi khác tối đa 100 ký tự.').nullable().optional(),
 });
 
 export const contactLogSchema = z.object({
-  templateKey: z.enum(['interview_onsite', 'interview_online', 'rejection', 'call']),
-  channel: z.enum(['gmail', 'mailto', 'copy']),
+  templateKey: z.enum(['interview_onsite', 'interview_online', 'rejection', 'rejection_interview', 'call']),
+  channel: z.enum(['gmail', 'mailto', 'copy', 'copy_html']),
 });
 
 /** "+ Thêm mới" in a job form dropdown: one value appended to one list of the job template, on the server. */

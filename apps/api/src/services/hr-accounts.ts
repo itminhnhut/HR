@@ -112,6 +112,8 @@ export const toHrMe = (user: HrUser): HrMe => ({
   name: user.name,
   phone: user.phone,
   contactEmail: user.contactEmail,
+  jobTitle: user.jobTitle,
+  alias: user.alias,
 });
 
 /**

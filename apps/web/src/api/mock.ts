@@ -153,6 +153,8 @@ const toHrMe = (u: MockHrUser): HrMe => ({
   name: u.name,
   phone: u.phone,
   contactEmail: u.contactEmail,
+  jobTitle: u.jobTitle,
+  alias: u.alias,
 });
 const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
   id: u.id,
@@ -162,6 +164,8 @@ const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
   isMe: u.id === me.id,
   phone: u.phone,
   contactEmail: u.contactEmail,
+  jobTitle: u.jobTitle,
+  alias: u.alias,
 });
 
 /** Like the BE's generatePassword: three groups of five letters and digits. */
@@ -807,6 +811,8 @@ export const mockApi: Api = {
       lastLoginAt: null,
       phone: null,
       contactEmail: null,
+      jobTitle: 'HR Generalist',
+      alias: null,
     };
     db.hrUsers.push(user);
     save();
@@ -842,6 +848,9 @@ export const mockApi: Api = {
     me.name = parsed.data.name || null;
     me.phone = parsed.data.phone || null;
     me.contactEmail = parsed.data.contactEmail.toLowerCase() || null;
+    // Same rule as the BE: left out keeps the saved value, empty clears it.
+    if (parsed.data.jobTitle !== undefined) me.jobTitle = parsed.data.jobTitle || null;
+    if (parsed.data.alias !== undefined) me.alias = parsed.data.alias || null;
     save();
     return delay(toHrMe(me));
   },

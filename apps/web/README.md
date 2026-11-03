@@ -9,7 +9,7 @@ Giao diện dựng theo mockup trong `design-mockup/` (bản sao canvas thiết 
 
 ```bash
 npm install          # ở thư mục gốc monorepo
-npm run dev          # build @careers/shared rồi mở http://localhost:5173
+npm run dev          # build @careers/shared rồi mở http://localhost:3344
 ```
 
 Không đặt `VITE_API_URL` thì app dùng **dữ liệu giả trong trình duyệt** (`src/api/mock.ts`, lưu ở localStorage):

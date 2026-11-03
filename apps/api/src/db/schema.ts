@@ -24,8 +24,14 @@ import {
 export const jobState = pgEnum('job_state', ['draft', 'published', 'closed']);
 export const employmentType = pgEnum('employment_type', ['full_time', 'part_time', 'internship']);
 export const interviewMode = pgEnum('interview_mode', ['onsite', 'online']);
-export const templateKey = pgEnum('template_key', ['interview_onsite', 'interview_online', 'rejection', 'call']);
-export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy']);
+export const templateKey = pgEnum('template_key', [
+  'interview_onsite',
+  'interview_online',
+  'rejection',
+  'rejection_interview',
+  'call',
+]);
+export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy', 'copy_html']);
 export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
 
 /** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
@@ -192,6 +198,11 @@ export const hrUsers = pgTable(
     phone: text('phone'),
     /** The real mailbox this HR sends from; the sign-in email may not receive mail. */
     contactEmail: text('contact_email'),
+    /** Shown in the mail signature and filled in as {Chức danh HR}, e.g. "HR Generalist". */
+    /** Filled in from the start; clearing it (null) leaves the line out of the mail signature. */
+    jobTitle: text('job_title').default('HR Generalist'),
+    /** Shown in brackets in the mail signature and filled in as {Tên gọi khác}, e.g. "Ms. Lee". */
+    alias: text('alias'),
     createdAt,
     updatedAt,
   },
@@ -223,6 +234,10 @@ export const messageTemplates = pgTable('message_templates', {
   key: templateKey('key').primaryKey(),
   subject: text('subject').notNull(),
   body: text('body').notNull(),
+  note: text('note').notNull().default(''),
+  calloutTitle: text('callout_title').notNull().default(''),
+  callout: text('callout').notNull().default(''),
+  closing: text('closing').notNull().default(''),
   updatedAt,
 });
 

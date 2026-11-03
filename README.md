@@ -13,7 +13,7 @@ packages/shared Luật nghiệp vụ, validation (zod), kiểu dữ liệu dùng
 
 ```bash
 npm install
-npm run dev            # http://localhost:5173
+npm run dev            # http://localhost:3344
 ```
 
 Chưa đặt `VITE_API_URL` thì FE dùng BE giả trong trình duyệt (`apps/web/src/api/mock.ts`). Xem `apps/web/README.md`.

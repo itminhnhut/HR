@@ -18,6 +18,8 @@ export default defineConfig(({ mode }) => ({
   build: { target: 'es2022', sourcemap: mode === 'preview' ? false : 'hidden' },
   // With VITE_API_URL=/api in .env.local, `npm run dev:api` (port 8787) answers these paths.
   server: {
+    port: 3344,
+    strictPort: true,
     proxy: Object.fromEntries(
       // xfwd: pass the visitor's IP on, so per-IP limits (phone lookup) work for phones on the same wifi.
       ['/api', '/share', '/sitemap.xml', '/robots.txt'].map((path) => [

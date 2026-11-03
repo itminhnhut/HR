@@ -225,6 +225,8 @@ export interface HrUserDto {
   isMe: boolean;
   phone: string | null;
   contactEmail: string | null;
+  jobTitle: string | null;
+  alias: string | null;
 }
 
 /** Shown once: the temporary password of a new or reset account. */
@@ -291,6 +293,10 @@ export interface HrMe {
   phone: string | null;
   /** The real mailbox this HR sends from (the sign-in email may not receive mail). */
   contactEmail: string | null;
+  /** Filled into templates as {Chức danh HR}, e.g. "HR Generalist"; the mail signature shows it. */
+  jobTitle: string | null;
+  /** Filled into templates as {Tên gọi khác}, e.g. "Ms. Lee"; the mail signature shows it in brackets. */
+  alias: string | null;
 }
 
 export interface CandidateMe {

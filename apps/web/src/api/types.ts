@@ -11,6 +11,7 @@ import type {
   HrMe,
   HrUserDto,
   InterviewMode,
+  MessageTemplate,
   MessageTemplatesResponse,
   TemplateKey,
   ContactChannel,
@@ -128,6 +129,8 @@ export interface HrProfilePatch {
   name: string;
   phone: string;
   contactEmail: string;
+  jobTitle: string;
+  alias: string;
 }
 
 /**
@@ -203,9 +206,9 @@ export interface Api {
   hrChangePassword(current: string, next: string): Promise<HrMe>;
   hrUpdateProfile(patch: HrProfilePatch): Promise<HrMe>;
   hrMessageTemplates(): Promise<MessageTemplatesResponse>;
-  hrSaveMessageTemplate(key: TemplateKey, input: { subject: string; body: string }): Promise<MessageTemplatesResponse>;
+  hrSaveMessageTemplate(key: TemplateKey, input: Omit<MessageTemplate, 'key'>): Promise<MessageTemplatesResponse>;
   hrResetMessageTemplate(key: TemplateKey): Promise<MessageTemplatesResponse>;
-  /** "Đã soạn thư": HR opened a filled template in Gmail / a mail app, or copied it. */
+  /** "Đã soạn thư": HR opened a filled template in Gmail / a mail app, or copied it (plain, or designed for Outlook). */
   hrLogContact(id: string, input: { templateKey: TemplateKey; channel: ContactChannel }): Promise<ApplicationDetailDto>;
 
   // News (spec-news.md). Public: published posts only.

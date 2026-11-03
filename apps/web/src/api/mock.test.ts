@@ -285,3 +285,74 @@ describe('candidate', () => {
     expect(await run(mockApi.candidateOverview())).toBeNull();
   });
 });
+
+describe('mail templates and sender details', () => {
+  const signIn = async () => {
+    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
+  };
+
+  it('should list the five templates with all their sections', async () => {
+    // Arrange
+    await signIn();
+
+    // Act
+    const { templates } = await run(mockApi.hrMessageTemplates());
+
+    // Assert
+    expect(templates.map((t) => t.key)).toEqual([
+      'interview_onsite',
+      'interview_online',
+      'rejection',
+      'rejection_interview',
+      'call',
+    ]);
+    expect(templates.find((t) => t.key === 'rejection')?.calloutTitle).toBeTruthy();
+  });
+
+  it('should keep every section of a saved template, and go back to the original on reset', async () => {
+    // Arrange
+    await signIn();
+    const texts = { subject: 'S', body: 'B', note: '', calloutTitle: 'T', callout: 'C', closing: 'K' };
+
+    // Act
+    const saved = await run(mockApi.hrSaveMessageTemplate('rejection_interview', texts));
+    const reset = await run(mockApi.hrResetMessageTemplate('rejection_interview'));
+
+    // Assert
+    expect(saved.templates.find((t) => t.key === 'rejection_interview')).toEqual({
+      key: 'rejection_interview',
+      ...texts,
+    });
+    expect(saved.customized).toEqual(['rejection_interview']);
+    expect(reset.customized).toEqual([]);
+  });
+
+  it('should save the job title and alias, and clear them when emptied', async () => {
+    // Arrange
+    await signIn();
+    const profile = { name: 'Lan', phone: '', contactEmail: '' };
+
+    // Act
+    const saved = await run(mockApi.hrUpdateProfile({ ...profile, jobTitle: 'HR Generalist', alias: 'Ms. Lee' }));
+    const cleared = await run(mockApi.hrUpdateProfile({ ...profile, jobTitle: '', alias: '' }));
+
+    // Assert
+    expect(saved).toMatchObject({ jobTitle: 'HR Generalist', alias: 'Ms. Lee' });
+    expect(cleared).toMatchObject({ jobTitle: null, alias: null });
+  });
+
+  it('should log the designed-mail channel in the contact history', async () => {
+    // Arrange
+    await signIn();
+    const [first] = (await run(mockApi.hrApplications())).applications;
+    if (!first) throw new Error('the seed has applications');
+
+    // Act
+    const detail = await run(
+      mockApi.hrLogContact(first.id, { templateKey: 'rejection_interview', channel: 'copy_html' }),
+    );
+
+    // Assert
+    expect(detail.contacts.at(-1)).toMatchObject({ templateKey: 'rejection_interview', channel: 'copy_html' });
+  });
+});
