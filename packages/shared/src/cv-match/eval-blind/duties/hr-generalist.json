@@ -1,0 +1,25 @@
+{
+  "duties": [
+    "Tuyển dụng trọn quy trình từ đăng tin đến nhận việc",
+    "Chấm công, tính lương và trả lương hằng tháng",
+    "Làm thủ tục BHXH, BHYT và các chế độ cho người lao động",
+    "Soạn hợp đồng lao động, nội quy và xử lý vi phạm kỷ luật",
+    "Đón nhân viên mới, đào tạo hội nhập",
+    "Điều phối đánh giá định kỳ và KPI",
+    "Tổ chức hoạt động gắn kết nội bộ"
+  ],
+  "labels": {
+    "hrg-01": ["M", "M", "M", "M", "M", "M", "M"],
+    "hrg-02": ["M", "M", "M", "M", "M", "M", "K"],
+    "hrg-03": ["M", "M", "M", "M", "K", "M", "M"],
+    "hrg-04": ["M", "U", "U", "M", "M", "K", "M"],
+    "hrg-05": ["U", "M", "M", "K", "K", "K", "K"],
+    "hrg-06": ["M", "U", "U", "K", "M", "K", "M"],
+    "hrg-07": ["U", "U", "U", "M", "K", "K", "K"],
+    "hrg-08": ["K", "K", "K", "K", "K", "K", "K"],
+    "hrg-09": ["K", "K", "K", "K", "K", "K", "K"],
+    "hrg-10": ["K", "K", "K", "K", "K", "K", "K"],
+    "hrg-11": ["M", "M", "M", "M", "M", "M", "K"],
+    "hrg-12": ["M", "M", "M", "M", "M", "M", "K"]
+  }
+}

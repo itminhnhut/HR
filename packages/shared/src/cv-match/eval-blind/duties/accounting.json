@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Theo dõi công nợ khách hàng và nhà cung cấp, đối chiếu định kỳ",
+    "Kiểm tra hồ sơ thanh toán, lập phiếu chi và uỷ nhiệm chi",
+    "Kê khai thuế GTGT, TNCN hằng kỳ",
+    "Đối chiếu tiền gửi ngân hàng và quỹ tiền mặt",
+    "Xuất hoá đơn điện tử và quản lý hoá đơn đầu vào",
+    "Hỗ trợ kế toán trưởng lập báo cáo tài chính và làm việc khi thanh tra thuế"
+  ],
+  "labels": {
+    "kto-01": ["M", "M", "M", "M", "M", "M"],
+    "kto-02": ["M", "M", "M", "M", "M", "M"],
+    "kto-03": ["M", "M", "M", "M", "M", "M"],
+    "kto-04": ["M", "M", "U", "M", "M", "U"],
+    "kto-05": ["M", "M", "M", "K", "M", "K"],
+    "kto-06": ["U", "U", "M", "M", "M", "M"],
+    "kto-07": ["U", "K", "U", "M", "M", "K"],
+    "kto-08": ["M", "U", "U", "K", "M", "K"],
+    "kto-09": ["K", "K", "K", "K", "K", "K"],
+    "kto-10": ["K", "K", "K", "K", "K", "K"],
+    "kto-11": ["K", "K", "K", "K", "K", "K"],
+    "kto-12": ["M", "M", "M", "M", "M", "M"]
+  }
+}

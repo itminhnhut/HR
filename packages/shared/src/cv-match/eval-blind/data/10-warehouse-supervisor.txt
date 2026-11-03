@@ -1,0 +1,515 @@
+@ad warehouse-supervisor
+@occupation Giám sát kho
+@req experience | 5 năm làm kho, trong đó ít nhất 2 năm ở vai trò tổ trưởng hoặc giám sát
+@req education | Tốt nghiệp cao đẳng trở lên, ngành logistics, chuỗi cung ứng hoặc quản trị là phù hợp
+@req skills | Tổ chức nhập xuất theo FIFO, FEFO, sắp xếp vị trí và quy hoạch mặt bằng kho
+@req skills | Kiểm kê định kỳ, truy nguyên chênh lệch và lập báo cáo
+@req skills | Quản lý được đội bốc xếp, lái xe nâng từ 10 người trở lên và phân ca
+@req skills | Sử dụng WMS hoặc phân hệ kho của ERP
+@req skills | Đảm bảo PCCC, an toàn lao động và 5S trong kho
+@req skills | Dùng Excel làm báo cáo tồn kho và chỉ số vận hành
+@req licence bonus | Có chứng nhận huấn luyện vận hành xe nâng là lợi thế
+@req language bonus | Tiếng Anh đọc được packing list là lợi thế
+@req soft | Sức khoẻ tốt, chịu được làm ca đêm
+=== wsv-01 | strong | ordinary | interview | M M M M M M M M M M M
+NGUYỄN HOÀNG LONG
+Trưởng bộ phận kho lạnh
+Di động: 0900 000 031
+Thư điện tử: long.nguyenhoang.kho@example.com
+Nơi ở: Dĩ An, Bình Dương | Sinh năm 1990 | Đã lập gia đình
+
+ĐÔI NÉT VỀ TÔI
+Mười năm sống với hàng đông lạnh: từ người mặc áo phao đi soạn đơn trong phòng âm 18 độ cho đến lúc được giao cả kho hơn 8.000 pallet. Điều tôi tự hào nhất không phải chức danh mà là ba năm liền không có lô hàng nào của kho phải huỷ vì quá date.
+
+LỊCH SỬ CÔNG VIỆC
+03/2021 đến nay. Công ty CP Thực phẩm Đông Lạnh Sao Biển. Giám sát kho.
+Điều hành 26 anh em gồm tài xế xe nâng, công nhân bốc dỡ và nhân viên soạn hàng, chia thành ba kíp quay vòng. Trong đó tôi trực kíp 22h - 6h một tuần mỗi tháng và vẫn đều đặn đạt sức khoẻ loại I khi khám định kỳ.
+Hàng thuỷ sản và thịt được cho ra theo hạn dùng gần nhất, riêng nguyên liệu khô đi theo ngày về trước. Tôi tự đánh mã ô kệ lại toàn bộ năm 2022, chuyển nhóm bán chạy về gần cửa xuất, nhờ đó quãng đường xe nâng giảm thấy rõ.
+Mỗi tháng đếm chọn mẫu, mỗi quý đếm toàn bộ. Lệch ở đâu thì lần lại phiếu, camera và lịch sử quét mã để biết lệch từ khâu nào, sau đó lập biên bản gửi kế toán.
+Làm việc trên hệ thống quản lý kho (WMS) của công ty, phân quyền cho nhân viên và xử lý các lỗi vị trí phát sinh. Trực tiếp mở khoá, chạy lại lệnh khi có sai lệch giữa hệ thống và ô thực tế.
+Phụ trách đội chữa cháy cơ sở, kiểm tra bình, vòi, lối thoát hiểm. Chấm điểm 5S hàng tuần theo từng khu, nhắc nhở việc đeo găng, mặc áo ấm và an toàn khi vào phòng lạnh.
+Làm báo cáo bằng Excel hằng tuần: giá trị tồn, số ngày tồn, hàng sắp hết hạn, tỷ lệ giao đúng hạn, năng suất kíp.
+Ngồi với bộ phận mua và đội xe mỗi thứ Hai để chốt lịch container về, lịch xuất cho nhà phân phối. Hướng dẫn nhân viên mới 3 ngày đầu và tổ chức diễn tập an toàn hai lần một năm.
+
+06/2016 đến 02/2021. Công ty TNHH Kho Vận Lạnh Hải Đăng.
+Từ 06/2016 đến 09/2018: nhân viên kho, soạn hàng theo đơn cho siêu thị. Từ 10/2018: tổ trưởng kíp đêm, quản lý 12 người.
+Đối chiếu packing list tiếng Anh của hàng nhập từ Na Uy, Ấn Độ với số thùng thực nhận, ghi nhận thiếu đủ để báo chủ hàng.
+
+HỌC VẤN VÀ BẰNG CẤP
+2012 - 2015: Cao đẳng Kinh tế Đối ngoại Thành Nam, ngành Quản trị chuỗi cung ứng.
+2019: Chứng nhận huấn luyện an toàn vận hành xe nâng hàng, Trung tâm An toàn Lao động Phương Đông.
+2023: Lớp kiểm kê và kiểm soát tồn kho nâng cao.
+
+THÀNH TÍCH
+Giảm tỷ lệ huỷ hàng từ 0,6% xuống dưới 0,1% sau hai năm. Được công nhận nhân viên tiêu biểu của công ty năm 2022, 2024.
+
+NGOÀI GIỜ
+Đạp xe đường dài, làm vườn, cuối tuần đưa hai con về quê.
+#why Đủ cả. Không dùng chữ FIFO, FEFO nhưng mô tả đúng việc đó. Trên 5 năm rưỡi ở vai trò dẫn nhóm, có ca đêm và khám sức khoẻ cụ thể.
+=== wsv-02 | strong | hard | interview | M M M M M M M M A M M
+DINH THI THANH TRUC
+Warehouse Operations Lead - Pharmaceutical Distribution
+Phone: 0900 000 032 | Email: truc.dinh.ops@example.com | Tan Binh, Ho Chi Minh City
+Date of birth: 1991 | Available: 30 days' notice
+
+PROFILE
+Warehouse professional with over nine years in regulated distribution. I care about clean audit trails, sensible racking and people who go home safe. Currently leading a GDP-certified site that holds more than 2,300 product codes, many with short remaining shelf life and temperature limits.
+
+EMPLOYMENT
+Jul 2021 - Present | Duc An Pharma Distribution JSC | Warehouse Operations Lead
+- Run a 6,000-pallet site with 31 staff: pickers, reach-truck drivers, loaders and two shift leaders. Prepare the weekly roster across three rotating shifts, and regularly cover nights myself (three or four nights a month).
+- Earliest-expiry-first picking is enforced by batch in SAP WM; slow items get moved to upper levels and the fast movers go to the golden zone near dispatch. Redesigned the receiving bay and quarantine area in 2023.
+- Monthly cycle counts and a full annual count with the finance team. When a batch does not reconcile, I go back through transfer orders, scan logs and returns to find where it went wrong and write the variance report.
+- Internal auditor for fire safety and GDP housekeeping. Hold weekly 5S walks, check extinguishers and emergency exits, follow up near-miss reports.
+- Build Excel reports with pivot tables and Power Query: stock on hand, expiry risk by month, order accuracy, lines picked per hour.
+- Train every new joiner for two weeks and repeat manual handling and spill response sessions each quarter.
+- Sit with Procurement and third-party carriers twice a week to plan inbound containers and outbound routes for hospital orders.
+
+Mar 2017 - Jun 2021 | Lotus Medical Supply Co., Ltd | Warehouse Assistant, then Team Leader (from Jan 2019)
+- Picked, packed and checked orders against delivery notes; moved on to lead a team of nine on the day shift.
+- Checked commercial invoices and packing lists from Indian and German suppliers against received cartons before putting goods away.
+- Helped migrate stock data from a spreadsheet to the first version of the company's ERP inventory module.
+
+EDUCATION
+2012 - 2016 | Bachelor of Supply Chain Management, Saigon Commerce Academy (Tan Phu campus). GPA 7.4/10.
+
+TRAINING AND LANGUAGES
+Good Distribution Practice refresher (annual). Lean Six Sigma Yellow Belt (2022). First aid certificate (2024). English: TOEIC 720, daily use with suppliers and auditors.
+
+PROJECTS
+Temperature mapping of the cold room (2024) with an outside validation team. Paperless picking pilot with handheld scanners, reduced pick errors by about a third in six months.
+
+INTERESTS
+Pilates, reading mystery novels, volunteering at a neighbourhood book corner.
+#why Toàn tiếng Anh. Dược nên FEFO viết là earliest-expiry-first, kiểm kê là cycle count. Không nói có chứng nhận xe nâng: bonus nên A. Từ 01/2019 đã dẫn nhóm, vượt 2 năm.
+=== wsv-03 | strong | ordinary | interview | M M M M M M M M M A M
+TRUONG VAN HAU
+To giam sat kho vat lieu xay dung
+DT 0900 000 033 . Mail: hau.truongvan@example.com
+Dia chi: Thuan Thanh, Bac Ninh
+
+VAI NET
+Minh viet khong dau cho nhanh, mong anh chi thong cam. Toi di len tu lai xe nang, roi to truong, roi giam sat. Biet may tan hang nang nhu gach, thep, xi mang thi can xep sao cho khong sap, khong mat, va khong ai bi thuong.
+
+QUA TRINH LAM VIEC
+08/2022 - nay. Cong ty CP Vat Lieu Thanh Cao, kho trung tam Thuan Thanh (khoang 12.000 m2 ca nha kho lan bai). Chuc danh: Giam sat kho.
+- Dieu hanh 22 nguoi chia lam 2 ca, ca toi ket thuc luc 23h, mua cao diem co dot truc dem lien tuc 2 thang va chua nghi buoi nao.
+- Hang vao truoc xuat truoc, rieng keo dan, xi mang co han dung thi xem han tren bao roi moi cap. Toi ve lai so do bai, chia lo theo ma hang va tinh lai loi di cho xe nang.
+- Thang nao cung dem kho cuoi thang cung ke toan. Thieu thua thi xem lai phieu xuat, can xe, lich su nhap tren phan mem Bravo de ra nguyen nhan, co bien ban ro rang.
+- Nhap, xuat, dieu chuyen tren phan he kho cua Bravo, duyet phieu cua nhan vien.
+- Kiem tra binh chua chay moi thang, dan noi quy an toan khu xep cao, cam dung gan keo thep dang ha. Moi cuoi tuan la kiem tra 5S toan kho.
+- Lap bao cao Excel ton kho, so xe xuat trong ngay, hao hut theo ma hang gui truong phong.
+- Huong dan cac em moi vao cach cheo xep, cach di xe nang trong kho, cach ky phieu.
+
+05/2018 - 07/2022. Cong ty TNHH Gach Men Dai Viet Xanh. To truong boc xep tu 02/2020.
+- Luc dau lai xe nang va xuat gach len container. Sau do quan to 14 nguoi cho kho thanh pham.
+- Lam viec voi dieu phoi xe de xep thu tu cac xe cho boc hang, giam thoi gian xe nam cho.
+- Tung ca thang lam dem do kho phai xuat hang di Lao Cai.
+
+01/2016 - 04/2018. Xuong Sat Mien Kinh Bac. Cong nhan, ban thoi gian phu kho.
+
+HOC VAN
+2013 - 2016: Cao dang Kinh te Ky thuat Bac Thanh, nganh Quan tri kinh doanh.
+
+CHUNG CHI
+Giay chung nhan huan luyen van hanh xe nang 3 tan (2019, cap lai 2024). An toan lao dong nhom 3. Co nghiep vu PCCC co so.
+
+KY NANG
+Excel: SUMIFS, loc, bang tong hop. Phan mem Bravo. Biet sua xe nang don gian. Chi biet doc so va ten hang tren phieu tieng Anh, khong ngoai ngu.
+
+THANH TICH
+Nam 2024 giam hao hut gach vo tu 1,8% con 0,7%. Khong co tai nan lao dong nghiem trong trong 4 nam quan ly.
+
+SO THICH
+Bong chuyen hoi, nuoi ga, tham gia doi xung kich khu pho.
+#why Viết không dấu vì thói quen. Từ 02/2020 đã làm tổ trưởng. Dòng tiếng Anh là bonus, "doc so va ten hang" không đủ nên A. Quản trị kinh doanh đạt.
+=== wsv-04 | partial | ordinary | maybe | M U M M M U M M M A K
+CAO XUÂN PHÚC
+Tổ trưởng kho
+0900 000 034 — phuc.caoxuan@example.com — Yên Mỹ, Hưng Yên
+
+GIỚI THIỆU NGẮN
+7 năm kho phụ liệu may. Quen nhiều mã, nhiều màu, nhiều size. Quản người tốt. Chưa có cơ hội dùng phần mềm kho.
+
+KINH NGHIỆM
+
+10/2022 - nay
+Công ty TNHH Phụ Liệu May Tân Hạnh
+Tổ trưởng kho
+- Dưới tay 16 người: nhập hàng, cắt mẫu, cấp phát, lái xe nâng.
+- Xếp lịch ca, đổi ca, chia việc theo số đơn.
+- Hàng về trước đi trước. Kho có sơ đồ kệ do tôi vẽ và dán ở từng dãy.
+- Cuối tháng đếm tổng, sau đó tìm lại phiếu cấp phát của chuyền để biết thiếu ở đâu.
+- Báo cáo thiếu thừa gửi kế toán và giám đốc nhà máy.
+- Thẻ kho và sổ tay vẫn là công cụ chính. Công ty chưa triển khai phần mềm quản lý kho, nên mọi số liệu do tôi nhập vào file Excel hằng ngày.
+- Làm báo cáo tồn kho, vòng quay, hàng chết trên Excel.
+- Lên lịch xe là việc của phòng kế hoạch, tổ kho chỉ nhận lịch và làm theo.
+- Trực tiếp nhắc bình cứu hoả, lối thoát, biển báo. Tuần nào cũng dọn 5S, đến lịch thì đoàn PCCC khu công nghiệp xuống kiểm tra.
+
+11/2019 - 09/2022
+Công ty TNHH Dệt May Vân Trà
+Nhân viên kho vải
+- Nhận cuộn vải, soi lỗi cùng QC, đo khổ.
+- Kiểm cuộn theo lô nhuộm, cấp cho tổ cắt.
+- Lái xe nâng khi cần.
+- Đối chiếu số cuộn với phiếu.
+
+12/2018 - 10/2019
+Cửa hàng phụ kiện Thái Ngân
+Giao hàng
+- Chở hàng đi các tỉnh lân cận.
+
+HỌC VẤN
+2015 - 2017: Trung cấp Kế toán Đồng Hưng.
+Đã đăng ký liên thông nhưng chưa theo học.
+
+CHỨNG NHẬN
+Thẻ huấn luyện vận hành xe nâng (2021).
+An toàn lao động nhóm 3 (2024).
+
+KỸ NĂNG
+Excel (thành thạo Pivot, VLOOKUP).
+Vẽ sơ đồ kho.
+Tính toán nhanh.
+
+THÀNH TÍCH
+Đề xuất chia mã nút theo màu, thời gian soạn đơn giảm khoảng một nửa.
+Tỷ lệ cấp sai phụ liệu dưới 0,2% trong năm 2025.
+Giải nhì hội thi an toàn vệ sinh viên của khu công nghiệp 2024.
+
+SỞ THÍCH
+Bóng đá phong trào. Đọc tin về kho vận trên mạng. Nuôi chó.
+
+NGƯỜI THAM CHIẾU
+Chị Thoa, trưởng phòng nhân sự Tân Hạnh, 0900 000 134.
+#why Làm việc tốt nhưng chỉ có trung cấp và chưa dùng WMS hay ERP. Lên lịch xe CV tự nói không phải việc của mình. Không nói ca đêm.
+=== wsv-05 | partial | hard | maybe | U M M M U M A M A M K
+LÂM GIA HÂN
+Điều hành viên kho 3PL
+0900 000 035
+giahan.lam@example.com
+Quận 7, TP. Hồ Chí Minh
+
+TÔI LÀ AI
+Tốt nghiệp đúng ngành, thích dữ liệu và thích đi kho hơn thích ngồi văn phòng. Trong hơn bốn năm qua tôi học nhanh nhất từ hai đợt triển khai phần mềm và một đợt chuyển kho. Tôi đang tìm cơ hội được dẫn một đội lớn hơn.
+
+CÔNG VIỆC
+Công ty CP Dịch vụ Kho Vận Sông Tiền (kho thuê ngoài, nhiều chủ hàng mỹ phẩm và hàng tiêu dùng)
+05/2025 - nay: Trưởng nhóm vận hành, 6 thành viên
+• Chịu trách nhiệm một khu 2.000 m2 cho khách mỹ phẩm, cấp phát theo hạn sử dụng còn lại và theo tiêu chuẩn khách yêu cầu.
+• Tự thiết kế lại luồng đi trong khu: gom hàng chạy vào hàng kệ thấp gần bàn đóng gói, chuyển hàng cồn xuống khu riêng.
+• Đối soát tồn với khách mỗi tháng; khi lệch thì đào lại lịch sử giao dịch trên WMS, tìm đúng ca và đúng người, gửi báo cáo cùng phương án xử lý.
+• Làm báo cáo vận hành trên Excel gửi khách: số đơn, tỷ lệ đúng giờ, tồn theo tuổi hàng. Hàng chậm luân chuyển được đánh dấu riêng.
+• Nhắc nhóm thực hiện 5S và dọn khu vực trước khi hết ca. Phần PCCC do bộ phận HSE toà kho làm, tôi chỉ tham dự diễn tập.
+• Làm việc với hãng vận chuyển để chốt khung giờ lấy hàng các đợt khuyến mãi.
+
+03/2022 - 04/2025: Nhân viên điều hành kho
+• Nhận yêu cầu nhập xuất từ khách, tạo lệnh, in phiếu, kiểm tra hàng ra vào.
+• Thành viên nhóm triển khai WMS đợt 2 năm 2023: viết tài liệu vai trò, test luồng nhận hàng, đào tạo lại người dùng cuối.
+• Đọc commercial invoice, packing list của lô hàng từ Hàn Quốc để đối chiếu với thực tế.
+
+HỌC VẤN
+2017 - 2021: Đại học Thương mại Quốc tế Đông Đô, Cử nhân Logistics và Quản lý chuỗi cung ứng. Khoá luận: "Tối ưu vị trí lưu kho bằng phân tích ABC".
+
+KỸ NĂNG VÀ NGÔN NGỮ
+WMS, Excel (Power Query, pivot), Power BI cơ bản, Tiếng Anh TOEIC 750, giao tiếp hằng ngày với khách nước ngoài. Tiếng Hàn sơ cấp.
+
+DỰ ÁN
+• Chuyển kho 2024: chuyển 1.400 pallet trong 3 ngày cuối tuần không sai tồn.
+• Sổ tay nhận hàng cho nhân viên mới, soạn bằng cả tiếng Việt và tiếng Anh.
+
+HOẠT ĐỘNG
+Diễn giả khách mời ở lớp chuỗi cung ứng của trường cũ. Chơi cầu lông, học nấu ăn.
+#why Nền tốt nhưng 4 năm 8 tháng, dẫn nhóm 1 năm rưỡi và đội chỉ 6 người. Có 5S, còn PCCC do bộ phận khác làm nên dòng an toàn tranh cãi được.
+=== wsv-06 | near-miss | ordinary | no | U A A M U M A M M A K
+PHAN THỊ BÍCH LIÊN
+Thủ kho
+Số điện thoại 0900 000 036
+Email bichlien.phan@example.com
+Tiên Du, Bắc Ninh
+
+MỤC TIÊU
+Tôi mong muốn được gắn bó lâu dài với một doanh nghiệp ổn định, phát huy kinh nghiệm nhiều năm trong lĩnh vực giữ kho, sổ sách.
+
+KINH NGHIỆM LÀM VIỆC
+Từ 09/2017 đến nay: Thủ kho nguyên liệu, Công ty CP Cơ Khí Đồng Minh Tiến
+Hằng ngày tôi nhận phôi thép, bu lông và sơn từ nhà cung cấp, xem hoá đơn, phiếu giao có khớp không, nhập số vào phần mềm Fast phân hệ kho, rồi in phiếu cho tổ sản xuất. Khi xuất cấp cho xưởng thì lấy lô cũ trước, riêng sơn phải xem hạn.
+Vị trí để hàng trong kho đã có từ trước, do quản đốc xưởng quyết định, tôi giữ nguyên và ghi vị trí trong sổ.
+Việc đếm hàng diễn ra vào cuối mỗi tháng. Tôi tự đếm, so với phần mềm, nếu lệch thì xem lại phiếu xuất và hỏi tổ, sau đó ghi vào biên bản kiểm kê gửi kế toán trưởng.
+Tôi không quản lý nhân sự. Đội bốc dỡ và xe nâng do anh tổ trưởng xưởng điều hành, tôi chỉ gọi họ khi có xe về.
+Cuối tuần gửi bảng tồn kho bằng Excel cho trưởng phòng.
+
+Từ 03/2014 đến 08/2017: Nhân viên cấp phát, Công ty TNHH Bao Bì Kim Ngân
+Cấp giấy, keo, mực cho các máy in theo phiếu yêu cầu. Lái xe nâng hàng nhẹ trong kho. Có tham gia diễn tập chữa cháy hằng năm của công ty và học lớp PCCC một buổi.
+
+HỌC VẤN
+2011 - 2014: Cao đẳng Tài chính Kế toán Lạc Hồng Sơn, ngành Kế toán doanh nghiệp.
+
+CHỨNG NHẬN
+Huấn luyện an toàn vận hành xe nâng (2016), đã đổi lại 2022.
+
+KỸ NĂNG
+Phần mềm Fast. Excel: SUM, VLOOKUP, in báo cáo. Word. Cẩn thận, ít nhầm lẫn. Tiếng Anh: đọc mã vật tư trên catalogue, không học thêm.
+
+THÀNH TÍCH
+Năm 2023 được khen vì số tồn thực tế khớp phần mềm 99,8%. Sáng kiến dán nhãn màu theo tháng về của sơn.
+Bốn lần được bầu là cá nhân tiêu biểu công đoàn cơ sở.
+
+HOẠT ĐỘNG VÀ SỞ THÍCH
+Cắm hoa, chạy bộ buổi sáng, tham gia ban nữ công. Thích đi lễ chùa đầu năm và nấu ăn cho gia đình.
+
+NGƯỜI GIỚI THIỆU
+Bà Thủy, kế toán trưởng Đồng Minh Tiến, 0900 000 136.
+#why Thủ kho giỏi 12 năm nhưng CV nói rõ không quản người, nên hai dòng dẫn đội là U. Ngành Kế toán có bằng cao đẳng: dòng ngành tranh cãi. Có FIFO, không có quy hoạch: A.
+=== wsv-07 | near-miss | hard | maybe | U M A M A A A M A A K
+TÔ THANH VÂN
+Cửa hàng trưởng siêu thị tiện lợi
+0900 000 037 | van.tothanh@example.com | Thủ Đức, TP. Hồ Chí Minh
+
+HỒ SƠ NGẮN
+Tám năm trong ngành bán lẻ, trong đó hơn năm năm làm cửa hàng trưởng, đã mở mới 2 điểm bán và cứu một điểm thường xuyên thua lỗ. Muốn chuyển sang hậu cần vì thấy mình mạnh nhất ở hàng hoá và con người chứ không phải bán hàng.
+
+KINH NGHIỆM
+04/2021 - nay: Chuỗi Siêu thị Mini Bốn Mùa - Cửa hàng trưởng (điểm bán 420 m2, doanh thu 1,2 tỷ/tháng)
+- Quản 18 nhân viên ca sáng, ca chiều, xếp lịch hằng tuần trên phần mềm nhân sự của chuỗi, thay ca khi có người nghỉ.
+- Nhận hàng từ tổng kho và nhà cung cấp trực tiếp, kiểm phiếu giao, kiểm hạn. Sữa, bánh, đồ tươi được đẩy lên trước theo hạn dùng, hàng cận date làm khuyến mãi.
+- Sắp kệ theo sơ đồ trưng bày mà phòng ngành hàng gửi, chia lại khu hậu kho khi có đợt hàng Tết.
+- Đếm toàn bộ cửa hàng cuối tháng, tìm nguyên nhân hao hụt theo từng ngành hàng, có lần phát hiện một nhân viên gian lận qua đối chiếu camera và lịch sử thu ngân.
+- Đặt hàng và xem tồn trên phần mềm bán lẻ của chuỗi (POS kết nối ERP tổng công ty, chỉ dùng ở màn hình cửa hàng).
+- Viết báo cáo tuần trên Excel: doanh thu, hao hụt, tồn cận date, số ngày tồn.
+- Trực tiếp hướng dẫn nhân viên mới; là đội trưởng PCCC của cửa hàng theo quy định chung của toà nhà, diễn tập chữa cháy mỗi năm.
+
+11/2018 - 03/2021: Chuỗi Siêu thị Mini Bốn Mùa - Phó cửa hàng
+- Mở cửa, đóng ca, nhận tiền, kiểm hàng về, giải quyết khiếu nại.
+- Tham gia đợt khai trương hai điểm bán mới tại Thủ Đức.
+
+06/2017 - 10/2018: Công ty TNHH Thời Trang Mai Linh Thảo - Nhân viên bán hàng
+- Tư vấn trang phục, xếp hàng lên giá, kiểm hàng cuối tuần.
+
+HỌC VẤN
+2014 - 2017: Cao đẳng Thương mại Nam Bình, ngành Quản trị kinh doanh.
+
+KỸ NĂNG
+Excel tốt, giao tiếp, xử lý tình huống, bán hàng, kèm cặp. Tiếng Anh giao tiếp cơ bản với khách.
+
+THÀNH TÍCH
+Cửa hàng xuất sắc miền Nam năm 2023. Giảm hao hụt 1,4% xuống 0,6%.
+
+SỞ THÍCH
+Du lịch bụi, làm bánh, xem phim Hàn.
+#why Cửa hàng trưởng giống nhiều mặt nhưng chưa từng làm kho, hậu kho chỉ là một góc. Đội 18 người có phân ca nhưng không phải bốc xếp, xe nâng. POS của chuỗi có phải là phân hệ kho ERP hay không thì tranh cãi được.
+=== wsv-08 | non-fit | hard | no | U U U U U U U A A A A
+HỒ MINH KHÔI
+Data Engineer / Kỹ sư dữ liệu
+0900 000 038 · khoi.ho.data@example.com · Cầu Giấy, Hà Nội
+Mã nguồn cá nhân: gitlab nội bộ, có thể demo khi phỏng vấn
+
+TÓM TẮT
+Kỹ sư dữ liệu 6 năm kinh nghiệm xây dựng kho dữ liệu (data warehouse) và các luồng ETL cho doanh nghiệp bán lẻ và tài chính. Quan tâm chất lượng dữ liệu, giám sát pipeline và tối ưu chi phí truy vấn.
+
+KINH NGHIỆM LÀM VIỆC
+09/2022 - nay: Công ty CP Công Nghệ Dữ Liệu Thiên Hà - Senior Data Engineer, trưởng nhóm kỹ thuật
+- Thiết kế mô hình kho dữ liệu theo sơ đồ hình sao cho 40 bảng fact và dimension, phục vụ báo cáo tồn kho và doanh số của khách hàng bán lẻ.
+- Xây dựng hàng đợi FIFO trên Kafka và SQS đảm bảo thứ tự xử lý sự kiện; bổ sung cơ chế chống trùng lặp.
+- Viết job kiểm kê dữ liệu chạy mỗi đêm, phát hiện chênh lệch giữa hệ nguồn và kho, tự động sinh báo cáo chất lượng dữ liệu.
+- Quy hoạch phân vùng lưu trữ và layout bảng trên Snowflake để giảm chi phí đọc.
+- Dẫn nhóm 5 kỹ sư, phân ca on-call theo tuần; trực các sự cố ban đêm khi pipeline lỗi.
+- Quản lý tài khoản và phân quyền, xử lý sự cố sập job, đảm bảo an toàn thông tin theo chuẩn ISO 27001.
+
+07/2020 - 08/2022: Công ty TNHH Giải Pháp Phần Mềm Sao Việt - Data Engineer
+- Viết ETL bằng Python, Airflow, dbt cho hệ thống ngân hàng lõi.
+- Xuất báo cáo cho khối kinh doanh qua Excel và Power BI, tự động gửi email hằng ngày.
+- Hỗ trợ khách kiểm tra dữ liệu khi nghiệm thu.
+
+HỌC VẤN
+2016 - 2020: Đại học Công nghệ Thông tin Thăng Long Xanh, Kỹ sư Khoa học máy tính.
+
+KỸ NĂNG
+Python, SQL, Spark, Airflow, dbt, Kafka, Snowflake, Docker, Excel, Power BI, Git.
+Tiếng Anh: IELTS 6.5, đọc tài liệu kỹ thuật hằng ngày.
+
+DỰ ÁN CÁ NHÂN
+- Tool "stock-lens": dashboard tồn kho mẫu cho cửa hàng nhỏ, bằng dữ liệu giả lập.
+- Blog kỹ thuật về chia phân vùng, nén dữ liệu.
+
+CHỨNG CHỈ
+Snowflake SnowPro Core. AWS Certified Data Analytics.
+
+SỞ THÍCH
+Chơi cờ vây, leo núi nhân tạo, chạy cự ly 10km, nghe podcast về lịch sử công nghệ. Thỉnh thoảng thử lái xe nâng ở trò chơi mô phỏng, cho vui.
+#why Kho dữ liệu, FIFO queue, layout, kiểm kê dữ liệu chỉ là trùng chữ. Excel có thật nhưng không dùng cho tồn kho thực. On-call đêm không phải ca đêm ở kho nên dòng soft tranh cãi được.
+=== wsv-09 | non-fit | ordinary | no | U U U U A U A U A A M
+LƯU ĐỨC TRỌNG
+Đội trưởng bảo vệ khu công nghiệp
+Điện thoại 0900 000 039 - Email trong.luuduc@example.com - Quế Võ, Bắc Ninh
+
+SƠ LƯỢC
+Xuất ngũ năm 2012, cao 1m74, nặng 72kg, sức khoẻ tốt, nhiều năm chuyên trực đêm. Có bản lĩnh, xử lý được tình huống khó, được ban giám đốc nhà máy tin tưởng giao cho đội an ninh nhiều vị trí.
+
+QUÁ TRÌNH LÀM VIỆC
+
+01/2019 đến nay. Công ty CP Dịch Vụ Bảo Vệ Thái Sơn Nam. Đội trưởng, mục tiêu nhà máy linh kiện Kinh Bắc.
+Tôi quản lý 22 anh em chia làm 3 ca, tự phân ca và lên bảng trực mỗi tháng. Bản thân tôi trực ca đêm 2 tuần liền trong tháng.
+Kiểm soát xe tải ra vào cổng nhà máy và khu kho hàng: giữ giấy tờ, đối chiếu phiếu xuất hàng có chữ ký với hàng trên xe, ghi sổ biển số.
+Giám sát hệ thống camera, đi tuần khu kho, nhà xe, tường rào. Lập biên bản khi phát hiện vi phạm.
+Đầu mối với công an phòng cháy khu vực, kiểm tra hệ thống báo cháy, bình chữa cháy, lối thoát nạn theo lịch; tham gia đội chữa cháy cơ sở.
+Hướng dẫn bảo vệ mới 3 buổi: nội quy, cách kiểm tra xe, kỹ năng chữa cháy ban đầu, sơ cứu.
+
+03/2013 đến 12/2018. Công ty TNHH An Ninh Bảo An Phát. Tổ trưởng bảo vệ, mục tiêu trung tâm thương mại và siêu thị.
+Quản lý tổ 7 người. Trực đêm, tuần tra các tầng, xử lý trộm cắp, hỗ trợ kiểm kê an ninh khi cửa hàng kiểm hàng cuối năm (đứng gác cửa, không tham gia đếm).
+Đào tạo nhân viên mới về quy trình tuần tra.
+
+HỌC VẤN
+Tốt nghiệp trung học phổ thông 12/12.
+Chứng chỉ nghiệp vụ bảo vệ cấp năm 2013. Chứng nhận huấn luyện PCCC cơ sở 2022.
+
+KỸ NĂNG
+Võ thuật cơ bản, cảnh giới, giao tiếp với cơ quan chức năng, lái xe B2.
+Word cơ bản, đọc được email. Bảng trực viết tay rồi nhờ văn phòng đánh máy.
+
+THÀNH TÍCH
+Năm 2021 phát hiện vụ mang hàng ra khỏi kho trái phép bằng cách so phiếu với xe. Bằng khen của công ty 3 năm liền.
+
+SỞ THÍCH
+Võ cổ truyền, câu cá, xem thời sự, về thăm đồng đội cũ mỗi năm.
+#why Nhiều chữ chung: giám sát, tổ trưởng, phân ca, ca đêm, kho, kiểm kê. Không phải người làm kho. Đội 22 người có phân ca nhưng là bảo vệ. PCCC có thật, phần 5S và an toàn trong kho thì không: A. Ca đêm có bằng chứng thật.
+=== wsv-10 | stuffing | ordinary | no | U U U U U U U U U U K
+MAI NGỌC TRÂM
+Ứng tuyển: Giám sát kho
+SĐT 0900 000 040 / Email: tram.maingoc@example.com / Sóc Sơn, Hà Nội
+
+MỤC TIÊU
+5 năm làm kho, trong đó ít nhất 2 năm ở vai trò tổ trưởng hoặc giám sát. Tổ chức nhập xuất theo FIFO, FEFO, sắp xếp vị trí và quy hoạch mặt bằng kho. Kiểm kê định kỳ, truy nguyên chênh lệch và lập báo cáo. Quản lý được đội bốc xếp, lái xe nâng từ 10 người trở lên và phân ca. Sử dụng WMS hoặc phân hệ kho của ERP. Đảm bảo PCCC, an toàn lao động và 5S trong kho.
+
+KỸ NĂNG NỔI BẬT
+WMS, ERP, SAP, FIFO, FEFO, 5S, Kaizen, PCCC, ATLĐ, xe nâng, Excel, VLOOKUP, Pivot, KPI, OTIF, kiểm kê, inventory, packing list, tiếng Anh, chuỗi cung ứng, logistics, supply chain, layout kho, giám sát kho, warehouse supervisor, warehouse manager.
+
+KINH NGHIỆM LÀM VIỆC
+
+Tháng 6/2023 đến nay: Nhà hàng Lẩu Nướng Ba Sao - Nhân viên phục vụ, sau đó thu ngân
+- Chào khách, ghi order, bưng bê, dọn bàn.
+- Nhận tiền, in hoá đơn, chốt ca cùng quản lý.
+- Dán tem ngày lên đồ ăn tủ mát theo nhắc nhở của bếp trưởng.
+
+Tháng 2/2021 đến tháng 5/2023: Shop Hoa Tươi Thanh Tâm - Nhân viên
+- Cắm hoa, gói quà, trả lời tin nhắn trên fanpage.
+- Đi nhận hoa ở chợ đầu mối lúc sáng sớm.
+- Soạn đơn, giao hoa trong nội thành dịp lễ, tính tiền.
+
+Tháng 9/2019 đến tháng 1/2021: Trung tâm Anh Ngữ Sao Sáng - Lễ tân bán thời gian
+- Đón học viên, điểm danh, nhắc lịch học, nhập tên vào danh sách.
+
+HỌC VẤN
+2017 - 2019: Trung cấp Du lịch và Khách sạn Hoà Bình Xanh, Nghiệp vụ nhà hàng.
+
+CHỨNG CHỈ
+Chứng nhận an toàn vệ sinh thực phẩm của nhà hàng (2024). Lớp cắm hoa nghệ thuật (2020).
+
+ĐIỂM MẠNH
+Vui vẻ, nhanh nhẹn, chịu khó, hoà đồng. Có tinh thần học hỏi và luôn hoàn thành công việc được giao. Sắp xếp được công việc khoa học.
+
+SỞ THÍCH
+Nghe nhạc, xem phim, chụp ảnh, cắm hoa, đi cà phê với bạn bè.
+#why Mục tiêu dán nguyên văn từ ad và ô từ khoá dài, công việc thật là nhà hàng và shop hoa. Mọi dòng đo được đều U kể cả hai bonus, dòng soft để K.
+=== wsv-11 | messy | hard | interview | M M M M M M M M M M K
+HA QUOC VIET                                      ● THONG TIN
+Warehouse Supervisor                              Dien thoai: 0900 000 041
+                                                  Email: viet.haquoc@example.com
+TOM TAT                                           Dia chi: Ben Luc, Long An
+Hon 8 nam lam viec tai kho hang tieu dung,
+tu nhan vien len giam sat, quen van hanh          ● HOC VAN
+kho lon va mua cao diem.                          Cao dang Kinh te Doi ngoai
+                                                  Long Giang, nganh Logistics
+KINH NGHIEM                                       2013 - 2016
+Giam sat kho
+• Cong ty TNHH Hang Tieu Dung Phuong Nam Xanh     ● CHUNG NHAN
+12/2021                                           Huan luyen van hanh xe nang
+-                                                 (cap 2020)
+nay                                               An toan lao dong nhom 3
+• Dieu phoi doi 28 nguoi: boc xep, xe nang,
+to dong goi; lap lich 3 ca, chia nguoi            ● KY NANG
+theo du bao don hang.                             WMS (Manhattan), SAP MM va WM
+• Hang vao truoc thi xuat truoc, hang             Excel: Pivot, Power Query
+co han thi uu tien theo han gan nhat              Tieng Anh: TOEIC 610, doc tot
+tren phan mem.                                    invoice va packing list hang
+• Thiet ke lai khu nhan hang va khu               nhap tu Thai Lan
+pick lon, chia kho theo A B C, giam
+16% thoi gian lay hang.                           ● THANH TICH
+• Dem theo chu ky hang tuan, dem tong             Giam sat xuat sac 2024.
+cuoi nam; lech thi truy theo log WMS va           Kho dat 96 diem kiem tra
+camera, lap bien ban gui tai chinh.               an toan toan tap doan.
+• Lap report Excel: ton, ngay ton, hang
+cham ban, OTIF, nang suat ca.                     ● SO THICH
+• Hop moi tuan voi mua hang, ke hoach             Da ga, chay bo, nuoi meo
+san xuat va doi xe de chot lich hang ve,
+lich xuat.                                        ▪ Trang 1/2
+• Truong ban an toan kho: PCCC, dien tap,
+danh gia 5S hang thang.
+▪ CV_HaQuocViet_2026.pdf
+To truong kho
+• Cong ty CP Phan Phoi Gia Dung Dong Tien
+03/2018
+-
+11/2021
+• Quan to 12 nguoi kho thanh pham tu 09/2019, phan ca sang chieu.
+• Doi chieu hang thuc nhan voi phieu nhap va phieu xuat, ky xac nhan voi tai xe.
+Nhan vien kho
+• Doi chieu va xep hang len ke, quet ma,
+02/2017
+-
+02/2018
+lam tai cong ty Giao Nhan Hoang Gia Moi, kho Long An.
+▪ Trang 2/2
+#why Hai cột bị trộn, dấu mất, ngày nằm riêng dòng nhưng người đọc vẫn ghép lại được. Vượt 2 năm tổ trưởng và giám sát. Không nói gì về sức khoẻ, ca đêm cụ thể của bản thân nên K.
+=== wsv-12 | messy | hard | no | M U A U M U A U M A M
+DO VAN CUONG                         ● KY NANG
+To truong boc xep                    Lai xe nang (5 tan), thao
+                                     lap pallet, chang buoc hang
+So dt: 0900 000 042                  Khong dung nhieu may tinh,
+Mail: cuong.dovan.kho@example.com    bao cao la noi cho thu kho ghi
+Long Thanh, Dong Nai
+                                     ● CHUNG NHAN
+GIOI THIEU                           The van hanh xe nang (2018,
+Lam viec voi hang nang hon 8 nam.    cap lai 2023)
+Chiu kho, khoe, ca nao cung lam.     An toan lao dong nhom 3
+
+KINH NGHIEM                          ● HOC VAN
+                                     Tot nghiep cap 3 nam 2010,
+• To truong boc xep, xe nang         truong THPT Song May Xanh
+Cong ty CP Cang Can Dong Thanh Binh
+05/2021                              ● HOAT DONG
+-                                    Doi xung kich cong ty
+nay                                  Bong da cong nhan
+• Dan to 18 nguoi: 12 boc xep, 6 xe nang, chia 3 ca, truc ca dem
+cac ngay tau ve. Nam nao cung lam dem lien tuc, khong xin nghi.
+• Xep hang theo lo, lo cu ra truoc, xep cao toi da 3 tang theo quy
+dinh. Vi tri bai la do truong kho va thu kho chi dinh, to minh lam theo.
+• Dem kho va doi chieu la viec cua thu kho, to minh chi dem phu khi
+ho goi. Bao cao ton, hao hut cung la thu kho lam.
+• Doi chieu container, so seal, so kien voi phieu giao nhan, ky ten
+voi tai xe truoc khi cho xe vao bai.
+• Thong bao an toan moi dau ca, nhac doi mu, giay, day an toan;
+tham gia doi chua chay co so, kiem binh chua chay, tap huan moi nam.
+▪ page 1
+• Ai moi vao thi cuong truc tiep 1 tuan, day ky thuat nang ha va
+cach tranh vung nguy hiem cua xe nang.
+
+Lai xe nang
+• Cong ty TNHH Van Tai Kho Bai Binh Son
+11/2017
+-
+04/2021
+• Lai xe nang, nang ha container rong va hang kien; xep hang len xe tai.
+
+Tho phu
+• Doi boc xep Ba Dung, ben song Long Thanh
+2014
+-
+2017
+• Boc xep gach, xi mang, phan bon.
+
+Muc tieu: tro thanh giam sat kho cua mot cong ty lon.
+Thoi gian ranh: di cau, sua xe may cho bo me, xem bong da cung anh em cong ty.
+Nguoi tham khao: anh Hung, truong kho Dong Thanh Binh, 0900 000 142.
+▪ page 2
+#why Đốc công giỏi, có thẻ xe nâng và ca đêm thật, nhưng không có bằng, không máy tính, không tự kiểm kê hay báo cáo. Với vai trò giám sát phải làm số liệu thì không nên gọi. Có lô cũ ra trước, không có quy hoạch: A.

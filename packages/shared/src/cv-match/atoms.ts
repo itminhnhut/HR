@@ -7,7 +7,8 @@ import type { MatchVerdict } from './types.js';
 /** THPT < Trung cấp < Cao đẳng < Đại học < Thạc sĩ < Tiến sĩ. */
 export type EduLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export type LanguageName = 'english' | 'japanese' | 'chinese' | 'korean' | 'french' | 'german';
+export type LanguageName =
+  'english' | 'japanese' | 'chinese' | 'korean' | 'french' | 'german' | 'spanish' | 'russian' | 'thai';
 export type LanguageTest = 'toeic' | 'ielts' | 'toefl' | 'jlpt' | 'hsk' | 'topik';
 
 export interface ExperienceAtom {
@@ -34,12 +35,24 @@ export interface LanguageAtom {
   minScore: number | null;
   /** 1 cơ bản, 2 đọc hiểu, 3 giao tiếp, 4 thành thạo; null = just "tiếng Anh". */
   minLevel: number | null;
+  /** CEFR rank asked (A1 = 1 … C2 = 6), also "bằng B tiếng Anh"; null when not named. */
+  minCefr: number | null;
+  /** "Có chứng chỉ TOEIC": the paper itself is asked for, a stated level does not answer it. */
+  needsCertificate: boolean;
+}
+
+/** Any one of these satisfies the requirement ("Tiếng Anh hoặc tiếng Trung"). */
+export interface AnyLanguageAtom {
+  kind: 'any-language';
+  options: LanguageAtom[];
 }
 
 export interface KeywordAtom {
   kind: 'keywords';
   groupIds: string[];
   mode: 'all' | 'any';
+  /** "Excel nâng cao": a basic level does not count; "thành thạo": a stated basic level does not count. */
+  level?: 'advanced' | 'proficient';
 }
 
 export interface LicenseAtom {
@@ -64,7 +77,14 @@ export interface LiteralAtom {
 }
 
 export type Atom =
-  ExperienceAtom | EducationAtom | LanguageAtom | KeywordAtom | LicenseAtom | AvailabilityAtom | LiteralAtom;
+  | ExperienceAtom
+  | EducationAtom
+  | LanguageAtom
+  | AnyLanguageAtom
+  | KeywordAtom
+  | LicenseAtom
+  | AvailabilityAtom
+  | LiteralAtom;
 
 export interface ParsedRequirement {
   atoms: Atom[];
@@ -74,6 +94,8 @@ export interface ParsedRequirement {
   unknownReason: string | null;
   /** "Ưu tiên …" / "… là lợi thế": shown as met when the CV has it, otherwise unknown (never unmet). */
   preference: boolean;
+  /** Bonus part next to mandatory atoms ("Word, Excel; biết ERP là lợi thế"): noted, never decides the line. */
+  bonusAtoms: Atom[];
   /** Soft part next to measurable atoms ("…, chịu áp lực tốt"), mentioned in the reason. */
   softNote: string | null;
 }
@@ -82,8 +104,15 @@ export interface AtomResult {
   verdict: MatchVerdict;
   evidence: string | null;
   reason: string;
+  /** CVs normally do not state this (own a laptop, start date), so silence says nothing about the candidate. */
+  askInInterview?: boolean;
 }
 
 export function result(verdict: MatchVerdict, reason: string, evidence: string | null = null): AtomResult {
   return { verdict, reason, evidence };
+}
+
+/** An "unknown" that must not lower the percent: HR asks in the interview. */
+export function askInInterview(reason: string, evidence: string | null = null): AtomResult {
+  return { verdict: 'unknown', reason, evidence, askInInterview: true };
 }

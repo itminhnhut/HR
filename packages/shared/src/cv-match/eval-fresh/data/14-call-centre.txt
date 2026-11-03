@@ -1,0 +1,73 @@
+@ad call-centre
+@occupation Nhân viên tổng đài chăm sóc khách hàng
+@req experience | Kinh nghiệm: Từ 6 tháng
+@req education | Học vấn: Trung cấp trở lên
+@req experience | Có kinh nghiệm tổng đài hoặc chăm sóc khách hàng qua điện thoại
+@req skills | Gõ máy tính nhanh, biết dùng phần mềm CRM
+@req language | Giao tiếp tiếng Anh cơ bản
+@req soft | Giọng nói chuẩn, không nói ngọng
+@req soft | Làm được xoay ca 24/7
+@req soft | Kiên nhẫn, kiểm soát cảm xúc tốt
+=== cal-01 | strong | ordinary | interview | M M M M M K M K
+NGUYỄN THỊ THU THẢO
+Nhân viên tổng đài
+06/2022 - nay: Tổng đài viên, Công ty Viễn thông Sài Gòn Net. Nhận 80 cuộc gọi/ngày, giải đáp khiếu nại, ghi nhận trên CRM. Làm 3 ca xoay vòng, kể cả đêm và lễ.
+Học vấn: Cao đẳng Quản trị văn phòng, 2021
+Tốc độ gõ 60 từ/phút. Tiếng Anh giao tiếp cơ bản.
+=== cal-02 | strong | ordinary | interview | M M M M M K K K
+LÊ HOÀNG YẾN
+Chăm sóc khách hàng qua điện thoại
+Công ty Tài chính An Tâm, từ 2023 đến nay. Hotline tư vấn khoản vay, nhập thông tin vào Salesforce. Gõ nhanh.
+Trung cấp Kế toán, 2022. Tiếng Anh giao tiếp đơn giản (A2).
+=== cal-03 | strong | ordinary | interview | M M M M M K M K
+TRAN NGOC DIEM
+Call Centre Agent
+Mobile Star Telecom, Jan 2024 - Present. Inbound support line for customer complaints, logging tickets in Zendesk CRM. Type 55 wpm. Rotating 24/7 shifts.
+Associate Degree in Business Administration, 2023
+Basic conversational English.
+=== cal-04 | partial | ordinary | maybe | M M M U U K K K
+PHẠM THỊ DIỆU
+Telesales
+2024 - nay: Nhân viên telesales, Trung tâm Anh ngữ Bình Minh. Gọi điện tư vấn khóa học theo danh sách.
+Cao đẳng Du lịch, 2023
+=== cal-05 | partial | ordinary | maybe | U M M M M K M K
+VŨ THỊ NGA
+CSKH mới
+08/2026 - nay: Thực tập chăm sóc khách hàng qua điện thoại, Công ty Điện máy Xanh Lá. Dùng phần mềm CRM nội bộ, gõ nhanh. Làm xoay ca được.
+Trung cấp Quản trị kinh doanh, 2026. Tiếng Anh cơ bản.
+=== cal-06 | partial | ordinary | maybe | M U M U U K U K
+ĐỖ THU HIỀN
+Nhân viên trực điện thoại
+2021 - nay: Trực tổng đài đặt xe cho hãng taxi Phú Sỹ. Chỉ làm ca ngày vì con nhỏ.
+Tốt nghiệp THPT.
+=== cal-07 | near-miss | ordinary | maybe | M M U M M K K K
+HOÀNG THU TRANG
+Chăm sóc khách hàng tại quầy
+2022 - nay: Nhân viên dịch vụ khách hàng tại quầy, Ngân hàng Đông Nam, nhập liệu trên CRM, gõ nhanh. Tiếng Anh giao tiếp cơ bản.
+Đại học Ngân hàng, 2021
+=== cal-08 | near-miss | ordinary | no | A M U U U K K K
+NGÔ MINH TUẤN
+Nhân viên bán hàng
+2023 - nay: Nhân viên bán hàng trực tiếp, Cửa hàng Thế Giới Máy Ảnh. Tư vấn khách tại cửa hàng.
+Cao đẳng Kinh tế, 2022
+=== cal-09 | non-fit | ordinary | no | A M U U U K K K
+TRƯƠNG VĂN BÌNH
+Kỹ sư xây dựng
+2018 - nay: Kỹ sư giám sát công trình, Công ty Xây dựng Thành Đô.
+Đại học Xây dựng, 2017
+=== cal-10 | non-fit | ordinary | no | A U U U U K K K
+DƯƠNG VĂN NÔNG
+Công nhân may
+2019 - nay: Công nhân may, Công ty May Hưng Yên.
+Hết lớp 9.
+=== cal-11 | stuffing | hard | no | U U U U U K K K
+NGUYỄN THỊ SEN
+Tổng đài, chăm sóc khách hàng qua điện thoại, CRM, gõ nhanh, tiếng Anh cơ bản, giọng nói chuẩn, xoay ca 24/7, kiên nhẫn, kiểm soát cảm xúc, trung cấp, 1 năm kinh nghiệm
+Nghề nghiệp: 10/2026 - nay, chưa đi làm chính thức, phụ trông cửa hàng cho người thân
+Học vấn: Lớp 11
+=== cal-12 | messy | hard | interview | M M M M M K M K
+TONG DAI VIEN - PHAN THI THANH MAI
+Kinh nghiem: 2022-nay, tong dai vien, Cong ty Bao hiem Thinh Vuong
+Nhan cuoc goi, xu ly khieu nai, dung phan mem CRM, go nhanh
+Lam 3 ca xoay vong
+Hoc van: Cao dang Du lich 2021 - Tieng Anh giao tiep co ban

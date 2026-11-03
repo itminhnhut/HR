@@ -1,0 +1,123 @@
+[
+{"id":"d01-university-levels","notes":"Plain university graduate against a ladder of levels.","cvText":"NGUYỄN THỊ THANH VÂN\nChuyên viên nhân sự\n\nHỌC VẤN\n2014 - 2018: Đại học Lao động Xã hội, ngành Quản trị nhân lực, tốt nghiệp loại Khá\n\nKINH NGHIỆM\n2018 - nay: Chuyên viên nhân sự, Công ty CP Giày Thái Bình\n","items":[
+["Tốt nghiệp Đại học","met","education"],
+["Học vấn: Thạc sĩ trở lên","unmet","education"],
+["Trình độ: Cao đẳng trở lên","met","education"],
+["Tốt nghiệp Trung cấp trở lên","met","education"],
+["Yêu cầu bằng cấp: Đại học","met","education"]]},
+{"id":"d02-college-levels","notes":"Cao đẳng only.","cvText":"LÊ VĂN TRÍ\nKỹ thuật viên điện tử\n\nHỌC VẤN\nCao đẳng Kỹ thuật Cao Thắng, ngành Điện tử công nghiệp (2017 - 2020)\n\nKINH NGHIỆM\n2020 - nay Kỹ thuật viên, Công ty TNHH Điện tử Samhwa\n","items":[
+["Học vấn: Đại học trở lên","unmet","education"],
+["Trung cấp trở lên","met","education"],
+["Tốt nghiệp Cao đẳng ngành Điện tử","met","education"],
+["Tốt nghiệp Cao đẳng/Đại học chuyên ngành Điện, Điện tử","met","education"]]},
+{"id":"d03-trung-cap-electrician","notes":"Trung cấp nghề.","cvText":"PHẠM VĂN TÂN\nThợ điện công nghiệp\n\nTRÌNH ĐỘ\nTrung cấp nghề Điện công nghiệp, Trường Trung cấp Nghề Củ Chi, 2016 - 2018\n\nKINH NGHIỆM\n2018 - nay: Thợ điện, Công ty TNHH Bao bì Kim Long\n","items":[
+["Trung cấp ngành Điện trở lên","met","education"],
+["Cao đẳng ngành Điện trở lên","unmet","education"],
+["Tốt nghiệp THPT trở lên","met","education"]]},
+{"id":"d04-high-school-only","notes":"THPT only, in 12/12 wording.","cvText":"VĂN THỊ NGA\nCông nhân may\n\nHọc vấn: 12/12\nTốt nghiệp Trường THPT Nguyễn Trãi năm 2012\n\nKINH NGHIỆM\n2013 - nay: Công nhân may, Công ty CP May Việt Tiến Long\n","items":[
+["Tốt nghiệp THPT","met","education"],
+["Trình độ văn hoá 12/12","met","education"],
+["Trình độ: Cao đẳng trở lên","unmet","education"],
+["Lao động phổ thông, không yêu cầu bằng cấp","met","education"]]},
+{"id":"d05-english-master-computer-science","notes":"English degree names.","cvText":"Kevin Le\nData Engineer\n\nEDUCATION\nM.Sc. in Computer Science, University of Science, VNU-HCM, 2019 - 2021\nB.Eng. in Software Engineering, Can Tho University, 2014 - 2018\n\nEXPERIENCE\n2021 - Present Data Engineer, Northwind Analytics\n","items":[
+["Bachelor's degree or higher","met","education"],
+["Master's degree required","met","education"],
+["PhD in Computer Science","unmet","education"],
+["Bachelor's degree in Computer Science or related field","met","education"]]},
+{"id":"d06-third-year-student","notes":"Still studying; not graduated.","cvText":"NGUYỄN NHẬT MINH\nSinh viên năm 3, ngành Công nghệ thông tin\nTrường Đại học Công nghệ, ĐHQG Hà Nội (dự kiến tốt nghiệp 06/2028)\n\nKỸ NĂNG\nJava, HTML, CSS, Git\n","items":[
+["Tốt nghiệp đại học chuyên ngành CNTT","unmet","education","Chưa tốt nghiệp"],
+["Sinh viên năm 3, năm 4 ngành CNTT","met","education"],
+["Bằng đại học trở lên","unmet","education"]]},
+{"id":"d07-finance-major-match","notes":"Major list in the ad; candidate's major is among them.","cvText":"ĐỖ THU HÀ\nGiao dịch viên\n\nHỌC VẤN\nCử nhân Tài chính - Ngân hàng, Học viện Ngân hàng, 2016 - 2020\n\nKINH NGHIỆM\n2020 - nay: Giao dịch viên, Ngân hàng TMCP Đông Hải\n","items":[
+["Tốt nghiệp ĐH chuyên ngành Kế toán, Tài chính, Ngân hàng","met","education"],
+["Đại học ngành Công nghệ thông tin","unmet","education"],
+["Tốt nghiệp đại học khối kinh tế","met","education"]]},
+{"id":"d08-law-major-mismatch","notes":"Law degree against accounting major requirement.","cvText":"TRƯƠNG MINH QUANG\nChuyên viên pháp chế\n\nHỌC VẤN\nCử nhân Luật, Đại học Luật TP.HCM, 2013 - 2017\n\nKINH NGHIỆM\n2017 - nay: Chuyên viên pháp chế, Công ty CP Đầu tư Nam Long Phát\n","items":[
+["Đại học chuyên ngành Kế toán","unmet","education"],
+["Đại học trở lên","met","education"],
+["Tốt nghiệp Đại học Luật","met","education"],
+["Cử nhân Luật trở lên","met","education"]]},
+{"id":"d09-it-related-major","notes":"Khoa học máy tính is an IT-related major.","cvText":"HUỲNH TẤN PHÁT\nLập trình viên\n\nHỌC VẤN\nĐại học Bách khoa TP.HCM, ngành Khoa học máy tính, 2016 - 2020\n\nKINH NGHIỆM\n2020 - nay: Lập trình viên, Công ty TNHH Phần mềm Sông Hàn\n","items":[
+["Tốt nghiệp ĐH ngành CNTT hoặc các ngành liên quan","met","education"],
+["Tốt nghiệp đại học chuyên ngành Công nghệ thông tin, Khoa học máy tính","met","education"],
+["Tốt nghiệp đại học ngành Kinh tế","unmet","education"]]},
+{"id":"d10-engineer-degree-counts-as-university","notes":"Kỹ sư equals university level.","cvText":"BÙI ĐỨC ANH\nKỹ sư công trình\n\nBẰNG CẤP\nKỹ sư Xây dựng cầu đường, Đại học Giao thông Vận tải, 2012 - 2017\n\nKINH NGHIỆM\n2017 - nay: Kỹ sư hiện trường, Công ty CP Cầu Đường 10\n","items":[
+["Đại học chuyên ngành Xây dựng trở lên","met","education"],
+["Kỹ sư cầu đường","met","education"],
+["Thạc sĩ Xây dựng","unmet","education"]]},
+{"id":"d11-university-only-as-employer","notes":"Works at a university as a guard; own education is high school.","cvText":"LÂM VĂN KHÁNH\nNhân viên bảo vệ\n\nKINH NGHIỆM\n2018 - nay: Nhân viên bảo vệ tại Trường Đại học Bách khoa Đà Nẵng\n2015 - 2018: Bảo vệ tại Trường Cao đẳng Thương mại\n\nHỌC VẤN\nTốt nghiệp THPT\n","items":[
+["Học vấn: Đại học trở lên","unmet","education","Trường đại học là nơi làm việc"],
+["Trình độ: Cao đẳng trở lên","unmet","education"],
+["Tốt nghiệp THPT trở lên","met","education"]]},
+{"id":"d12-reference-has-the-degree","notes":"Master and PhD belong to the references, not the candidate.","cvText":"TRẦN THỊ LỆ\nNhân viên tạp vụ văn phòng\n\nHỌC VẤN\nLớp 12, Trường THPT Châu Thành\n\nKINH NGHIỆM\n2016 - nay: Tạp vụ, Viện Nghiên cứu Lúa\n\nNGƯỜI THAM CHIẾU\nTS. Nguyễn Văn Bình, Tiến sĩ Nông học, Phó viện trưởng\nThS. Lê Thị Hoa, Thạc sĩ Quản trị, Trưởng phòng Hành chính\n","items":[
+["Thạc sĩ trở lên","unmet","education","Bằng của người tham chiếu"],
+["Đại học trở lên","unmet","education"]]},
+{"id":"d13-masters-only-a-wish","notes":"Wants to study a master; has a bachelor.","cvText":"NGÔ HOÀI THƯƠNG\nChuyên viên phân tích tín dụng\n\nMỤC TIÊU\nTrong 3 năm tới sẽ học lên Thạc sĩ Tài chính.\n\nHỌC VẤN\nCử nhân Tài chính, Đại học Kinh tế TP.HCM, 2017 - 2021\n\nKINH NGHIỆM\n2021 - nay: Chuyên viên tín dụng, Ngân hàng Phương Nam\n","items":[
+["Thạc sĩ trở lên","unmet","education"],
+["Đại học trở lên","met","education"]]},
+{"id":"d14-dropped-out","notes":"Left university in year 2.","cvText":"ĐÀO VĂN KIÊN\nNhân viên giao hàng\n\nHỌC VẤN\nHọc hết năm 2 Đại học Giao thông Vận tải, chưa tốt nghiệp (nghỉ học vì hoàn cảnh gia đình)\nTốt nghiệp THPT Phan Đình Phùng, 2016\n\nKINH NGHIỆM\n2018 - nay: Giao hàng, Công ty Chuyển phát Tiết Kiệm Việt\n","items":[
+["Tốt nghiệp đại học","unmet","education"],
+["Tốt nghiệp THPT trở lên","met","education"]]},
+{"id":"d15-expected-graduation-english","notes":"Expected graduation in the future.","cvText":"Hannah Vo\nMarketing Intern\n\nEDUCATION\nBachelor of Business, RMIT Vietnam. Expected graduation: June 2027. GPA 3.5/4\n\nEXPERIENCE\nJun 2026 - Sep 2026 Marketing Intern, Bright Coconut Studio\n","items":[
+["Bachelor's degree required","unmet","education","Chưa tốt nghiệp"],
+["Final-year students or fresh graduates welcome","met","education"]]},
+{"id":"d16-no-education-section","notes":"No education mentioned anywhere.","cvText":"NGUYỄN VĂN PHÚC\nNhân viên kinh doanh\n\nKINH NGHIỆM\n2019 - nay: Nhân viên kinh doanh, Công ty TNHH Vật liệu Xây dựng Thuận Thành\nTìm kiếm đại lý, chăm sóc khách hàng\nSử dụng được Excel\n","items":[
+["Đại học trở lên","ambiguous","education","CV không ghi học vấn: có thể coi là không đạt hoặc chưa rõ"]]},
+{"id":"d17-doctor-and-pharmacist-levels","notes":"Physician degree at university level; medical.","cvText":"BS. PHẠM HOÀNG LONG\nBác sĩ đa khoa\n\nĐÀO TẠO\nBác sĩ đa khoa, Đại học Y Dược TP.HCM, 2010 - 2016\nChứng chỉ hành nghề y do Sở Y tế cấp 2018\n\nCÔNG TÁC\n2016 - nay: Bác sĩ khoa Nội, Bệnh viện Quận Bình Tân\n","items":[
+["Tốt nghiệp Đại học Y","met","education"],
+["Đại học trở lên","met","education"],
+["Tốt nghiệp Đại học Dược","unmet","education","Bác sĩ, không phải dược"]]},
+{"id":"d18-pharmacist-intermediate","notes":"Dược sĩ trung cấp against level requirements.","cvText":"NGUYỄN KIM LOAN\nDược tá nhà thuốc\n\nTRÌNH ĐỘ\nDược sĩ trung cấp, Trường Trung cấp Y Dược Lê Hữu Trác, 2017 - 2019\n\nKINH NGHIỆM\n2019 - nay: Nhân viên nhà thuốc Long Mỹ\n","items":[
+["Dược sĩ đại học","unmet","education"],
+["Dược sĩ trung cấp trở lên","met","education"],
+["Cao đẳng Dược trở lên","unmet","education"]]},
+{"id":"d19-nursing-bachelor","notes":"Cử nhân Điều dưỡng satisfies a college requirement.","cvText":"MAI THỊ HẠNH\nĐiều dưỡng trưởng khoa\n\nHỌC VẤN\nCử nhân Điều dưỡng, Đại học Điều dưỡng Nam Định, 2012 - 2016\n\nKINH NGHIỆM\n2016 - nay: Điều dưỡng, Bệnh viện Nhi Thanh Hoá\n","items":[
+["Cao đẳng Điều dưỡng trở lên","met","education"],
+["Tốt nghiệp chuyên ngành Dược","unmet","education"]]},
+{"id":"d20-english-associate-degree","notes":"Associate degree = college level.","cvText":"Tony Dang\nBookkeeper\n\nEDUCATION\nAssociate Degree in Accounting, Saigon College of Economics, 2018 - 2021\n\nEXPERIENCE\n2021 - Present Bookkeeper, Pine Tree Trading\n","items":[
+["Cao đẳng trở lên","met","education"],
+["Đại học trở lên","unmet","education"],
+["College diploma or above in Accounting","met","education"]]},
+{"id":"d21-below-high-school-short-course","notes":"Grade 9 and a short vocational certificate.","cvText":"HOÀNG THỊ MẾN\nThợ may\n\nHọc vấn: Lớp 9/12\nChứng chỉ sơ cấp nghề may công nghiệp (3 tháng), Trung tâm Dạy nghề Quận 8\n\nKINH NGHIỆM\n2015 - nay: Thợ may, Xưởng may Tân Phú\n","items":[
+["Tốt nghiệp THPT trở lên","unmet","education"],
+["Trung cấp nghề may trở lên","unmet","education"],
+["Có chứng chỉ nghề may","met","licence"]]},
+{"id":"d22-no-requirement-lines","notes":"Ad lines that require no degree.","cvText":"TRẦN HỮU NGHĨA\nCông nhân kho\n\nKINH NGHIỆM\n2022 - nay Công nhân bốc xếp, Kho hàng Sóng Thần\nĐã học hết lớp 10\n","items":[
+["Học vấn: Không yêu cầu","met","education"],
+["Không yêu cầu bằng cấp","met","education"],
+["Trình độ: Không cần","met","education"]]},
+{"id":"d23-abbreviations-dh-cd-tc","notes":"Abbreviations ĐH, CĐ, TC on both sides.","cvText":"VÕ THỊ THANH TRÚC\nNhân viên văn phòng\n\nTRÌNH ĐỘ\nCĐ Công Thương TP.HCM, Quản trị văn phòng, 2018 - 2021\nKINH NGHIỆM\n2021 - nay: Nhân viên văn phòng, Công ty Vận tải Biển Đông Dương\n","items":[
+["Trình độ CĐ trở lên","met","education"],
+["Trình độ: ĐH trở lên","unmet","education"],
+["TC, CĐ trở lên","met","education"]]},
+{"id":"d24-foreign-university","notes":"Foreign university in English, ad in Vietnamese.","cvText":"Lily Bui\nBusiness Analyst\n\nEDUCATION\nBachelor of Commerce, University of Melbourne, Australia, 2016 - 2019\n\nEXPERIENCE\n2020 - Present Business Analyst, Golden Bridge Consulting\n","items":[
+["Tốt nghiệp đại học chuyên ngành Kinh tế, Thương mại","met","education"],
+["Đại học trở lên","met","education"],
+["Thạc sĩ trở lên","unmet","education"]]},
+{"id":"d25-no-diacritics-education","notes":"Whole CV without diacritics.","cvText":"NGUYEN VAN HIEU\nNhan vien ke toan\n\nHOC VAN\nCu nhan Ke toan, Dai hoc Kinh te Quoc dan, 2015 - 2019\n\nKINH NGHIEM\n2019 - nay: Ke toan vien, Cong ty TNHH Thep Hoa Phat Bac\n","items":[
+["Đại học chuyên ngành Kế toán","met","education"],
+["Học vấn: Đại học trở lên","met","education"],
+["Thạc sĩ Kế toán","unmet","education"]]},
+{"id":"d26-short-course-at-university","notes":"Short course held at a university is not a degree.","cvText":"PHẠM THỊ DUNG\nThu ngân\n\nHỌC VẤN\nTốt nghiệp THPT Bình Chánh\nKhoá học ngắn hạn Kỹ năng bán hàng (2 tuần) tại Đại học Kinh tế TP.HCM\n\nKINH NGHIỆM\n2020 - nay: Thu ngân, Siêu thị Co.opXtra Hoà An\n","items":[
+["Cao đẳng trở lên","unmet","education"],
+["Đại học ngành Quản trị kinh doanh","unmet","education"]]},
+{"id":"d27-grade-classification-and-gpa","notes":"Grade: GPA 3.4/4 and Giỏi.","cvText":"NGUYỄN PHƯƠNG THẢO\nTrợ giảng\n\nHỌC VẤN\nĐại học Sư phạm TP.HCM, Sư phạm Tiếng Anh, tốt nghiệp loại Giỏi, GPA 3.4/4, 2019 - 2023\n\nKINH NGHIỆM\n2023 - nay: Trợ giảng, Trung tâm ngoại ngữ Sao Sáng\n","items":[
+["Tốt nghiệp loại Khá trở lên","met","education"],
+["GPA từ 3.0 trở lên","met","education"],
+["GPA từ 3.6 trở lên","unmet","education"]]},
+{"id":"d28-masters-in-progress","notes":"Currently studying a master.","cvText":"LÊ QUANG VINH\nGiảng viên tập sự\n\nHỌC VẤN\nĐang học Thạc sĩ Quản trị Kinh doanh, Đại học Ngoại thương, dự kiến tốt nghiệp 2027\nCử nhân Kinh tế đối ngoại, Đại học Ngoại thương, 2018 - 2022\n\nKINH NGHIỆM\n2022 - nay: Trợ giảng, Đại học Ngoại thương\n","items":[
+["Tốt nghiệp Thạc sĩ","unmet","education"],
+["Đại học trở lên","met","education"]]},
+{"id":"d29-preschool-teacher","notes":"Early childhood pedagogy college; real ad wording.","cvText":"ĐẶNG THỊ THUỶ\nGiáo viên mầm non\n\nĐÀO TẠO\nCao đẳng Sư phạm Mầm non, Trường CĐSP Trung ương, 2016 - 2019\n\nKINH NGHIỆM\n2019 - nay: Giáo viên lớp Chồi, Trường Mầm non Hoa Sen\n","items":[
+["Tốt nghiệp Cao đẳng Sư phạm Mầm non trở lên","met","education"],
+["Tốt nghiệp Đại học Sư phạm Mầm non","unmet","education"],
+["Có bằng sư phạm","met","education"]]},
+{"id":"d30-food-tech-vs-marketing","notes":"Bachelor in Marketing vs other majors.","cvText":"Bella Ho\nContent Executive\n\nEDUCATION\nBachelor in Marketing, Foreign Trade University, 2017 - 2021\n\nEXPERIENCE\n2021 - Present Content Executive, Pink Lotus Cosmetics\n","items":[
+["Tốt nghiệp đại học ngành Marketing, Truyền thông","met","education"],
+["Cao đẳng/Đại học ngành Công nghệ thực phẩm","unmet","education"]]},
+{"id":"d31-cao-hoc-and-tien-si","notes":"PhD is above master; wording Tiến sĩ, Cao học.","cvText":"PGS. VŨ HOÀNG MINH\nGiảng viên\n\nHỌC VẤN\nTiến sĩ Kinh tế học, Đại học Kinh tế Quốc dân, 2015\nThạc sĩ Kinh tế, 2010\n\nCÔNG TÁC\n2010 - nay: Giảng viên, Đại học Thăng Long\n","items":[
+["Thạc sĩ trở lên","met","education"],
+["Trình độ Cao học trở lên","met","education"],
+["Có bằng Tiến sĩ","met","education"],
+["Tiến sĩ ngành Y","unmet","education"]]}
+]

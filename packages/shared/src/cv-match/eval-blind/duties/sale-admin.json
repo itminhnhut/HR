@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Nhận PO, đơn đặt hàng từ khách hàng và nhập vào hệ thống",
+    "Soạn hợp đồng, báo giá và quản lý hồ sơ hợp đồng",
+    "Theo dõi giao hàng, phối hợp với kho và vận chuyển",
+    "Tổng hợp báo cáo doanh số tuần và tháng cho trưởng phòng",
+    "Đối chiếu công nợ và nhắc khách thanh toán",
+    "Theo dõi chính sách chiết khấu, chương trình khuyến mãi cho đại lý"
+  ],
+  "labels": {
+    "sad-01": ["M", "M", "M", "M", "M", "M"],
+    "sad-02": ["M", "M", "M", "M", "M", "M"],
+    "sad-03": ["M", "M", "M", "M", "M", "K"],
+    "sad-04": ["M", "U", "M", "M", "U", "K"],
+    "sad-05": ["M", "M", "M", "M", "M", "K"],
+    "sad-06": ["U", "M", "M", "U", "M", "M"],
+    "sad-07": ["U", "K", "U", "M", "M", "M"],
+    "sad-08": ["U", "U", "K", "K", "K", "K"],
+    "sad-09": ["M", "K", "M", "K", "K", "K"],
+    "sad-10": ["K", "K", "K", "K", "U", "K"],
+    "sad-11": ["M", "M", "M", "M", "M", "M"],
+    "sad-12": ["U", "M", "K", "K", "U", "K"]
+  }
+}

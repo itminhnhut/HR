@@ -1,0 +1,85 @@
+@ad truck-driver
+@occupation Lái xe tải
+@req experience | Có ít nhất 3 năm kinh nghiệm lái xe tải
+@req licence | Có bằng lái xe hạng C trở lên còn hạn
+@req education | Học vấn: Tốt nghiệp THPT trở lên
+@req skills | Thông thạo các tuyến đường miền Bắc
+@req skills | Biết kiểm tra, xử lý sự cố xe cơ bản
+@req soft | Không có tiền án, không vi phạm giao thông nghiêm trọng
+@req soft | Chấp nhận đi tỉnh dài ngày, chạy đêm
+=== dri-01 | strong | ordinary | interview | M M M M M K M
+TRẦN VĂN THẮNG
+Lái xe tải
+Sinh năm 1985, Hải Dương. Bằng lái hạng C, hạn đến 2029.
+Kinh nghiệm: 04/2017 - nay, lái xe tải 8 tấn, Công ty Vận tải Hùng Vương. Chạy các tuyến Hà Nội - Lạng Sơn, Hải Phòng, Lào Cai, Quảng Ninh, chạy đêm thường xuyên. Tự kiểm tra xe trước chuyến, xử lý thủng lốp, hỏng nhẹ.
+Học vấn: Tốt nghiệp THPT.
+=== dri-02 | strong | ordinary | interview | M M M M M K M
+PHẠM ĐÌNH TÚ
+Tài xế xe tải nặng
+Bằng FC. 12 năm cầm lái xe đầu kéo và xe tải thùng.
+2014 - nay: Tài xế, Công ty Vận tải Bắc Hà, đi Cao Bằng, Sơn La, Điện Biên. Đi dài ngày, chạy đêm.
+Biết bảo dưỡng cơ bản, sửa lỗi xe dọc đường.
+Học vấn 12/12.
+=== dri-03 | strong | ordinary | interview | M M M M M K K
+NGUYEN VAN LUC
+Truck Driver
+Bac Viet Transport, 2018 - Present. Drive 10-ton trucks across northern provinces: Hanoi, Hai Phong, Lang Son, Thai Nguyen. Daily vehicle checks and basic roadside repairs.
+Licence: Class D, valid until 2030.
+Education: High school diploma
+=== dri-04 | partial | ordinary | maybe | U M M U M K K
+LÊ ANH TUẤN
+Lái xe tải nhỏ
+01/2025 - nay: Lái xe tải 2.5 tấn trong nội thành TP.HCM, Công ty Nước Suối Sài Gòn. Bằng C. Tự kiểm tra xe, thay dầu.
+Tốt nghiệp THPT.
+=== dri-05 | partial | ordinary | maybe | M U M M U K M
+NGUYỄN HỮU DŨNG
+Tài xế
+2019 - nay: Lái xe tải 3.5 tấn, Công ty Sữa Ba Vì, tuyến Hà Nội - Phú Thọ - Yên Bái - Thái Nguyên. Chấp nhận đi đêm.
+Bằng C hết hạn tháng 3/2025, đang làm thủ tục cấp lại.
+Tốt nghiệp THPT.
+=== dri-06 | partial | ordinary | maybe | M M U U M K K
+ĐÀO VĂN BẰNG
+Lái xe tải chạy miền Tây
+2016 - nay: Chạy xe tải lạnh tuyến TP.HCM - Cà Mau. Bằng C còn hạn. Xử lý sự cố cơ bản.
+Trình độ: lớp 9.
+=== dri-07 | near-miss | ordinary | no | U U M U U K K
+HOÀNG VĂN PHÚ
+Tài xế taxi
+2020 - nay: Tài xế taxi, Hãng taxi Mai Linh Xanh, Hà Nội. Bằng lái xe hạng B2.
+Tốt nghiệp THPT.
+=== dri-08 | near-miss | ordinary | no | U U M U U K K
+VÕ ANH KHOA
+Shipper
+2021 - nay: Giao hàng xe máy, GrabExpress và Giao Hàng Nhanh. Bằng A1.
+Tốt nghiệp THPT.
+=== dri-09 | near-miss | ordinary | maybe | U M M M A K M
+ĐỖ THANH SƠN
+Lái xe khách
+2017 - nay: Lái xe khách giường nằm, tuyến Hà Nội - Lào Cai - Sa Pa. Bằng hạng E. Đi đêm, xa nhà nhiều ngày. Biết kiểm tra xe cơ bản.
+Tốt nghiệp THPT.
+#why E outranks C but a coach is not a truck; "kiểm tra" without "xử lý sự cố" is a judgement call.
+=== dri-10 | non-fit | ordinary | no | U U M U U K K
+NGUYỄN THỊ MAI
+Nhân viên bán hàng
+2020 - nay: Bán hàng thời trang, Shop Hoa Hồng.
+Đại học Công đoàn, 2019.
+=== dri-11 | stuffing | hard | no | U U U U U K K
+BẾ VĂN TOÀN
+Lái xe tải, bằng lái xe hạng C, còn hạn, kinh nghiệm 5 năm lái xe tải, tuyến đường miền Bắc, xử lý sự cố xe, chạy đêm, đi tỉnh, THPT
+Công việc thực tế: 2025 - nay, phụ xe buýt học sinh, chưa có bằng lái ô tô.
+Học lớp 10 thì nghỉ.
+=== dri-12 | messy | hard | interview | M M M M M K M | nfd
+L Á I  X E  T Ả I
+HÀ VĂN HẢI             Từ 2015 đến nay: lái xe tải thùng 15
+Bằng lái:              tấn, Công ty Vận tải Thành Công, Hà Nội
+Hạng C                 đi Lạng Sơn, Quảng Ninh, Cao Bằng, Hà
+Hạn: 2028              Giang. Chạy đêm, đi nhiều ngày. Xử lý
+Trình độ: 12/12        sự cố xe trên đường.
+=== dri-13 | partial | hard | maybe | M A M M M U M
+MÈ VĂN KHIÊM
+Tài xế xe tải 5 tấn, 7 năm
+2019 - nay: Vận tải Tây Bắc, chở hàng Sơn La - Hà Nội, đi đêm nhiều ngày, tự sửa xe dọc đường.
+Bằng hạng C1 (đổi theo quy định mới năm 2025).
+Năm 2023 bị tước bằng 6 tháng do gây tai nạn nghiêm trọng, đã chấp hành xong.
+Tốt nghiệp THPT.
+#why C1 versus old C after the 2025 change: recruiters differ. The serious accident contradicts the record line.

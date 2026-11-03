@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Mở tờ khai xuất nhập khẩu và truyền số liệu lên hệ thống hải quan",
+    "Kiểm tra bộ chứng từ của shipper, yêu cầu chỉnh sửa khi có sai lệch",
+    "Đi làm thủ tục thông quan tại chi cục, cảng và xử lý khi hàng bị phân luồng",
+    "Đặt chỗ với hãng tàu, forwarder và theo dõi lịch tàu",
+    "Xin C/O và làm thủ tục kiểm tra chuyên ngành",
+    "Lưu trữ hồ sơ hải quan, phục vụ kiểm tra sau thông quan"
+  ],
+  "labels": {
+    "lgc-01": ["M", "M", "M", "M", "M", "M"],
+    "lgc-02": ["M", "M", "M", "M", "M", "M"],
+    "lgc-03": ["M", "M", "M", "K", "M", "K"],
+    "lgc-04": ["U", "M", "U", "M", "M", "K"],
+    "lgc-05": ["M", "M", "M", "K", "U", "M"],
+    "lgc-06": ["U", "K", "K", "M", "U", "K"],
+    "lgc-07": ["U", "K", "M", "K", "M", "K"],
+    "lgc-08": ["U", "K", "K", "K", "K", "K"],
+    "lgc-09": ["K", "K", "K", "K", "K", "K"],
+    "lgc-10": ["K", "K", "K", "K", "K", "K"],
+    "lgc-11": ["M", "M", "M", "M", "M", "M"],
+    "lgc-12": ["M", "M", "K", "M", "M", "K"]
+  }
+}

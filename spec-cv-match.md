@@ -12,11 +12,14 @@ HR mở từng CV, đọc rồi tự dò từng dòng "Yêu cầu" của tin. V�
 **Must have:**
 
 - Nút **"Chấm CV"** ở chi tiết hồ sơ (và chấm tự động khi mở hồ sơ có file CV, lưu kết quả). Kết quả:
-  - **% phù hợp** = số yêu cầu thoả / số yêu cầu chấm được. Hiện cạnh tên ở danh sách hồ sơ để sắp xếp, lọc.
+  - **% phù hợp** = số yêu cầu thoả / số yêu cầu đo được từ CV; dòng đo được mà CV chưa rõ tính là chưa thể hiện, nên
+    không làm tăng %. Chấm được dưới một nửa số dòng đo được thì không ra %, hiện "Chưa đủ dữ liệu". Một yêu cầu hỏi hai
+    lần (ô Học vấn và dòng "Tốt nghiệp …") chỉ tính một lần. Hiện cạnh tên ở danh sách hồ sơ để sắp xếp, lọc.
   - **Thoả** (xanh): từng dòng yêu cầu + **trích đoạn CV làm bằng chứng** (vd "3 năm kinh nghiệm bán hàng tại …").
   - **Không thoả** (đỏ): từng dòng + lý do (vd "CV ghi 1 năm, yêu cầu từ 2 năm"; "không thấy Excel trong CV").
   - **Không chấm được từ CV** (xám): yêu cầu kiểu tính cách ("chủ động", "chịu áp lực"), HR tự đánh giá khi phỏng
-    vấn. Không tính vào %. Không đoán bừa.
+    vấn. Không tính vào %. Không đoán bừa. Điểm cộng ("ưu tiên", "là lợi thế") và điều CV thường không ghi (có laptop,
+    ngày đi làm) cũng không tính vào %.
 - Loại yêu cầu được hiểu:
   - **Kinh nghiệm theo năm**: "từ 2 năm", "tối thiểu 1 năm", "2+ năm"; đọc trong CV cả dạng khoảng thời gian
     ("03/2021 – nay", "2019 - 2022"), cộng dồn, không đếm trùng đoạn chồng nhau.

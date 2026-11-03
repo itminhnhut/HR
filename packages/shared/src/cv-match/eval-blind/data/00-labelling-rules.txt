@@ -1,0 +1,85 @@
+Labelling rules for the blind evaluation set. Written before any data and before any run.
+Date written: 2026-11-03. Author: one agent, blind to the matcher's vocabulary, rules, tests and earlier evaluation data.
+All candidates, companies, schools and numbers are fictional. "Today" for every case is 2026-11-03.
+
+The rules below (down to "File format") are copied from the fresh set's rules file. The notes after them are new.
+
+Labels, per requirement line, as a careful recruiter reading the extracted text:
+
+M = met. The CV shows it, in any wording: synonym, abbreviation, English, an equal or higher degree, or years
+    worked out from the date ranges. A line naming a role or field needs work or study in that role or field.
+U = unmet. The CV contradicts it, or an item a complete CV would normally state is absent (years, degree, field,
+    a named licence or certificate, a named tool or skill, a language level).
+K = unknown. A recruiter cannot judge it from this CV: soft traits with no concrete evidence; things CVs do not
+    normally state (health, shifts, travel, own motorbike, criminal record) when the CV is silent; empty or unreadable text.
+A = ambiguous. Careful recruiters would differ. Reported apart, never scored as right or wrong. Used for:
+    - "Kinh nghiệm: Từ N năm" (no field named) when the years are there but in an unrelated job;
+    - a bonus line ("ưu tiên") the CV does not meet: not holding a bonus is not failing a requirement;
+    - a soft line backed only by the candidate's own claim;
+    - a line with several parts where the CV shows only some, and it is a matter of judgement whether that is enough;
+    - an equivalence recruiters argue over (for example B1 versus "đọc hiểu chuyên ngành").
+
+Keyword stuffing: text pasted from the ad or a keyword dump with nothing in the work history behind it earns no credit.
+A measurable item whose only evidence is the dump is U, bonus lines included. Soft lines stay K.
+
+Messy extraction: a person reading the raw text can still work out broken layouts, lost accents and spaced-out letters,
+so the labels follow the content. Empty or undecodable text is K on every line and tier "maybe": a recruiter would open
+the original file rather than reject it.
+
+Tiers are a recruiter's view of the whole CV against the whole ad, not a count of labels:
+interview = should interview, maybe = could go either way, no = should not interview.
+
+File format. "@req <category> [bonus] | <line>" lines give the ad. Each CV starts with
+"=== id | kind | difficulty | tier | labels", optionally "| nfd" (text served in decomposed Unicode, as some PDF tools
+produce). Labels follow the order of the @req lines. Lines beginning "#why " are the labeller's notes and are not CV text.
+
+----------------------------------------------------------------------------------------------------------------------
+Notes added for this set (2026-11-03)
+
+Synthetic, single author. One author wrote everything: the ads, the CVs and every label. It was one agent, which wrote
+the first ad itself and used parallel copies of itself, under these same rules, for the others. That is not a second
+opinion: no independent labeller has checked any of it, and nobody measured agreement between labellers. This set can
+compare one matcher version with another. It is not a substitute for real CVs read by real recruiters, and a good result
+on it says little about real candidates until that has been checked.
+
+How much was re-checked. The parallel copies were stopped by a usage limit around the end of their work, and none of them
+reported finishing the planned read-back of labels against CVs. Afterwards the author ran a structure check on all files and
+read 24 of the 120 CVs against their labels, mostly the partial, near-miss and messy ones. That found 4 labels of about 420
+that contradicted the CV (1 @req label, 3 duty labels), all corrected. The other 96 CVs got the structure and pattern checks
+only, so expect a similar small rate of label slips there, and more often on duties than on @req lines.
+
+Blindness. While writing, the author read only the fresh set's rules file and the first 30 lines of its first data file
+(for the format). The author read no matcher code, no tests, no other evaluation data and no run output, and never ran
+the matcher. Each label was decided from the ad line and the whole CV, as a recruiter would, with no view on how a
+machine would read it.
+
+Real names. People, companies, schools and buildings are invented; any match with a real one is an accident. Real product
+and standard names (AutoCAD, Revit, SAP, ECUS, VNACCS, MISA, TOEIC, IELTS, Incoterms, equipment brands) stay because real
+ads and CVs use them. They are not part of anyone's personal data. Phones look like 0900 000 xxx, emails use @example.com.
+
+Kinds:
+    strong    = fits the ad; often worded very differently from it.
+    partial   = fits part of the ad, with real gaps.
+    near-miss = neighbouring job or field that looks right at a glance and falls short on the core of the ad.
+    non-fit   = different job. Some were chosen because their content shares words with the ad by accident
+                (for example M&E as Monitoring & Evaluation, or a data warehouse against a goods warehouse).
+    stuffing  = pasted ad text or a keyword dump with no work history behind it.
+    messy     = broken PDF extraction (interleaved columns, spaced-out letters, lost accents, broken lines). Any tier.
+Kind says how the CV looks. Tier says what a recruiter would do with it. They are separate judgements.
+
+CV text. CVs are written to be 1,500-4,000 characters so that unrelated content is present, as it is in a real CV. Some are
+in Vietnamese without diacritics or in English by the candidate's choice. That is style, not a kind. No CV here is empty or
+undecodable, and none uses the "nfd" flag, so those two rules from the copied section have no cases in this set.
+
+Reading the requirement rules on long CVs. Evidence counts wherever it sits in the CV, but a skills-section list on its own
+with a work history that contradicts it is weighed as a recruiter would weigh it: a named tool in an ordinary skills list is
+accepted when the work history makes it plausible. A long list pasted from the ad is stuffing.
+
+Job description labels (eval-blind/duties/<ad>.json, shape { "duties": [...], "labels": { "<cvId>": [...] } }). Labels follow
+the order of "duties". There are three values and no A, and silence means something different from the @req lines:
+    M = the CV's work history shows this kind of work, in any wording.
+    U = the CV clearly shows the candidate did not do it or could not (for example "do kế toán trưởng phụ trách").
+    K = the CV is silent, or a recruiter cannot tell.
+A duty absent from a CV is K, not U. A duty that appears only in a keyword dump or a pasted ad, with nothing in the work
+history, is K. Work in a clearly different field that only shares the words is K unless the CV itself rules it out. The
+work counts at the level the CV shows it: real help on a duty is M, but "chỉ hỗ trợ, không trực tiếp làm" is U.

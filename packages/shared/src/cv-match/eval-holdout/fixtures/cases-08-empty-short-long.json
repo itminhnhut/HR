@@ -1,0 +1,102 @@
+[
+{"id":"x01-empty-string","notes":"Scanned PDF, no text layer.","cvText":"","items":[
+["Kinh nghiệm: Từ 2 năm","unknown","experience"],
+["Đại học trở lên","unknown","education"],
+["Biết Excel","unknown","skills"],
+["Có bằng lái xe B2","unknown","licence"],
+["TOEIC 500 trở lên","unknown","language"],
+["Chăm chỉ","unknown","soft"]]},
+{"id":"x02-whitespace-only","notes":"Only whitespace and form feeds.","cvText":"   \n\n\t\n\f\n   \n","items":[
+["Từ 1 năm kinh nghiệm","unknown","experience"],
+["Tốt nghiệp THPT","unknown","education"]]},
+{"id":"x03-scanner-watermark","notes":"Text layer is the scanner's watermark only.","cvText":"Scanned with CamScanner\n","items":[
+["Kinh nghiệm: Từ 2 năm","unknown","experience"],
+["Thành thạo Excel","unknown","skills"]]},
+{"id":"x04-drive-link-only","notes":"PDF holds only a link.","cvText":"https://drive.google.com/file/d/1a2b3c4d5e/view?usp=sharing\n","items":[
+["Có kinh nghiệm bán hàng","unknown","experience"],
+["Đại học trở lên","unknown","education"]]},
+{"id":"x05-digits-only","notes":"Only numbers.","cvText":"0912345678\n1998\n2019 - 2023\n","items":[
+["Từ 2 năm kinh nghiệm","unknown","experience"]]},
+{"id":"x06-replacement-glyphs","notes":"Font without a Unicode map.","cvText":"\uFFFD\uFFFD\uFFFD \uFFFD\uFFFD\uFFFD\uFFFD \uFFFD\uFFFD\n\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD \uFFFD\uFFFD\uFFFD\n(cid:12)(cid:34)(cid:7)\n","items":[
+["Biết Excel","unknown","skills"],
+["Từ 1 năm kinh nghiệm","unknown","experience"]]},
+{"id":"x07-page-furniture-only","notes":"Page labels only.","cvText":"Trang 1/2\nTrang 2/2\nCV\n","items":[
+["Biết Word","unknown","skills"]]},
+{"id":"x08-very-short-above-threshold","notes":"One sentence, enough to judge.","cvText":"Nguyễn Văn Tài, lái xe tải 5 năm, có bằng lái xe hạng C, sđt 0912345678, học hết lớp 12.","items":[
+["Từ 3 năm kinh nghiệm lái xe","met","experience"],
+["Có bằng lái xe hạng C","met","licence"],
+["Từ 10 năm kinh nghiệm","unmet","experience"],
+["Có bằng FC","unmet","licence"]]},
+{"id":"x09-very-short-below-letter-threshold","notes":"A genuine very short CV: a human reads it fine.","cvText":"Lái xe 5 năm, bằng lái C.","items":[
+["Có bằng lái xe hạng C","met","licence"],
+["Từ 3 năm kinh nghiệm lái xe","met","experience"]]},
+{"id":"x10-short-keywords-only","notes":"Three-word CV plus phone; no dates.","cvText":"Trần Thị Bé\nPhục vụ quán ăn, rửa chén, dọn bàn\n0987654321\n","items":[
+["Có kinh nghiệm phục vụ","met","experience"],
+["Từ 1 năm kinh nghiệm","unknown","experience"],
+["Chăm chỉ, trung thực","unknown","soft"]]},
+{"id":"x11-blank-template","notes":"Empty form with labels only, no content.","cvText":"HỌ VÀ TÊN:\nNGÀY SINH:\nĐỊA CHỈ:\nKINH NGHIỆM LÀM VIỆC:\nHỌC VẤN:\nKỸ NĂNG:\nNGOẠI NGỮ:\n","items":[
+["Từ 2 năm kinh nghiệm","unknown","experience","Mẫu trống, chưa điền gì"],
+["Đại học trở lên","unknown","education"],
+["Biết Excel","unknown","skills"]]},
+{"id":"x12-cover-letter-only","notes":"Cover letter only, no CV content.","cvText":"Kính gửi Anh/Chị phòng nhân sự,\nEm rất mong được ứng tuyển vị trí nhân viên kinh doanh của Quý công ty. Em là người năng động, chăm chỉ và luôn sẵn sàng học hỏi. Mong Anh/Chị sắp xếp lịch phỏng vấn cho em.\nEm xin chân thành cảm ơn.\n","items":[
+["Từ 2 năm kinh nghiệm","ambiguous","experience","Thư không có thông tin: không đạt hoặc chưa rõ đều hợp lý"],
+["Đại học trở lên","ambiguous","education","Như trên"],
+["Biết Excel","ambiguous","skills","Như trên"]]},
+{"id":"x13-japanese-resume","notes":"CV written entirely in Japanese; Latin letters few.","cvText":"履歴書\n氏名 グエン ティ ハ\n職歴\n2019年4月 - 2024年3月 株式会社サクラ 営業事務\n学歴\nハノイ大学 日本語学部 卒業\n資格\n日本語能力試験 N2\nTOEIC 650\n","items":[
+["Tiếng Nhật N3 trở lên","met","language"],
+["TOEIC 600 trở lên","met","language"],
+["Đại học trở lên","met","education","大学 卒業 là tốt nghiệp đại học"]]},
+{"id":"x14-long-25-year-career","notes":"Long CV: 25 years across many employers with overlap, many tools. Union 2001-nay = 25y+. Keyword traps at the end: wish and references.","cvText":"NGUYỄN VĂN THUẬN\nGiám đốc Vận hành\nSĐT: 0900 222 333 | thuan.ops@example.com | Ngày sinh: 02/03/1978\nĐịa chỉ: Quận Hải Châu, Đà Nẵng\n\nTÓM TẮT\nNhà quản lý vận hành với nhiều năm kinh nghiệm trong sản xuất và chuỗi cung ứng. Từng điều hành các nhà máy 500 đến 1.200 công nhân, triển khai Lean, 5S, Kaizen và ERP. Phụ trách ngân sách vận hành 300 tỷ đồng mỗi năm. Đam mê phát triển con người, xây dựng đội ngũ kế cận.\n\nKINH NGHIỆM LÀM VIỆC\n01/2019 - nay: Giám đốc Vận hành, Công ty CP Thuỷ sản Sông Hàn Mới\n- Quản lý 3 nhà máy, 1.200 công nhân, triển khai SAP ERP toàn công ty, giảm tồn kho 18%.\n- Xây dựng hệ thống KPI, báo cáo trên Power BI; làm việc với đối tác Nhật, Mỹ.\n- Chủ trì đánh giá HACCP, ISO 22000 hằng năm.\n\n03/2013 - 12/2018: Giám đốc Nhà máy, Công ty TNHH Chế biến Gỗ Hoà Khánh\n- Quản lý 800 công nhân, đạt chứng chỉ FSC, giảm tỷ lệ phế phẩm từ 6% xuống 2%.\n- Lập kế hoạch sản xuất và ngân sách trên Excel, phối hợp phòng Kế toán chốt giá thành.\n\n06/2008 - 02/2013: Trưởng phòng Sản xuất, Công ty CP Dệt Hoà Thọ Mới\n- Điều phối 3 ca sản xuất, áp dụng Lean, 5S.\n\n01/2007 - 12/2011: Giảng viên thỉnh giảng (bán thời gian), Trường Cao đẳng Công nghệ Đà Nẵng\n- Dạy học phần Quản trị sản xuất.\n\n07/2001 - 05/2008: Kỹ sư cơ khí, Nhà máy Cơ khí Đà Nẵng\n- Bảo trì máy, thiết kế đồ gá trên AutoCAD.\n\nHỌC VẤN\n2011 - 2013: Thạc sĩ Quản trị Kinh doanh (MBA), Đại học Kinh tế Đà Nẵng\n1996 - 2001: Kỹ sư Cơ khí, Đại học Bách khoa Đà Nẵng\n\nCHỨNG CHỈ\nLean Six Sigma Green Belt (2015)\nChuyên gia đánh giá nội bộ ISO 9001 (2016)\n\nNGOẠI NGỮ\nTiếng Anh: IELTS 6.0\nTiếng Nhật: chưa biết, dự định học trong 2027\n\nGIẢI THƯỞNG\nDoanh nhân tiêu biểu thành phố 2022\n\nHOẠT ĐỘNG XÃ HỘI\nCố vấn cho CLB Khởi nghiệp sinh viên từ 2018\n\nNGƯỜI THAM CHIẾU\nTS. Lê Quang Nam, Tiến sĩ Cơ khí, Hiệu trưởng\nÔng Phạm Hải, có bằng lái xe hạng FC, Giám đốc Vận tải\n","items":[
+["Trên 20 năm kinh nghiệm","met","experience"],
+["Từ 10 năm kinh nghiệm quản lý sản xuất","met","experience"],
+["Thạc sĩ trở lên","met","education"],
+["Có bằng Tiến sĩ","unmet","education","Của người tham chiếu"],
+["Tiếng Anh IELTS 6.0 trở lên","met","language"],
+["Tiếng Nhật giao tiếp","unmet","language"],
+["Có kinh nghiệm triển khai SAP","met","skills"],
+["Sử dụng Power BI","met","skills"],
+["Biết AutoCAD","met","skills"],
+["Có bằng lái FC","unmet","licence","Của người tham chiếu"],
+["Có khả năng lãnh đạo","unknown","soft"]]},
+{"id":"x15-long-developer-many-projects","notes":"Long IT CV listing many projects whose dates overlap jobs; total real 2017-nay.","cvText":"Trần Hữu Khang\nTech Lead\nSkype: example | GitHub: github.com/example\n\nSUMMARY\nBackend engineer who loves distributed systems. Working with Go, TypeScript and PostgreSQL. Not familiar with mobile development. No experience with Rust.\n\nEXPERIENCE\nMar 2022 - Present | Tech Lead | Stellar Commerce\nProject: Payment Gateway (Mar 2022 - Dec 2023): Go, Kafka, PostgreSQL, Redis, Docker, Kubernetes.\nProject: Loyalty Platform (Jan 2024 - Present): TypeScript, NestJS, AWS Lambda, DynamoDB.\nProject: Data Sync (Jun 2023 - Dec 2023): Python, Airflow.\n\nJul 2019 - Feb 2022 | Senior Developer | Mekong Software\nProject: Banking Core Adapter (Jul 2019 - May 2021): Java, Spring Boot, Oracle.\nProject: Ticketing App (Jun 2021 - Feb 2022): Node.js, React, MongoDB.\n\nAug 2017 - Jun 2019 | Developer | Pine Labs Vietnam\nProject: CMS (Aug 2017 - Jun 2019): PHP, Laravel, MySQL.\n\nINTERNSHIP\nJun 2016 - Dec 2016 | Intern | Pine Labs Vietnam\n\nEDUCATION\nBachelor of Engineering, Information Technology, Ho Chi Minh City University of Technology, 2013 - 2017\n\nCERTIFICATES\nAWS Certified Developer - Associate (2023)\nTOEIC 820\n\nLEARNING GOALS\nRust, Flutter and Solidity in the next 12 months.\n\nINTERESTS\nRunning, photography, chess.\n","items":[
+["At least 8 years of software development experience","met","experience"],
+["At least 12 years of experience","unmet","experience"],
+["Thành thạo Go, TypeScript","met","skills"],
+["Biết Kubernetes, Docker","met","skills"],
+["Biết Rust","unmet","skills"],
+["Biết Flutter","unmet","skills"],
+["Có kinh nghiệm phát triển ứng dụng mobile","unmet","skills"],
+["Bằng đại học ngành CNTT","met","education"],
+["TOEIC 700 trở lên","met","language"],
+["Có chứng chỉ AWS","met","licence"],
+["Đam mê công nghệ","unknown","soft"]]},
+{"id":"x16-long-teacher-public-sector","notes":"Long Vietnamese public-sector CV with narrative paragraphs.","cvText":"SƠ YẾU LÝ LỊCH\n\nHọ và tên: LÊ THỊ HỒNG VÂN\nGiới tính: Nữ\nNgày sinh: 15/08/1985\nNơi sinh: Nghệ An\nDân tộc: Kinh\nTôn giáo: Không\nĐịa chỉ thường trú: Thành phố Vinh, Nghệ An\n\nTRÌNH ĐỘ\nTrình độ văn hoá: 12/12\nTrình độ chuyên môn: Thạc sĩ Lý luận và Phương pháp dạy học bộ môn Ngữ văn, Đại học Vinh, 2014\nCử nhân Sư phạm Ngữ văn, Đại học Vinh, 2007\nNgoại ngữ: Tiếng Anh B1\nTin học: Chứng chỉ Ứng dụng CNTT cơ bản\n\nQUÁ TRÌNH CÔNG TÁC\nTừ tháng 9 năm 2007 đến tháng 8 năm 2015: Giáo viên Ngữ văn, Trường THCS Hưng Dũng\nTừ tháng 9 năm 2015 đến nay: Giáo viên Ngữ văn, Trường THPT Lê Viết Thuật\nTrong quá trình công tác, tôi tham gia bồi dưỡng học sinh giỏi cấp tỉnh, viết sáng kiến kinh nghiệm được Sở Giáo dục và Đào tạo công nhận năm 2019, 2021. Từng làm tổ trưởng chuyên môn giai đoạn 2018 - 2022. Không tham gia giảng dạy tại nước ngoài.\n\nKHEN THƯỞNG\nChiến sĩ thi đua cơ sở 2019, 2021, 2023. Giáo viên dạy giỏi cấp tỉnh chu kỳ 2020 - 2024.\n\nTôi xin cam đoan những lời khai trên là đúng sự thật.\n","items":[
+["Từ 15 năm kinh nghiệm giảng dạy","met","experience"],
+["Thạc sĩ Ngữ văn hoặc Lý luận dạy học","met","education"],
+["Tốt nghiệp Đại học Sư phạm","met","education"],
+["Tiếng Anh B1 trở lên","met","language"],
+["Tiếng Anh B2 trở lên","unmet","language"],
+["Có kinh nghiệm làm tổ trưởng chuyên môn","met","experience"],
+["Có chứng chỉ ứng dụng CNTT","met","licence"],
+["Có kinh nghiệm dạy ở nước ngoài","unmet","experience"],
+["Tận tâm với học sinh","unknown","soft"],
+["Độ tuổi 35 - 45","met","soft","Sinh 1985, 41 tuổi; CV có ngày sinh"]]},
+{"id":"x17-soft-requirements-wording","notes":"Purely soft requirement wordings; CV content cannot settle them.","cvText":"ĐINH THỊ THU HƯƠNG\nNhân viên kinh doanh\nNgày sinh: 20/10/1997\nGiới tính: Nữ\n\nKINH NGHIỆM\n2021 - nay: Nhân viên kinh doanh, Công ty Rượu Hà Thành Mới\nChăm sóc đại lý\nHọc vấn: Đại học Thăng Long\n","items":[
+["Trung thực, nhiệt tình","unknown","soft"],
+["Chịu được áp lực công việc cao","unknown","soft"],
+["Có tinh thần trách nhiệm","unknown","soft"],
+["Kỹ năng làm việc nhóm tốt","unknown","soft"],
+["Tư duy logic, nhanh nhẹn","unknown","soft"],
+["Ngoại hình ưa nhìn","unknown","soft"],
+["Hoạt bát, vui vẻ","unknown","soft"],
+["Có đam mê kinh doanh","unknown","soft"],
+["Yêu thích công việc chăm sóc khách hàng","unknown","soft"],
+["Có khả năng làm việc độc lập","unknown","soft"],
+["Sẵn sàng đi công tác","unknown","soft"],
+["Có thể tăng ca khi cần","unknown","soft"],
+["Cao từ 1m60 trở lên","unknown","soft"],
+["Sức khoẻ tốt","unknown","soft"],
+["Giới tính: Nữ","met","soft","CV ghi rõ giới tính"],
+["Tuổi từ 25 đến 35","met","soft","Sinh 1997, 29 tuổi"],
+["Nam, tuổi 20 - 30","unmet","soft","CV ghi giới tính nữ"]]}
+]

@@ -1,0 +1,25 @@
+{
+  "duties": [
+    "Phân công ca làm việc và điều hành đội kho",
+    "Giám sát nhập xuất hàng, đối chiếu với chứng từ",
+    "Tổ chức kiểm kê và xử lý chênh lệch",
+    "Cải tiến bố trí kho, duy trì 5S",
+    "Báo cáo tồn kho, hàng chậm luân chuyển và các chỉ số",
+    "Phối hợp mua hàng, sản xuất và vận tải lên lịch giao nhận",
+    "Đào tạo nhân viên mới và huấn luyện an toàn"
+  ],
+  "labels": {
+    "wsv-01": ["M", "M", "M", "M", "M", "M", "M"],
+    "wsv-02": ["M", "M", "M", "M", "M", "M", "M"],
+    "wsv-03": ["M", "M", "M", "M", "M", "M", "M"],
+    "wsv-04": ["M", "M", "M", "M", "M", "U", "K"],
+    "wsv-05": ["M", "M", "M", "M", "M", "M", "M"],
+    "wsv-06": ["U", "M", "M", "U", "M", "K", "K"],
+    "wsv-07": ["K", "M", "M", "K", "M", "K", "M"],
+    "wsv-08": ["K", "K", "K", "K", "K", "K", "K"],
+    "wsv-09": ["K", "K", "U", "K", "K", "K", "M"],
+    "wsv-10": ["K", "K", "K", "K", "K", "K", "K"],
+    "wsv-11": ["M", "M", "M", "M", "M", "M", "K"],
+    "wsv-12": ["M", "M", "U", "K", "U", "K", "M"]
+  }
+}

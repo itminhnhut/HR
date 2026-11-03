@@ -1,0 +1,494 @@
+@ad sale-admin
+@occupation Nhân viên Sale Admin
+@req experience | Đã có từ 18 tháng kinh nghiệm ở vị trí sale admin, trợ lý kinh doanh hoặc tương đương
+@req education | Trình độ cao đẳng trở lên khối ngành kinh tế, thương mại
+@req skills | Lên đơn hàng và bám tiến độ giao hàng cho khách
+@req skills | Soạn hợp đồng, phụ lục và báo giá theo mẫu của công ty
+@req skills | Excel ở mức dùng được hàm tra cứu và bảng tổng hợp để làm báo cáo doanh số
+@req skills | Đối chiếu công nợ với khách hàng và phối hợp kế toán xuất hoá đơn
+@req skills bonus | Từng thao tác trên ERP (SAP, Oracle, Bravo...) là một lợi thế
+@req language | Viết được email tiếng Anh cơ bản cho đối tác
+@req soft | Tỉ mỉ, làm việc có trình tự, không ngại giấy tờ
+@req soft | Giao tiếp nhẹ nhàng, khéo léo với khách hàng và đại lý
+=== sad-01 | strong | ordinary | interview | M M M M M M M M M M
+HOÀNG THU PHƯƠNG
+Điều phối bán hàng - Sales Support
+Điện thoại: 0900 000 301
+Email: phuong.hoangthu@example.com
+Địa chỉ: Long Biên, Hà Nội
+Ngày sinh: 12/04/1996
+
+TÓM TẮT BẢN THÂN
+Hơn bảy năm đứng sau đội kinh doanh ở hai doanh nghiệp phân phối vật liệu xây dựng và thiết bị nhà tắm. Tôi thích công việc mà mọi con số phải khớp với nhau: số đặt, số xuất, số xe chở và số tiền khách trả. Đang tìm một môi trường có hệ thống đại lý lớn hơn để học thêm về quản lý chính sách bán hàng.
+
+KINH NGHIỆM LÀM VIỆC
+
+08/2021 - nay
+Công ty CP Sơn Bảo Lâm - Nhân viên điều phối bán hàng, nhóm 4 người
+- Mỗi ngày tiếp nhận 30 đến 50 phiếu đặt của hơn 140 đại lý qua Zalo và email, kiểm tra hạn mức rồi tạo sales order trên SAP.
+- Ghép chuyến với kho Gia Lâm và đội xe thuê ngoài, báo giờ xe đến cho từng đại lý, gọi lại khi có chuyến trễ để họ sắp xếp bốc dỡ.
+- Soạn hợp đồng nguyên tắc đầu năm, phụ lục giá khi công ty đổi giá và bảng chào giá cho công trình, dùng mẫu pháp chế đã duyệt, trình trưởng phòng ký.
+- Cuối tháng gửi biên bản xác nhận số dư cho từng đại lý, tìm nguyên nhân khi hai bên lệch, báo kế toán lập hóa đơn điện tử theo phiếu xuất.
+- Làm báo cáo sản lượng theo vùng, theo nhóm hàng trên Excel, dùng XLOOKUP lấy mã và PivotTable để xem so với chỉ tiêu, gửi giám đốc kinh doanh sáng thứ Hai.
+- Cập nhật bảng chiết khấu theo quý, tính thưởng trưng bày cho đại lý và trả lời họ khi có thắc mắc.
+- Khi có đại lý nổi nóng vì hàng thiếu, thường là tôi được nhờ gọi lại xin lỗi và tìm phương án giao bù; năm 2024 có 2 đại lý định ngừng lấy hàng đã đổi ý sau khi được xử lý kiểu này.
+
+06/2019 - 07/2021
+Công ty TNHH Thiết bị Vệ sinh Hà Mi - Nhân viên hỗ trợ kinh doanh
+- Nhập đơn của showroom và nhà thầu nhỏ, hẹn lịch giao lắp.
+- Gửi báo giá theo danh mục, nhắc khách thanh toán đợt 2 khi giao đủ.
+- Sắp xếp hồ sơ khách theo mã, không để thất lạc bộ nào trong đợt kiểm toán năm 2020.
+
+HỌC VẤN
+2014 - 2018: Đại học Kinh doanh Hoa Lư, Cử nhân Quản trị Kinh doanh, loại Khá.
+
+KỸ NĂNG
+- SAP SD (tạo đơn, tra tồn, xuất báo cáo cơ bản)
+- Excel: XLOOKUP, SUMIFS, PivotTable, Power Query mức làm quen
+- Tiếng Anh: TOEIC 575, viết thư trao đổi hàng mẫu với nhà cung cấp phụ gia ở Đài Loan
+- Lập bộ hồ sơ theo từng lô, ghi chú thay đổi vào nhật ký dùng chung
+
+THÀNH TÍCH
+Nhân viên xuất sắc khối hỗ trợ năm 2023. Đề xuất đổi mẫu phiếu đặt hàng, giảm gần một nửa số lần phải gọi lại đại lý hỏi mã màu.
+
+SỞ THÍCH
+Pha chế cà phê, trồng rau ban công, đọc tiểu thuyết trinh thám.
+#why Đủ cả. Bằng chứng cụ thể cho hai dòng soft: hồ sơ qua kiểm toán, giữ chân đại lý đang giận.
+=== sad-02 | strong | hard | interview | M M M M M M M M A M
+NGUYEN BAO NGOC
+Sales Coordinator
+Tel 0900 000 302 | baongoc.nguyen@example.com | District 7, Ho Chi Minh City
+
+ABOUT ME
+Sales coordinator with close to six years in B2B packaging and food ingredients. I sit between account managers, the plant and finance, so most of my day is making sure that what we promised a customer is what actually reaches their dock. I describe myself as detail-oriented and my former manager used to call me "the human checklist".
+
+EMPLOYMENT
+
+Lotus Bay Packaging JSC, Long An (Feb 2022 - Present)
+Senior Sales Coordinator, serving 11 key accounts in beverage and dairy
+* Convert customer purchase orders into Oracle sales orders, confirm lead time with planning, chase the plant if a run slips.
+* Book trucks with the logistics team, send delivery notices and proof of delivery, follow up shortages and returns until closed.
+* Prepare price quotations, sales agreements and addenda from the legal-approved templates, circulate them for signature and keep an expiry tracker.
+* Month-end: reconcile AR ageing against customer statements, explain differences, ask finance to raise or adjust VAT invoices.
+* Build the weekly sales pack in Excel (INDEX/MATCH, XLOOKUP, pivot tables and charts) for the Sales Director.
+* Calculate volume rebates per customer contract and flag when an account approaches the next tier.
+* Handled a difficult recall in 2024: phoned 6 customers in one afternoon, agreed replacement dates with each, and we lost none of them.
+
+Saigon Harvest Ingredients Co., Ltd (Jul 2020 - Jan 2022)
+Sales Assistant
+* Supported 3 account managers: order entry, samples, certificates of analysis, customer files.
+* Wrote routine emails in English to suppliers in Thailand and Malaysia about shipping dates and specifications.
+* Tracked outstanding payments in a shared sheet and reminded customers before due dates.
+
+EDUCATION
+Bachelor of Commerce, Dong Thuan University of Economics, 2016 - 2020.
+
+SKILLS AND LANGUAGES
+Oracle EBS Order Management, Excel (advanced), Word, Outlook, Teams.
+English: IELTS 6.0. Daily written correspondence. Vietnamese: native.
+
+COURSES
+Contract basics for non-lawyers, Mekong Business Academy, 2023.
+Advanced Excel for Reporting, online, 2021.
+
+INTERESTS
+Badminton, baking, learning to play the ukulele. Treasurer of my apartment block's residents' group.
+#why Toàn tiếng Anh, không chữ "sale admin" nhưng đúng việc. "Detail-oriented" chỉ là tự nhận nên dòng tỉ mỉ là A; dòng khéo léo có ví dụ gọi 6 khách nên M.
+=== sad-03 | strong | ordinary | interview | M M M M M M A M M A
+TRAN THI KIM OANH
+Tro ly kinh doanh
+DT: 0900 000 303 - Mail: kimoanh.tran@example.com
+Dia chi: Ninh Kieu, Can Tho
+
+VAI NET VE MINH
+Minh hoc thuong mai roi vao nghe tu viec ban thuoc o nha thuoc, sau do chuyen sang ho tro kinh doanh cho cong ty thiet bi y te tu nam 2024. Tinh minh cham, thich ghi ra giay truoc khi lam. Khach quen hay noi thich goi cho minh vi minh noi chuyen de chiu.
+
+CONG VIEC DA LAM
+
+06/2024 den nay - Cong ty TNHH Y Cu Minh Tam - Tro ly kinh doanh
++ Nhan don tu benh vien, phong kham qua dien thoai va email, len phieu dat hang cho kho, hen ngay giao, bao khach khi hang ve cham.
++ Lam viec voi ben chuyen phat va xe cong ty de hang kim, ong truyen toi dung khoa, luu bien ban giao nhan co chu ky.
++ Viet bao gia, hop dong mua ban, phu luc gia han theo form co san, gui anh giam doc xem roi moi ky.
++ Chuan bi ho so thau cho cac benh vien tuyen tinh: sap theo bo, soat tung trang. Trong 19 goi da nop chua goi nao bi loai vi thieu giay to.
++ Moi thang gui bien ban doi chieu so du cho khach, gom phieu giao hang dua chi ke toan xuat hoa don, gui hoa don cho phong tai chinh benh vien.
++ Bang doanh so thang lam tren Excel: VLOOKUP lay ten khach, pivot xem theo khu vuc va theo san pham, gui truong phong ngay mung 2.
++ Viet email tieng Anh don gian cho nha cung cap Han Quoc de hoi hang mau, ngay giao, chung tu.
+
+09/2021 - 05/2024 - Nha thuoc Thanh Tam - Nhan vien ban thuoc
++ Tu van thuoc khong ke don theo huong dan cua duoc si, ban hang, thu tien.
++ Kiem hang nhap, sap xep tu thuoc, theo doi han dung.
+
+HOC VAN
+2018 - 2021: Cao dang Thuong nghiep Lam Son, nganh Kinh doanh thuong mai.
+
+KY NANG
+Word, Excel, Zalo OA. Chua dung phan mem ERP, cong ty dang quan ly bang file Excel va phan mem kho don gian.
+Tieng Anh: chung chi A2, viet mail ngan duoc, chua noi tu tin.
+
+KHOA HOC
+Lop ky nang soan thao hop dong thuong mai, 2 buoi, Trung tam Dao tao Tay Do Moi (2025).
+
+SO THICH
+Nau an, trong lan, dan nhau di cho noi cuoi tuan voi may dua ban.
+#why Không dấu do thói quen. 2 năm 5 tháng đúng vị trí. Tự nói chưa dùng ERP, bonus nên A. Giao tiếp chỉ có lời tự nhận nên A. Hồ sơ thầu 19 gói là bằng chứng cho dòng tỉ mỉ.
+=== sad-04 | partial | hard | maybe | U A M U A U M M A A
+ĐỖ HOÀNG YẾN
+Sale Admin
+0900 000 304 | yen.dohoang@example.com | Hải Châu, Đà Nẵng
+
+GIỚI THIỆU
+Từ lễ tân khách sạn chuyển ngành sang hỗ trợ bán hàng từ đầu năm nay. Tôi còn mới trong công việc văn phòng kinh doanh nhưng học nhanh và rất muốn ở lâu dài. Tính cẩn thận, ai cũng bảo tôi hiền và biết nói chuyện.
+
+QUÁ TRÌNH LÀM VIỆC
+
+Tháng 01/2026 - nay: Công ty TNHH Thực phẩm Sạch Trà My (Đà Nẵng) - Nhân viên Sale Admin
+• Nhận đơn của chuỗi cửa hàng tiện lợi qua file, gõ lên phần mềm Bravo, in phiếu chuyển cho kho.
+• Gọi tài xế hỏi xe, báo cửa hàng khi hàng về trễ, ghi lại phần trả về.
+• Cộng số bán trong tuần theo từng cửa hàng rồi gửi chị trưởng nhóm. Tôi dùng SUMIF và lọc, phần bảng Pivot chị trưởng nhóm đang chỉ dần nên chưa tự làm được.
+• Hợp đồng và phụ lục do anh trưởng phòng soạn, tôi chỉ in và xin chữ ký, cất vào tủ theo tháng.
+• Việc đối chiếu số dư với cửa hàng và xuất hóa đơn là của phòng kế toán, tôi chỉ gửi phiếu giao hàng sang đó.
+
+Tháng 03/2023 - 12/2025: Khách sạn Biển Ngân, Sơn Trà - Lễ tân
+• Làm thủ tục nhận và trả phòng, tiếp khách Hàn Quốc và khách phương Tây.
+• Xử lý đặt phòng qua email bằng tiếng Anh, viết thư xác nhận và thư xin lỗi khi có sự cố.
+• Thu tiền, in hóa đơn phòng, bàn giao ca.
+• Được khách ghi tên khen trên trang đánh giá của khách sạn 6 lần trong năm 2024.
+
+Tháng 06/2022 - 02/2023: Quán Cà Phê Gió Biển - Thu ngân bán thời gian
+• Tính tiền, đón khách, kiểm quỹ cuối ngày.
+
+HỌC VẤN
+2019 - 2022: Cao đẳng Du lịch Hồng Lam, ngành Quản trị khách sạn.
+
+KỸ NĂNG VÀ NGOẠI NGỮ
+Tiếng Anh TOEIC 540, viết email thành thạo với khách lưu trú. Tiếng Hàn sơ cấp. Word, Excel căn bản, Bravo mức nhập liệu.
+
+HOẠT ĐỘNG
+Tình nguyện viên lễ hội pháo hoa thành phố 2023, phụ trách hướng dẫn khách nước ngoài. Thành viên đội văn nghệ khách sạn.
+
+SỞ THÍCH
+Bơi biển sáng sớm, làm đồ handmade, xem phim Hàn.
+#why Mới 10 tháng làm đúng việc, lễ tân không tương đương nên U. Quản trị khách sạn có thuộc khối kinh tế không thì còn tranh cãi. Excel chỉ có SUMIF, chưa Pivot. Hợp đồng, công nợ tự nói không làm.
+=== sad-05 | partial | ordinary | maybe | M U M M A M A U K K
+ĐẶNG VĂN KHÁNH
+Trợ lý kinh doanh
+SĐT 0900 000 305
+Mail khanh.dangvan@example.com
+Thường Tín, Hà Nội
+
+CÔNG VIỆC
+
+09/2023 - nay. Công ty TNHH Bao Bì Carton Phú Xuyên. Trợ lý kinh doanh (công ty 25 người).
+Ghi đơn của khách vào sổ và file chung, chuyển xưởng làm lệnh sản xuất.
+Theo xe hàng, hẹn giờ với kho khách, báo lại anh giám đốc khi xe hỏng hoặc khách đổi giờ.
+Gõ báo giá theo mẫu, làm hợp đồng và phụ lục đổi giá khi giấy tăng giá, in ra đưa giám đốc ký.
+Cuối tháng cộng doanh số từng khách, báo giám đốc. Excel dùng được SUM, SUMIF, VLOOKUP, còn bảng tổng hợp Pivot thì chưa quen, mỗi lần cần là nhờ bạn.
+Gọi cho khách chốt số còn nợ, ghi vào giấy xác nhận, rồi báo chị kế toán viết hóa đơn.
+Ít khi phải viết gì ngoài tiếng Việt vì khách đều trong nước.
+
+03/2021 - 08/2023. Công ty TNHH Bao Bì Carton Phú Xuyên. Nhân viên kho, sau đó hỗ trợ phòng kinh doanh.
+Đếm hàng, xếp pallet, viết phiếu xuất.
+Từ đầu năm 2023 được chuyển lên văn phòng giúp giao dịch khách vì quen hàng, biết mã thùng.
+
+06/2019 - 02/2021. Trung tâm Điện Máy Xuân La. Phụ kho, giao hàng.
+Giao tủ lạnh, tivi, thu tiền hộ, nộp lại cho thu ngân.
+
+HỌC VẤN
+2017 - 2019: Trung cấp Kế toán Doanh nghiệp, Trường Trung cấp Nghề Sông Nhuệ.
+Hiện chưa học lên cao đẳng, đang tìm hiểu lớp liên thông buổi tối.
+
+KỸ NĂNG
+Word, Excel như trên. Biết đọc thông số thùng carton: sóng, định lượng, kích thước. Lái xe tải nhỏ, có bằng C. Tiếng Anh: đọc được từ đơn giản trên bao bì, chưa viết email được.
+
+KHEN THƯỞNG
+Nhân viên chăm chỉ năm 2024 của công ty.
+Tháng 7/2025 phát hiện nhầm giá giấy trong báo giá, kịp sửa trước khi gửi khách.
+
+SỞ THÍCH
+Đá bóng phong trào, sửa xe máy, đi câu.
+#why Việc đúng hơn ba năm nhưng chỉ có trung cấp. Tự nói chưa viết được email tiếng Anh nên U. Excel có tra cứu mà chưa có Pivot nên A. Khá gọn, không có gì về giao tiếp nên K.
+=== sad-06 | near-miss | hard | maybe | A M A A U A A U K M
+PHAN QUANG VINH
+Nhân viên kinh doanh tuyến tỉnh
+Di động: 0900 000 306
+Email: vinh.phanquang@example.com
+TP. Vinh, Nghệ An
+
+MỤC TIÊU
+Sau sáu năm chạy tuyến, tôi muốn chuyển sang công việc văn phòng ổn định hơn để gần gia đình, vẫn gắn với mảng bán hàng và đại lý mà tôi đã hiểu rõ.
+
+KINH NGHIỆM
+
+04/2022 - nay: Công ty CP Phân Bón Thành Lộc - Nhân viên thị trường Nghệ An, Hà Tĩnh
+- Quản lý khoảng 60 đại lý cấp 1 và cấp 2, thăm tuyến 4 ngày một tuần, nắm tồn kho và đối thủ ở từng huyện.
+- Chốt số lượng rồi chuyển đơn về cho bạn sale admin ở văn phòng Vinh để bạn ấy lên phiếu, tôi không vào phần mềm tạo đơn. Khi đại lý sốt ruột thì tôi gọi kho hỏi xe giúp họ.
+- Tự viết báo giá nhanh bằng điện thoại. Hợp đồng đại lý do văn phòng gõ, tôi đem xuống cho đại lý ký và mang về.
+- Đi thu tiền cuối vụ, ngồi với đại lý xem họ còn nợ bao nhiêu theo sổ. Hóa đơn thì văn phòng và kế toán lo.
+- Giải thích chính sách chiết khấu từng quý cho đại lý, đề xuất hỗ trợ thêm khi đại lý vào vụ mới.
+- Báo cáo của cả tuyến do bạn sale admin tổng hợp, tôi chỉ nhắn số qua Zalo mỗi tối thứ Sáu.
+- Mùa mưa bão 2024 giá tăng 12%, mất 3 tuần đi từng đại lý thuyết phục giữ đơn, không mất đại lý cấp 1 nào.
+
+05/2020 - 03/2022: Công ty TNHH Thức Ăn Chăn Nuôi An Phong - Nhân viên bán hàng
+- Mở mới 18 điểm bán ở Quỳnh Lưu, Diễn Châu. Hướng dẫn cách cho ăn, theo dõi chuồng trại cùng kỹ thuật.
+- Có xem tồn kho trên Bravo bằng máy của văn phòng khi về họp tháng, không thao tác gì khác.
+
+HỌC VẤN
+2016 - 2019: Cao đẳng Kinh tế Tam Giang, ngành Quản trị kinh doanh.
+
+KỸ NĂNG
+Excel cơ bản, nhập số, cộng cột. Word. Lái ô tô bằng B2. Đàm phán, chịu đi xa.
+
+THÀNH TÍCH
+Vượt chỉ tiêu 3 năm liền, được thưởng chuyến đi Phú Quốc năm 2023.
+
+SỞ THÍCH
+Bóng chuyền, nuôi ong cùng bố ở quê, đọc báo nông nghiệp.
+#why Bán hàng thị trường, có nhiều việc gần sale admin nhưng chính việc giấy tờ thì văn phòng làm. Có tính là tương đương không thì tranh cãi. Các dòng chỉ làm được một nửa nên A. Excel tự nói cơ bản nên U.
+=== sad-07 | near-miss | hard | maybe | A M U U M M M U M K
+LƯƠNG THỊ HẠNH
+Kế toán bán hàng
+Tel: 0900 000 307 · hanh.luongthi@example.com · Bắc Từ Liêm, Hà Nội
+
+TÓM TẮT
+Sáu năm kế toán doanh thu và công nợ phải thu ở doanh nghiệp hàng tiêu dùng. Tôi muốn đổi không khí, gần với bộ phận bán hàng hơn và bớt phần sổ sách cuối năm.
+
+KINH NGHIỆM LÀM VIỆC
+
+11/2021 - nay: Công ty CP Hàng Gia Dụng Kim Long Sơn - Kế toán bán hàng
+- Mỗi sáng nhận phiếu xuất đã ký từ kho, ghi nhận doanh thu trên SAP FI và phát hành hóa đơn điện tử, gửi khách qua email.
+- Đối chiếu số dư phải thu với hơn 200 nhà phân phối và đại lý, lập biên bản xác nhận theo quý, ghi rõ từng chênh lệch và cách xử lý.
+- Lập danh sách tuổi nợ, gửi trưởng vùng để nhắc thu, trực tiếp gọi khi quá hạn trên 60 ngày.
+- Tính chiết khấu thương mại theo quý cho đại lý dựa trên chính sách của phòng kinh doanh, làm phiếu giảm trừ.
+- Làm báo cáo doanh thu theo tháng cho kế toán trưởng trên Excel: INDEX MATCH, VLOOKUP, Pivot, kèm bản so sánh với cùng kỳ.
+- Phần nhận đơn và theo dõi giao hàng thuộc phòng điều phối, tôi chỉ nhận chứng từ khi hàng đã xuất, không làm việc với khách về lịch giao.
+- Ba năm liền kiểm toán độc lập không có bút toán điều chỉnh nào ở mảng doanh thu của tôi. Tất cả chứng từ được đánh số, kẹp theo ngày, có file tra cứu.
+
+03/2020 - 10/2021: Công ty TNHH Kiểm Toán và Tư Vấn Nam Bình - Trợ lý kiểm toán
+- Đi khách hàng cùng trưởng nhóm, kiểm tra chứng từ, gửi thư xác nhận công nợ.
+- Tổng hợp giấy tờ làm việc theo mẫu của công ty.
+
+HỌC VẤN
+2016 - 2020: Đại học Tài chính Hòa Lạc, Cử nhân Kế toán.
+
+CHỨNG CHỈ
+Kế toán trưởng (2024). Khóa kê khai thuế nâng cao (2022).
+
+KỸ NĂNG
+SAP FI, MISA (dùng ở công việc làm thêm cho cửa hàng của gia đình), Excel nâng cao, phần mềm hóa đơn điện tử. Lập báo cáo thuế GTGT theo tháng.
+
+SỞ THÍCH
+Yoga, chạy bán marathon, làm bánh mì tại nhà. Đọc sách tâm lý học.
+#why Giỏi đúng dòng công nợ, ERP, Excel nhưng là kế toán, hợp đồng và đơn không đụng tới. CV nói rõ không làm đơn, giao hàng. Không nêu tiếng Anh nên U. Hợp đồng không nhắc đến nên U.
+=== sad-08 | non-fit | hard | no | U U U U U U A M K K
+MAI HỮU PHÚC
+System Administrator
+Mobile: 0900 000 308 | phuc.maihuu@example.com | Tân Bình, TP. Hồ Chí Minh
+
+TÓM TẮT
+Quản trị hệ thống với 7 năm kinh nghiệm, trong đó 4 năm phụ trách hạ tầng cho SAP. Tôi chăm lo để phòng ban nghiệp vụ, từ sale admin, kho đến kế toán, luôn đăng nhập được và hệ thống không chậm vào ngày chốt sổ.
+
+KINH NGHIỆM
+
+10/2022 - nay: Công ty CP Nhựa Kỹ Thuật Tân Quang - Admin hệ thống / SAP Basis
+- Quản trị máy chủ SAP ECC và S/4HANA: vá lỗi, sao lưu, nâng cấp, phân quyền theo vai trò.
+- Tạo user và gán role cho phòng kinh doanh, phòng sale admin, kế toán. Không làm nghiệp vụ, chỉ xử lý khi họ không thực hiện được thao tác do thiếu quyền.
+- Theo dõi tiến trình job chạy đơn hàng, hóa đơn ban đêm, xử lý khi job lỗi, báo nhóm tư vấn SD, FI.
+- Trao đổi ticket với hãng và đối tác triển khai nước ngoài bằng email tiếng Anh, viết báo cáo sự cố.
+- Lập hợp đồng bảo trì với nhà thầu CNTT do phòng mua hàng phụ trách, tôi chỉ đưa thông số.
+
+03/2019 - 09/2022: Công ty TNHH Giải Pháp Mạng Đông Sài Gòn - Kỹ sư hạ tầng
+- Quản trị Windows Server, Active Directory, VMware, tường lửa cho khách hàng doanh nghiệp.
+- Viết script PowerShell và Bash để tự động kiểm tra dung lượng, gửi cảnh báo.
+- Trực hỗ trợ khách hàng theo ca, phân loại sự cố, cập nhật phiếu.
+
+HỌC VẤN
+2014 - 2018: Đại học Công Nghệ Thông Tin Gia Định, Kỹ sư Mạng máy tính.
+
+CHỨNG CHỈ
+SAP Certified Technology Associate. Linux Foundation Sysadmin. CCNA.
+
+KỸ NĂNG
+Linux, Windows Server, HANA DB, Oracle DB, Bash, PowerShell, Zabbix, VMware. Tiếng Anh TOEIC 780.
+
+DỰ ÁN
+- Di trú SAP từ ECC lên S/4HANA, 2024: dựng hệ thống thử nghiệm, chạy lại quy trình bán hàng cùng người dùng phòng sale admin để bảo đảm đúng phân quyền.
+- Xây dựng trung tâm dữ liệu dự phòng tại Bình Dương: thiết kế sao lưu, diễn tập khôi phục mỗi quý.
+- Giám sát dashboard cho quản trị viên ban đêm, giảm 40% số lần báo động giả.
+
+SỞ THÍCH
+Lắp máy tính cũ, chơi cờ vây trên mạng, leo núi Bà Đen vào dịp lễ.
+#why Admin nhưng là admin hệ thống. SAP là phần quản trị kỹ thuật, không phải thao tác nghiệp vụ, bonus nên A. Tiếng Anh viết email với đối tác là có thật.
+=== sad-09 | non-fit | ordinary | no | U U M U U U A U K A
+LÂM NGỌC TRÂM
+Admin Fanpage - Chốt đơn online
+Liên hệ: 0900 000 309 / tram.lamngoc@example.com
+Biên Hòa, Đồng Nai
+
+GIỚI THIỆU
+Mình là một bạn trẻ yêu thời trang, đã làm admin cho 3 fanpage quần áo và mỹ phẩm từ năm 2022. Mình quen rep inbox tới khuya, biết cách làm khách vui và rất nhanh tay. Hy vọng được làm cho một shop lớn hơn hoặc một công ty có đội ngũ chuyên nghiệp.
+
+KINH NGHIỆM
+
+07/2024 - nay: Shop Thời Trang Mây Tím - Admin fanpage kiêm chốt đơn
+- Trả lời bình luận, inbox trên Facebook, Instagram, trung bình 150 cuộc trò chuyện mỗi ngày.
+- Tư vấn size, chốt đơn, nhập đơn vào phần mềm bán hàng rồi đẩy sang đơn vị giao hàng, theo dõi hành trình từng đơn, gọi khách khi shipper báo không liên lạc được.
+- Xử lý đổi trả, đơn hoàn, đối soát tiền COD với bên vận chuyển mỗi tuần cùng chị chủ.
+- Viết bài, canh giờ đăng, chạy mini game và mã giảm giá cho khách theo dõi trang.
+- Trang giữ điểm phản hồi 4.9/5 trong hơn một năm, có nhiều khách khó tính sau đó thành khách quen.
+
+02/2023 - 06/2024: Thương Hiệu Mỹ Phẩm Hương Cỏ Dại - Cộng tác viên admin
+- Đăng bài chéo, trả lời câu hỏi về sản phẩm, gửi khách chương trình khuyến mãi.
+- Cập nhật đơn lên Google Sheet cho chị quản lý xem.
+
+08/2022 - 01/2023: Quán Trà Sữa Hoa Nhài - Phục vụ, kiêm trực page quán
+- Nhận đơn qua page, gọi tài xế công nghệ, pha chế khi đông khách.
+
+HỌC VẤN
+2019 - 2021: Trung cấp Thiết kế Đồ họa, Trường Trung cấp Nghệ thuật Ứng dụng Sông Đồng.
+
+KỸ NĂNG
+Canva, CapCut, Facebook Business Suite, phần mềm quản lý đơn online, Google Sheet nhập liệu. Nói chuyện vui vẻ. Tiếng Anh đọc được caption.
+
+DỰ ÁN CÁ NHÂN
+Kênh video ngắn phối đồ, 18 nghìn người theo dõi. Tự làm các mẫu ảnh sản phẩm cho shop.
+
+SỞ THÍCH
+Đi cà phê, quay video, sưu tầm đồ vintage, ca hát với nhóm bạn.
+#why Từ "admin", "đơn hàng", "khách hàng" trùng. Nhập đơn và theo đơn giao là thật nên dòng 3 là M. Nhưng không có hợp đồng, đại lý, công nợ khách, cũng không phải văn phòng bán hàng. Giao tiếp có điểm phản hồi nhưng chỉ với khách lẻ, không đại lý nên A.
+=== sad-10 | stuffing | ordinary | no | U U U U U U U U K K
+ĐINH THỊ NGA
+Sale Admin
+0900 000 310 - nga.dinhthi@example.com - Từ Sơn, Bắc Ninh
+
+MỤC TIÊU
+Đã có từ 18 tháng kinh nghiệm ở vị trí sale admin, trợ lý kinh doanh. Lên đơn hàng và bám tiến độ giao hàng cho khách. Soạn hợp đồng, phụ lục và báo giá theo mẫu của công ty. Đối chiếu công nợ với khách hàng và phối hợp kế toán xuất hóa đơn. Tỉ mỉ, làm việc có trình tự, không ngại giấy tờ. Giao tiếp nhẹ nhàng, khéo léo với khách hàng và đại lý.
+
+KỸ NĂNG NỔI BẬT
+Sale admin, sales support, trợ lý kinh doanh, SAP, Oracle, Bravo, ERP, Excel, VLOOKUP, Pivot Table, báo cáo doanh số, PO, hợp đồng, phụ lục, báo giá, công nợ, hóa đơn, đối chiếu, chiết khấu, đại lý, email tiếng Anh, TOEIC.
+
+KINH NGHIỆM LÀM VIỆC
+
+05/2024 - nay: Tạp Hóa Bà Tư Đình Bảng - Nhân viên bán hàng
+- Đứng quầy, tính tiền cho khách, xếp hàng lên kệ, quét dọn cửa hàng.
+- Khi hết bột giặt, mì gói thì báo cô chủ để cô gọi người mang tới.
+- Sổ ghi nợ của khách quen do cô chủ giữ.
+
+10/2022 - 04/2024: Công ty TNHH Điện Tử Thuận Thành - Công nhân lắp ráp
+- Làm trên dây chuyền, gắn linh kiện theo mẫu, ca ngày ca đêm xoay vòng.
+- Kiểm tra bằng mắt, loại sản phẩm lỗi vào khay riêng.
+
+06/2021 - 09/2022: Quán Cơm Bình Dân Hương Lúa - Phụ bếp, phục vụ
+- Rửa rau, dọn bàn, bưng cơm, thu tiền lúc đông khách.
+
+HỌC VẤN
+2018 - 2021: Trường THPT Nguyễn Văn Khánh, Từ Sơn. Đã tốt nghiệp.
+
+CHỨNG CHỈ
+Tin học văn phòng cơ bản, Trung tâm Tin học Bình Minh Việt, học năm 2020.
+
+ĐIỂM MẠNH
+Siêng năng, vui vẻ, đi làm đúng giờ. Có xe máy. Có thể làm cả cuối tuần và đi làm ngay.
+
+SỞ THÍCH
+Xem phim, nghe nhạc, nấu ăn cho gia đình. Trông em nhỏ cuối tuần. Mỗi năm cùng cô chủ đi hội chợ Tết để mua hàng cho quán.
+
+NGƯỜI THAM KHẢO
+Cô Tư, chủ tạp hóa: 0900 000 391.
+#why Mục tiêu dán nguyên từ ad, cộng ô từ khóa. Công việc thật là đứng quầy, công nhân, phụ bếp. Dòng đo được U kể cả bonus, soft để K.
+=== sad-11 | messy | hard | interview | M M M M M M M M M A
+VƯƠNG NGỌC HÀ
+Sale Admin
+0900 000 311   ha.vuongngoc@example.com   Cau Giay, Ha Noi
+
+TOM TAT
+Gan bay nam ho tro kinh doanh trong nganh day cap dien va van phong pham. Làm việc theo checklist, thích lưu trữ gọn gàng.
+Được đồng nghiệp đánh giá nói năng mềm mỏng, khách ít khi to tiếng với mình.
+
+QUÁ TRÌNH CÔNG TÁC
+Thời gian
+Công ty
+Chức danh
+Mô tả công việc
+08/2022 - nay
+02/2020 - 07/2022
+Công ty CP Cáp Điện Hồng Quân
+Công ty TNHH Văn Phòng Phẩm Trúc Xanh
+Sale Admin
+NV ho tro kinh doanh
+Tiep nhan don dat hang cua 70 dai ly va nha thau,
+tao don tren Bravo, chuyen lenh cho kho Hung Yen;
+Sap xe voi doi van tai, nhan tin bao gio hang den,
+giai quyet khi giao thieu cuon hoac sai chung loai;
+Soạn báo giá, hợp đồng nguyên tắc, phụ lục điều chỉnh giá đồng
+theo biểu mẫu công ty, trình ký và lưu hồ sơ;
+Doi chieu cong no cuoi thang voi dai ly, gui bien ban xac nhan,
+bao ke toan xuat hoa don theo tung lo giao;
+Lam bao cao doanh so tuan bang Excel: VLOOKUP, Pivot Table,
+gui Truong phong kinh doanh sang thu Hai;
+Theo doi chiet khau theo san luong va chuong trinh tang hang
+cho dai ly cap 1, cap nhat bang tinh moi quy.
+Nhan don qua dien thoai tu truong hoc va van phong,
+hen ngay giao trong thanh pho, nhac khach thanh toan;
+Cho hop dong nam voi 2 truong hoc, kiem tra lai tung dong hang truoc
+khi gui. 3 nam lien khong co hoa don nao bi yeu cau lam lai;
+Viet email tieng Anh cho nha cung cap but ky Thai Lan
+ve lich hang va mau moi.
+
+HỌC VẤN
+Năm
+Trường
+Ngành
+2015 - 2019
+Đại học Kinh doanh Hoa Lư
+Thương mại quốc tế
+
+KỸ NĂNG
+Bravo 8                        Tieng Anh
+Excel                          TOEIC 510
+Word, Outlook                  Viet email thuong mai ngan
+
+HOẠT ĐỘNG VÀ SỞ THÍCH
+Nhóm đọc sách công ty, phụ trách quỹ phòng,
+Di hoc nau an cuoi tuan, dan piano o muc nhap mon.
+
+Trang 1 / 2
+CV_VuongNgocHa_2026.pdf - xuất từ Canva
+Trang 2 / 2
+#why Bảng bị tách cột, chức vụ và mô tả rời khỏi công ty, mất dấu vài dòng. Người đọc gỡ được từ nhà cung cấp theo nội dung. Hoá đơn không sai 3 năm là bằng chứng tỉ mỉ. Giao tiếp mới là lời nhận xét nên A.
+=== sad-12 | near-miss | ordinary | no | U A U A M U A M M K
+CAO THỊ THANH TÂM
+Chuyên viên Hành chính - Văn phòng
+0900 000 312 | tam.caothanh@example.com | Đống Đa, Hà Nội
+
+TÓM TẮT
+Tám năm trong công tác hành chính văn phòng, nơi mọi loại giấy tờ từ công văn tới bảng chấm công đều đi qua tay tôi. Tìm vị trí hỗ trợ có tính ổn định, văn phòng quận trung tâm.
+
+KINH NGHIỆM
+
+03/2020 - nay: Công ty CP Xây Dựng Hưng Đạo Sơn - Chuyên viên hành chính (admin văn phòng)
+- Quản lý công văn đến, đi, con dấu, hồ sơ pháp lý công ty và hồ sơ của gần 400 nhân viên theo bộ mã, tra lại trong vài phút khi kiểm toán hỏi.
+- Soạn hợp đồng thuê văn phòng, hợp đồng dịch vụ vệ sinh, bảo vệ, căng tin theo mẫu; lưu và nhắc gia hạn.
+- Xin báo giá văn phòng phẩm, đồ in ấn; lập đề nghị mua, theo dõi nhận hàng cho nội bộ.
+- Theo dõi chấm công, làm báo cáo chi phí văn phòng theo tháng bằng Excel: VLOOKUP lấy phòng ban, Pivot cộng theo khoản mục.
+- Sắp xếp phòng họp, đón khách, đặt vé đi lại cho ban giám đốc. Gửi thư và email mời bằng tiếng Anh cho đối tác nước ngoài.
+- Công ty có phòng kinh doanh riêng, tôi không tham gia đơn hàng hay công nợ khách hàng.
+
+08/2017 - 02/2020: Trung Tâm Anh Ngữ Sao Khuê - Lễ tân kiêm nhân viên hành chính
+- Đón học viên, thu học phí, ghi danh, lưu hồ sơ học viên.
+- Làm các thông báo, lịch học, kiểm kê thiết bị phòng học.
+
+HỌC VẤN
+2014 - 2017: Cao đẳng Nghiệp vụ Văn thư Thăng Long Mới, ngành Quản trị văn phòng.
+
+CHỨNG CHỈ
+Nghiệp vụ văn thư lưu trữ (2019). TOEIC 625 (2023).
+
+KỸ NĂNG
+Word, Excel, PowerPoint, Google Workspace. Soạn thảo văn bản hành chính theo Nghị định về công tác văn thư.
+
+THÀNH TÍCH
+Xây dựng lại quy trình lưu hồ sơ theo mã, rút thời gian tra cứu từ nửa ngày xuống vài phút. Lao động tiên tiến 2022, 2024.
+
+SỞ THÍCH
+Cắm hoa, làm đồ thêu tay, tham gia đội văn nghệ công đoàn.
+#why Hành chính chứ không phải bán hàng, chữ "admin", "báo giá", "hợp đồng" trùng. Hợp đồng dịch vụ thật nhưng không phải hợp đồng bán, nên A. Quản trị văn phòng có tính khối kinh tế không còn tranh cãi. Bản thân CV nói không làm đơn và công nợ.

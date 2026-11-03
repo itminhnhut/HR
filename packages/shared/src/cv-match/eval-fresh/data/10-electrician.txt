@@ -1,0 +1,75 @@
+@ad electrician
+@occupation Thợ điện công nghiệp
+@req experience | Kinh nghiệm: Từ 3 năm
+@req education | Học vấn: Trung cấp trở lên
+@req education | Chuyên ngành Điện công nghiệp hoặc Điện dân dụng
+@req licence | Có thẻ an toàn điện bậc 3/5 trở lên
+@req skills | Đọc được bản vẽ điện, lắp đặt tủ điện
+@req skills | Bảo trì động cơ, biến tần; biết PLC cơ bản
+@req soft | Sức khỏe tốt, không sợ độ cao
+@req soft | Chấp nhận tăng ca và đi công trình xa
+=== ele-01 | strong | ordinary | interview | M M M M M M K M
+PHẠM VĂN KIÊN
+Thợ điện công nghiệp
+05/2019 - nay: Thợ điện, Công ty Cơ Điện Tân Hưng. Đọc bản vẽ, đấu nối và lắp tủ điện động lực, tủ điều khiển. Bảo trì động cơ, biến tần, lập trình PLC Mitsubishi cơ bản. Đi công trình ở Bắc Ninh, Quảng Ninh, tăng ca khi có yêu cầu.
+Cao đẳng nghề Điện công nghiệp, 2018
+Thẻ an toàn điện bậc 4/5
+=== ele-02 | strong | ordinary | interview | M M M M M M K K
+LÝ VĂN TRUNG
+Kỹ thuật điện bảo trì
+Nhà máy Thép An Khánh, 2021 đến nay: kỹ thuật viên bảo trì điện. Sửa chữa, thay thế motor, inverter. Đọc sơ đồ điện, ráp tủ điện. Biết PLC Siemens S7-1200 mức cơ bản.
+Trung cấp Điện công nghiệp, 2020
+Thẻ an toàn điện bậc 3/5, cấp 2025
+=== ele-03 | strong | ordinary | interview | M M M M M M K M
+DO VAN TUAN
+Industrial Electrician
+Kim Long Mechanical & Electrical, Oct 2018 - Present. Read electrical drawings, assemble and install control panels. Maintain motors and VFDs, basic PLC troubleshooting. Overtime and out-of-town sites.
+Vocational College, Industrial Electrics, 2018
+Electrical safety card level 4/5
+=== ele-04 | partial | ordinary | maybe | M M M U M U K K
+NGUYỄN VĂN SÁNG
+Thợ điện
+2020 - nay: Đội thi công Điện nước Hưng Thịnh, đi dây, lắp tủ điện căn hộ theo bản vẽ.
+Trung cấp Điện dân dụng, 2019
+=== ele-05 | partial | ordinary | maybe | U M M M M M K K
+LÊ HỮU PHƯỚC
+Kỹ thuật điện
+12/2024 - nay: Thợ điện, Công ty Bao bì Sông Đà. Lắp tủ điện theo bản vẽ, bảo trì động cơ, biến tần, PLC Omron cơ bản.
+Cao đẳng Điện công nghiệp, 2024. Thẻ an toàn điện bậc 3.
+=== ele-06 | partial | ordinary | maybe | M M M U A M U U
+ĐỖ HÙNG CƯỜNG
+Thợ điện bảo trì
+2016 - nay: Bảo trì điện xưởng gỗ Phú Tài. Bảo trì động cơ, biến tần, PLC cơ bản. Ít lắp mới, chủ yếu thay thế theo sơ đồ có sẵn.
+Trung cấp Điện, 2015. Chưa có thẻ an toàn.
+Bị chứng sợ độ cao, không đi công trình xa do hoàn cảnh gia đình.
+=== ele-07 | near-miss | ordinary | no | A M U U U U K K
+TRẦN VĂN HẢI
+Thợ sửa điều hòa dân dụng
+2018 - nay: Lắp đặt, vệ sinh máy lạnh gia đình, Điện lạnh Bình Minh.
+Trung cấp Điện lạnh, 2017
+=== ele-08 | near-miss | ordinary | maybe | M M U U M M K K
+VŨ ĐÌNH QUANG
+Thợ cơ điện
+2019 - nay: Thợ cơ khí kiêm điện, Xưởng Cơ khí Sao Mai. Sửa chữa máy tiện, đấu tủ điện theo bản vẽ, bảo trì motor, biến tần, xem PLC cơ bản.
+Trung cấp Cơ khí, 2018
+=== ele-09 | non-fit | ordinary | no | A M U U U U K K
+ĐẶNG THỊ THU HÀ
+Nhân viên hành chính
+2021 - nay: Hành chính nhân sự, Công ty Xây dựng Hòa Bình.
+Đại học Luật, 2020
+=== ele-10 | non-fit | ordinary | no | A U U U U U K K
+CHU VĂN LÂM
+Lái xe khách
+2015 - nay: Lái xe 29 chỗ, Hãng xe Phúc Xuyên.
+Hết lớp 9.
+=== ele-11 | stuffing | hard | no | U U U U U U K K
+NGÔ VĂN THỊNH
+Kỹ năng: điện công nghiệp, điện dân dụng, thẻ an toàn điện bậc 3/5, bản vẽ điện, tủ điện, động cơ, biến tần, PLC, trung cấp điện, 5 năm kinh nghiệm thợ điện
+Kinh nghiệm: 09/2025 - nay, nhân viên chạy bàn, quán lẩu Hà Thành
+Học vấn: Lớp 12
+=== ele-12 | messy | hard | interview | M M M M M M K M
+THO DIEN CONG NGHIEP - HOANG VAN THANH
+Kinh nghiem: 2017-nay, tho dien cong ty Co dien Dai Duong, doc ban ve, lap tu dien,
+bao tri dong co, bien tan, PLC co ban, di cong trinh xa, tang ca.
+Hoc van: Cao dang nghe Dien cong nghiep 2016
+The an toan dien bac 4/5

@@ -1,7 +1,7 @@
 /**
  * "Có thể đi làm ngay" / "available immediately" versus a notice period stated in the CV.
  */
-import { result, type AtomResult, type AvailabilityAtom } from './atoms.js';
+import { askInInterview, result, type AtomResult, type AvailabilityAtom } from './atoms.js';
 import type { CvDoc } from './normalize.js';
 import { clauseBefore, snippet } from './text-match.js';
 
@@ -31,5 +31,5 @@ export function evaluateAvailability(doc: CvDoc): AtomResult {
   }
   const later = doc.lines.find((l) => CV_LATER.test(l.folded) || CV_NOW.test(l.folded));
   if (later) return result('unmet', 'CV ghi cần thời gian báo trước / chưa đi làm ngay được', snippet(later));
-  return result('unknown', 'CV không ghi thời gian có thể đi làm, HR hỏi khi phỏng vấn');
+  return askInInterview('CV không ghi thời gian có thể đi làm, HR hỏi khi phỏng vấn');
 }

@@ -1,0 +1,95 @@
+[
+{"id":"t01-khong-biet-excel","notes":"Plain negation.","cvText":"NGUYỄN VĂN BA\nThợ xây\n\nGIỚI THIỆU\nTôi làm thợ xây 10 năm. Không biết dùng Excel, không biết dùng máy tính.\n\nKINH NGHIỆM\n2016 - nay: Thợ xây, Đội xây dựng Thanh Hà\n","items":[
+["Biết sử dụng Excel","unmet","skills"],
+["Biết tin học văn phòng","unmet","skills"],
+["Có kinh nghiệm thợ xây từ 5 năm","met","experience"]]},
+{"id":"t02-chua-co-kinh-nghiem-autocad","notes":"Chưa có kinh nghiệm with a tool, others listed.","cvText":"VŨ THẾ ANH\nKỹ sư xây dựng mới ra trường\n\nKỸ NĂNG\nExcel, Word. Chưa có kinh nghiệm dùng AutoCAD và Revit.\n\nHỌC VẤN\nĐại học Xây dựng miền Trung, 2021 - 2025\n","items":[
+["Thành thạo AutoCAD","unmet","skills"],
+["Biết Revit","unmet","skills"],
+["Biết Excel","met","skills"]]},
+{"id":"t03-muon-hoc-react","notes":"Wish lines only.","cvText":"ĐỖ MINH KHOA\nFresher Web\n\nKỸ NĂNG\nHTML, CSS\n\nMONG MUỐN\nMuốn học React và Node.js trong 6 tháng tới, sau đó học thêm Docker.\n\nHỌC VẤN\nCao đẳng FPT, 2022 - 2025\n","items":[
+["Có kinh nghiệm React","unmet","skills"],
+["Biết Node.js","unmet","skills"],
+["Biết Docker","unmet","skills"],
+["Biết HTML, CSS","met","skills"]]},
+{"id":"t04-excel-in-company-name","notes":"Excel only as a company name.","cvText":"HOÀNG THU TRANG\nLễ tân\n\nKINH NGHIỆM\n2022 - nay: Lễ tân, Công ty TNHH Excel Việt Nam\nĐón khách, nhận điện thoại, chuyển thư tín\n\nTốt nghiệp THPT\n","items":[
+["Thành thạo Excel","unmet","skills","Chỉ là tên công ty"]]},
+{"id":"t05-java-python-sql-company-names","notes":"Tech words in employer names only.","cvText":"LÝ VĂN NAM\nNhân viên phục vụ\n\nKINH NGHIỆM\n2023 - nay: Phục vụ, Java Coffee & Tea\n2021 - 2023: Phụ bếp, Nhà hàng Python Grill\n2020 - 2021: Bảo vệ, Công ty TNHH SQL Land\n","items":[
+["Biết lập trình Java","unmet","skills"],
+["Biết lập trình Python","unmet","skills"],
+["Biết SQL","unmet","skills"]]},
+{"id":"t06-sap-in-company-name","notes":"Company called SAP Logistics.","cvText":"TẠ THANH THỦY\nNhân viên chứng từ\n\nKINH NGHIỆM\n2021 - nay: Nhân viên chứng từ, Công ty TNHH SAP Logistics\nLập bộ chứng từ, gửi hoá đơn cho khách. Dùng Excel và email\n","items":[
+["Sử dụng phần mềm SAP","unmet","skills"],
+["Biết Excel","met","skills"]]},
+{"id":"t07-goal-mentions-tools","notes":"Objective mentions the target stack.","cvText":"PHAN THANH TÚ\nNhân viên văn phòng\n\nMỤC TIÊU NGHỀ NGHIỆP\nTrở thành Data Analyst thành thạo SQL, Power BI và Python trong 2 năm tới.\n\nKỸ NĂNG\nWord, Excel\n\nKINH NGHIỆM\n2022 - nay: Nhân viên văn phòng, Công ty Bao bì Hải Long\n","items":[
+["Biết SQL","unmet","skills","Chỉ là mục tiêu"],
+["Sử dụng Power BI","unmet","skills"],
+["Biết Python","unmet","skills"],
+["Biết Word, Excel","met","skills"]]},
+{"id":"t08-positive-not-negation","notes":"Không in a sentence that is not a negation of the skill.","cvText":"LÂM TUẤN KIỆT\nKế toán kho\n\nKỸ NĂNG\nKhông chỉ thành thạo Excel mà còn sử dụng tốt MISA.\nKhông gặp khó khăn khi dùng PowerPoint.\n\nKINH NGHIỆM\n2020 - nay: Kế toán kho, Công ty Thuỷ sản Minh Hải\n","items":[
+["Thành thạo Excel","met","skills","Không chỉ... mà còn là khẳng định"],
+["Sử dụng MISA","met","skills"],
+["Biết PowerPoint","met","skills"]]},
+{"id":"t09-negation-scope-but","notes":"Negation scoped to one tool; the sentence continues with another.","cvText":"MAI THANH THẢO\nDesigner mới vào nghề\n\nKỸ NĂNG\nKhông biết Photoshop nhưng thành thạo Canva.\nChưa biết SQL, dùng tốt Excel.\n\nKINH NGHIỆM\n2024 - nay: Thiết kế bài đăng, Shop Gạo Mộc\n","items":[
+["Biết Photoshop","unmet","skills"],
+["Thành thạo Canva","met","skills"],
+["Biết SQL","unmet","skills"],
+["Biết Excel","met","skills"]]},
+{"id":"t10-english-negations","notes":"English negations and wishes.","cvText":"Sam Luong\nJunior Developer\n\nSKILLS\nFamiliar with Git and Python.\nNo experience with Docker. Not familiar with AWS.\nWilling to learn Kubernetes. Looking to learn Terraform.\n\nEXPERIENCE\n2024 - Present Junior Developer, Mint Labs\n","items":[
+["Experience with Docker","unmet","skills"],
+["Experience with AWS","unmet","skills"],
+["Knowledge of Kubernetes","unmet","skills"],
+["Terraform","unmet","skills"],
+["Git","met","skills"],
+["Python","met","skills"]]},
+{"id":"t11-sold-software-not-used","notes":"Sold software; used a different one.","cvText":"NGUYỄN TIẾN ĐẠT\nNhân viên kinh doanh phần mềm\n\nKINH NGHIỆM\n2022 - nay: Bán gói phần mềm MISA cho doanh nghiệp nhỏ, đại lý của MISA tại Hà Tĩnh\nChăm sóc khách hàng qua điện thoại\n","items":[
+["Biết làm kế toán trên MISA","ambiguous","skills","Bán MISA có thể biết dùng, nhưng không chứng minh làm kế toán trên MISA"],
+["Có kinh nghiệm bán phần mềm","met","experience"]]},
+{"id":"t12-studying-python-course","notes":"Currently studying, no use.","cvText":"VÕ TUẤN KHANH\nNhân viên hành chính\n\nKHOÁ HỌC\nĐang học Python online (mới học 2 tuần)\n\nKINH NGHIỆM\n2022 - nay: Hành chính, Công ty CP Gạch Đồng Tâm Mới\n","items":[
+["Thành thạo Python","unmet","skills","Mới học 2 tuần"],
+["Biết Python","ambiguous","skills","Đang học: biết sơ qua hay chưa biết"]]},
+{"id":"t13-coordinating-with-accounting-dept","notes":"Accounting appears only as another department.","cvText":"ĐẶNG THỊ MỸ\nNhân viên kinh doanh\n\nKINH NGHIỆM\n2020 - nay: Nhân viên kinh doanh, Công ty Thép Sông Công\nTìm khách hàng, phối hợp với phòng Kế toán để đối chiếu công nợ, phối hợp phòng Nhân sự nộp hồ sơ\n","items":[
+["Có kinh nghiệm kế toán","unmet","experience"],
+["Có kinh nghiệm nhân sự","unmet","experience"],
+["Có kinh nghiệm kinh doanh","met","experience"]]},
+{"id":"t14-hobbies","notes":"Language and driving only in hobbies.","cvText":"PHẠM THỊ MÂY\nNhân viên kế hoạch\n\nSỞ THÍCH\nXem phim Nhật, nghe nhạc tiếng Anh, học tiếng Hàn qua phim, thích lái xe đường dài cùng gia đình\n\nKINH NGHIỆM\n2022 - nay: Kế hoạch, Công ty Cao su Sao Vàng Mới\n","items":[
+["Biết tiếng Nhật","unmet","language"],
+["Tiếng Anh giao tiếp","unmet","language"],
+["Tiếng Hàn giao tiếp","unmet","language"],
+["Có bằng lái xe ô tô","unmet","licence"]]},
+{"id":"t15-used-to-not-know","notes":"Past negation resolved: now proficient.","cvText":"HÀ VĂN QUÂN\nNhân viên kế toán kho\n\nGIỚI THIỆU\nTrước đây chưa biết Excel, nhưng sau 3 năm làm việc nay đã thành thạo Excel.\n\nKINH NGHIỆM\n2022 - nay: Kế toán kho, Công ty Gỗ Trường Thành Mới\n","items":[
+["Thành thạo Excel","met","skills"]]},
+{"id":"t16-teaches-excel","notes":"Teaching a tool proves using it.","cvText":"NGUYỄN KIM DUNG\nGiảng viên tin học\n\nKINH NGHIỆM\n2017 - nay: Giảng dạy Excel và PowerPoint cho học viên, Trung tâm Tin học Bách Khoa Mới\nĐào tạo nhân viên ngân hàng sử dụng SAP\n","items":[
+["Thành thạo Excel","met","skills"],
+["Biết PowerPoint","met","skills"],
+["Biết sử dụng SAP","met","skills"]]},
+{"id":"t17-no-laptop-no-bike","notes":"Negated equipment.","cvText":"NGÔ THỊ NGỌC\nCộng tác viên viết bài\n\nTHÔNG TIN THÊM\nHiện chưa có laptop cá nhân, đang mượn máy người thân.\nKhông có xe máy, đi lại bằng xe buýt.\n\nKINH NGHIỆM\n2024 - nay: Viết bài, Tạp chí Gia Đình Việt Mới\n","items":[
+["Có laptop","unmet","skills"],
+["Có xe máy","unmet","skills"]]},
+{"id":"t18-sells-laptops-bikes","notes":"Sells laptops and motorbikes; owning is not stated.","cvText":"LƯU MINH KHÔI\nNhân viên bán hàng\n\nKINH NGHIỆM\n2021 - 2023: Bán laptop tại FPT Shop Mới, tư vấn cấu hình laptop cho khách\n2023 - nay: Bán xe máy Honda tại Head Thành Đạt\n","items":[
+["Có laptop riêng","unknown","skills","Bán laptop không nói có laptop; CV không nói có hay không"],
+["Có xe máy riêng","unknown","skills","Bán xe máy không nói có xe; CV không nói có hay không"],
+["Có kinh nghiệm bán hàng điện máy, xe máy","met","experience"]]},
+{"id":"t19-job-did-not-require","notes":"CV mentions a tool as not needed.","cvText":"TRƯƠNG THỊ HÀ\nThu ngân\n\nKINH NGHIỆM\n2022 - nay: Thu ngân, Siêu thị Mini Bách Hoá Lộc\nCông việc không yêu cầu Excel nên chưa sử dụng Excel.\nDùng máy POS bán hàng.\n","items":[
+["Biết Excel","unmet","skills"],
+["Biết sử dụng máy POS","met","skills"]]},
+{"id":"t20-car-company-no-licence","notes":"Car company employer; no licence.","cvText":"NGUYỄN THANH BÌNH\nNhân viên chăm sóc khách hàng\n\nKINH NGHIỆM\n2020 - nay: CSKH, Công ty CP Ô tô Trường Hải Mới\nGọi điện chăm sóc khách mua xe tải, xe khách\n","items":[
+["Có bằng lái xe ô tô","unmet","licence"],
+["Có bằng lái C","unmet","licence"]]},
+{"id":"t21-customers-names-tools","notes":"Tools as customers' names.","cvText":"KIỀU ANH TUẤN\nNhân viên giao nhận\n\nKINH NGHIỆM\n2020 - nay: Giao nhận tài liệu cho các khách hàng Microsoft Việt Nam, Oracle Việt Nam, Salesforce Asia\n","items":[
+["Biết lập trình Oracle PL/SQL","unmet","skills"],
+["Sử dụng Salesforce","unmet","skills"]]},
+{"id":"t22-negated-degree","notes":"Không có bằng cấp.","cvText":"LÊ ĐÌNH THỌ\nThợ mộc\n\nGIỚI THIỆU\nKhông có bằng đại học, không học cao đẳng; học nghề mộc từ gia đình.\n\nKINH NGHIỆM\n2008 - nay: Thợ mộc, Xưởng mộc Đại Thành\n","items":[
+["Đại học trở lên","unmet","education"],
+["Cao đẳng trở lên","unmet","education"],
+["Từ 5 năm kinh nghiệm thợ mộc","met","experience"]]},
+{"id":"t23-sao-chep-yeu-cau","notes":"Candidate pasted the ad's requirement into CV as a heading, without a claim to it.","cvText":"NGUYỄN THỊ NHÀN\nỨng tuyển: Nhân viên kế toán. Tin tuyển dụng yêu cầu: Thành thạo MISA, 3 năm kinh nghiệm, Đại học.\n\nTHÔNG TIN CỦA TÔI\n2024 - nay: Bán hàng, Cửa hàng Tạp hoá Nhàn\nTốt nghiệp THPT, biết Excel\n","items":[
+["Thành thạo MISA","unmet","skills","Dán từ tin tuyển dụng"],
+["Đại học trở lên","unmet","education"],
+["Từ 3 năm kinh nghiệm","unmet","experience"],
+["Biết Excel","met","skills"]]},
+{"id":"t24-ky-su-as-family-mention","notes":"Bố là kỹ sư. Not the candidate.","cvText":"NGÔ HẢI YẾN\nGiữ trẻ\n\nGIỚI THIỆU\nBố em là kỹ sư, mẹ là giáo viên có bằng thạc sĩ. Em tốt nghiệp lớp 12.\n\nKINH NGHIỆM\n2024 - nay: Giữ trẻ tại gia đình\n","items":[
+["Có bằng đại học","unmet","education"],
+["Thạc sĩ trở lên","unmet","education"],
+["Có bằng lái xe","unmet","licence"]]}
+]

@@ -1,0 +1,88 @@
+[
+{"id":"c01-b2-exact","notes":"B2 exact, various wording.","cvText":"NGUYỄN VĂN HÙNG\nLái xe văn phòng\n\nBằng lái xe hạng B2, cấp 2017\n\nKINH NGHIỆM\n2017 - nay: Lái xe cho Ban Giám đốc, Công ty CP Cao su Đồng Nai\n","items":[
+["Có bằng lái xe B2","met","licence"],
+["GPLX hạng B2 trở lên","met","licence"],
+["Có giấy phép lái xe ô tô","met","licence"],
+["Bằng lái C trở lên","unmet","licence"]]},
+{"id":"c02-c-covers-b2","notes":"C covers B2 by Vietnamese licence rules at the time of issue.","cvText":"ĐỖ VĂN TOÀN\nLái xe tải\n\nGPLX: hạng C\n\nKINH NGHIỆM\n2016 - nay: Lái xe tải 8 tấn, Công ty Vận tải Phát Đạt\n","items":[
+["Bằng lái B2 trở lên","met","licence"],
+["Có bằng lái xe hạng C","met","licence"],
+["Bằng FC","unmet","licence"],
+["Bằng lái xe hạng D","unmet","licence"]]},
+{"id":"c03-e-covers-c","notes":"E licence covers C and D.","cvText":"LƯƠNG VĂN MẠNH\nLái xe khách\n\nBằng E (cấp 2015). Lái xe khách giường nằm tuyến Bắc Nam.\n\nKINH NGHIỆM\n2015 - nay: Lái xe, Hãng xe Hoàng Long Việt\n","items":[
+["Có bằng lái hạng D trở lên","met","licence"],
+["Có bằng C trở lên","met","licence"],
+["Bằng FC","unmet","licence"]]},
+{"id":"c04-a1-only","notes":"Motorbike licence only.","cvText":"PHẠM THỊ LAN\nNhân viên giao hàng\n\nBằng lái xe A1, có xe máy riêng\n\nKINH NGHIỆM\n2022 - nay: Giao hàng, Công ty Giao Vận Sài Thành\n","items":[
+["Bằng lái B2","unmet","licence"],
+["Có bằng lái xe máy","met","licence"],
+["Có xe máy","met","skills"],
+["Có bằng lái ô tô","unmet","licence"],
+["Có bằng A1 trở lên","met","licence"]]},
+{"id":"c05-b1-vs-b2","notes":"B1 (automatic) does not satisfy B2.","cvText":"VÕ THỊ MINH\nTrợ lý cá nhân\n\nBằng lái B1 số tự động\n\nKINH NGHIỆM\n2021 - nay: Trợ lý, Công ty Tư vấn Đầu tư Thái Sơn\n","items":[
+["Có bằng lái xe B2","unmet","licence"],
+["Có bằng B1 trở lên","met","licence"]]},
+{"id":"c06-no-licence-yet","notes":"Explicitly no licence.","cvText":"LÊ QUỐC BẢO\nPhụ xe\n\nHiện chưa có bằng lái xe ô tô. Có bằng A1.\n\nKINH NGHIỆM\n2024 - nay: Phụ xe tải, Công ty Vận tải Đông Bắc\n","items":[
+["Có bằng lái xe ô tô","unmet","licence"],
+["Có bằng lái xe B2","unmet","licence"]]},
+{"id":"c07-licence-in-progress","notes":"Currently learning for B2.","cvText":"HOÀNG VĂN PHI\nNhân viên kho\n\nĐang học bằng lái B2, dự kiến thi 12/2026.\n\nKINH NGHIỆM\n2020 - nay: Nhân viên kho, Công ty TNHH Bia Sao Việt\n","items":[
+["Có bằng lái xe B2","unmet","licence","Chưa thi"]]},
+{"id":"c08-licence-word-at-driving-school","notes":"Office job at a driving school.","cvText":"TRẦN THỊ KIM\nNhân viên văn phòng\n\nKINH NGHIỆM\n2019 - nay: Nhân viên văn phòng, Trung tâm Đào tạo Lái xe B2 Sông Hồng\nTiếp nhận hồ sơ học viên học bằng lái hạng B2, C\nKhông biết lái xe\n","items":[
+["Có bằng lái xe B2","unmet","licence"],
+["Có bằng lái xe hạng C","unmet","licence"]]},
+{"id":"c09-b2-english-not-driving","notes":"B2 here is English level, not a licence.","cvText":"NGUYỄN THANH TÂM\nGiáo viên Tiếng Anh\n\nCHỨNG CHỈ\nBằng B2 tiếng Anh (CEFR)\n\nCÔNG TÁC\n2020 - nay: Giáo viên, Trường THPT Sóc Sơn\n","items":[
+["Có bằng lái xe B2","unmet","licence"],
+["Tiếng Anh B2","met","language"]]},
+{"id":"c10-driving-b2-not-english","notes":"Driver's B2 does not mean English B2.","cvText":"ĐINH VĂN TỚI\nLái xe\n\nBằng lái xe hạng B2\n\nKINH NGHIỆM\n2019 - nay: Lái xe, Công ty Dịch vụ Taxi Vĩnh Phúc\n","items":[
+["Tiếng Anh trình độ B2","unmet","language"],
+["Có bằng lái B2","met","licence"]]},
+{"id":"c11-c-english-not-driving","notes":"Old Bằng C tiếng Anh is not a C licence.","cvText":"PHAN VĂN HƯNG\nNhân viên văn thư\n\nBằng C tiếng Anh, Bằng A tin học\n\nCÔNG TÁC\n2005 - nay: Văn thư, UBND Phường Ngọc Hà\n","items":[
+["Có bằng lái C","unmet","licence"],
+["Có giấy phép lái xe","unmet","licence"]]},
+{"id":"c12-no-diacritics-licence","notes":"No diacritics.","cvText":"NGUYEN VAN KHOA\nTai xe\n\nBang lai xe hang C, FC\nKINH NGHIEM\n2015 - nay: Lai xe container, Cong ty Van tai Bien Xanh\n","items":[
+["Bằng lái xe hạng FC","met","licence"],
+["Có bằng lái xe hạng C","met","licence"],
+["Có bằng lái hạng E","unmet","licence"]]},
+{"id":"c13-forklift-certificate","notes":"Forklift certificate and a driver's licence are different things.","cvText":"VŨ VĂN CHUNG\nLái xe nâng\n\nCHỨNG CHỈ\nChứng chỉ vận hành xe nâng hàng, 2022\nBằng lái A1\n\nKINH NGHIỆM\n2022 - nay: Lái xe nâng, Kho lạnh Tân Cảng Việt\n","items":[
+["Có chứng chỉ lái xe nâng","met","licence"],
+["Có bằng lái C","unmet","licence"]]},
+{"id":"c14-no-forklift-certificate","notes":"Warehouse worker without forklift certificate.","cvText":"NGUYỄN VĂN MINH\nNhân viên kho\n\nKINH NGHIỆM\n2020 - nay: Nhân viên kho, Công ty TNHH Nhựa Duy Tân Long\nKiểm hàng, sắp xếp pallet\nTốt nghiệp THPT\n","items":[
+["Có chứng chỉ vận hành xe nâng","unmet","licence"]]},
+{"id":"c15-accounting-certificates","notes":"CPA and chief accountant certificate.","cvText":"NGUYỄN THỊ TUYẾT\nKế toán trưởng\n\nCHỨNG CHỈ\nChứng chỉ Kế toán trưởng (Bộ Tài chính, 2019)\nCPA Việt Nam (2021)\n\nKINH NGHIỆM\n2012 - nay: Kế toán, Công ty CP Thép Việt Bình\nĐại học Kinh tế Quốc dân\n","items":[
+["Có chứng chỉ Kế toán trưởng","met","licence"],
+["Có chứng chỉ CPA","met","licence"],
+["Có chứng chỉ ACCA","unmet","licence"]]},
+{"id":"c16-acca-in-progress","notes":"Studying ACCA, not yet qualified.","cvText":"LƯU TRÚC QUỲNH\nKiểm toán viên trợ lý\n\nCHỨNG CHỈ\nĐang học ACCA (đã qua F1-F5, chưa hoàn thành)\n\nKINH NGHIỆM\n2023 - nay: Trợ lý kiểm toán, Công ty Kiểm toán AFA Sao Vàng\nĐại học Ngoại thương\n","items":[
+["Có chứng chỉ ACCA","unmet","licence","Chưa hoàn thành"],
+["Ưu tiên có ACCA hoặc đang học ACCA","met","licence"]]},
+{"id":"c17-pharmacy-practice-certificate","notes":"Pharmacy practice licence.","cvText":"NGUYỄN NGỌC ÁNH\nDược sĩ phụ trách chuyên môn\n\nĐại học Dược Hà Nội, 2012 - 2017\nChứng chỉ hành nghề Dược số 12345/CCHND\n\nKINH NGHIỆM\n2017 - nay: Dược sĩ, Nhà thuốc Bình An Khang\n","items":[
+["Có chứng chỉ hành nghề Dược","met","licence"],
+["Có chứng chỉ hành nghề Y","unmet","licence"]]},
+{"id":"c18-pharmacy-no-certificate","notes":"Pharmacist without the practice certificate.","cvText":"PHẠM THANH THUÝ\nNhân viên bán thuốc\n\nCao đẳng Dược, 2020 - 2023\nChưa có chứng chỉ hành nghề dược\n\nKINH NGHIỆM\n2023 - nay: Bán thuốc, Nhà thuốc Đông Tây\n","items":[
+["Có chứng chỉ hành nghề dược","unmet","licence"]]},
+{"id":"c19-tour-guide-card","notes":"International tour guide card.","cvText":"TRẦN MINH LUÂN\nHướng dẫn viên\n\nThẻ hướng dẫn viên du lịch quốc tế, số 179123\nTiếng Anh tốt\n\nKINH NGHIỆM\n2017 - nay: Hướng dẫn viên, Công ty Du lịch Rồng Vàng\n","items":[
+["Có thẻ hướng dẫn viên du lịch","met","licence"],
+["Có thẻ HDV quốc tế","met","licence"]]},
+{"id":"c20-tour-guide-no-card","notes":"Sold tours; no guide card.","cvText":"ĐOÀN NHƯ Ý\nNhân viên bán tour\n\nKINH NGHIỆM\n2022 - nay: Sale tour, Công ty Du lịch Mặt Trời Hồng\nBán tour trong nước, làm việc với hướng dẫn viên\nCao đẳng Du lịch Hà Nội\n","items":[
+["Có thẻ hướng dẫn viên du lịch","unmet","licence"]]},
+{"id":"c21-pmp-aws-certificates","notes":"IT and project certificates in English.","cvText":"Andrew Quach\nDelivery Manager\n\nCERTIFICATIONS\nPMP (PMI, 2022)\nAWS Certified Solutions Architect - Associate\n\nEXPERIENCE\n2015 - Present Delivery Manager, Red River Software\nB.Sc. Information Technology\n","items":[
+["PMP certification required","met","licence"],
+["AWS certification","met","licence"],
+["CCNA certificate","unmet","licence"],
+["Có chứng chỉ PMP","met","licence"]]},
+{"id":"c22-construction-supervisor","notes":"Construction supervision practice certificate.","cvText":"NGUYỄN ĐÌNH THÁI\nGiám sát thi công\n\nCHỨNG CHỈ\nChứng chỉ hành nghề giám sát thi công xây dựng hạng II\nChứng chỉ an toàn lao động\n\nKINH NGHIỆM\n2014 - nay: Giám sát, Công ty CP Xây dựng Sông Lam\nKỹ sư xây dựng\n","items":[
+["Có chứng chỉ hành nghề giám sát xây dựng","met","licence"],
+["Có chứng chỉ an toàn lao động","met","licence"],
+["Có chứng chỉ hành nghề thiết kế","unmet","licence"]]},
+{"id":"c23-pedagogy-certificate","notes":"Teaching-skills certificate absent vs present.","cvText":"LÝ THỊ NGA\nTrợ giảng\n\nChứng chỉ nghiệp vụ sư phạm (2022)\nĐại học Khoa học Tự nhiên, Toán học\n\nKINH NGHIỆM\n2022 - nay: Giáo viên Toán, Trung tâm Trí Việt\n","items":[
+["Có chứng chỉ nghiệp vụ sư phạm","met","licence"],
+["Có chứng chỉ TESOL","unmet","licence"]]},
+{"id":"c24-welder-certificate","notes":"Welder 3G certificate; ask for 6G.","cvText":"TRƯƠNG VĂN DŨNG\nThợ hàn\n\nChứng chỉ thợ hàn 3G, Trung cấp nghề Hàn\n\nKINH NGHIỆM\n2017 - nay: Thợ hàn, Công ty Cơ khí Đóng tàu Hạ Long\n","items":[
+["Có chứng chỉ hàn 3G","met","licence"],
+["Có chứng chỉ hàn 6G","unmet","licence"]]},
+{"id":"c25-electric-safety-absent","notes":"Electrician without the safety card.","cvText":"NGÔ VĂN LỰC\nThợ điện\n\nKINH NGHIỆM\n2019 - nay: Thợ điện dân dụng, Công ty Điện nước Thanh Xuân\nTrung cấp nghề Điện\n","items":[
+["Có thẻ an toàn điện","unmet","licence"]]},
+{"id":"c26-motorbike-with-car-licence","notes":"B2 only, no mention of motorbike licence or bike.","cvText":"BÙI HỒNG THÁI\nLái xe dịch vụ\n\nBằng lái B2\nKINH NGHIỆM\n2021 - nay: Lái xe công nghệ\n","items":[
+["Có bằng lái xe máy","ambiguous","licence","Hầu hết người có B2 có A1 nhưng CV không ghi"],
+["Có xe máy","unknown","skills","CV im lặng về việc sở hữu xe: HR phải hỏi, không kết luận được"]]}
+]

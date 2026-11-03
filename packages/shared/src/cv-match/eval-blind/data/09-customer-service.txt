@@ -1,0 +1,467 @@
+@ad customer-service
+@occupation Nhân viên Chăm sóc khách hàng
+@req experience | Kinh nghiệm: 1 năm trở lên
+@req education | Tốt nghiệp trung cấp trở lên, không yêu cầu chuyên ngành
+@req skills | Đã từng trực tổng đài hoặc làm chăm sóc khách hàng
+@req skills | Trả lời thắc mắc của khách qua hotline, email và Zalo
+@req skills | Xử lý khiếu nại theo quy trình, biết đề xuất phương án đổi trả hoặc đền bù
+@req skills | Ghi nhận lịch sử khách hàng trên CRM hoặc phần mềm ticket
+@req skills | Điều phối kỹ thuật viên đi bảo hành và theo dõi đến khi hoàn tất
+@req skills | Gọi lại khảo sát mức độ hài lòng và tổng hợp báo cáo định kỳ
+@req language bonus | Giao tiếp tiếng Anh ở mức cơ bản là lợi thế
+@req soft | Giọng nói dễ nghe, rõ ràng, không nói ngọng
+@req soft | Chấp nhận làm theo ca, gồm cả thứ Bảy và Chủ Nhật
+=== css-01 | strong | ordinary | interview | M M M M M M M M M M M
+NGUYỄN THỊ KIM OANH
+Chuyên viên Dịch vụ sau bán hàng
+Di động: 0900 000 901 | Email: oanh.nguyenkim@example.com
+Nơi ở: Hoàng Mai, Hà Nội | Sinh năm 1995
+
+VÀI DÒNG VỀ TÔI
+Gần năm năm ngồi đầu dây bên này của một hãng máy lọc nước gia đình, trước đó làm lễ tân cho một phòng khám nha. Tôi thích cái lúc một khách đang bực bội gác máy mà vẫn cảm ơn mình. Muốn chuyển sang đơn vị có sản phẩm kỹ thuật lớn hơn để học thêm.
+
+QUÁ TRÌNH LÀM VIỆC
+02/2022 - nay: Công ty CP Gia dụng Thanh Nguyên - Chuyên viên Dịch vụ sau bán hàng
+- Nghe máy tổng đài 1900 của hãng, trung bình 60-70 cuộc mỗi ca, giải đáp về lõi lọc, áp lực nước, tiếng kêu của máy, thời hạn bảo hành.
+- Trả lời hộp thư chung và tin nhắn Zalo OA, cam kết phản hồi trong 30 phút vào giờ làm.
+- Nhận phản ánh của khách theo quy trình 4 bước, phân mức độ, đề xuất đổi máy mới, tặng lõi lọc hoặc miễn phí công thợ rồi trình trưởng nhóm ký khi vượt hạn mức.
+- Cập nhật mọi cuộc gọi lên hệ thống CRM của công ty để người sau mở ra là thấy lịch sử máy và lịch sử gọi.
+- Xếp lịch cho 22 thợ ở Hà Nội và các tỉnh lân cận đến nhà khách sửa máy, gọi lại thợ khi quá giờ, chốt phiếu khi khách xác nhận xong.
+- Sau mỗi ca bảo hành, gọi khách hỏi điểm hài lòng từ 1 đến 5; cuối tuần gửi bảng tổng hợp khiếu nại, cuối tháng làm báo cáo chỉ số hài lòng cho phòng dịch vụ.
+- Gọi nhắc khách thay lõi theo chu kỳ 6 tháng, giới thiệu gói bảo dưỡng năm.
+- Làm xoay ca sáng, chiều; thứ Bảy, Chủ Nhật trực theo lịch và nghỉ bù trong tuần.
+
+08/2019 - 01/2022: Phòng khám Nha khoa Nụ Cười Mới - Lễ tân
+- Đón khách, hẹn lịch khám, nhắc lịch tái khám, thu tiền và in hóa đơn.
+- Trực điện thoại phòng khám, ghi chú vào sổ và bảng tính.
+
+HỌC VẤN
+2015 - 2018: Cao đẳng Thương mại Lạc Thành, ngành Quản trị kinh doanh.
+
+KỸ NĂNG
+- Tiếng Anh: TOEIC 505, nói chuyện đơn giản được với khách nước ngoài thuê căn hộ gọi đến tổng đài.
+- CRM, Excel (pivot, biểu đồ), Google Sheets, Zalo OA.
+- Điểm chấm chất lượng cuộc gọi năm 2025: 9,2/10, riêng mục giọng nói và phát âm được 10/10. Được chọn thu âm lời chào tự động của tổng đài.
+
+THÀNH TÍCH
+Nhân viên dịch vụ xuất sắc quý 3/2024. Giảm 18% số cuộc gọi lặp lại nhờ viết bộ câu trả lời mẫu cho 30 tình huống thường gặp.
+
+SỞ THÍCH
+Đọc truyện cho con nghe, làm bánh, đi bộ công viên buổi sáng.
+#why Đủ cả. Giọng có bằng chứng cụ thể (điểm chấm cuộc gọi, thu âm tổng đài), ca và cuối tuần được ghi rõ.
+=== css-02 | strong | hard | interview | M M M M M M M M M K M
+BUI KHANH LY
+Customer Care Executive
+Phone: 0900 000 902 | Email: khanhly.bui@example.com | District 7, Ho Chi Minh City
+LinkedIn: not used
+
+SUMMARY
+I have spent four years on the receiving end of air-conditioning breakdowns in the Saigon summer, which is good training for patience. I am the person between an angry household, a busy field crew and a warranty policy written in small print. I would like to join a team that takes after-sales seriously and measures it.
+
+EXPERIENCE
+September 2022 - Present | Customer Care Executive | Mat Lanh Home Services Co., Ltd
+- Pick up the inbound service line (about 50 calls on a normal day, 120+ in April and May) and work the support mailbox and the company's Zalo official account.
+- Explain warranty conditions, error codes and service fees in plain words.
+- Handle dissatisfied customers under the company's escalation procedure: log the case, investigate with the technician, then propose a replacement part, a fee waiver or a partial refund, and get approval where needed.
+- Keep every case in Zendesk, tagged by product and fault, so colleagues see the whole history of each household.
+- Dispatch field technicians across 9 districts using a shared calendar, chase them when they run late, and close the case only after the customer confirms that the unit runs properly.
+- Call back a sample of customers three days after each visit to collect a satisfaction score; compile a weekly complaints summary and a monthly CSAT report for the service manager.
+- Remind contract customers about their half-yearly cleaning and offer the annual maintenance plan. Renewal rate in my portfolio reached 64% in 2025.
+- Rotating roster: morning, afternoon, and two weekends a month, including Sundays.
+
+March 2021 - August 2022 | Front Desk and Bookings | Hoa Dao Serviced Apartments
+- Checked guests in and out, most of them foreign engineers on short contracts.
+- Took room problems by phone and passed them to the building's maintenance staff.
+- Spoke English with guests daily about bills, laundry and transport.
+
+EDUCATION
+2017 - 2021 | Bachelor of Tourism Management, An Binh University of Social Sciences. Graduated with Credit.
+
+SKILLS
+Zendesk, Google Workspace, Excel (pivot tables, charts), Zalo OA manager. Vietnamese native, English intermediate (IELTS 5.5, 2020).
+
+ACHIEVEMENTS
+Team's lowest repeat-call rate for three quarters in 2024. Wrote the first FAQ sheet for inverter units, still used by new starters.
+
+INTERESTS
+Learning to swim, Saturday markets, cooking for friends, long bus journeys with a good podcast.
+#why CV tiếng Anh, mọi việc đều nói bằng lời khác. Không có bằng chứng về giọng nói nên K, dù làm điện thoại nhiều năm.
+=== css-03 | strong | ordinary | interview | M M M M M M U M A K M
+TRAN THI NGOC BICH
+Nhan vien CSKH mang thuong mai dien tu
+SDT: 0900 000 903 - Mail: ngocbich.tran@example.com
+Dia chi: Thanh Khe, Da Nang
+
+GIOI THIEU
+Minh lam CSKH online tu nam 2021, quen ngoi truc nhieu kenh cung luc. Tinh minh hoi nhanh nhau nhung khach da phan thich vi duoc tra loi lien. Minh muon doi sang cong ty co san pham ben vung, khong phai chay theo san sale nua.
+
+KINH NGHIEM LAM VIEC
+06/2023 - nay: Cong ty TNHH Thuong mai Dien tu Lan Chi - Truong nhom nho CSKH (3 ban)
+- Cong ty ban noi com, may xay, quat, do gia dung nho tren san va web.
+- Nghe duong day nong, tra loi email khach, tin nhan Zalo, inbox Facebook va chat tren san.
+- Khach phan nan giao thieu, giao vo, loi may: mo phieu, kiem tra anh video, doi chieu quy dinh roi de xuat doi hang, hoan tien mot phan, tang voucher. Tren 2 trieu thi xin y kien sep.
+- Moi phieu deu ghi vao phan mem CRM cua shop (lich su mua, lich su khieu nai, ai dang giu phieu).
+- Hang loi ky thuat thi chuyen ve hang san xuat, ben hang tu sap tho den nha khach, minh khong dieu phoi tho va cung khong theo doi lich sua.
+- Sau 7 ngay goi lai mot nhom khach hoi co hai long khong, ghi diem vao bang.
+- Thu Hai hang tuan gui bao cao so phieu khieu nai, ly do, ti le xu ly dung han cho quan ly. Cuoi thang them bao cao tong.
+- Lam xoay ca, ca toi den 22h, thu 7 chu nhat va ngay sale lon van lam, nghi bu trong tuan.
+
+04/2021 - 05/2023: Shop Do Gia Dung Nha Xinh Online - Nhan vien tu van va xu ly don
+- Tra loi inbox, len don, in van don, goi hang.
+- Goi xac nhan don COD, lien he shipper khi khach khong nhan.
+
+HOC VAN
+2018 - 2021: Cao dang Cong nghe va Thuong mai Son Tra Moi, nganh Marketing.
+
+KY NANG
+Word, Excel co ban (loc, SUMIF, pivot), Canva, Shopee Seller, phan mem CRM ban hang.
+
+THANH TICH
+Giu ti le phan hoi tren 98% trong 3 dot sale cuoi nam 2024 va 2025. Duoc thuong "CSKH duoc khach khen nhieu nhat" quy 2/2025. Huong dan 4 ban moi trong 2 nam qua.
+
+SO THICH
+Xem phim Han, tap yoga online, di bien sang som cuoi tuan, nuoi meo.
+#why Không dấu do thói quen. Rất hợp CSKH, CV nói rõ không điều phối thợ nên dòng đó là U, nhưng vẫn đáng phỏng vấn vì học được. Không nhắc tiếng Anh nên A theo bonus.
+=== css-04 | strong | hard | maybe | M U M M M M M M A M M
+PHẠM THỊ THU TRANG
+0900 000 904
+trang.phamthu@example.com
+Đống Đa - Hà Nội
+
+*** Giao dịch viên tổng đài - 8 năm ***
+
+CÔNG VIỆC
+
+09/2018 -> nay
+Công ty Viễn thông Sao Bắc - Trung tâm Hỗ trợ Khách hàng
+Giao dịch viên, từ 2022 kiêm Tổ phó ca
++ nghe số 1800 của nhà mạng, 3 ca kể cả đêm, cuối tuần, lễ Tết đều đi theo lịch
++ trả lời mail hỗ trợ + kênh Zalo cho khách doanh nghiệp nhỏ
++ internet chậm, rớt mạng, sai cước: mở ticket trên hệ thống CRM, xem lịch sử thuê bao trước khi nói chuyện với khách
++ khiếu nại cước: theo đúng quy trình 3 cấp, tính lại cước, đề nghị giảm cước tháng, tặng dung lượng; trường hợp lớn lập tờ trình gửi phòng Tính cước
++ xếp lịch cho đội kỹ thuật ở quận đến nhà khách thay modem, kéo lại cáp; nhắn khách giờ đến; gọi lại đội nếu trễ hẹn; khóa ticket khi đã xong và khách nhận
++ sau sửa chữa gọi lại hỏi hài lòng hay không, chấm 1-5
++ tổ phó: làm báo cáo tuần số khiếu nại theo loại, gửi quản lý ca; báo cáo tháng về điểm hài lòng
++ gọi mời gia hạn gói cước khi sắp hết hạn
+
+03/2017 -> 08/2018
+Cửa hàng điện thoại Minh Khoa - bán hàng
++ tư vấn máy, làm hồ sơ trả góp
++ nhận máy hỏng gửi đi hãng, gọi báo khách khi có kết quả
+
+BẰNG CẤP
+Tốt nghiệp THPT năm 2016, Trường THPT Lê Bình Khiêm. Chưa học lên do hoàn cảnh gia đình, đang để dành tiền và dự định học sau.
+
+KHÓA NỘI BỘ
+Kỹ năng xử lý cuộc gọi khó (2019). Tổ trưởng ca (2022). Chứng nhận giao tiếp qua điện thoại của trung tâm đào tạo công ty (2020).
+
+GIẢI THƯỞNG
+- Giải Nhất hội thi Giọng nói vàng của toàn trung tâm, năm 2021, ban giám khảo chấm phát âm và ngữ điệu.
+- Giao dịch viên tiêu biểu 2019, 2023.
+- Hai năm liền điểm chất lượng cuộc gọi trên 95/100.
+
+KỸ NĂNG
+Hệ thống CRM viễn thông, Word, Excel cơ bản. Gõ 10 ngón, 65 từ/phút.
+
+CUỘC SỐNG
+Hai con nhỏ, chồng làm ở Hà Nội nên đi ca không vấn đề. Thích hát karaoke với bạn, trồng rau trên sân thượng.
+#why Mọi việc đều rất đạt, nhưng chỉ có bằng THPT trong khi ad cần trung cấp, nên dòng học vấn là U. Một số người vẫn gọi phỏng vấn vì 8 năm, một số dừng ở điều kiện cứng: maybe.
+=== css-05 | partial | hard | maybe | M M M A A M U A M K U
+LÊ HOÀNG YẾN
+Chuyên viên Hỗ trợ học viên trực tuyến
+ĐT: 0900 000 905 | yen.lehoang@example.com | Phú Nhuận, TP. Hồ Chí Minh
+
+ĐÔI NÉT VỀ TÔI
+Tôi là một người thích viết hơn thích nói, và công việc ba năm qua đúng là như vậy: tất cả các câu hỏi của học viên đến với tôi dưới dạng chữ, qua khung chat trên website và email. Tôi tin rằng một câu trả lời viết tốt có thể tránh được một cuộc tranh luận dài. Hiện tôi đang học văn bằng 2 ngành Luật vào buổi tối và cuối tuần, nên mong muốn công việc mới có giờ hành chính từ thứ Hai đến thứ Sáu; đây là điều tôi cần nói rõ ngay từ đầu để hai bên đỡ mất thời gian.
+
+KINH NGHIỆM CÔNG TÁC
+08/2023 - nay: Nền tảng Học Trực Tuyến Mầm Xanh - Chuyên viên Hỗ trợ học viên
+- Nhận và trả lời câu hỏi về khóa học, tài khoản, học phí qua live chat và email. Công việc này không có điện thoại: công ty không mở đường dây nóng, học viên liên hệ hoàn toàn bằng văn bản.
+- Mỗi yêu cầu được tạo phiếu trên Freshdesk, gắn nhãn theo loại, ghi lại lịch sử của từng học viên để người trực sau tiếp tục được.
+- Với lỗi nền tảng, phân loại rồi chuyển cho nhóm kỹ thuật phần mềm, theo dõi phiếu đến khi được giải quyết. Đây là đội lập trình nội bộ, không có đi đâu cả.
+- Khi học viên phàn nàn và đòi hoàn học phí, tôi thu thập thông tin theo mẫu và gửi lên trưởng nhóm, người quyết định có hoàn tiền hay không. Tôi được phép tặng thêm thời hạn truy cập trong khuôn khổ nhỏ.
+- Khảo sát sau hỗ trợ do hệ thống tự gửi qua email. Cuối tháng tôi xuất kết quả, viết một báo cáo ngắn về các nhóm phàn nàn chính để gửi quản lý sản phẩm. Tôi không gọi điện cho học viên.
+- Trả lời học viên nước ngoài bằng tiếng Anh trong các khóa về lập trình và thiết kế.
+
+10/2021 - 07/2023: Trung tâm Anh ngữ Ngôi Sao Nhỏ - Trợ giảng và giáo vụ bán thời gian
+- Hỗ trợ giáo viên nước ngoài trong lớp thiếu nhi, chấm bài, điểm danh.
+- Gửi thông báo cho phụ huynh, ghi nhận phản hồi cuối mỗi khóa học.
+
+HỌC VẤN
+2018 - 2022: Học viện Ngôn ngữ An Bình, Cử nhân Ngôn ngữ Anh, tốt nghiệp loại Khá.
+2025 - nay: Văn bằng 2 ngành Luật, hệ vừa học vừa làm, Đại học Pháp chế Nam Tiến.
+
+KỸ NĂNG
+- Tiếng Anh tốt: IELTS 7.0, viết email và trò chuyện qua chat thành thạo.
+- Freshdesk, Notion, Google Sheets, Excel ở mức tổng hợp số liệu.
+- Viết tài liệu hướng dẫn, câu trả lời mẫu.
+
+DỰ ÁN TIÊU BIỂU
+- Xây dựng trung tâm trợ giúp với 120 bài viết, giảm khoảng 25% số phiếu về đăng nhập và thanh toán sau sáu tháng.
+- Bản dịch tiếng Việt cho bộ câu hỏi thường gặp của khóa thiết kế đồ họa.
+
+SỞ THÍCH
+Viết truyện ngắn, nghe podcast về sách, học chơi đàn ukulele, đạp xe sáng Chủ Nhật khi không có lịch học.
+#why Hỗ trợ khách thật nhưng toàn bằng chữ. Không hotline, không Zalo nên dòng kênh là A. CV tự nói chỉ làm giờ hành chính và không đi làm cuối tuần nên dòng ca là U. Không có gì về giọng nên K.
+=== css-06 | partial | hard | maybe | M M M A U M M A A K A
+ĐỖ VĂN HƯNG
+Nhân viên điều phối bảo hành
+0900 000 906 — hung.dovan@example.com — Gia Lâm, Hà Nội
+
+TÓM TẮT
+Ba năm ngồi bàn điều phối của công ty điện mặt trời áp mái, trước đó làm kế toán kho. Tôi quen với bản đồ, lịch, số điện thoại của anh em kỹ thuật hơn là nói chuyện với khách, nhưng khi tổng đài thiếu người tôi vẫn được gọi sang.
+
+CÔNG VIỆC
+10/2023 - nay — Công ty TNHH Năng lượng Hồng Dương — Điều phối viên dịch vụ kỹ thuật
+— Nhận phiếu từ nhóm chăm sóc khách, sắp xếp 14 kỹ thuật viên theo tuyến cho 6 tỉnh phía Bắc: thay inverter, siết đầu nối, kiểm tra mái.
+— Làm việc trên phần mềm ticket của công ty, cập nhật trạng thái phiếu từng giờ, nhắc anh em gửi ảnh nghiệm thu.
+— Gọi cho khách hẹn giờ, báo trễ nếu kỹ thuật viên bị kẹt, chốt phiếu khi có ảnh và xác nhận.
+— Mỗi tuần một đến hai ca ngồi trực tổng đài thay khi bên chăm sóc khách thiếu người, chủ yếu trả lời điện thoại về lịch hẹn. Nhóm kỹ thuật và tôi trao đổi với nhau bằng Zalo, còn hộp thư hỗ trợ là phần của nhóm chăm sóc khách.
+— Khiếu nại về sản lượng điện, về tiền đền bù đều do nhóm chăm sóc khách và trưởng phòng dịch vụ xử lý. Tôi chỉ nhận lại phiếu và sắp lại lịch.
+— Việc gọi điện khảo sát sau bảo hành cũng do nhóm đó phụ trách. Tôi tổng hợp báo cáo tuần về tiến độ: số phiếu mở, đúng hẹn, trễ hẹn, theo tuyến và theo kỹ thuật viên.
+— Gọi khách đến kỳ vệ sinh tấm pin 6 tháng một lần, sắp lịch bảo dưỡng theo hợp đồng.
+— Làm từ thứ Hai đến thứ Bảy, có tuần trực sáng thứ Bảy, tuần trực chiều.
+
+01/2021 - 09/2023 — Công ty CP Vật tư Điện Tân Trào — Kế toán kho
+— Nhập xuất vật tư, đối chiếu thẻ kho, làm phiếu giao hàng cho đội công trình.
+— Lập bảng theo dõi tồn kho inverter và tấm pin bằng Excel.
+
+HỌC VẤN
+2018 - 2020: Trung cấp Kinh tế Kỹ thuật Đông Anh Mới, ngành Kế toán doanh nghiệp.
+
+KỸ NĂNG
+Phần mềm ticket, Excel (pivot, VLOOKUP), Google Maps để xếp tuyến, Zalo nhóm. Lái xe máy, xe tải dưới 1,5 tấn (hạng B).
+
+THÀNH TÍCH
+Tỷ lệ đúng hẹn tăng từ 71% lên 90% sau khi đổi cách chia tuyến năm 2025. Lập bản đồ khách theo huyện để gom ca, tiết kiệm khoảng 15% chi phí đi lại.
+
+NGOÀI GIỜ
+Chơi bóng bàn câu lạc bộ phường, đọc sách lịch sử, phụ bố mẹ làm vườn ở Gia Lâm.
+#why Mạnh đúng ở dòng điều phối, có ngồi tổng đài thật nhưng ít. CV nói khiếu nại và khảo sát là việc của nhóm khác. Chỉ đi làm thứ Bảy, không nói Chủ Nhật nên dòng ca là A.
+=== css-07 | near-miss | hard | maybe | A M A A U M U A M K M
+VƯƠNG TUẤN KIỆT
+IT Helpdesk Engineer
+Tel. 0900 000 907 | Email kiet.vuongtuan@example.com | Cau Giay, Ha Noi
+
+MỤC TIÊU
+Muốn rời mảng hạ tầng để chuyển sang công việc thiên về con người hơn. Năm năm hỗ trợ người dùng trong ngân hàng giúp tôi có kiên nhẫn và biết giải thích chuyện kỹ thuật bằng lời dễ hiểu.
+
+KINH NGHIỆM
+
+07/2022 - nay     Ngân hàng TMCP Hòa Phong (Hội sở)        Chuyên viên IT Helpdesk (Service Desk tầng 1)
+  * Trực số nội bộ 8888 và hòm thư hỗ trợ cho 2.300 nhân viên của 60 chi nhánh: quên mật khẩu, lỗi máy in, lỗi kết nối phần mềm core banking.
+  * Ghi nhận sự cố trên Jira Service Management, phân loại mức ưu tiên, chuyển tuyến 2 cho đội mạng hoặc đội ứng dụng.
+  * Toàn bộ người gọi đến đều là nhân viên ngân hàng; tôi không làm việc với khách hàng bên ngoài, khách của ngân hàng có tổng đài riêng do trung tâm khác phụ trách.
+  * Ngồi trực cả đêm và cuối tuần theo lịch để hỗ trợ đợt cập nhật hệ thống, ca đêm 2 tuần/lần.
+  * Hệ thống tự gửi phiếu đánh giá sau khi đóng sự cố; cuối tháng tôi xuất báo cáo SLA gửi trưởng nhóm.
+  * Tự xử lý từ xa bằng phần mềm điều khiển màn hình, đôi khi xuống tận phòng ban thay chuột, cài lại máy.
+
+09/2020 - 06/2022     Công ty TNHH Giải pháp Máy tính Đăng Quang        Kỹ thuật viên hỗ trợ
+  * Cài đặt Windows, Office, phần mềm diệt virus, đi lắp máy trạm cho các văn phòng khách hàng.
+  * Sửa máy in, chia sẻ mạng LAN, sao lưu dữ liệu định kỳ.
+  * Ghi sổ công việc bằng file Excel và báo cho sếp cuối ngày.
+
+HỌC VẤN
+2017 - 2020   Cao đẳng Công nghệ Thông tin Hữu Nghị Mới, ngành Quản trị mạng máy tính.
+
+CHỨNG CHỈ
+Khóa ITIL Foundation (2023). MOS Excel (2021). TOEIC 620 (2022).
+
+KỸ NĂNG
+Jira Service Management, Active Directory, Windows Server căn bản, PowerShell ở mức viết script đơn giản. Tiếng Anh nói được với chuyên gia nước ngoài của hãng cung cấp core banking khi họ sang triển khai, đã làm hỗ trợ cho họ trong 2 tháng năm 2024.
+
+DỰ ÁN
+Tham gia dự án chuyển đổi hệ thống email cho toàn ngân hàng năm 2023: viết hướng dẫn, trả lời thắc mắc trong tuần chuyển đổi, nhận hơn 900 yêu cầu. Viết kho tài liệu tự phục vụ giúp giảm số cuộc gọi quên mật khẩu.
+
+SỞ THÍCH
+Lắp máy tính cho bạn bè, chơi cờ vua online, đá bóng thứ Năm hằng tuần với đội của phòng CNTT.
+#why Giống CSKH ở cách làm (hotline, ticket, ca, SLA) nhưng người gọi là nhân viên nội bộ, không có khiếu nại khách, không có thợ bảo hành. Tổng đài nội bộ có tính là trực tổng đài không: A.
+=== css-08 | near-miss | ordinary | maybe | A M A U U M U U A A K
+HOÀNG THỊ MỸ LINH
+Telesales Bảo hiểm và Tài chính cá nhân
+0900 000 908 ~ mylinh.hoang@example.com ~ Bắc Từ Liêm, Hà Nội
+
+VỀ MÌNH
+Mình làm telesales gần bốn năm nay, tức là mỗi ngày mình gọi 150 cuộc cho những người không mong mình gọi, và vẫn cười được. Giọng miền Bắc chuẩn, dễ nghe (mọi người bảo vậy), nói chuyện được với đủ loại khách. Mình đang muốn đổi sang công việc ổn định hơn, ít áp lực chỉ tiêu.
+
+KINH NGHIỆM
+03/2024 - nay: Công ty Bảo hiểm Thái Hòa An - Tư vấn viên telesales
+- Gọi ra theo danh sách có sẵn, giới thiệu bảo hiểm sức khỏe và bảo hiểm tai nạn, chốt hợp đồng ngay trên điện thoại.
+- Toàn bộ cuộc gọi là gọi đi, mình không trực số đến và không có phần giải đáp thắc mắc sau bán.
+- Sau cuộc gọi gửi tài liệu qua Zalo hoặc email cho khách quan tâm, ghi tình trạng từng số vào CRM (đã gọi, hẹn gọi lại, từ chối, đã chốt).
+- Khách phàn nàn về quyền lợi hay đòi hủy hợp đồng thì mình chuyển sang phòng Dịch vụ khách hàng, mình không xử lý.
+- Đạt 120% chỉ tiêu trong 7/10 quý gần nhất, báo cáo doanh số cuối ngày cho trưởng nhóm.
+
+11/2022 - 02/2024: Công ty Tài chính Tín An Việt - Nhân viên telesales vay tiêu dùng
+- Gọi khách có nhu cầu vay, kiểm tra hồ sơ sơ bộ theo checklist, hẹn gặp nhân viên thẩm định.
+- Nhập dữ liệu khách vào phần mềm quản lý khoản vay.
+- Làm giờ hành chính cộng thêm sáng thứ Bảy.
+
+01/2021 - 10/2022: Shop Quần Áo Ngọc Hân - Bán hàng và trông shop
+- Bán hàng tại quầy, trả lời inbox fanpage, đóng gói đơn online.
+
+HỌC VẤN
+2017 - 2019: Trung cấp Kinh tế Tài chính Kinh Bắc Mới, ngành Tài chính ngân hàng.
+
+KỸ NĂNG
+Thuyết phục qua điện thoại, xử lý từ chối, CRM, Word, Excel cơ bản. Gõ nhanh. Học khóa bán hàng qua điện thoại nâng cao năm 2024.
+
+THÀNH TÍCH
+Top 5 telesales toàn khu vực miền Bắc tháng 8/2025. Được chọn hướng dẫn 6 nhân viên mới trong 2 đợt tuyển dụng.
+
+SỞ THÍCH
+Hát, xem hài độc thoại, tập gym, thỉnh thoảng làm MC cho đám cưới của bạn bè.
+#why Giỏi điện thoại nhưng gọi đi để bán, không phải tiếp nhận. CV nói không làm dòng hotline và khiếu nại. Giọng chỉ là lời tự nhận (dù có làm MC cho bạn) nên A. Có thể cho cơ hội chuyển nghề: maybe.
+=== css-09 | non-fit | hard | no | A M U U U U U A A K M
+MAI THỊ THANH HÀ
+Điều dưỡng viên
+Điện thoại: 0900 000 909 | Email: thanhha.mai@example.com | Mỹ Đức, Hà Nội
+
+MỤC TIÊU NGHỀ NGHIỆP
+Là điều dưỡng đã có hơn sáu năm chăm sóc bệnh nhân tại khoa Ngoại và khoa Nội tổng hợp, tôi mong muốn được cống hiến ở môi trường y tế chuyên nghiệp hơn, nâng cao chất lượng chăm sóc người bệnh.
+
+KINH NGHIỆM LÀM VIỆC
+09/2020 - nay: Bệnh viện Đa khoa Tâm An Hà Đông - Điều dưỡng khoa Ngoại
+- Thực hiện y lệnh, tiêm truyền, thay băng, theo dõi dấu hiệu sinh tồn, chăm sóc bệnh nhân trước và sau mổ.
+- Làm theo ca trực 24/24, luân phiên, bao gồm thứ Bảy, Chủ Nhật và ngày lễ.
+- Ghi nhận diễn biến của bệnh nhân vào hồ sơ bệnh án điện tử trên phần mềm của bệnh viện.
+- Hướng dẫn người nhà cách chăm sóc tại nhà, dặn chế độ ăn và lịch tái khám.
+- Gọi điện hỏi thăm bệnh nhân trong vòng 48 giờ sau khi ra viện theo chương trình của khoa, hỗ trợ tổng hợp phiếu đánh giá hài lòng người bệnh theo quý để báo cáo cho điều dưỡng trưởng.
+- Khi có phản ánh của người nhà thì báo ngay cho điều dưỡng trưởng, không tự giải quyết.
+- Báo phòng Vật tư khi máy theo dõi hỏng, đội kỹ thuật bệnh viện sẽ xuống sửa.
+
+07/2019 - 08/2020: Phòng khám Đa khoa Bình Tâm - Điều dưỡng phòng khám
+- Hẹn lịch khám cho bệnh nhân, đón tiếp, đo huyết áp, hỗ trợ bác sĩ.
+- Nhắn tin qua Zalo của phòng khám để nhắc lịch tiêm vắc xin, trả lời bệnh nhân về giờ khám.
+- Lấy mẫu xét nghiệm, ghi sổ trả kết quả.
+
+HỌC VẤN
+2016 - 2019: Cao đẳng Y tế Hà Tây Xanh, ngành Điều dưỡng đa khoa.
+
+CHỨNG CHỈ
+Chứng chỉ hành nghề điều dưỡng. Cấp cứu cơ bản (BLS). Chăm sóc vết thương nâng cao (2023).
+
+KỸ NĂNG
+Kỹ thuật điều dưỡng, giao tiếp với bệnh nhân và người nhà, sử dụng phần mềm bệnh án điện tử, Word, Excel cơ bản.
+
+HOẠT ĐỘNG
+Tham gia đoàn khám bệnh từ thiện vùng cao 3 năm liền. Phụ trách tờ tin nội bộ của chi đoàn khoa. Giải Nhì hội thi "Điều dưỡng thanh lịch" của bệnh viện năm 2022, phần ứng xử.
+
+SỞ THÍCH
+Đan len, trồng hoa lan, nấu ăn cho gia đình cuối tuần.
+#why Trùng chữ: chăm sóc, hẹn lịch, ghi nhận, theo ca, gọi hỏi thăm, hài lòng. Là điều dưỡng, không có khách dịch vụ. Gọi sau ra viện và tổng hợp phiếu quý là tương đối giống, nên dòng khảo sát là A.
+=== css-10 | non-fit | ordinary | no | A M U U U A U U A K M
+TÔ MINH PHÚC
+Kỹ thuật viên Viễn thông - Mạng doanh nghiệp
+0900 000 910 | phuc.tominh@example.com | Tân Bình, TP.HCM
+
+TÓM TẮT
+Bảy năm làm hạ tầng thoại và mạng cho văn phòng. Cài đặt tổng đài IP, cấu hình đường dây nóng cho doanh nghiệp, đi đầu dây, xử lý sự cố tại chỗ. Đã quen với lịch trực NOC.
+
+KINH NGHIỆM
+05/2021 - nay: Công ty CP Giải pháp Viễn thông Kim Hải - Kỹ thuật viên hệ thống thoại
+- Lắp đặt, cấu hình tổng đài PBX và IP-PBX cho khách doanh nghiệp từ 20 đến 500 máy lẻ.
+- Thiết lập hệ thống hotline, lời chào, phân phối cuộc gọi theo hàng đợi, ghi âm cuộc gọi cho các phòng chăm sóc khách hàng của khách.
+- Nhận ticket từ NOC, ghi lịch sử sự cố theo từng site của khách, đi xử lý tại chỗ khi được phân công.
+- Bảo trì định kỳ tổng đài và UPS theo hợp đồng, thay card, nâng cấp phần mềm.
+- Trực NOC theo ca 24/7, tuần có ca đêm và thứ Bảy, Chủ Nhật.
+
+08/2019 - 04/2021: Công ty TNHH Mạng và An ninh Đông Sài Gòn - Kỹ thuật viên mạng
+- Kéo cáp, bấm đầu, đo kiểm, lắp switch và access point cho tòa nhà.
+- Lắp camera, cấu hình đầu ghi hình.
+- Lập biên bản bàn giao thiết bị theo mẫu của công ty.
+
+HỌC VẤN
+2016 - 2019: Cao đẳng Kỹ thuật Viễn thông Phương Nam Việt, ngành Kỹ thuật viễn thông.
+
+CHỨNG CHỈ
+CCNA (2020). Khóa quản trị Asterisk (2022). An toàn làm việc trên cao (2023).
+
+KỸ NĂNG
+Asterisk, FreePBX, Cisco, MikroTik, Linux cơ bản. Đọc tài liệu Cisco bằng tiếng Anh, chưa dùng để nói chuyện. Lái xe máy đi site, hàn cáp quang.
+
+DỰ ÁN
+- Triển khai tổng đài 300 máy lẻ cho một chuỗi phòng khám (2023), kèm chức năng chuyển hướng cuộc gọi theo chi nhánh.
+- Chuyển hệ thống thoại analog sang SIP trunk cho 4 văn phòng (2024).
+- Viết script Bash để giám sát trạng thái trunk và cảnh báo qua Telegram.
+
+SỞ THÍCH
+Tự lắp hệ thống nhà thông minh ở nhà, đá bóng cuối tuần, xem kênh công nghệ.
+#why Trùng chữ: tổng đài, hotline, ticket, bảo trì, ca, phòng chăm sóc khách hàng. Anh ấy lắp tổng đài, không ngồi nghe tổng đài. Ticket theo site có thể coi như lịch sử khách nên A.
+=== css-11 | stuffing | ordinary | no | A U U U U U U U U K K
+ĐINH THỊ HOA
+Nhân viên Chăm sóc khách hàng
+SĐT: 0900 000 911 | hoa.dinhthi@example.com | Hà Đông, Hà Nội
+
+MỤC TIÊU
+Đã từng trực tổng đài hoặc làm chăm sóc khách hàng, xử lý khiếu nại theo quy trình, biết đề xuất phương án đổi trả hoặc đền bù, trả lời thắc mắc của khách qua hotline, email và Zalo. Điều phối kỹ thuật viên đi bảo hành và theo dõi đến khi hoàn tất. Gọi lại khảo sát mức độ hài lòng và tổng hợp báo cáo định kỳ. Giọng nói dễ nghe, rõ ràng, chấp nhận làm theo ca.
+
+TỪ KHÓA
+CSKH, chăm sóc khách hàng, customer service, CRM, ticket, Zendesk, Freshdesk, hotline, call center, tổng đài, khiếu nại, đổi trả, đền bù, bảo hành, khảo sát, CSAT, NPS, báo cáo định kỳ, tiếng Anh giao tiếp, TOEIC, Zalo OA, email support.
+
+KINH NGHIỆM LÀM VIỆC
+06/2023 - nay: Quán Cà Phê Góc Phố Nhỏ - Nhân viên phục vụ
+- Ghi món, pha nước đơn giản, bưng đồ, lau bàn, dọn ly.
+- Mở cửa buổi sáng, kiểm đếm bánh và sữa còn trong tủ, báo chủ quán khi sắp hết.
+- Thu tiền tại quầy khi thu ngân đi vắng.
+
+10/2021 - 05/2023: Làm tự do - Shipper xe máy
+- Chạy đơn đồ ăn và hàng nhỏ theo ứng dụng trong khu vực Hà Đông, Thanh Xuân.
+- Được ứng dụng đánh giá 4,8 sao.
+- Tự đổ xăng, tự sửa xe khi hỏng dọc đường.
+
+07/2020 - 09/2021: Xưởng May Thu Hường - Công nhân phụ
+- Cắt chỉ, gấp quần áo, đóng thùng.
+
+HỌC VẤN
+Tốt nghiệp THPT năm 2020, Trường THPT Tân Lập Mới.
+
+KỸ NĂNG
+Dùng được điện thoại thông minh, Facebook, Zalo, TikTok. Làm được món trà sữa và cà phê phin. Nhanh nhẹn, trung thực.
+
+THÔNG TIN KHÁC
+Có xe máy riêng. Độc thân, ở trọ gần Bến xe Yên Nghĩa. Có thể đi làm ngay. Chị chủ quán sẵn sàng xác nhận thời gian làm việc của tôi, liên hệ qua 0900 000 990.
+
+SỞ THÍCH
+Xem TikTok, nghe nhạc, cuối tuần về quê thăm bố mẹ, tập nấu các món mới theo video.
+#why Đoạn mục tiêu dán nguyên từ ad và ô từ khóa dài, công việc thật là phục vụ quán và chạy xe. Có đủ năm nhưng không liên quan nên dòng đầu A. Học vấn chỉ có THPT nên U.
+=== css-12 | messy | hard | interview | M M M M M M M M A K M
+C A O   T H Ị   N G Ọ C   D I Ễ M
+N H Â N   V I Ê N   C H Ă M   S Ó C   K H Á C H   H À N G
+Dienthoai:0900 000 912   Email:diem.caongoc@example.com
+Diachi:Long Bien,HaNoi
+
+M U C   T I E U
+Muonlamviec lau dai omotcongty conhe thongdichvu baohanh dinhhinh ro rang.
+
+K I N H   N G H I E M   L A M   V I E C
+01/2023-nay:Congty CPDien LanhGia Dung BachMinh -Nhanvien CSKH
+- Nghe duong day nong cua hang, tra loi cau hoi ve may lanh, may giat, thoi han bao hanh.
+- Tralo i hopthu hotro vatin nhan Zalo OA cuakhach trong gio lam.
+- Khach phannan: ghi phieu theo mau quy trinh,xem lai lich su, de xuatdoi linh kien,doi may hoac boi thuong mot phan,trinh quan ly duyet.
+- Ghi lich su moi cuoc goi va moi lan sua vao phan mem CRM;moi khach la mot ho so, moi may la mot dong.
+- Sapxep lichcho 12 kythuat vien tuyen quan huyen, nhac gio, doithe khi tho ket, chi dong phieu khi khach bao da xong.
+- Sau khi sua xong 3 ngay goi lai hoi khach cham diem. Thu Sau gui bang tong hop tuan, cuoi thang lam bao cao khieu nai va diem hailong chophong dich vu.
+- Xoayca sang-chieu-toi,lam ca thu 7,chu nhat;nghi bu theo lich.
+
+05/2021-12/2022:Cua hang Dien May Hai Thanh -Nhan vien tiep nhan bao hanh
+- Nhan may khach mang den cua hang,ghi phieu,gui ve tram bao hanh.
+- Goi bao khach khi may da sua xong,thu phi va tra may.
+- Thinh thoang giup ban hang khi dong khach dip he.
+
+H O C   V A N
+2018-2021   Cao dang KinhTe VanThu Hoai Duc Moi
+Nganh: Van thu luu tru
+
+K Y   N A N G
+Word,Excel(pivot,VLOOKUP) -CRM -Zalo OA -Dang ky gui mail mau -Go10ngon
+
+T H A N H   T I C H
+Nhanvien CSKH cua quy 4/2024.Viet lai mau tinnhan xinloi khi tho den tre,gop phan giam phanhoi tieucuc trong 2 thang cao diem he nam 2025.
+Giam ti le goi lai tu 22% xuong 15% trong nam 2025.
+
+S O   T H I C H
+Doc truyen ngontinh,tap the duc nhip dieu,mua sam dip cuoi tuan,di choi voi cac chau.
+
+Trang 1/2 -- CV_Diem_CSKH_moi.pdf -- Trang 2/2
+#why PDF hỏng: chữ giãn ở tiêu đề, từ dính nhau, mất dấu. Đọc được thì đây là ứng viên rất hợp: đủ hotline, mail, Zalo, CRM, thợ, khảo sát, ca cuối tuần. Không nhắc tiếng Anh nên A, không có gì về giọng nên K.

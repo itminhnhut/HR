@@ -1,0 +1,446 @@
+@ad purchasing
+@occupation Nhân viên mua hàng vật tư
+@req experience | Đã làm thu mua ít nhất 3 năm tại nhà máy sản xuất hoặc công ty xây lắp
+@req education | Cao đẳng hoặc đại học khối Kinh tế, Thương mại, Chuỗi cung ứng hoặc khối kỹ thuật
+@req skills | Tìm và đánh giá nhà cung cấp, duy trì danh sách nhà cung cấp được duyệt
+@req skills | So sánh báo giá, đàm phán giá và điều khoản thanh toán
+@req skills | Lên PO, bám tiến độ giao hàng và xử lý khi giao trễ, thiếu hàng
+@req skills | Đọc được bản vẽ và thông số kỹ thuật đơn giản của vật tư
+@req skills | Biết mua hàng nhập khẩu: phương thức L/C, T/T và điều kiện Incoterms
+@req skills bonus | Từng dùng SAP MM hoặc phân hệ mua hàng của một ERP là lợi thế
+@req language | Tiếng Anh viết email và trao đổi qua điện thoại với nhà cung cấp nước ngoài
+@req soft | Minh bạch, liêm chính khi làm việc với nhà cung cấp
+=== pur-01 | strong | ordinary | interview | M M M M M M M M M M
+TRẦN HOÀNG YẾN
+Chuyên viên cung ứng vật tư kỹ thuật
+Điện thoại: 0900 000 701 | hoangyen.tran@example.com
+Sài Đồng, Long Biên, Hà Nội | Sinh năm 1991
+
+VÀI DÒNG VỀ TÔI
+Mười năm rưỡi đi mua cho nhà máy, từ con bu lông đến cụm máy nén nhập nguyên chiếc. Tôi thích công việc này vì mỗi đồng tiết kiệm được đều đếm được, còn mỗi lần giao trễ thì cả xưởng biết ngay. Hiện muốn tìm một doanh nghiệp có quy trình rõ ràng hơn và nhóm hàng rộng hơn.
+
+QUÁ TRÌNH LÀM VIỆC
+11/2019 - nay: Nhà máy Cơ khí Chính xác Tân Đại Phát - Trưởng nhóm cung ứng (nhóm 3 người)
+- Mỗi ngày nhận phiếu đề nghị từ xưởng và bảo trì, tra số tồn trên hệ thống rồi mới quyết định đặt thêm hay điều chuyển.
+- Tạo PR, PO trên SAP (ME21N, ME2M), theo dõi các dòng quá hạn mỗi sáng thứ Hai và gọi thẳng nhà cung cấp.
+- Mỗi năm chấm điểm khoảng 70 đơn vị về chất lượng, giao đúng hạn, giá; loại khỏi danh sách đã duyệt những đơn vị dưới 60 điểm, đi thăm xưởng trước khi đưa đơn vị mới vào danh sách.
+- Với mỗi đơn hàng trên 50 triệu lấy tối thiểu 3 chào giá, lập bảng phân tích, thương lượng giá và kỳ hạn công nợ từ 15 lên 45 ngày với nhóm thép và vật tư tiêu hao.
+- Nhập phôi thép hợp kim và vòng bi từ Đài Loan, Hàn Quốc, Đức: mở L/C trả chậm 60 ngày với ngân hàng, T/T đặt cọc 30%, giá FOB hoặc CIF Hải Phòng. Gọi điện và viết email tiếng Anh trực tiếp với người bán.
+- Xem bản vẽ chi tiết của phòng thiết kế để hỏi đúng dung sai, mác thép, độ cứng trước khi xin giá.
+- Hàng thiếu hoặc lệch dung sai: phối hợp QC lập biên bản, yêu cầu đổi trả, đẩy giao bù bằng đường hàng không khi cần.
+- Đề xuất công ty công khai bảng so sánh giá cho cả phòng kế toán xem. Năm 2023 từ chối khoản "chiết khấu riêng" của một đơn vị và báo cáo bằng văn bản cho giám đốc.
+- Làm báo cáo tháng về giá trị mua và số tiền tiết kiệm, năm 2024 giảm được khoảng 1,9 tỷ đồng so với giá năm trước.
+
+03/2016 - 10/2019: Công ty CP Thiết bị Áp lực Hải Minh - Nhân viên mua hàng
+- Mua thép tấm, mặt bích, van, que hàn cho xưởng chế tạo bồn áp lực.
+- Làm đề nghị thanh toán, đối chiếu công nợ với kế toán mỗi cuối tháng.
+- Xin chứng chỉ vật liệu CO, CQ của từng lô và lưu cho đoàn đăng kiểm.
+
+HỌC VẤN
+2011 - 2015: Đại học Kinh tế Đông Hải, Cử nhân Kinh doanh quốc tế.
+
+KỸ NĂNG VÀ NGOẠI NGỮ
+SAP MM, Excel (Power Query), đọc bản vẽ 2D. TOEIC 750, tiếng Anh thương mại dùng hằng ngày.
+
+SỞ THÍCH
+Trồng lan, đi bộ đường dài, tham gia nhóm đọc sách của phường.
+#why Đủ mọi mặt, nhiều chữ khác ad. Có sự việc cụ thể từ chối khoản chiết khấu riêng nên dòng liêm chính là M.
+=== pur-02 | strong | hard | interview | M M M M M M M M M K
+NGUYEN HA PHUONG
+Procurement Specialist - Direct Materials
+Mobile 0900 000 702 | phuong.nguyenha@example.com | Di An, Binh Duong
+
+SUMMARY
+Eight and a half years sourcing packaging and chemical inputs for manufacturing plants. Strong on supplier development, cost-down projects, and keeping open orders from slipping. Open to moving to industrial or MRO categories.
+
+EXPERIENCE
+Jun 2021 - Present | Procurement Specialist | Lam Vien Packaging Manufacturing Co., Ltd
+- Own a spend of roughly USD 6 million across paperboard, inks, adhesives and spare parts.
+- Convert MRP requisitions into purchase orders in Oracle iProcurement after checking on-hand and in-transit stock.
+- Qualify new vendors: factory audit checklist, sample trial with R&D, then add to the approved vendor list. Review scorecards every quarter and put under-performers on improvement plans.
+- Run RFQs, prepare bid tabs, and negotiate price, MOQ and payment terms, e.g. moved a key ink supplier from 30 to 60 days.
+- Expedite late orders with weekly open-PO reports; arrange partial air freight when production is at risk and claim the extra cost back from the vendor.
+- Import from Korea, Indonesia and China: sight and usance L/C, T/T with deposit, mostly FOB Busan, CIF Cat Lai and DAP terms. Work with the forwarder on shipment plans.
+- Daily emails and calls in English with overseas account managers; led two supplier negotiations over video and phone without an interpreter.
+- Read simple general-arrangement drawings and material specs (GSM, ASTM grades, viscosity) to confirm a substitute before release.
+- Coordinate with incoming QC on rejected lots and raise non-conformance reports.
+- Monthly savings tracker for the finance director, with USD 210k of verified savings in 2024.
+
+Apr 2018 - May 2021 | Purchasing Executive | Tan Hiep Furniture Components JSC
+- Bought hardware, fittings, MDF and lacquer for a furniture export plant with 900 workers.
+- Issued POs in the company ERP and chased suppliers against the production schedule.
+- Compared at least three quotations for each new item and kept the price list up to date.
+
+EDUCATION
+2013 - 2017 | Bachelor of Logistics and Supply Chain Management, Lac Viet Institute of Economics.
+
+SKILLS
+Oracle Purchasing, Excel, Power BI. English: IELTS 6.5. Basic Mandarin for greetings.
+
+ACHIEVEMENTS
+Led the second-source project for a critical adhesive, avoiding a line stoppage during the 2022 shipping delays. Employee of the Year 2023.
+
+INTERESTS
+Badminton, cooking, weekend volunteering at an animal shelter.
+#why Tiếng Anh, chữ khác hẳn ad (vendor, bid tabs, MRP). Ngành Chuỗi cung ứng. Không có gì cụ thể về liêm chính nên K.
+=== pur-03 | strong | ordinary | interview | M M M M M M M A A K
+PHAM VAN KIEN
+Phu trach mua vat tu cong trinh
+DT 0900 000 703 - kien.phamvan.vt@example.com - Thanh Tri, Ha Noi
+
+GIOI THIEU NGAN
+Toi lam nghe mua vat tu xay lap da hon 8 nam. Ban dau la nguoi giu kho cong truong nen quen tu cuon cap, ong gio toi may bom. Thich viec ro rang, chot gia nhanh, hang den dung ngay de doi thi cong khong phai ngoi cho.
+
+CONG VIEC DA LAM
+05/2020 - nay: Cong ty CP Xay lap Co dien Viet Long Thanh - Phu trach mua hang du an
+- Cong truong gui phieu de nghi vat tu, toi doi chieu du toan va ton kho cong truong, gom lai theo tuan de mua cho duoc gia tot hon.
+- Giu file nha cung cap theo tung nhom: ong thep, cap dien, thiet bi ve sinh, bom. Moi nam cham diem 1 lan cung ky thuat, dai ly nao giao tre 3 lan thi bo khoi danh sach duoc mua.
+- Chu dong di tim dai ly moi khi co du an o tinh xa, den tan kho xem hang.
+- Xin it nhat 3 bao gia, lap bang so sanh trinh giam doc du an, tra gia va xin them thoi han cong no 30 - 45 ngay.
+- Ra don dat hang, goi nhac nhac truoc ngay giao 2 hom, truong hop thieu hang thi tach don hoac mua bu cho kip do be tong.
+- Xem ban ve shop drawing va bang vat tu de hoi dung DN, PN, do day ton, tiet dien cap. Hay phat hien bang thong so sai truoc khi chot.
+- Tung mua may bom tu Han va van tu Trung Quoc: chuyen tien T/T 30/70, mot lo gia tri lon lam L/C qua ngan hang, gia CIF Hai Phong; biet FOB, EXW khac nhau cho nao. Thu tuc hai quan thue dich vu lam.
+- Lam de nghi thanh toan, doi chieu cong no voi ke toan du an moi thang. Bao cao gia tri mua theo du an cho ban giam doc.
+
+06/2018 - 04/2020: Cong ty TNHH Xay dung Thanh Vuong - Nhan vien vat tu cong truong
+- Mua tai cho cac vat tu nho, nhan hang, giu kho, xuat cho to doi.
+- Lap bien ban hang hu, tra ve nha cung cap. Chay xe di lay hang khi can gap.
+
+HOC VAN
+2014 - 2017: Cao dang Xay dung Thanh Phu, nganh Cong nghe ky thuat cong trinh.
+
+KY NANG
+Word, Excel kha. Chua dung ERP, cong ty dung file Excel va phan mem du toan. Tieng Anh viet email voi ben ban thi on, nghe dien thoai con cham nen thuong de dong nghiep nghe cung.
+
+DU AN TIEU BIEU
+Chung cu Song Hong Xanh 2 toa (2021 - 2024). Nha may banh keo Thien Thuy tai Hung Yen (2024 - 2025). Tong gia tri vat tu mua khoang 95 ty dong.
+
+SO THICH
+Xem bong da, sua xe may, nuoi ca.
+#why Không dấu do thói quen. Tiếng Anh viết được, điện thoại yếu nên dòng ngoại ngữ là tranh cãi. Chưa dùng ERP là bonus nên A. Cao đẳng khối kỹ thuật đạt.
+=== pur-04 | partial | hard | maybe | M M M M M M U M U M
+ĐINH VĂN THẮNG
+Nhân viên Thu mua - Vật tư cơ khí
+ĐT 0900 000 704
+Email: thang.dinhvan@example.com
+Địa chỉ: Thái Nguyên
+
+TÓM TẮT
+Mười năm gắn bó một nhà máy thép. Hiểu rất rõ thị trường vật tư trong nước khu vực phía Bắc: đơn vị nào giao thật, đơn vị nào chỉ giỏi báo giá. Ưu điểm lớn nhất là nắm bản vẽ và ra hiện trường cùng anh em bảo trì.
+
+KINH NGHIỆM
+09/2016 - nay: Công ty CP Thép Hình Bắc Hưng - Nhân viên thu mua, phòng Vật tư
+- Phụ trách nhóm phụ tùng cơ khí, vật liệu chịu lửa, dầu mỡ, vật tư tiêu hao. Khoảng 300 đơn hàng mỗi năm.
+- Khi có đề nghị từ phân xưởng thì kiểm tra tồn và lịch sử sử dụng trước, tránh mua trùng.
+- Tìm thêm nguồn trong nước cho những chi tiết trước đây mua lẻ, đi xem xưởng, cho làm thử. Duy trì danh mục đơn vị đạt yêu cầu theo ISO 9001, đánh giá lại mỗi năm một lần.
+- Lập bảng so giá, ngồi với đơn vị cung cấp để thương lượng giá, thời hạn thanh toán, điều kiện bảo hành. Giảm 12% chi phí gạch chịu lửa năm 2021.
+- Nhập đơn đặt hàng vào phân hệ mua hàng của Bravo, bám theo ngày giao, đi xuống tận xưởng đối tác nếu chậm.
+- Đọc bản vẽ gia công trục, bánh răng, tự đo mẫu cũ bằng thước cặp để làm bản vẽ tay gửi xưởng ngoài.
+- Hàng nhập khẩu do phòng Xuất nhập khẩu của công ty làm trọn gói. Tôi chỉ nhận về tại kho, không tham gia chọn nguồn, mở L/C hay điều kiện giao hàng.
+- Năm 2022 báo cáo giám đốc việc một đơn vị gửi phong bì dịp Tết; công ty dùng sự việc này để ra quy định cấm nhận quà. Ban kiểm soát kiểm tra hồ sơ mua hằng năm chưa có ghi nhận sai phạm nào với phần tôi làm.
+- Kiểm nhận cùng phòng KCS, lập biên bản trả lại hàng lỗi. Làm đề nghị thanh toán chuyển cho kế toán đúng lịch.
+
+06/2014 - 08/2016: Xưởng Cơ khí Gia Sàng - Thợ tiện kiêm vẽ kỹ thuật
+- Tiện, phay chi tiết máy, đọc bản vẽ, báo giá gia công cho khách lẻ.
+
+HỌC VẤN
+2011 - 2014: Cao đẳng Cơ khí Luyện kim Trung Du, ngành Công nghệ chế tạo máy.
+
+KỸ NĂNG
+Bravo, Excel, AutoCAD 2D mức xem và sửa nhẹ. Tiếng Anh: chưa dùng trong công việc, chỉ đọc được vài thông số trên catalogue, không viết email và không nghe điện thoại được.
+
+HOẠT ĐỘNG
+Công đoàn viên tích cực nhiều năm, phụ trách quỹ tương trợ của tổ. Thích câu cá, nuôi ong, sửa đồ gia dụng.
+#why Thu mua rất chắc nhưng không có nhập khẩu và không có tiếng Anh, đều do CV nói ra. Ad có hai dòng này nên chỉ ở mức cân nhắc. Có sự việc phong bì cụ thể nên liêm chính M.
+=== pur-05 | partial | ordinary | maybe | U U A A M U A M M K
+LÊ KHÁNH VY
+Purchasing Staff | Nhân viên mua hàng
+0900 000 705 | vy.lekhanh@example.com | Yên Phong, Bắc Ninh
+
+MỤC TIÊU
+Em chuyển từ phiên dịch sang mua hàng được hơn hai năm và thấy phù hợp. Em muốn học thêm về phần đánh giá đối tác và thương lượng, là hai mảng em mới chỉ được quan sát.
+
+KINH NGHIỆM LÀM VIỆC
+08/2024 - nay: Công ty TNHH Linh kiện Điện tử Vĩnh An (nhà máy lắp ráp) - Nhân viên mua hàng
+- Nhận yêu cầu từ kế hoạch sản xuất, kiểm tra tồn kho trên SAP rồi tạo đơn mua trên module MM, phát hành sau khi quản lý ký.
+- Theo dõi ngày hàng về của từng dòng, nhắc đối tác bằng email, báo sớm cho kế hoạch nếu có nguy cơ trễ. Khi thiếu hàng thì làm việc với đối tác để giao bổ sung.
+- Khi có nhóm hàng mới thì tìm thông tin đơn vị bán qua Alibaba, hội chợ, gửi hồ sơ năng lực cho trưởng phòng. Việc đánh giá và duyệt vào danh sách là do trưởng phòng làm.
+- Lập bảng so sánh báo giá, phần thương lượng giá và điều khoản do trưởng phòng trực tiếp ngồi với đối tác.
+- Báo cáo tiết kiệm chi phí hằng tháng cũng do trưởng phòng tổng hợp, em chỉ gửi số liệu đơn mua.
+- Phần lớn hàng từ Trung Quốc, trả bằng T/T. Có học sơ qua FOB, CIF, DDP khi làm đơn. Chưa tự làm L/C vì kế toán trưởng phụ trách.
+- Viết email, gọi Teams và điện thoại với đối tác nước ngoài bằng tiếng Anh, thường xuyên giúp trưởng phòng nghe khi họp.
+- Phối hợp IQC trả các lô bị lỗi.
+
+07/2021 - 07/2024: Công ty TNHH Điện tử Hoà Lạc Sao - Phiên dịch tiếng Anh sản xuất
+- Dịch họp sản xuất, cải tiến, dịch quy trình và tiêu chuẩn cho công nhân.
+- Dịch hộ phòng mua trong các buổi khách hàng đến thăm, không phụ trách đơn hàng.
+- Hỗ trợ chuẩn bị buổi đánh giá của khách hàng theo bộ tiêu chuẩn IATF.
+
+HỌC VẤN
+2017 - 2021: Đại học Ngoại ngữ Hải Vân, Cử nhân Ngôn ngữ Anh. Điểm trung bình 3.2/4.
+
+KỸ NĂNG
+SAP MM (tạo đơn mua, xem báo cáo), Excel VLOOKUP, IELTS 7.0. Giao tiếp, chủ động, cẩn thận.
+
+HOẠT ĐỘNG VÀ SỞ THÍCH
+Câu lạc bộ tiếng Anh của trường, dịch phim phụ đề trên kênh cộng đồng. Thích làm bánh, chơi ukulele, thỉnh thoảng đi thiện nguyện cuối tuần cùng nhóm bạn đại học.
+#why Mới 2 năm 3 tháng thu mua thật; ba năm phiên dịch không tính. Ngôn ngữ Anh không thuộc khối yêu cầu. Việc đánh giá và đàm phán CV nói do sếp làm, nên có phần nhưng chưa đủ: A.
+=== pur-06 | near-miss | hard | no | U A M M M U U A U K
+MAI QUỐC CƯỜNG
+Trưởng nhóm thu mua - Chuỗi nhà hàng
+SĐT: 0900 000 706 · cuong.maiquoc@example.com · Quận 7, TP. Hồ Chí Minh
+
+GIỚI THIỆU
+Gần bảy năm lo nguồn cung cho một chuỗi 24 nhà hàng lẩu nướng. Tôi quen dậy lúc bốn giờ sáng ra chợ đầu mối, biết thịt nào giá nào, biết nhà vườn nào vụ này được mùa. Mong muốn mở rộng sang các nhóm hàng khác với quy trình bài bản hơn.
+
+KINH NGHIỆM
+01/2020 - nay: Công ty CP Ẩm thực Bếp Lửa Hồng - Trưởng nhóm thu mua
+- Nhận đề xuất từ bếp trưởng các chi nhánh, xem tồn cuối ngày trên phần mềm quản lý nhà hàng để gom đơn.
+- Tìm nguồn thịt, hải sản, rau, gia vị. Đến tận trại và xưởng sơ chế kiểm tra an toàn thực phẩm, đánh giá lại mỗi 6 tháng, giữ danh sách đơn vị đủ giấy chứng nhận.
+- Mỗi tuần lấy giá so sánh ít nhất 3 đơn vị, đàm phán giá theo sản lượng và công nợ 15 ngày. Giảm được 2,3 điểm food cost trong năm 2023.
+- Đặt hàng, theo dõi xe lạnh về đúng khung giờ trước 10 giờ sáng, thiếu hàng thì gọi nguồn dự phòng hoặc điều chuyển giữa các chi nhánh.
+- Rượu vang và thịt bò Úc mua lại từ công ty nhập khẩu trong nước, chúng tôi không nhập trực tiếp, không làm thủ tục ngoại thương.
+- Kiểm nhận cùng bếp, trả lại hàng không đạt nhiệt độ hay sai quy cách.
+- Báo cáo hằng tháng về food cost và mức giá đã tiết kiệm cho giám đốc vận hành.
+
+03/2017 - 12/2019: Nhà hàng Sen Quê - Phụ bếp, sau lên Tổ trưởng kho bếp
+- Sơ chế, giữ kho nguyên liệu, kiểm kê cuối tuần, đề xuất mua hàng cho bếp trưởng.
+- Đi chợ mua rau củ, kiểm tra độ tươi, giữ quan hệ với các chủ vựa.
+
+HỌC VẤN
+2014 - 2017: Cao đẳng Du lịch và Khách sạn Sông Lam, ngành Quản trị nhà hàng và dịch vụ ăn uống.
+
+KỸ NĂNG
+Phần mềm quản lý nhà hàng, Excel, đánh giá chất lượng thực phẩm bằng cảm quan, chứng nhận an toàn thực phẩm, quản lý nhóm 5 người.
+
+THÀNH TÍCH
+Xây dựng quy cách mua cho 180 mặt hàng thực phẩm. Được chọn là Quản lý trẻ của chuỗi năm 2022. Xử lý nguồn thịt thay thế trong đợt dịch tả lợn mà không phải đóng món nào.
+
+SỞ THÍCH
+Nấu ăn, đi chợ quê, viết bài trên trang cá nhân về nguyên liệu.
+#why Nghiệp vụ thu mua thật, nhưng là thực phẩm cho nhà hàng, không phải nhà máy hay xây lắp nên dòng kinh nghiệm U. Không có bản vẽ, nhập khẩu, tiếng Anh. Ngành nhà hàng có thuộc khối kinh tế hay không là tranh cãi.
+=== pur-07 | near-miss | hard | maybe | U M U U A M A A M K
+PHAN ĐỨC LONG
+Sales Engineer - Van và thiết bị đường ống
+0900 000 707 | long.phanduc@example.com | Tân Phú, TP. Hồ Chí Minh
+
+TÓM TẮT
+Mười năm trong ngành van công nghiệp: hai năm kiểm hàng, tám năm bán hàng kỹ thuật. Tôi chưa từng giữ vị trí mua hàng, nhưng đã gặp hàng trăm nhân viên mua hàng của khách và hiểu họ cần gì. Muốn chuyển sang phía người mua vì muốn ở một chỗ ổn định, không đi tỉnh quá nhiều.
+
+KINH NGHIỆM LÀM VIỆC
+10/2018 - nay: Công ty TNHH Van Công Nghiệp Đại Tín - Kỹ sư kinh doanh
+- Tư vấn van bướm, van cổng, khớp nối cho nhà máy và nhà thầu cơ điện, chọn đúng kích cỡ, áp lực, vật liệu theo bản vẽ khách gửi.
+- Soạn báo giá gửi khách, thương lượng giá bán và phần bảo hành. Nhận PO của khách và theo dõi đến lúc giao đủ, xử lý các khiếu nại về giao trễ từ phía khách.
+- Đặt hàng chính hãng về từ Ý và Hàn Quốc theo dự báo bán hàng, trao đổi giá EXW, FOB qua email và điện thoại với hãng. Chuyển tiền T/T và hồ sơ nhập khẩu do bộ phận xuất nhập khẩu của công ty làm.
+- Xem bản vẽ P&ID và thông số mặt bích để đề xuất phương án, trả lời các câu hỏi kỹ thuật của khách.
+- Dùng phân hệ bán hàng của phần mềm Bravo để tra tồn và xuất đơn bán.
+- Doanh số bình quân 14 tỷ đồng mỗi năm, vượt chỉ tiêu 5 năm liên tiếp.
+
+07/2016 - 09/2018: Công ty TNHH Đúc Kim Loại Mỹ Hoà - Nhân viên QC đầu vào
+- Kiểm tra phôi đúc khi về xưởng, đo kích thước bằng thước cặp, panme.
+- Cùng kho đối chiếu số lượng, lập biên bản hàng lỗi trả về nhà cung cấp.
+- Lưu trữ chứng chỉ vật liệu.
+
+HỌC VẤN
+2011 - 2016: Đại học Kỹ thuật Phương Thành, Kỹ sư Cơ khí.
+
+KỸ NĂNG
+AutoCAD mức xem, Excel, Bravo. Tiếng Anh giao tiếp tốt, thường gọi điện và viết thư cho hãng ở Ý, TOEIC 720. Kỹ năng thuyết trình, chăm sóc khách hàng.
+
+THÀNH TÍCH
+Salesman of the year 2021 và 2023. Trúng gói cung cấp van cho khu xử lý nước thải Tân Thành, trị giá 6,5 tỷ đồng.
+
+HOẠT ĐỘNG
+Tham gia hội kỹ sư cơ khí thành phố, hay đi trekking và chơi cờ vây.
+#why Ở phía bán, cùng thuật ngữ báo giá, PO nhưng ngược vai. Bản thân CV nói chưa từng mua hàng. Đặt hàng với hãng có thật nhưng ở mức nhỏ, nên nhập khẩu và PO là tranh cãi. Am hiểu kỹ thuật và tiếng Anh tốt nên vẫn có thể mời xem.
+=== pur-08 | non-fit | hard | no | U A A U U U U A M K
+ĐỖ NGỌC HÂN
+Product Owner | Chuyên gia sản phẩm số
+0900 000 708 - han.dongoc@example.com - Nam Từ Liêm, Hà Nội
+
+TÓM TẮT
+Bảy năm trong công ty phần mềm và fintech. Làm PO cho sản phẩm thanh toán, quen nói chuyện với người dùng, viết requirement, giữ backlog gọn và ra bản phát hành đều mỗi hai tuần.
+
+KINH NGHIỆM
+04/2022 - nay: Công ty CP Công nghệ Tài chính Vinh Quang Số - Senior Product Owner
+- Là PO của ứng dụng ví điện tử 1,2 triệu người dùng. Giữ product backlog, viết user story, tiêu chí nghiệm thu, chốt ưu tiên với stakeholder.
+- Đầu năm 2024 phụ trách chọn hệ CRM mới: lập danh sách yêu cầu, xem demo 3 vendor, chấm điểm và đề xuất. Giá và hợp đồng do phòng Mua sắm của tập đoàn đàm phán, tôi không tham gia phần đó.
+- Theo dõi tiến độ phát triển của vendor outsource ở Ấn Độ, họp hằng tuần, gọi và viết email bằng tiếng Anh về mức độ dịch vụ, lỗi, ngày giao.
+- Làm việc với đội kế toán khi tích hợp dữ liệu sang SAP FI, chỉ là viết yêu cầu dữ liệu, không dùng SAP hàng ngày.
+- Phân tích funnel bằng Metabase và SQL, chạy A/B test.
+
+06/2019 - 03/2022: Công ty TNHH Phần mềm Bầu Trời Xanh - Business Analyst
+- Lấy yêu cầu từ khách hàng ngân hàng, viết tài liệu BRD, SRS, vẽ luồng BPMN.
+- Quản lý change request, phối hợp QA kiểm thử UAT, ký biên bản nghiệm thu sản phẩm.
+
+HỌC VẤN
+2015 - 2019: Đại học Công nghệ Kim Đồng Sơn, Kỹ sư Công nghệ Thông tin.
+
+CHỨNG CHỈ
+Professional Scrum Product Owner I. IELTS 7.5.
+
+KỸ NĂNG
+Jira, Confluence, Figma, SQL, Metabase. Đàm phán ưu tiên với các bên, viết tài liệu tốt.
+
+DỰ ÁN TỰ LÀM
+Web nhỏ ghi lại chi tiêu cá nhân, chia sẻ trên diễn đàn lập trình. Mentor cho các bạn BA mới trong cộng đồng sản phẩm.
+
+SỞ THÍCH
+Bơi, leo tường trong nhà, đọc sách về thiết kế trải nghiệm.
+#why PO ở đây là Product Owner. Đánh giá vendor phần mềm một lần có thật nhưng không phải quản lý nguồn cung vật tư, nên A. CV nói giá và hợp đồng do phòng khác lo. Gọi điện tiếng Anh với vendor nước ngoài thì đạt. CNTT có phải khối kỹ thuật theo ý ad không thì tranh cãi.
+=== pur-09 | non-fit | ordinary | no | U U A A U U U A A K
+VƯƠNG THẢO LINH
+PR & Communications Specialist
+Điện thoại: 0900 000 709 | linh.vuongthao@example.com | Phú Nhuận, TP. Hồ Chí Minh
+
+VỀ TÔI
+Làm truyền thông từ năm 2019. Thích những ngày báo chí đăng đúng thông điệp và những sự kiện kết thúc mà không ai biết phía sau vừa xảy ra chuyện gì. Viết nhanh, quen với áp lực thời hạn và khủng hoảng nhỏ.
+
+KINH NGHIỆM CÔNG TÁC
+02/2022 - nay: Công ty CP Mỹ phẩm Hoa Hạ Vy - Chuyên viên PR
+- Lên kế hoạch PR theo quý, viết thông cáo báo chí, gửi đến các tòa soạn, theo dõi tin đăng.
+- Làm việc với KOL, agency quảng cáo. Xin báo giá quảng cáo từ 3 đơn vị, lập bảng so sánh trình trưởng phòng, thương lượng để giảm phí hoặc xin thêm hạng mục.
+- Giữ danh sách nhà cung cấp sự kiện gồm âm thanh, ánh sáng, in ấn, quà tặng. Sau mỗi sự kiện ghi nhận xét để lần sau biết nên gọi ai.
+- Tổ chức 9 sự kiện ra mắt, lớn nhất 400 khách. Hợp đồng do phòng Pháp chế soạn.
+- Xử lý các bình luận tiêu cực trên mạng xã hội, chuẩn bị câu trả lời cho lãnh đạo.
+
+07/2019 - 01/2022: Công ty TNHH Truyền thông Tia Nắng Mới - Account Executive
+- Nhận brief từ khách, viết proposal, báo giá gói truyền thông, chăm sóc khách hàng nhóm FMCG.
+- Trao đổi với agency khu vực bằng email tiếng Anh về chiến dịch và tài liệu.
+- Theo dõi tiến độ in ấn và giao bộ quà PR đúng ngày cho khách mời.
+
+HỌC VẤN
+2015 - 2019: Đại học Khoa học Nhân văn Hồng Lĩnh, Cử nhân Báo chí và Truyền thông.
+
+KỸ NĂNG
+Viết thông cáo, tổ chức sự kiện, Canva, Google Analytics. IELTS 6.5. Có dùng phần mềm kế toán Misa để nộp đề nghị thanh toán, chỉ mức xem được hoá đơn.
+
+SẢN PHẨM NỔI BẬT
+Chiến dịch "Da đẹp từ tháng ba", hơn 80 bài báo và 12 triệu lượt tiếp cận. Xử lý một sự cố truyền thông về lô hàng thử nghiệm trong 48 giờ, không phải thu hồi.
+
+SỞ THÍCH
+Xem kịch, chụp ảnh phim, học pha cà phê.
+#why PR ở đây là quan hệ công chúng. Có xin giá, so sánh thật và ghi nhận xét nhà cung cấp sự kiện nên hai dòng đó tranh cãi được, nhưng không phải vật tư. Tiếng Anh tốt nhưng chưa làm với người bán nước ngoài.
+=== pur-10 | stuffing | ordinary | no | U U U U U U U U U K
+TRƯƠNG THỊ KIM OANH
+Nhân viên mua hàng
+0900 000 710 | oanh.truongkim@example.com | Nghĩa Đô, Cầu Giấy, Hà Nội
+
+TỔNG QUAN NĂNG LỰC
+Đã làm thu mua, tìm và đánh giá nhà cung cấp, duy trì danh sách nhà cung cấp được duyệt. So sánh báo giá, đàm phán giá và điều khoản thanh toán. Lên PO, bám tiến độ giao hàng và xử lý khi giao trễ, thiếu hàng. Đọc được bản vẽ và thông số kỹ thuật đơn giản của vật tư. Biết mua hàng nhập khẩu: phương thức L/C, T/T và điều kiện Incoterms. Tiếng Anh viết email và trao đổi qua điện thoại với nhà cung cấp nước ngoài. Minh bạch, liêm chính.
+
+KỸ NĂNG NỔI BẬT
+Purchasing, Procurement, Sourcing, SAP MM, ERP, Oracle, PR, PO, RFQ, MOQ, L/C, T/T, FOB, CIF, EXW, Incoterms 2020, AVL, Vendor Evaluation, Supplier Audit, Cost Saving, Negotiation, AutoCAD, TOEIC.
+
+KINH NGHIỆM LÀM VIỆC
+06/2022 - nay: Cửa hàng Gia dụng Ánh Dương - Nhân viên bán hàng
+- Tư vấn mua hàng cho khách đến cửa hàng: nồi chiên, máy xay, bộ dao, đồ nhựa.
+- Giới thiệu chương trình khuyến mãi, gói quà, thu tiền và in hoá đơn trên máy tính tiền.
+- Trưng bày hàng, lau kệ, báo chủ cửa hàng khi hết hàng để chủ gọi đại lý giao thêm.
+- Nhắn tin trả lời khách trên trang Facebook của cửa hàng, ghi đơn và gọi shipper.
+
+09/2020 - 05/2022: Siêu thị Mini Phúc An - Thu ngân
+- Quét mã, thu tiền, kết ca, kiểm đếm tiền với quản lý.
+- Hỗ trợ khách mua hàng online chọn sản phẩm, đóng gói đơn.
+
+07/2019 - 08/2020: Quán Trà Sữa Mộc Miên - Nhân viên phục vụ
+- Pha chế theo công thức, phục vụ bàn, dọn dẹp.
+
+HỌC VẤN
+2016 - 2019: THPT Nguyễn Hữu Trí.
+2021: Khóa kỹ năng bán hàng 2 tháng, Trung tâm Kỹ năng Thành Công.
+
+THÀNH TÍCH
+Nhân viên bán hàng xuất sắc tháng 3 và tháng 11 năm 2023 của cửa hàng. Khách để lại nhiều nhận xét tốt.
+
+SỞ THÍCH
+Xem phim Hàn, làm móng, đi cà phê với bạn bè, nuôi mèo. Có nhiều năm đi mua sắm, biết săn giá rẻ trên các sàn và hay được bạn bè nhờ mua hộ.
+#why Đoạn đầu dán từ ad và một ô từ khoá, phần công việc chỉ là bán lẻ, "tư vấn mua hàng" là ngược vai. Học vấn THPT nên ngành U. Mọi dòng đo được U kể cả bonus, soft K.
+=== pur-11 | messy | hard | interview | M M M M M M M M M A
+HOC VAN
+2012 - 2016 Dai hoc Kinh te Ky thuat Phu Xuan
+Quan tri chuoi cung ung va Logistics, loai Kha
+KY NANG  PHAN MEM  NGOAI NGU  Danh gia NCC theo ISO 9001  SAP MM (PR, PO, GR)  TOEIC 700  Dam phan gia va cong no  Excel Pivot, Power Query  Goi dien, viet email voi ben ban o Thai, Trung  Doc ban ve ket cau don gian  AutoCAD xem ban ve  Tieng Trung HSK 3  Nhap khau L/C, T/T  Teams, Outlook  Doc hop dong tieng Anh
+
+Trang 2/2
+KINH NGHIEM LAM VIEC
+08/2022 - nay Cong ty CP Ket Cau Thep Hung Cuong - Chuyen vien mua vat tu
+* Mua thep tam, thep hinh, bu long cuong do, son phu cho nha may ket cau thep quy mo 2.000 tan/thang.
+* Phong ke hoach gui de nghi, doi chieu ton thuc te trong SAP truoc khi tao don.
+* Xin chao gia 3 - 5 don vi, lap bang phan tich gia tri, ep gia theo gia thep the gioi, xin no 45 ngay.
+* Duy tri danh sach ben ban dat yeu cau, moi nam chay tham xuong va cham diem 25 don vi. Dang ky don vi moi vao he thong.
+* Mo L/C at sight, L/C tra cham, T/T theo tung lo, chu yeu CFR Hai Phong, CIF va FOB Thuong Hai.
+* Bam lich tau, hang tre thi lap ke hoach thay the voi san xuat, doi bu hang thieu trong thoi gian ngan.
+* Doi chieu CO, CQ, mac thep voi ban ve chi tiet truoc khi chot don. Cung QC xu ly lo hang loi.
+* Lam ho so thanh toan chuyen ke toan, nhac han L/C den han.
+THANH TICH Giam 4,2% chi phi thep nam 2024 bang cach dieu chinh lich mua
+
+LY MINH TRANG
+Nhan vien mua hang cap cao
+Tel 0900 000 711
+trang.lyminh@example.com
+Le Chan Hai Phong
+
+MUC TIEU: phat trien thanh truong nhom mua hang. Toi co nguyen tac ro rang, luon lam viec minh bach voi moi don vi cung cap.
+
+06/2016 - 07/2022 Cong ty TNHH Thiet Bi Cang Bien Sao Viet (nha may che tao) - Nhan vien thu mua
+* Mua linh kien thuy luc, cap thep, dong co cho xuong che tao thiet bi nang.
+* Tim nguon thay the tu Thai Lan, Trung Quoc khi hang chau Au tang gia. Doc bang thong so xilanh, cap.
+* Theo doi don dat hang tren file va ERP noi bo, nhac giao hang.
+* Tham gia lap danh sach phu tung du phong voi bao tri.
+
+SO THICH di phuot, nau an, boi loi, doc sach ve lich su giao thuong
+
+CV_MinhTrang_final (1).pdf
+#why Hai trang PDF đảo thứ tự, học vấn đứng trước họ tên, bảng ba cột dồn thành một dòng, mất dấu. Người đọc gỡ được nên nhãn theo nội dung. Dòng liêm chính chỉ là lời tự nhận nên A.
+=== pur-12 | messy | hard | no | U M U U U U M A M K
+C H Ứ N G   T Ừ   X U Ấ T   N H Ậ P   K H Ẩ U
+Hà Tường Vi    0900 000 712    vi.hatuong@example.com
+Bình Tân, TP. Hồ Chí Minh
+
+T Ó M   T Ắ T
+Năm năm làm bộ chứng từ xuất nhập khẩu ở nhà
+máy giày. Tôi nhận P
+O từ phòng mua rồi đi tiếp
+phần giấy tờ, chưa trực tiếp chọn đối tác bán hàng hay trả giá. Hiện
+muốn học sang mảng mua hàng.
+
+K I N H   N G H I Ệ M
+03/2021 - nay
+Công ty TNHH Giày Da Hoàn Vũ Phát (nhà máy) - Nhân viên chứng từ
+- Nhận đơn hàng từ phòng Purchasing, việc tìm nguồn, so giá,
+đàm phán và phát hành đơn là của phòng đó.
+- Kiểm tra invoice, packing list, bill of lading, C/O so với đơn và L/C;
+sửa chênh lệch với người bán qua email, gọi điện bằng tiếng
+Anh khi gấp.
+- Làm hồ sơ mở L/C với ngân hàng, chuyển tiền T/T cùng kế
+toán; hiểu rõ FOB, CIF, CFR, EXW khi tính cước và bảo
+hiểm, cũng là người đối chiếu Incoterms 2020 trên hợp đồng.
+- Mở tờ khai trên ECUS, theo dõi lịch tàu và container về
+kho, báo bộ phận kho sắp xếp nhận hàng.
+- Xem PO và lịch hàng về trên SAP, không tạo đơn.
+- Có lô thiếu hoặc rách kiện thì làm hồ sơ khiếu nại bảo
+hiểm cùng kho. Lưu trữ bộ hồ sơ hải quan 5 năm.
+
+07/2019 - 02/2021
+Công ty CP Giao Nhận Biển Đông Xanh - Nhân viên hiện trường
+- Đi giao nhận chứng từ, làm thủ tục tại cảng, lấy lệnh,
+đóng phí lưu container.
+- Theo dõi tàu, báo khách ngày hàng cập cảng.
+
+H Ọ C   V Ấ N
+2015 - 2019: Đại học Kinh tế Đối ngoại Trường An, ngành Thương mại Quốc tế
+
+K Ỹ   N Ă N G
+ECUS5, VNACCS, SAP (chỉ xem), Excel. Tiếng Anh
+TOEIC 690. Chưa học đọc bản vẽ, các thông số vật liệu đều do
+kỹ thuật kiểm.
+
+K H Ó A   H Ọ C
+Chứng chỉ nghiệp vụ khai hải quan (2022). Khoá Thanh toán quốc tế cơ bản, Trung
+tâm Thương Vụ Phương Đông (2023).
+
+H O Ạ T   Đ Ộ N G
+Thành viên câu lạc bộ chạy bộ của công ty, tham gia giải nội bộ hằng năm.
+Đọc tiểu thuyết trinh thám, trồng cây ban công, đi cà phê sách.
+#why Biết rõ nhập khẩu và có tiếng Anh, nhưng chưa từng mua: CV nói phòng Purchasing làm. Cùng tên thuật ngữ L/C, PO, Incoterms. Dòng SAP chỉ xem nên A. Chữ giãn và câu bị ngắt nhưng đọc được.

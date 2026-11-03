@@ -1,5 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { requirementLines } from './cv-score.js';
+import { requirementLines, scoreKey } from './cv-score.js';
+
+describe('scoreKey', () => {
+  const job = { requirements: 'Biết Excel', experience: null, education: null, preferred: '' };
+
+  it('should change when the job description changes, so the result is scored again', () => {
+    const before = scoreKey({ ...job, responsibilities: 'Lập báo cáo' });
+    const after = scoreKey({ ...job, responsibilities: 'Lập báo cáo tháng' });
+
+    expect(after).not.toBe(before);
+  });
+
+  it('should change when the bonus lines change, so the result is scored again', () => {
+    const before = scoreKey({ ...job, responsibilities: '', preferred: 'Biết SAP' });
+    const after = scoreKey({ ...job, responsibilities: '', preferred: 'Biết MISA' });
+
+    expect(after).not.toBe(before);
+  });
+
+  it('should stay the requirement lines alone for a job without a description', () => {
+    expect(scoreKey({ ...job, responsibilities: '' })).toBe('Biết Excel');
+  });
+});
 
 describe('requirementLines', () => {
   it('should read a job without bullets exactly as before, so stored scores stay valid', () => {

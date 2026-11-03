@@ -222,14 +222,15 @@ export function HrApplicantsPage() {
     const list = (apps.data?.applications ?? []).filter(
       (a) => tab === 'all' || a.status === tab || a.id === selectedId,
     );
-    // Best match first; applications not scored yet go last, newest first among them.
+    // Best match first; applications without a percent (not scored, not enough data) go last, newest first among them.
     return byMatch ? [...list].sort((a, b) => (b.matchPercent ?? -1) - (a.matchPercent ?? -1)) : list;
   }, [apps.data, tab, byMatch, selectedId]);
   const counts = apps.data?.counts;
   const at = rows.findIndex((r) => r.id === selectedId);
   const nextId = at >= 0 ? rows[at + 1]?.id : rows[0]?.id;
-  // CV files without a percent yet are scored in the background so the list can be sorted by match.
-  const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv && a.matchPercent == null));
+  // CV files without an up-to-date result are scored in the background so the list can be sorted by match. A CV with a
+  // percent may still be out of date when the scoring rules changed, and only the server can tell.
+  const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv));
   const tabs: TabItem<TabKey>[] = TABS.map(([key, label]) => ({ key, label, count: counts?.[key] }));
   const navigate = useNavigate();
   const picking = usePicking(apps.data?.applications ?? []);

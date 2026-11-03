@@ -1,0 +1,126 @@
+[
+{"id":"e01-real-estate-sales-hien-tai","notes":"05/2022 - hiện tại = 4y6m BĐS; 09/2019 - 03/2022 = 2y6m bán lẻ. Total 7y sales.","cvText":"PHẠM QUỐC HUY\nChuyên viên kinh doanh bất động sản\nSĐT: 0900 111 201 | huy.pham@example.com\n\nKINH NGHIỆM LÀM VIỆC\n05/2022 - hiện tại: Chuyên viên kinh doanh, Công ty CP Địa ốc Hưng Thịnh Phát\n- Tư vấn và bán căn hộ cho khách hàng cá nhân, đạt 120% chỉ tiêu 2024\n09/2019 - 03/2022: Nhân viên bán hàng, Siêu thị điện máy Minh Long\n- Bán hàng trực tiếp tại quầy, chăm sóc khách hàng sau bán\n\nHỌC VẤN\n2015 - 2019: Đại học Thương mại, chuyên ngành Marketing\n","items":[
+["Có ít nhất 5 năm kinh nghiệm bán hàng","met","experience"],
+["Tối thiểu 3 năm kinh nghiệm trong lĩnh vực bất động sản","met","experience"],
+["Từ 5 năm kinh nghiệm bất động sản","unmet","experience","Chỉ 4y6m BĐS"],
+["Kinh nghiệm: 10 năm trở lên","unmet","experience"]]},
+{"id":"e02-accountant-overlapping-jobs","notes":"Two overlapping jobs, union is 01/2018 to 12/2021 = 4y. Summed naively = 6.5y.","cvText":"TRẦN THỊ HỒNG NHUNG\nKế toán viên\n\nKINH NGHIỆM LÀM VIỆC\n01/2018 - 12/2021  Kế toán nội bộ, Công ty TNHH Nhựa Tân Bình\nGhi sổ, lập báo cáo thuế hằng tháng\n06/2019 - 12/2021  Kế toán dịch vụ (bán thời gian), Công ty TNHH Tư vấn Thuế An Phúc\nKê khai thuế cho các hộ kinh doanh\n\nHỌC VẤN\nCao đẳng Tài chính Hải quan, chuyên ngành Kế toán, 2015 - 2017\n","items":[
+["Kinh nghiệm: Trên 5 năm","unmet","experience","Hợp nhất chỉ 4 năm"],
+["Từ 3 năm kinh nghiệm kế toán","met","experience"],
+["Có ít nhất 4 năm kinh nghiệm","met","experience","01/2018-12/2021 trọn 48 tháng"]]},
+{"id":"e03-teacher-career-gap","notes":"Two teaching stints with a 5-year gap: 1y10m + 2y9m = 4y7m; the span is 10y.","cvText":"VŨ THU TRANG\nGiáo viên Toán\n\nQUÁ TRÌNH CÔNG TÁC\n08/2012 - 06/2014 Giáo viên Toán, Trường THCS Lê Lợi (Nam Định)\n09/2019 - 06/2022 Giáo viên Toán, Trường THCS Trần Phú (Nam Định)\nGiai đoạn 2014 - 2019 nghỉ để chăm con nhỏ, không đi làm.\n\nHỌC VẤN\nĐại học Sư phạm Hà Nội, Sư phạm Toán, 2008 - 2012\n","items":[
+["Có 8 năm kinh nghiệm giảng dạy trở lên","unmet","experience","Không tính thời gian nghỉ"],
+["Ít nhất 4 năm kinh nghiệm giảng dạy","met","experience"]]},
+{"id":"e04-stated-years-hospitality","notes":"Stated years in summary; employers listed without dates.","cvText":"LÊ MINH TÂM\nQuản lý nhà hàng\n\nGIỚI THIỆU\nHơn 7 năm kinh nghiệm trong ngành nhà hàng - khách sạn, từng quản lý đội ngũ 30 nhân viên.\n\nNƠI ĐÃ LÀM\nNhà hàng Sen Vàng, Quản lý ca\nKhách sạn Hoà Bình Riverside, Giám sát nhà hàng\n","items":[
+["Từ 5 năm kinh nghiệm trong ngành F&B hoặc khách sạn","met","experience"],
+["Trên 10 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e05-stated-almost-two-years","notes":"Gần 2 năm is below 2 years.","cvText":"NGUYỄN KHÁNH LINH\nLễ tân\n\nTÓM TẮT\nGần 2 năm làm lễ tân tại khách sạn 3 sao ở Đà Nẵng. Đón khách, làm thủ tục nhận và trả phòng.\nHỌC VẤN: Cao đẳng Du lịch Đà Nẵng\n","items":[
+["Kinh nghiệm: Từ 2 năm","unmet","experience","Gần 2 năm là chưa đủ 2 năm"],
+["Từ 1 năm kinh nghiệm lễ tân","met","experience"]]},
+{"id":"e06-stated-months-shop","notes":"Stated in months: 6 tháng and 18 tháng in different roles, no dates; a recruiter adds them to 2 years.","cvText":"ĐỖ MINH ANH\nBán hàng cửa hàng thời trang\n\nKINH NGHIỆM\n- 18 tháng bán hàng tại cửa hàng thời trang Hoa Mộc\n- 6 tháng thu ngân tại siêu thị Thành Đạt\n\nKỸ NĂNG\nTư vấn khách, sử dụng máy POS\nTốt nghiệp THPT\n","items":[
+["Ít nhất 1 năm kinh nghiệm bán hàng","met","experience"],
+["Có ít nhất 6 tháng kinh nghiệm","met","experience"],
+["Tối thiểu 3 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e07-stated-decimal-years","notes":"2,5 năm with a Vietnamese decimal comma.","cvText":"HOÀNG VĂN ĐẠT\nNhân viên kỹ thuật điều hoà\n\nCó 2,5 năm kinh nghiệm lắp đặt, bảo trì điều hoà dân dụng tại Công ty Điện lạnh Bắc Hà.\nTrình độ: Trung cấp nghề Điện lạnh\n","items":[
+["Từ 2 năm kinh nghiệm","met","experience"],
+["Từ 3 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e08-fresh-graduate-internship-only","notes":"Only a 6-month internship; graduated 2025.","cvText":"BÙI THANH HẰNG\nSinh viên mới tốt nghiệp ngành Kế toán\n\nHỌC VẤN\nĐại học Công nghiệp TP.HCM, ngành Kế toán, tốt nghiệp 2025\n\nTHỰC TẬP\n06/2025 - 12/2025 Thực tập sinh kế toán, Công ty TNHH Bao bì Sài Gòn\nHỗ trợ nhập hoá đơn, đối chiếu công nợ\n","items":[
+["Có từ 1 năm kinh nghiệm kế toán","unmet","experience"],
+["Không yêu cầu kinh nghiệm","met","experience"],
+["Ưu tiên ứng viên đã từng thực tập kế toán","met","experience"]]},
+{"id":"e09-internship-plus-job-qa","notes":"Intern 6m + job 1y8m. Whether the internship counts decides 2 years.","cvText":"TÔ HỮU PHƯỚC\nNhân viên QA thực phẩm\n\nKINH NGHIỆM\n07/2024 - 02/2026 Nhân viên QA, Công ty CP Thực phẩm Đồng Xanh\n01/2024 - 06/2024 Thực tập sinh QA, Công ty CP Thực phẩm Đồng Xanh\n\nHỌC VẤN\nĐại học Nông Lâm TP.HCM, Công nghệ thực phẩm, 2019 - 2023\n","items":[
+["Từ 1 năm kinh nghiệm QA","met","experience"],
+["Từ 2 năm kinh nghiệm QA","ambiguous","experience","1y8m chính thức, 2y2m nếu tính thực tập"],
+["Từ 3 năm kinh nghiệm QA","unmet","experience"]]},
+{"id":"e10-year-only-ranges","notes":"2020 - 2022 year-only range, about 2 years.","cvText":"NGÔ THỊ THU\nNhân viên hành chính\n\nKINH NGHIỆM\n2020 - 2022: Nhân viên hành chính, Công ty TNHH May Thành Công\nQuản lý văn thư, chấm công, mua văn phòng phẩm\n\nHỌC VẤN\n2016 - 2019: Cao đẳng Kinh tế Kỹ thuật\n","items":[
+["Có kinh nghiệm hành chính từ 2 năm","met","experience"],
+["Từ 4 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e11-boundary-whole-two-years","notes":"January 2020 through December 2021 is two full years; a one-month-off subtraction would give 23 months.","cvText":"MAI ĐỨC TRỌNG\nKỹ thuật viên IT helpdesk\n\nKINH NGHIỆM\n01/2020 - 12/2021 IT Helpdesk, Công ty CP Dệt may Hà Nam\nHỗ trợ người dùng, cài đặt máy tính, xử lý sự cố mạng LAN\n\nHỌC VẤN\nCao đẳng FPT Polytechnic, Công nghệ thông tin\n","items":[
+["Kinh nghiệm: Từ 2 năm","met","experience","Trọn 24 tháng"]]},
+{"id":"e12-english-developer-present","notes":"Jan 2020 - Present = 6y10m; Mar 2016 to Dec 2019 = 3y10m. Total about 10y8m.","cvText":"Daniel Tran\nSenior Software Engineer\n\nWORK EXPERIENCE\nJan 2020 – Present\nSenior Software Engineer, Blue Harbor Tech\nBuilt payment services in Python and PostgreSQL, led a team of 4.\n\nMar 2016 to Dec 2019\nSoftware Engineer, Mekong Digital\nMaintained Java services and REST APIs.\n\nEDUCATION\nBachelor of Computer Science, Da Nang University of Technology, 2012 - 2016\n","items":[
+["5+ years of experience in software development","met","experience"],
+["At least 12 years of experience","unmet","experience"],
+["Minimum 3 years of experience with Python","met","experience","Python ở job 2020-nay"]]},
+{"id":"e13-tmonth-format","notes":"T3/2019 - T5/2021 = 2y2m; T7/2021 - nay = 5y4m. Total 7y6m.","cvText":"LƯƠNG VĂN CƯỜNG\nNhân viên kinh doanh thiết bị y tế\n\nKINH NGHIỆM\nT7/2021 - nay: Nhân viên kinh doanh, Công ty TNHH Thiết bị Y tế Phúc An\nT3/2019 - T5/2021: Nhân viên kinh doanh, Công ty CP Dược phẩm Hà Tây\n\nTRÌNH ĐỘ\nĐại học Dược Hà Nội\n","items":[
+["Từ 7 năm kinh nghiệm kinh doanh","met","experience"],
+["Trên 8 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e14-dot-tilde-dates","notes":"03.2017 ~ 06.2019 = 2y3m; 08.2019 ~ 10.2022 = 3y2m. Total 5y5m.","cvText":"PHAN THỊ NGỌC\nNhân viên thu mua\n\nLỊCH SỬ LÀM VIỆC\n03.2017 ~ 06.2019  Nhân viên mua hàng, Công ty TNHH Cơ khí Phú Thành\n08.2019 ~ 10.2022  Nhân viên thu mua, Công ty CP Nội thất Hoà Phát Gia\n\nHỌC VẤN\nCử nhân Quản trị kinh doanh, Đại học Mở Hà Nội\n","items":[
+["Tối thiểu 5 năm kinh nghiệm thu mua","met","experience"],
+["Từ 6 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e15-long-form-dates","notes":"từ năm 2016 đến năm 2020 = 4y; Tháng 8 năm 2021 đến nay = 5y3m. Total 9y3m.","cvText":"NGUYỄN VĂN SƠN\nKỹ sư giám sát công trình\n\nQUÁ TRÌNH LÀM VIỆC\nTừ năm 2016 đến năm 2020: Kỹ sư công trường, Công ty CP Xây dựng số 5\nTháng 8 năm 2021 đến nay: Kỹ sư giám sát, Công ty TNHH Đầu tư Xây dựng Trường Sơn\n\nHỌC VẤN\nKỹ sư Xây dựng dân dụng, Đại học Xây dựng Hà Nội, 2011 - 2016\n","items":[
+["Từ 8 năm kinh nghiệm trong ngành xây dựng","met","experience"],
+["Từ 10 năm kinh nghiệm trở lên","unmet","experience"]]},
+{"id":"e16-birth-and-school-years-only","notes":"No work at all; only birth year and school years.","cvText":"ĐẶNG HOÀI NAM\nSinh năm 1999, quê Thanh Hoá\n\nHỌC VẤN\n2017 - 2021: Đại học Hồng Đức, ngành Quản trị kinh doanh\n2014 - 2017: Trường THPT Lam Sơn\n\nMỤC TIÊU\nTìm công việc đầu tiên trong lĩnh vực kinh doanh, sẵn sàng học hỏi.\n","items":[
+["Từ 1 năm kinh nghiệm","unmet","experience","Năm học không phải năm làm việc"],
+["Có kinh nghiệm kinh doanh","unmet","experience"],
+["Chấp nhận chưa có kinh nghiệm","met","experience"]]},
+{"id":"e17-volunteer-club-years-not-work","notes":"Club and volunteering years only.","cvText":"TRỊNH MỸ DUYÊN\n\nHOẠT ĐỘNG NGOẠI KHOÁ\n2018 - 2021 Thành viên CLB Tình nguyện Đại học Vinh\n2019 - 2021 Phó ban truyền thông CLB Tiếng Anh\n\nHỌC VẤN\nĐại học Vinh, ngành Sư phạm Tiếng Anh, 2017 - 2021\n","items":[
+["Có từ 2 năm kinh nghiệm làm việc","unmet","experience","CLB không phải kinh nghiệm làm việc"]]},
+{"id":"e18-part-time-waiter","notes":"One year part-time waitressing during university.","cvText":"CAO THỊ YẾN\nSinh viên năm cuối\n\nKINH NGHIỆM\n01/2023 - 12/2023 Phục vụ bán thời gian tại Quán Cà phê Mộc An\nĐón khách, order, dọn bàn\n\nHỌC VẤN\nĐại học Văn Lang (đang học)\n","items":[
+["Có kinh nghiệm phục vụ","met","experience"],
+["Từ 1 năm kinh nghiệm phục vụ","met","experience","F&B tính cả bán thời gian"],
+["Từ 3 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e19-states-no-experience","notes":"Explicit no experience statement.","cvText":"LA THỊ HƯƠNG\nHọc viên nghề spa\n\nGIỚI THIỆU BẢN THÂN\nEm mới học xong nghề chăm sóc da, hiện chưa có kinh nghiệm làm việc tại spa.\nEm mong muốn được làm việc lâu dài.\nTốt nghiệp THPT năm 2023.\n","items":[
+["Có kinh nghiệm làm việc tại spa","unmet","experience"],
+["Kinh nghiệm: Không yêu cầu","met","experience"],
+["Từ 6 tháng kinh nghiệm","unmet","experience"]]},
+{"id":"e20-field-specific-career-change","notes":"6y sales then 1y marketing. Total 7y but marketing only 1y.","cvText":"HỒ THANH BÌNH\nChuyên viên Marketing\n\nKINH NGHIỆM\n10/2025 - nay: Chuyên viên Marketing, Công ty CP Mỹ phẩm Lan Hương\nChạy chiến dịch quảng cáo Facebook, viết nội dung\n08/2019 - 09/2025: Nhân viên kinh doanh, Công ty TNHH Ô tô Việt Tiến\nBán xe và chăm sóc khách hàng\n\nHỌC VẤN\nĐại học Kinh tế Đà Nẵng, 2015 - 2019\n","items":[
+["Từ 3 năm kinh nghiệm Marketing","unmet","experience","Marketing chỉ khoảng 1 năm"],
+["Tối thiểu 5 năm kinh nghiệm","met","experience"],
+["Có kinh nghiệm Marketing","met","experience"]]},
+{"id":"e21-domain-mismatch-waiter-accounting","notes":"5 years as waiter; asked 3 years accounting.","cvText":"KIỀU VĂN TOÀN\nNhân viên phục vụ\n\nKINH NGHIỆM\n03/2021 - nay Nhân viên phục vụ, Nhà hàng Biển Đông\nĐón khách, ghi món, thanh toán tại bàn\nTrình độ: Tốt nghiệp THPT\n","items":[
+["Có 3 năm kinh nghiệm kế toán","unmet","experience"],
+["3 năm kinh nghiệm phục vụ nhà hàng","met","experience"]]},
+{"id":"e22-equivalent-position-wording","notes":"The ad wording depends on the unknown job title.","cvText":"TRẦN VĂN HẢI\nLái xe tải\n\nKINH NGHIỆM\n2020 - nay: Lái xe tải 5 tấn, Công ty Vận tải Bắc Nam\nGiấy phép lái xe hạng C\n","items":[
+["Ít nhất 2 năm kinh nghiệm ở vị trí tương đương","ambiguous","experience","Dòng không nêu vị trí; tin lái xe thì đạt, tin khác thì không"]]},
+{"id":"e23-management-years","notes":"5y as staff, 1y as store manager; management needs its own count.","cvText":"NGUYỄN THỊ KIM OANH\nCửa hàng trưởng\n\nKINH NGHIỆM\n11/2025 - nay Cửa hàng trưởng, Chuỗi trà sữa Mây\n01/2020 - 10/2025 Nhân viên bán hàng, Chuỗi trà sữa Mây\nĐại học Công nghệ Sài Gòn, Quản trị kinh doanh\n","items":[
+["Từ 2 năm kinh nghiệm quản lý","unmet","experience","Quản lý mới 1 năm"],
+["Có kinh nghiệm quản lý cửa hàng","met","experience"],
+["Tối thiểu 5 năm kinh nghiệm ngành bán lẻ","met","experience"]]},
+{"id":"e24-word-numbers","notes":"Years written as words.","cvText":"VÕ VĂN NHÂN\nĐầu bếp món Việt\n\nTÓM TẮT\nBa năm kinh nghiệm phụ bếp và năm năm kinh nghiệm bếp chính món Việt tại các nhà hàng ở Huế.\nTrình độ: Trung cấp Nấu ăn\n","items":[
+["Có ít nhất 5 năm kinh nghiệm làm bếp","met","experience"],
+["Trên 10 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e25-year-to-now","notes":"2024 - nay is about 2y10m at 2026-11.","cvText":"LÝ HOÀNG YẾN\nNhân viên chăm sóc khách hàng\n\nKINH NGHIỆM\n2024 - nay: Nhân viên CSKH, Công ty CP Viễn thông Sao Mai\nTrả lời tổng đài, xử lý khiếu nại\nHỌC VẤN: Cao đẳng Thương mại\n","items":[
+["Kinh nghiệm: 2 năm trở lên","met","experience"],
+["Kinh nghiệm: 3 năm trở lên","unmet","experience","Tối đa 2 năm 10 tháng"]]},
+{"id":"e26-jobs-without-dates","notes":"Employers without any dates: the length cannot be read.","cvText":"PHÙNG ĐỨC THẮNG\nNhân viên kho\n\nKINH NGHIỆM\nNhân viên kho, Công ty TNHH Phân phối Hoàng Gia\nNhân viên giao nhận, Công ty CP Chuyển phát Nhanh Việt\nNhập xuất kho, kiểm đếm hàng hoá, giao hàng cho đại lý\n","items":[
+["Từ 2 năm kinh nghiệm","unknown","experience","Không có mốc thời gian nào"],
+["Có kinh nghiệm làm kho","met","experience"]]},
+{"id":"e27-open-from-date","notes":"Từ 03/2023 with no end date means until now, 3y8m.","cvText":"HÀ THỊ MỸ LINH\nĐiều dưỡng viên\n\nCÔNG TÁC\nTừ 03/2023: Điều dưỡng khoa Nội, Bệnh viện Đa khoa Tâm Đức\nHỌC VẤN\nCao đẳng Y tế Bạch Mai, ngành Điều dưỡng, 2019 - 2022\n","items":[
+["Từ 3 năm kinh nghiệm điều dưỡng","met","experience"],
+["Từ 5 năm kinh nghiệm","unmet","experience"]]},
+{"id":"e28-numbers-with-years-not-experience","notes":"Warranty, contract and award years must not read as experience. Real work is 10 months.","cvText":"NGUYỄN TIẾN LỘC\nNhân viên tư vấn điện máy\n\nKINH NGHIỆM\n12/2025 - 09/2026 Nhân viên tư vấn, Điện máy Xanh Lá\nTư vấn gói bảo hành 5 năm cho khách, ký hợp đồng bảo trì 3 năm với doanh nghiệp\nĐạt Top 3 nhân viên năm 2026\n\nHỌC VẤN\nTốt nghiệp THPT\n","items":[
+["Từ 3 năm kinh nghiệm","unmet","experience","Thực tế 10 tháng"],
+["Từ 6 tháng kinh nghiệm tư vấn bán hàng","met","experience"]]},
+{"id":"e29-company-years-not-candidate","notes":"The 20 years belong to the company. Candidate has 8 months.","cvText":"ĐINH THU PHƯƠNG\nNhân viên kinh doanh bảo hiểm\n\nKINH NGHIỆM\n03/2026 - nay Tư vấn viên, Công ty Bảo hiểm An Tâm (công ty có hơn 20 năm kinh nghiệm trong ngành bảo hiểm)\nTư vấn hợp đồng nhân thọ\nHỌC VẤN\nĐại học Ngân hàng TP.HCM\n","items":[
+["Có từ 5 năm kinh nghiệm bảo hiểm","unmet","experience","20 năm là của công ty"],
+["Có kinh nghiệm tư vấn bảo hiểm","met","experience"]]},
+{"id":"e30-military-then-guard","notes":"2017-2019 military service, 2019 - nay security guard = 7y+. Guard only 7y.","cvText":"TẠ VĂN QUÂN\nNhân viên bảo vệ\n\nQUÁ TRÌNH\n2019 - nay: Bảo vệ toà nhà, Công ty Dịch vụ Bảo vệ Thăng Long\n2017 - 2019: Nghĩa vụ quân sự tại Quân khu 3\n\nHọc vấn: 12/12\nCó chứng chỉ nghiệp vụ bảo vệ\n","items":[
+["Từ 5 năm kinh nghiệm bảo vệ","met","experience"],
+["Có 8 năm kinh nghiệm bảo vệ trở lên","unmet","experience"],
+["Ưu tiên đã đi nghĩa vụ quân sự","met","experience"]]},
+{"id":"e31-wording-variety-18-months","notes":"Job 05/2025 - 10/2026 = 1y6m. Tests many ways of writing a threshold.","cvText":"ĐOÀN NGỌC MAI\nNhân viên nhập liệu\n\nKINH NGHIỆM\n05/2025 - 10/2026 Nhân viên nhập liệu, Công ty TNHH Giao nhận Sao Việt\nHỌC VẤN\nCao đẳng Công Thương TP.HCM\n","items":[
+["KN: 1-2 năm","met","experience"],
+["Có ít nhất 03 năm kinh nghiệm","unmet","experience"],
+["≥ 1 năm kinh nghiệm","met","experience"],
+["Tối thiểu 24 tháng kinh nghiệm","unmet","experience"],
+["Ít nhất 12 tháng kinh nghiệm","met","experience"],
+["Kinh nghiệm từ 2 năm trở lên","unmet","experience"],
+["Đã có kinh nghiệm làm việc từ 1 năm","met","experience"],
+["Yêu cầu kinh nghiệm 2+ năm","unmet","experience"]]},
+{"id":"e32-freelance-designer","notes":"Freelance since 2019 counts as experience in design for a recruiter.","cvText":"DƯƠNG GIA HUY\nFreelance Graphic Designer\n\nKINH NGHIỆM\n2019 - nay: Thiết kế đồ hoạ tự do cho các thương hiệu F&B và mỹ phẩm\nLogo, bao bì, ấn phẩm truyền thông\nCông cụ: Photoshop, Illustrator\nHỌC VẤN\nĐại học Mỹ thuật Công nghiệp, 2015 - 2019\n","items":[
+["Từ 3 năm kinh nghiệm thiết kế","met","experience"],
+["Tối thiểu 10 năm kinh nghiệm thiết kế","unmet","experience"]]},
+{"id":"e33-japan-technical-intern","notes":"Thực tập sinh kỹ năng in Japan is three years of real factory work, as any Vietnamese recruiter knows.","cvText":"NGUYỄN VĂN THÀNH\nThợ cơ khí\n\nKINH NGHIỆM\n04/2018 - 04/2021 Thực tập sinh kỹ năng ngành cơ khí (làm việc 3 năm), Công ty Sato Kogyo, tỉnh Aichi, Nhật Bản\nVận hành máy tiện, phay\n06/2021 - 05/2022 Thợ cơ khí, Công ty TNHH Cơ khí Tân Long\nTiếng Nhật N3\n","items":[
+["Từ 3 năm kinh nghiệm cơ khí","met","experience","3 năm tại Nhật + 1 năm trong nước"],
+["Có kinh nghiệm làm việc tại Nhật","met","experience"]]},
+{"id":"e34-stated-conflicts-with-ranges","notes":"Claims 8 years in the summary but only one 2-year job listed.","cvText":"QUÁCH VĂN LONG\nNhân viên kỹ thuật ô tô\n\nGIỚI THIỆU\n8 năm kinh nghiệm sửa chữa ô tô.\n\nKINH NGHIỆM\n2024 - 2026 Kỹ thuật viên, Gara Thành Công\n\nTrình độ: Trung cấp Công nghệ ô tô\n","items":[
+["Từ 5 năm kinh nghiệm sửa chữa ô tô","ambiguous","experience","Tự khai 8 năm nhưng chỉ ghi 2 năm: HR phải hỏi lại"]]},
+{"id":"e35-since-year-english","notes":"Since 2021 = 5y+. Previous job 2018-2020 listed.","cvText":"Emily Nguyen\nProduct Manager\n\nProfessional summary: Product manager since 2021 at Lotus Fintech, previously Business Analyst (2018 - 2020) at Sunrise Bank.\nBachelor of Economics, National Economics University\n","items":[
+["Over 5 years of product management experience","ambiguous","experience","Since 2021 cho 5-5.9 năm nên 'over 5' đúng, nhưng biên"],
+["At least 3 years of experience in product management","met","experience"],
+["At least 10 years of experience","unmet","experience"]]},
+{"id":"e36-english-over-ten-years","notes":"Over ten years in words; English numbers.","cvText":"Michael Pham\nFinance Manager\n\nSUMMARY\nOver ten years of experience in corporate finance and budgeting for manufacturing companies.\n\nEDUCATION\nMBA, Hanoi School of Business\n","items":[
+["At least 8 years of finance experience","met","experience"],
+["Minimum 15 years of experience","unmet","experience"]]}
+]

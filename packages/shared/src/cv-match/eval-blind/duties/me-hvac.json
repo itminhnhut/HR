@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Bóc tách khối lượng và lập bảng dự trù vật tư phần cơ điện theo hồ sơ thiết kế",
+    "Triển khai bản vẽ thi công hệ ống gió, ống nước lạnh và phối hợp với các bộ môn điện, PCCC",
+    "Giám sát thầu phụ lắp đặt thiết bị điều hoà tại công trường, kiểm soát tiến độ và chất lượng",
+    "Tổ chức chạy thử, vận hành thử hệ thống và bàn giao cho chủ đầu tư",
+    "Lập biên bản nghiệm thu và hồ sơ hoàn công",
+    "Xử lý sự cố kỹ thuật trong thời gian bảo hành, hướng dẫn kỹ thuật viên của chủ đầu tư"
+  ],
+  "labels": {
+    "mev-01": ["M", "M", "M", "M", "M", "M"],
+    "mev-02": ["M", "M", "M", "M", "M", "K"],
+    "mev-03": ["K", "M", "M", "M", "M", "M"],
+    "mev-04": ["M", "U", "M", "K", "M", "K"],
+    "mev-05": ["K", "U", "M", "K", "U", "M"],
+    "mev-06": ["M", "U", "U", "M", "M", "K"],
+    "mev-07": ["M", "M", "U", "K", "K", "K"],
+    "mev-08": ["K", "K", "K", "K", "K", "K"],
+    "mev-09": ["K", "K", "K", "K", "K", "K"],
+    "mev-10": ["K", "K", "K", "K", "K", "K"],
+    "mev-11": ["M", "M", "M", "M", "M", "M"],
+    "mev-12": ["K", "M", "M", "U", "M", "K"]
+  }
+}

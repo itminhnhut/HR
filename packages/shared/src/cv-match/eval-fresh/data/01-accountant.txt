@@ -1,0 +1,118 @@
+@ad accountant
+@occupation Kế toán tổng hợp
+@req experience | Kinh nghiệm: Từ 3 năm
+@req education | Học vấn: Đại học trở lên
+@req education | Tốt nghiệp chuyên ngành Kế toán, Kiểm toán hoặc Tài chính
+@req skills | Sử dụng thành thạo phần mềm kế toán MISA
+@req skills | Thành thạo Excel (VLOOKUP, Pivot Table)
+@req skills | Tự kê khai và quyết toán thuế GTGT, TNCN, TNDN
+@req skills | Lập được báo cáo tài chính năm
+@req language | Đọc hiểu tiếng Anh chuyên ngành kế toán
+@req licence bonus | Ưu tiên có chứng chỉ Kế toán trưởng
+@req soft | Trung thực, cẩn thận, chịu được áp lực công việc cuối kỳ
+=== acc-01 | strong | ordinary | interview | M M M M M M M M M K
+NGUYỄN THỊ THU HẰNG
+Kế toán tổng hợp
+ĐT: 0900 000 101 | hang.nguyen@example.com | Cầu Giấy, Hà Nội
+KINH NGHIỆM LÀM VIỆC
+04/2020 - nay: Kế toán tổng hợp, Công ty TNHH Thực phẩm Minh Châu
+- Hạch toán toàn bộ nghiệp vụ trên phần mềm MISA SME
+- Kê khai thuế GTGT hàng tháng, quyết toán thuế TNCN và TNDN cuối năm
+- Lập báo cáo tài chính năm, làm việc với cơ quan thuế khi thanh tra
+08/2018 - 03/2020: Kế toán công nợ, Công ty CP Bao bì Đại Thành
+HỌC VẤN
+2014 - 2018: Đại học Kinh tế Quốc dân, chuyên ngành Kế toán, bằng Khá
+KỸ NĂNG
+Excel: VLOOKUP, SUMIFS, Pivot Table. Đọc hiểu chứng từ và thuật ngữ kế toán bằng tiếng Anh (TOEIC 600).
+CHỨNG CHỈ: Chứng chỉ Kế toán trưởng, Học viện Tài chính, 2023
+=== acc-02 | strong | ordinary | interview | M M M M M M M A A K
+TRẦN MINH QUÂN
+Mục tiêu: gắn bó lâu dài ở vị trí kế toán tổng hợp tại doanh nghiệp sản xuất.
+Quá trình công tác
+T6/2021 đến nay - Công ty CP Xây lắp Hồng Phát - Kế toán viên, từ 2023 là kế toán tổng hợp
+Theo dõi doanh thu, chi phí công trình trên phần mềm Misa. Lập tờ khai GTGT, tạm tính TNDN, quyết toán thuế TNCN và
+TNDN. Lên BCTC cuối năm theo Thông tư 200.
+Đào tạo
+Đại học Thương mại, ngành Kế toán doanh nghiệp, tốt nghiệp 2021
+Ngoại ngữ, tin học
+Tiếng Anh B1. Excel nâng cao (hàm dò tìm VLOOKUP, bảng Pivot).
+=== acc-03 | strong | ordinary | interview | M M M M M M M M A K
+LE HOANG ANH
+General Accountant
+hoanganh.le@example.com | District 7, Ho Chi Minh City
+WORK EXPERIENCE
+General Accountant, Saigon Packaging JSC, Mar 2020 - Present
+- Maintain the general ledger in MISA, close the books monthly
+- Prepare and file VAT, personal income tax and corporate income tax returns, including annual tax finalization
+- Prepare annual financial statements under VAS for the external auditor
+EDUCATION
+Bachelor of Accounting, University of Economics Ho Chi Minh City, 2019
+SKILLS
+Advanced Excel (VLOOKUP, pivot tables). English: IELTS 6.5, read IFRS material and audit letters daily.
+=== acc-04 | partial | ordinary | maybe | U U M U M U U U A K
+PHẠM THỊ LAN
+Kế toán viên
+Kinh nghiệm: 09/2024 - nay, Công ty TNHH Nội thất Gia Khang, kế toán viên
+Nhập chứng từ mua bán trên phần mềm Fast Accounting, lập tờ khai thuế GTGT hàng tháng.
+Hỗ trợ kế toán trưởng tập hợp số liệu cuối năm.
+Học vấn: Cao đẳng Kinh tế Kỹ thuật, ngành Kế toán, 2024
+Tin học: Excel tốt, thường dùng VLOOKUP và Pivot Table.
+=== acc-05 | partial | ordinary | maybe | M M M M M U U U A K
+ĐỖ VĂN KHÁNH
+Kế toán công nợ - kho
+Công ty TNHH Thiết bị Vệ sinh Hải Âu, 2022 - nay: theo dõi công nợ phải thu, phải trả, đối chiếu kho, xuất hóa đơn trên MISA.
+Công ty CP Phân phối An Bình, 2021 - 2022: nhân viên kế toán kho.
+Học vấn: Đại học Tài chính - Marketing, ngành Tài chính Ngân hàng (2021).
+Kỹ năng: Excel, dùng Pivot Table và VLOOKUP để đối chiếu công nợ. Việc thuế và báo cáo năm do kế toán trưởng phụ trách.
+=== acc-06 | near-miss | ordinary | maybe | M M M U M A A M A K
+VŨ THANH TÙNG
+Trợ lý kiểm toán cao cấp
+01/2022 - nay: Công ty TNHH Kiểm toán Việt Tín
+Kiểm toán báo cáo tài chính doanh nghiệp sản xuất và thương mại. Rà soát tờ khai thuế, soát xét báo cáo tài chính của khách hàng.
+Khách hàng chủ yếu dùng SAP và Oracle.
+Đại học Ngoại thương, chuyên ngành Kiểm toán, 2021
+Excel nâng cao (Pivot Table, VLOOKUP, Power Query)
+Đang học ACCA, đọc viết báo cáo kiểm toán bằng tiếng Anh hằng ngày.
+=== acc-07 | near-miss | ordinary | no | A M U U U U U U A K
+HOÀNG THỊ MAI
+Thu ngân trưởng
+2020 - nay: Siêu thị Hoa Sen, thu ngân, từ 2023 là tổ trưởng thu ngân. Đối soát tiền cuối ca, lập báo cáo doanh thu ngày.
+Học vấn: Đại học Công đoàn, Quản trị kinh doanh, 2019
+Tin học văn phòng cơ bản. Tiếng Anh giao tiếp đơn giản.
+=== acc-08 | non-fit | ordinary | no | A U U U U U U U A K
+BÙI VĂN LỘC
+Đầu bếp
+2018 - nay: Bếp chính nhà hàng Sen Vàng, Đà Nẵng. Nấu món Việt, lên món theo mùa.
+Trung cấp Nấu ăn, Trường Du lịch Đà Nẵng, 2017
+=== acc-09 | non-fit | ordinary | no | U M U U U U U A A K
+NGÔ PHƯƠNG THẢO
+Sinh viên mới tốt nghiệp, mong muốn làm việc trong lĩnh vực truyền thông.
+Thực tập sinh marketing, Công ty Quảng cáo Tầm Nhìn, 02/2026 - 06/2026.
+Đại học Hoa Sen, ngành Marketing, 2026
+Word, Excel, PowerPoint cơ bản. IELTS 7.0.
+=== acc-10 | stuffing | hard | no | U U U U U U U U U K
+TRỊNH VĂN HIẾU
+Nhân viên bán hàng
+Từ khóa: kế toán tổng hợp, kế toán, kiểm toán, tài chính, phần mềm MISA, Excel VLOOKUP Pivot Table, kê khai thuế GTGT TNCN TNDN,
+quyết toán thuế, báo cáo tài chính năm, đại học kế toán, chứng chỉ kế toán trưởng, 5 năm kinh nghiệm, tiếng Anh chuyên ngành
+Kinh nghiệm: 03/2024 - nay, nhân viên bán hàng, Cửa hàng điện máy Thành Đạt. Tư vấn và bán tivi, tủ lạnh.
+Học vấn: Tốt nghiệp THPT Lê Lợi, 2023
+=== acc-11 | messy | hard | interview | M M M M M M M U A K | nfd
+Trang 1/2                                    H Ồ  S Ơ  Ứ N G  V I Ê N
+ĐẶNG THU HIỀN        K I N H  N G H I Ệ M
+Kế toán tổng hợp     02/2021 -       Công ty CP Dệt may Phú Thọ
+Sinh: 1993           nay             Kế toán tổng hợp. Dùng MISA hạch
+H Ọ C  V Ấ N                         toán, kê khai thuế GTGT, quyết toán
+Học viện Tài         08/2017 -       TNCN, TNDN. Lập báo cáo tài chính
+chính, Kế toán       01/2021         năm.
+2013 - 2017                          Kế toán viên, Công ty Sợi Hưng Long
+K Ỹ  N Ă N G
+Excel: VLOOKUP, Pivot Table
+Trang 2/2                                    H Ồ  S Ơ  Ứ N G  V I Ê N
+=== acc-12 | partial | hard | maybe | M U M M M M U U A K
+LƯƠNG THỊ NGỌC
+Kế toán viên, Công ty TNHH Cơ khí Tân Tiến, 05/2022 - nay
+Hạch toán trên MISA, Excel (VLOOKUP, Pivot Table). Tự kê khai thuế GTGT, quyết toán thuế TNCN, TNDN hằng năm.
+Phụ giúp kế toán trưởng làm báo cáo tài chính, chưa tự lập độc lập.
+Học vấn: đang học năm 3 hệ vừa làm vừa học, Đại học Kinh doanh và Công nghệ, ngành Kế toán, dự kiến tốt nghiệp 2028.
+Bằng hiện có: Trung cấp Kế toán, 2021.

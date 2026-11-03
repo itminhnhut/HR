@@ -1,0 +1,25 @@
+{
+  "duties": [
+    "Tiếp nhận yêu cầu mua hàng (PR) từ các bộ phận và kiểm tra tồn kho",
+    "Tìm nhà cung cấp, khảo sát và đánh giá định kỳ",
+    "Xin báo giá, lập bảng so sánh và trình duyệt",
+    "Đàm phán, lập đơn đặt hàng hoặc hợp đồng mua",
+    "Theo dõi hàng về, phối hợp QC và kho, xử lý hàng lỗi",
+    "Theo dõi thanh toán cho nhà cung cấp cùng kế toán",
+    "Báo cáo chi phí mua hàng và mức tiết kiệm được"
+  ],
+  "labels": {
+    "pur-01": ["M", "M", "M", "M", "M", "M", "M"],
+    "pur-02": ["M", "M", "M", "M", "M", "K", "M"],
+    "pur-03": ["M", "M", "M", "M", "M", "M", "M"],
+    "pur-04": ["M", "M", "M", "M", "M", "M", "K"],
+    "pur-05": ["M", "M", "M", "M", "M", "K", "U"],
+    "pur-06": ["M", "M", "M", "M", "M", "K", "M"],
+    "pur-07": ["U", "U", "U", "M", "M", "K", "K"],
+    "pur-08": ["K", "K", "K", "U", "K", "K", "K"],
+    "pur-09": ["K", "M", "M", "M", "K", "K", "K"],
+    "pur-10": ["K", "K", "K", "K", "K", "K", "K"],
+    "pur-11": ["M", "M", "M", "M", "M", "M", "K"],
+    "pur-12": ["K", "U", "U", "U", "M", "M", "K"]
+  }
+}

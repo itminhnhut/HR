@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Tìm kiếm và phát triển khách hàng mới trong ngành xây lắp cơ điện và nhà máy",
+    "Khảo sát nhu cầu tại hiện trường, đề xuất cấu hình thiết bị và giải pháp kỹ thuật",
+    "Soạn báo giá, hồ sơ chào thầu và thương lượng hợp đồng",
+    "Làm việc với hãng, nhà cung cấp nước ngoài về giá và thời gian giao hàng",
+    "Theo dõi đơn hàng, giao hàng và thu hồi công nợ",
+    "Báo cáo doanh số và dự báo bán hàng hằng tháng"
+  ],
+  "labels": {
+    "sen-01": ["M", "M", "M", "M", "M", "M"],
+    "sen-02": ["M", "M", "M", "M", "M", "M"],
+    "sen-03": ["M", "M", "M", "M", "M", "M"],
+    "sen-04": ["M", "M", "M", "U", "M", "M"],
+    "sen-05": ["M", "M", "M", "K", "M", "M"],
+    "sen-06": ["M", "U", "M", "K", "M", "M"],
+    "sen-07": ["U", "M", "M", "M", "U", "M"],
+    "sen-08": ["K", "K", "M", "K", "M", "M"],
+    "sen-09": ["K", "K", "M", "K", "U", "M"],
+    "sen-10": ["K", "K", "K", "K", "M", "M"],
+    "sen-11": ["K", "K", "K", "K", "K", "K"],
+    "sen-12": ["M", "M", "M", "M", "M", "M"]
+  }
+}

@@ -1,0 +1,32 @@
+Labelling rules for the fresh evaluation set. Written before any data and before any run.
+Author: one agent, blind to the matcher's vocabulary, rules, tests and earlier evaluation sets.
+All candidates, companies, schools and numbers are fictional. "Today" for every case is 2026-11-03.
+
+Labels, per requirement line, as a careful recruiter reading the extracted text:
+
+M = met. The CV shows it, in any wording: synonym, abbreviation, English, an equal or higher degree, or years
+    worked out from the date ranges. A line naming a role or field needs work or study in that role or field.
+U = unmet. The CV contradicts it, or an item a complete CV would normally state is absent (years, degree, field,
+    a named licence or certificate, a named tool or skill, a language level).
+K = unknown. A recruiter cannot judge it from this CV: soft traits with no concrete evidence; things CVs do not
+    normally state (health, shifts, travel, own motorbike, criminal record) when the CV is silent; empty or unreadable text.
+A = ambiguous. Careful recruiters would differ. Reported apart, never scored as right or wrong. Used for:
+    - "Kinh nghiệm: Từ N năm" (no field named) when the years are there but in an unrelated job;
+    - a bonus line ("ưu tiên") the CV does not meet: not holding a bonus is not failing a requirement;
+    - a soft line backed only by the candidate's own claim;
+    - a line with several parts where the CV shows only some, and it is a matter of judgement whether that is enough;
+    - an equivalence recruiters argue over (for example B1 versus "đọc hiểu chuyên ngành").
+
+Keyword stuffing: text pasted from the ad or a keyword dump with nothing in the work history behind it earns no credit.
+A measurable item whose only evidence is the dump is U, bonus lines included. Soft lines stay K.
+
+Messy extraction: a person reading the raw text can still work out broken layouts, lost accents and spaced-out letters,
+so the labels follow the content. Empty or undecodable text is K on every line and tier "maybe": a recruiter would open
+the original file rather than reject it.
+
+Tiers are a recruiter's view of the whole CV against the whole ad, not a count of labels:
+interview = should interview, maybe = could go either way, no = should not interview.
+
+File format. "@req <category> [bonus] | <line>" lines give the ad. Each CV starts with
+"=== id | kind | difficulty | tier | labels", optionally "| nfd" (text served in decomposed Unicode, as some PDF tools
+produce). Labels follow the order of the @req lines. Lines beginning "#why " are the labeller's notes and are not CV text.

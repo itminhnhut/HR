@@ -1,0 +1,113 @@
+[
+{"id":"m01-nfd-whole-cv","notes":"Whole text decomposed (NFD), as Mac-made PDFs often do.","transform":"nfd","cvText":"NGUYỄN THỊ THANH TÂM\nKế toán tổng hợp\n\nKINH NGHIỆM LÀM VIỆC\n03/2020 - nay: Kế toán tổng hợp, Công ty CP Nhựa Bình Dương\nLập báo cáo thuế, dùng phần mềm MISA\n\nHỌC VẤN\nĐại học Kinh tế TP.HCM, ngành Kế toán, 2015 - 2019\n\nNGOẠI NGỮ\nTiếng Anh TOEIC 600\n\nBằng lái xe hạng B2\n","items":[
+["Từ 5 năm kinh nghiệm kế toán","met","experience"],
+["Đại học chuyên ngành Kế toán","met","education"],
+["Tiếng Anh TOEIC 500 trở lên","met","language"],
+["Có bằng lái xe B2","met","licence"],
+["Sử dụng MISA","met","skills"],
+["Thạc sĩ trở lên","unmet","education"]]},
+{"id":"m02-two-column-education-dates-interleaved","notes":"Left column skills/education, right column experience, read line by line. Real work 03/2023 - nay = 3y8m; 2012 - 2016 is school.","cvText":"LÊ THU HIỀN\nKỸ NĂNG    KINH NGHIỆM LÀM VIỆC\nExcel    03/2023 - nay\nWord    Công ty TNHH Dệt Phong Phú Mới\nHỌC VẤN    Nhân viên hành chính nhân sự\n2012 - 2016    Soạn thảo văn bản, chấm công\nĐại học Mở Hà Nội    Quản lý hồ sơ nhân viên\n","items":[
+["Từ 5 năm kinh nghiệm","unmet","experience","2012-2016 là thời gian đi học"],
+["Từ 3 năm kinh nghiệm","met","experience"],
+["Đại học trở lên","met","education"],
+["Biết Excel","met","skills"]]},
+{"id":"m03-two-column-dates-detached","notes":"Dates block separated from employers by column extraction. 09/2021 - nay = 5y2m; 06/2018 - 08/2021 = 3y3m. Total 8y5m.","cvText":"NGÔ HỒNG PHÚC\nQuản lý kho\n\nThời gian\n09/2021 - nay\n06/2018 - 08/2021\nVị trí\nQuản lý kho, Công ty CP Phân bón Cà Mau Mới\nThủ kho, Công ty TNHH Thực phẩm Vị Hương\n\nHọc vấn\nCao đẳng Kinh tế Đối ngoại\n","items":[
+["Từ 5 năm kinh nghiệm quản lý kho","ambiguous","experience","Chức danh tách khỏi ngày; quản lý kho 5y2m và thủ kho 3y3m"],
+["Từ 7 năm kinh nghiệm làm kho","met","experience"],
+["Cao đẳng trở lên","met","education"]]},
+{"id":"m04-letterspaced-headers-and-skills","notes":"Letter-spaced headings; spaced skills.","cvText":"T R Ầ N   B Ả O   L O N G\nK I N H   N G H I Ệ M\n05/2019 - nay  Kỹ thuật viên, Công ty Điện Máy Toàn Cầu Mới\nK Ỹ   N Ă N G\nE x c e l ,  W o r d ,  A u t o C A D\nH Ọ C   V Ấ N\nCao đẳng Kỹ thuật Công nghệ\n","items":[
+["Từ 5 năm kinh nghiệm","met","experience"],
+["Biết Excel","met","skills"],
+["Biết AutoCAD","met","skills"],
+["Cao đẳng trở lên","met","education"]]},
+{"id":"m05-split-words","notes":"Words split by PDF extractor.","cvText":"HỒ THỊ ÁNH TUYẾT\nKế to án viên\n\nKinh nghi ệm làm việc\n02/2020 - nay: Kế to án, Công ty May Xuất Khẩu Sài Gòn Mới\nThành th ạo Ex cel, phần m ềm MI SA\n\nH ọc vấn\nĐại h ọc Tài chính Marketing\n\nNgo ại ngữ: TOE IC 500\n","items":[
+["Từ 5 năm kinh nghiệm kế toán","met","experience"],
+["Thành thạo Excel","met","skills"],
+["Sử dụng MISA","met","skills"],
+["Đại học trở lên","met","education"],
+["TOEIC 450 trở lên","met","language"]]},
+{"id":"m06-ligatures","notes":"fi and fl ligatures in English CV.","cvText":"Oﬃce Manager\nJenny Pham\n\nPROFESSIONAL PROFILE\nCertiﬁed administrative oﬃcer, 6 years of experience in oﬃce administration.\n\nSKILLS\nProﬁcient in MS Oﬃce, Workﬂow automation\n\nCERTIFICATES\nCertiﬁed Professional Secretary\n\nEDUCATION\nBachelor of Arts, Hoa Sen University\n","items":[
+["MS Office","met","skills"],
+["At least 5 years of experience","met","experience"],
+["Bachelor's degree","met","education"],
+["Proficient in Excel","met","skills","MS Office bao gồm Excel"]]},
+{"id":"m07-vn-ligatures-in-tools","notes":"Ligature within a tool name and in Vietnamese-hosted CV.","cvText":"VĂN THỊ THÚY\nThư ký\n\nKỸ NĂNG\nMS Oﬃce, Oﬃce 365\nChứng chỉ Kế toán trưởng, Certiﬁcate of Excel\n\nKINH NGHIỆM\n2020 - nay: Thư ký, Công ty TNHH Giày Đồng Nai Mới\n","items":[
+["Thành thạo tin học văn phòng","met","skills"],
+["Có chứng chỉ kế toán trưởng","met","licence"]]},
+{"id":"m08-all-caps-vietnamese","notes":"All caps with diacritics.","cvText":"NGUYỄN VĂN THẮNG\nKỸ SƯ CƠ KHÍ\n\nKINH NGHIỆM LÀM VIỆC\n06/2016 - NAY: KỸ SƯ THIẾT KẾ, CÔNG TY CƠ KHÍ THĂNG LONG MỚI\nTHIẾT KẾ TRÊN SOLIDWORKS, AUTOCAD\n\nHỌC VẤN\nKỸ SƯ CƠ KHÍ, ĐẠI HỌC BÁCH KHOA HÀ NỘI, 2011 - 2016\n\nNGOẠI NGỮ\nTIẾNG ANH TOEIC 750, BẰNG LÁI XE HẠNG B2\n","items":[
+["Từ 5 năm kinh nghiệm thiết kế cơ khí","met","experience"],
+["Thành thạo SolidWorks","met","skills"],
+["Đại học ngành Cơ khí","met","education"],
+["TOEIC 700 trở lên","met","language"],
+["Có bằng lái xe B2","met","licence"],
+["Từ 15 năm kinh nghiệm","unmet","experience"]]},
+{"id":"m09-all-caps-english","notes":"All caps English.","cvText":"CHRISTINE VU\nSENIOR ACCOUNTANT\n\nWORK EXPERIENCE\nJUN 2017 - PRESENT: SENIOR ACCOUNTANT, FOREST ROAD TRADING\n\nEDUCATION\nBACHELOR OF ACCOUNTING, UNIVERSITY OF ECONOMICS\n\nSKILLS\nMS EXCEL, SAP, IFRS\n\nLANGUAGES\nIELTS 7.5\n","items":[
+["5+ years of accounting experience","met","experience"],
+["Bachelor's degree in Accounting","met","education"],
+["Excel","met","skills"],
+["SAP","met","skills"],
+["IELTS 7.0 or higher","met","language"]]},
+{"id":"m10-table-pipes-tabs","notes":"Table extracted with separators.","cvText":"LƯƠNG ĐỨC THỊNH\nGiám sát bán hàng\n\nThời gian | Công ty | Chức vụ\n01/2018 | 03/2022 | Công ty Sữa Bình Minh Mới | Nhân viên bán hàng\n04/2022 | nay | Công ty Sữa Bình Minh Mới | Giám sát bán hàng\n\nBằng cấp\tTrường\tNăm\nĐại học\tĐại học Thương mại\t2017\n","items":[
+["Từ 5 năm kinh nghiệm bán hàng","met","experience"],
+["Có kinh nghiệm giám sát bán hàng","met","experience"],
+["Đại học trở lên","met","education"]]},
+{"id":"m11-date-broken-across-lines","notes":"Range split over two lines. 03/2021 - nay = 5y8m.","cvText":"TRẦN THỊ NGÂN\nNhân viên kinh doanh\n\nKINH NGHIỆM\n03/2021 -\nnay\nNhân viên kinh doanh\nCông ty CP Bia Hà Nội Mới\n\nHỌC VẤN\nCao đẳng Thương mại\n2017 -\n2020\n","items":[
+["Từ 5 năm kinh nghiệm","met","experience"],
+["Từ 6 năm kinh nghiệm","unmet","experience"]]},
+{"id":"m12-one-line-no-newlines","notes":"Whole CV as a single line. Sentences give scope for negation.","cvText":"NGUYỄN VĂN THÀNH Nhân viên kỹ thuật KINH NGHIỆM 2020 - nay: Kỹ thuật viên, Công ty Thang máy Phú Mỹ Mới HỌC VẤN Cao đẳng Kỹ thuật Công nghiệp KỸ NĂNG Excel, Word. Chưa có bằng lái ô tô. Mong muốn học thêm AutoCAD. Tiếng Anh TOEIC 500.","items":[
+["Từ 5 năm kinh nghiệm","met","experience"],
+["Có bằng lái ô tô","unmet","licence"],
+["Biết AutoCAD","unmet","skills"],
+["Biết Excel","met","skills"],
+["Cao đẳng trở lên","met","education"],
+["TOEIC 450 trở lên","met","language"]]},
+{"id":"m13-hyphen-line-break","notes":"Words hyphenated over a line break.","cvText":"VÕ MINH HOÀNG\nChuyên viên kế hoạch\n\nKỸ NĂNG\nThành thạo Power-\nPoint, Auto-\nCAD, Ex-\ncel\n\nKINH NGHI-\nỆM\n2018 - nay: Kế hoạch, Công ty CP Xây dựng Đại Dương Xanh\n","items":[
+["Biết PowerPoint","met","skills"],
+["Biết AutoCAD","met","skills"],
+["Biết Excel","met","skills"],
+["Từ 5 năm kinh nghiệm","met","experience"]]},
+{"id":"m14-odd-unicode-spaces-bullets","notes":"Private-use bullets, NBSP, soft hyphen, zero-width.","cvText":"PHẠM THỊ OANH\nNhân viên nhân sự\n\nKINH NGHIỆM\n 06/2021 – nay: Nhân viên nhân sự, Công ty Giấy Sài Gòn Mới\n Tuyển dụng, chấm công\n\nKỸ NĂNG\n Ex­cel, Pow­er​Point\n TOEIC 600\n\nHỌC VẤN\n Đại học Lao động Xã hội\n","items":[
+["Từ 5 năm kinh nghiệm","met","experience"],
+["Biết Excel","met","skills"],
+["Biết PowerPoint","met","skills"],
+["TOEIC 600 trở lên","met","language"],
+["Đại học trở lên","met","education"]]},
+{"id":"m15-broken-legacy-encoding","notes":"TCVN3 text decoded as Latin-1: unreadable Vietnamese. Dates and Latin tool names still readable to a human.","cvText":"NguyÔn V¨n Hïng\nKÕ to¸n viªn\n\nKinh nghiÖm lµm viÖc\n03/2019 - 05/2026: KÕ to¸n tæng hîp, C«ng ty Nhùa Long Thµnh\nSö dông Excel, MISA\n\nHäc vÊn\n§¹i häc Kinh tÕ Quèc d©n\n","items":[
+["Biết Excel","met","skills"],
+["Sử dụng MISA","met","skills"],
+["Từ 5 năm kinh nghiệm","met","experience"]]},
+{"id":"m16-two-column-negation-across","notes":"Negation in one column next to a positive skill in the other.","cvText":"HOÀNG VĂN TÙNG\nTHÔNG TIN KHÁC    KỸ NĂNG\nChưa có bằng lái ô tô    Thành thạo Excel, PowerPoint\nKhông có laptop    Sử dụng Word tốt\nKINH NGHIỆM\n2022 - nay: Nhân viên kinh doanh, Công ty Bột mì Đại Phong Mới\n","items":[
+["Biết Excel","met","skills"],
+["Biết PowerPoint","met","skills"],
+["Biết Word","met","skills"],
+["Có bằng lái ô tô","unmet","licence"],
+["Có laptop","unmet","skills"]]},
+{"id":"m17-page-furniture-dates","notes":"Footer update date and page numbers; real work starts 2025.","cvText":"VŨ HOÀNG LAN\nCurriculum Vitae, cập nhật 01/2026\nTrang 1/2\nKINH NGHIỆM\n01/2025 - nay: Nhân viên marketing, Công ty Dầu ăn Tường An Mới\nTrang 2/2\nHỌC VẤN\nĐại học Công nghiệp Hà Nội, 2020 - 2024\nIn ngày 15/10/2026. Hồ sơ lưu từ 2010 - 2026.\n","items":[
+["Từ 3 năm kinh nghiệm","unmet","experience","Thực tế 1y10m; 2010-2026 không phải kinh nghiệm"],
+["Từ 1 năm kinh nghiệm marketing","met","experience"]]},
+{"id":"m18-arrows-and-unusual-dashes","notes":"Arrow and em dash ranges. 03/2020 → 05/2023 = 3y2m; 06/2023 — 09/2026 = 3y3m. Total 6y5m.","cvText":"NGUYỄN THỊ ÁNH\nChuyên viên tuyển dụng\n\nKINH NGHIỆM\n03/2020 → 05/2023  Chuyên viên tuyển dụng, Công ty Bất động sản Nhà Mới\n06/2023 — 09/2026  Chuyên viên tuyển dụng, Công ty Tập đoàn Hoa Mai\nHọc vấn: Đại học Ngoại thương\n","items":[
+["Từ 5 năm kinh nghiệm tuyển dụng","met","experience"],
+["Từ 7 năm kinh nghiệm","unmet","experience"]]},
+{"id":"m19-spaced-digits","notes":"Digits spaced in date, as some PDF fonts extract. 2 0 1 9 - 2 0 2 3 = 4y.","cvText":"PHAN TRỌNG TÍN\nNhân viên giao nhận\n\nKINH NGHIỆM\n2 0 1 9 - 2 0 2 3: Giao nhận, Công ty TNHH Giao Vận Bình Tây\nHọc vấn: THPT\nĐã làm 4 năm tại vị trí trên\n","items":[
+["Từ 3 năm kinh nghiệm","met","experience"],
+["Từ 5 năm kinh nghiệm","unmet","experience"]]},
+{"id":"m20-icelandic-eth-d","notes":"Old fonts extract Đ as Ð (U+00D0).","cvText":"LÊ THỊ HỒNG\nÐiều dưỡng viên\n\nHỌC VẤN\nÐại học Y Dược Cần Thơ, ngành Ðiều dưỡng\nKINH NGHIỆM\n2020 - nay: Ðiều dưỡng, Bệnh viện Ða khoa Trung ương Cần Thơ\n","items":[
+["Đại học trở lên","met","education"],
+["Có kinh nghiệm điều dưỡng","met","experience"],
+["Từ 5 năm kinh nghiệm điều dưỡng","met","experience"]]},
+{"id":"m21-nfd-negation-and-wish","notes":"NFD plus negation and wish together.","transform":"nfd","cvText":"PHẠM THỊ DIỆU\nNhân viên văn phòng\n\nKỸ NĂNG\nChưa có bằng lái xe. Không biết tiếng Nhật.\nMong muốn học Python.\nThành thạo Excel.\n\nKINH NGHIỆM\n2022 - nay: Văn phòng, Công ty Thực phẩm Vĩnh Hảo Mới\n","items":[
+["Có bằng lái xe","unmet","licence"],
+["Tiếng Nhật N3","unmet","language"],
+["Biết Python","unmet","skills"],
+["Thành thạo Excel","met","skills"]]},
+{"id":"m22-non-diacritic-all-caps","notes":"ALL CAPS and no diacritics.","cvText":"TRAN VAN KHIEM\nLAI XE TAI\n\nKINH NGHIEM\n2018 - NAY: LAI XE TAI, CONG TY VAN TAI NAM VIET MOI\n\nBANG LAI XE HANG C\nTOT NGHIEP THPT\nCHUA CO BANG LAI HANG FC\n","items":[
+["Có bằng lái xe hạng C","met","licence"],
+["Có bằng lái FC","unmet","licence"],
+["Từ 5 năm kinh nghiệm lái xe tải","met","experience"],
+["Đại học trở lên","unmet","education"]]},
+{"id":"m23-two-col-skills-next-to-employer-trap","notes":"A skills word from one column sits next to the employer from the other.","cvText":"TRƯƠNG THỊ HƯƠNG\nHỌC VẤN    KINH NGHIỆM LÀM VIỆC\nCao đẳng Y Tế    2021 - nay\nTiếng Anh cơ bản    Điều dưỡng viên, Phòng khám Y khoa Tâm An\nKỸ NĂNG    Chăm sóc bệnh nhân, tiêm truyền\nTin học văn phòng    \n","items":[
+["Cao đẳng trở lên","met","education"],
+["Có kinh nghiệm điều dưỡng từ 3 năm","met","experience"],
+["Tin học văn phòng","met","skills"],
+["Tiếng Anh cơ bản","met","language"]]}
+]

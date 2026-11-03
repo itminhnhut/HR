@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Quản lý lịch làm việc và sắp xếp cuộc hẹn cho Tổng Giám đốc",
+    "Chuẩn bị nội dung họp, ghi biên bản và nhắc việc các phòng ban",
+    "Soạn thảo và dịch tài liệu, thư từ gửi đối tác",
+    "Tổ chức chuyến công tác, tiếp đón khách và đối tác",
+    "Theo dõi đầu việc liên phòng ban và báo cáo tiến độ cho Tổng Giám đốc",
+    "Quản lý chi phí tiếp khách và các khoản thanh toán của lãnh đạo"
+  ],
+  "labels": {
+    "eas-01": ["M", "M", "M", "M", "M", "M"],
+    "eas-02": ["M", "M", "M", "M", "M", "K"],
+    "eas-03": ["M", "M", "M", "M", "M", "M"],
+    "eas-04": ["M", "M", "M", "M", "M", "U"],
+    "eas-05": ["M", "M", "M", "M", "M", "M"],
+    "eas-06": ["U", "M", "M", "M", "K", "K"],
+    "eas-07": ["U", "M", "M", "M", "M", "U"],
+    "eas-08": ["K", "K", "K", "K", "K", "K"],
+    "eas-09": ["K", "K", "K", "K", "K", "K"],
+    "eas-10": ["K", "K", "K", "K", "K", "K"],
+    "eas-11": ["M", "M", "M", "M", "M", "M"],
+    "eas-12": ["M", "M", "M", "M", "M", "M"]
+  }
+}

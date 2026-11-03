@@ -10,12 +10,17 @@ import {
   majorMatches,
   type EducationEntry,
 } from './education.js';
+import { isKnownMajor, isNeighbourFamily, isSameFamily, isWiderStudy } from './majors.js';
 import { hasAnyTerm, snippet } from './text-match.js';
 
 function levelVerdict(atom: EducationAtom, entries: readonly EducationEntry[]): AtomResult | null {
   if (atom.minLevel === null) return null;
   const wanted = `${LEVEL_NAMES[atom.minLevel]} trở lên`;
   if (entries.length === 0) return result('unknown', `CV không ghi rõ học vấn, yêu cầu ${wanted}`);
+  const says = entries.find((e) => e.noDegree);
+  if (says && entries.every((e) => e.noDegree)) {
+    return result('unmet', `CV ghi không có bằng cấp này, yêu cầu ${wanted}`, snippet(says.line));
+  }
   const best = highestCompleted(entries);
   const bestLevel = best === null ? 0 : best === 'implied-thpt' ? 1 : best.level;
   if (best !== null && bestLevel >= atom.minLevel) {
@@ -34,8 +39,55 @@ function levelVerdict(atom: EducationAtom, entries: readonly EducationEntry[]): 
       snippet(studying.line),
     );
   }
+  const below = entries.find((e) => e.level === 1 && !e.completed);
+  if (below) return result('unmet', `CV ghi chưa hết THPT, yêu cầu ${wanted}`, snippet(below.line));
   const top = [...entries].sort((a, b) => b.level - a.level)[0];
   return result('unmet', `CV ghi ${LEVEL_NAMES[top.level]}, yêu cầu ${wanted}`, snippet(top.line));
+}
+
+/** "… hoặc ngành liên quan": same family of studies counts, another known family does not, the rest HR judges. */
+function relatedVerdict(
+  atom: EducationAtom,
+  entries: readonly EducationEntry[],
+  written: readonly string[],
+  evidence: string,
+): AtomResult {
+  const wanted = atom.majorLabels.join(', ');
+  const major = cvMajorLabel(entries, written[0]);
+  if (written.some((m) => atom.majors.some((w) => isSameFamily(m, w)))) {
+    return result('met', `CV ghi ngành ${major}, cùng nhóm ngành với ${wanted}`, evidence);
+  }
+  const isNeighbour = written.some((m) => atom.majors.some((w) => isNeighbourFamily(m, w)));
+  if (!isNeighbour && written.every(isKnownMajor) && atom.majors.some(isKnownMajor)) {
+    return result('unmet', `CV ghi ngành ${major}, yêu cầu ngành ${wanted} hoặc liên quan`, evidence);
+  }
+  return result('unknown', `CV ghi ngành ${major}, HR xem có phải ngành liên quan đến ${wanted} không`, evidence);
+}
+
+/** A major no word of the line can be compared with: written in another language, and not in a family we know apart. */
+function isIncomparable(atom: EducationAtom, entries: readonly EducationEntry[], major: string): boolean {
+  const isForeign = !/[^\p{ASCII}]/u.test(cvMajorLabel(entries, major));
+  const isOtherFamily =
+    isKnownMajor(major) && atom.majors.some(isKnownMajor) && !atom.majors.some((w) => isSameFamily(major, w));
+  return isForeign && !isOtherFamily;
+}
+
+/** Another study than the line names: only what the CV leaves undecided stays open. */
+function otherMajorVerdict(
+  atom: EducationAtom,
+  entries: readonly EducationEntry[],
+  written: readonly string[],
+  evidence: string,
+): AtomResult {
+  const wanted = atom.majorLabels.join(', ');
+  const major = cvMajorLabel(entries, written[0]);
+  if (written.every((m) => atom.majors.some((w) => isWiderStudy(m, w)))) {
+    return result('unknown', `CV ghi ngành ${major}, không rõ chuyên ngành ${wanted}`, evidence);
+  }
+  if (written.every((m) => isIncomparable(atom, entries, m))) {
+    return result('unknown', `CV ghi ngành ${major}, HR xem có đúng ngành ${wanted} không`, evidence);
+  }
+  return result('unmet', `CV ghi ngành ${major}, yêu cầu ngành ${wanted}`, evidence);
 }
 
 function majorVerdict(atom: EducationAtom, entries: readonly EducationEntry[]): AtomResult | null {
@@ -46,14 +98,12 @@ function majorVerdict(atom: EducationAtom, entries: readonly EducationEntry[]): 
   if (hit) return result('met', `Đúng chuyên ngành ${wanted}`, snippet(hit.line));
   if (written.length > 0) {
     const evidence = snippet(entries.find((e) => cvMajors([e]).length > 0)?.line ?? entries[0].line);
-    if (atom.majorRelatedOnly) {
-      return result(
-        'unknown',
-        `CV ghi ngành ${cvMajorLabel(entries, written[0])}, HR xem có phải ngành liên quan đến ${wanted} không`,
-        evidence,
-      );
-    }
-    return result('unmet', `CV ghi ngành ${cvMajorLabel(entries, written[0])}, yêu cầu ngành ${wanted}`, evidence);
+    if (atom.majorRelatedOnly) return relatedVerdict(atom, entries, written, evidence);
+    return otherMajorVerdict(atom, entries, written, evidence);
+  }
+  // Schooling that stops at high school has no major at all.
+  if (entries.length > 0 && entries.every((e) => e.level === 1)) {
+    return result('unmet', `CV chỉ ghi học hết phổ thông, yêu cầu ngành ${wanted}`, snippet(entries[0].line));
   }
   const loose = entries.find((e) => hasAnyTerm(e.folded, atom.majors));
   if (loose)

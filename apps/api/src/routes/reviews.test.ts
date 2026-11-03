@@ -1,12 +1,13 @@
-import type {
-  ApplicationDetailDto,
-  ApplicationsResponse,
-  ReviewBatchDto,
-  ReviewBatchRowDto,
-  ReviewPageDto,
+import {
+  CV_MATCH_VERSION,
+  type ApplicationDetailDto,
+  type ApplicationsResponse,
+  type ReviewBatchDto,
+  type ReviewBatchRowDto,
+  type ReviewPageDto,
 } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { applications, type Job } from '../db/schema.js';
+import { applications, cvScores, type Job } from '../db/schema.js';
 import { insertJob, json, loginHr } from '../test/fixtures.js';
 import { createTestContext, type TestContext } from '../test/harness.js';
 
@@ -62,6 +63,32 @@ async function sendBatch(ids: string[], extra: Record<string, unknown> = {}) {
   });
   return { res, body: res.status === 201 ? await json<ReviewBatchDto>(res) : null };
 }
+
+describe('The manager sees the CV check', () => {
+  it('should list the requirement lines and leave out job description and bonus lines', async () => {
+    // Arrange
+    const a = await insertApplication();
+    await t.db.insert(cvScores).values({
+      applicationId: a.id,
+      percent: 100,
+      items: [
+        { requirement: 'Biết Excel', verdict: 'met', evidence: null, reason: null },
+        { requirement: 'Lập báo cáo', verdict: 'met', evidence: null, reason: null, counted: false, section: 'duties' },
+        { requirement: 'Biết SAP', verdict: 'met', evidence: null, reason: null, counted: false, section: 'preferred' },
+      ],
+      version: CV_MATCH_VERSION,
+      requirementsKey: 'Biết Excel',
+      scoredAt: t.clock.now,
+    });
+    const { body } = await sendBatch([a.id]);
+
+    // Act
+    const page = await json<ReviewPageDto>(await boss('GET', `/${body?.token ?? ''}`));
+
+    // Assert
+    expect(page.items[0]?.matchItems.map((i) => i.requirement)).toEqual(['Biết Excel']);
+  });
+});
 
 describe('HR sends applications to the reviewer', () => {
   it('should create a batch with a private link, HR wording and a log line', async () => {

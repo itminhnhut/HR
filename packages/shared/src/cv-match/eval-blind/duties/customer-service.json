@@ -1,0 +1,24 @@
+{
+  "duties": [
+    "Trực hotline và các kênh chat, trả lời thắc mắc của khách",
+    "Ghi nhận khiếu nại, phân loại và chuyển bộ phận kỹ thuật",
+    "Điều phối lịch bảo hành, bảo trì tại nhà khách hàng",
+    "Gọi khảo sát sau dịch vụ",
+    "Báo cáo khiếu nại theo tuần và tháng",
+    "Nhắc lịch bảo dưỡng định kỳ, giới thiệu gói bảo trì"
+  ],
+  "labels": {
+    "css-01": ["M", "M", "M", "M", "M", "M"],
+    "css-02": ["M", "M", "M", "M", "M", "M"],
+    "css-03": ["M", "M", "U", "M", "M", "K"],
+    "css-04": ["M", "M", "M", "M", "M", "K"],
+    "css-05": ["M", "M", "K", "U", "M", "K"],
+    "css-06": ["M", "U", "M", "U", "K", "M"],
+    "css-07": ["M", "U", "K", "K", "K", "K"],
+    "css-08": ["U", "K", "K", "K", "K", "K"],
+    "css-09": ["K", "K", "K", "K", "K", "K"],
+    "css-10": ["K", "K", "K", "K", "K", "K"],
+    "css-11": ["K", "K", "K", "K", "K", "K"],
+    "css-12": ["M", "M", "M", "M", "M", "K"]
+  }
+}

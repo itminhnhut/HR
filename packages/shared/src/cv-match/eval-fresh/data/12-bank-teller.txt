@@ -1,0 +1,83 @@
+@ad bank-teller
+@occupation Giao dịch viên ngân hàng
+@req experience | Kinh nghiệm: Từ 1 năm ở vị trí giao dịch viên hoặc thu ngân
+@req education | Học vấn: Đại học trở lên
+@req education | Chuyên ngành Tài chính, Ngân hàng, Kế toán hoặc Kinh tế
+@req language | TOEIC 450 trở lên hoặc tương đương
+@req skills | Sử dụng tốt tin học văn phòng
+@req skills | Hiểu biết nghiệp vụ huy động vốn, mở tài khoản, chuyển tiền
+@req soft | Cẩn thận, chính xác, giọng nói rõ ràng
+=== ban-01 | strong | ordinary | interview | M M M M M M K
+PHẠM THỊ HỒNG ÂN
+Giao dịch viên
+03/2022 - nay: Giao dịch viên, Ngân hàng TMCP Sông Hàn, CN Đà Nẵng. Mở tài khoản thanh toán, nhận tiền gửi tiết kiệm, chuyển tiền trong và ngoài nước.
+Đại học Kinh tế Đà Nẵng, Tài chính Ngân hàng, 2021
+TOEIC 600. Thành thạo Word, Excel.
+=== ban-02 | strong | ordinary | interview | M M M M M M K
+NGUYỄN THU HOÀI
+Teller
+Chuyên viên dịch vụ khách hàng (giao dịch viên), Ngân hàng Đại Tín, từ 2021 tới nay. Huy động tiền gửi, định danh và mở tài khoản, lệnh chuyển khoản, kiểm đếm tiền mặt.
+Học viện Ngân hàng, ngành Kế toán, 2020
+IELTS 5.5. Tin học văn phòng MOS.
+=== ban-03 | strong | ordinary | interview | M M M M M M K
+TRAN MINH CHAU
+Bank Teller
+Pacific Commercial Bank, Mar 2023 - Present. Handle deposits, withdrawals, account opening and wire transfers. Cross-sell savings products.
+Bachelor of Finance and Banking, Hanoi University of Business, 2022
+TOEIC 700. MS Office proficient.
+=== ban-04 | partial | ordinary | maybe | M M M U M U K
+TRƯƠNG MỸ LINH
+Thu ngân siêu thị
+2022 - nay: Thu ngân, Siêu thị Ánh Dương. Kiểm tiền, xuất hóa đơn, kết ca. Dùng tốt Excel, Word.
+Đại học Kinh tế, Kinh tế Đối ngoại, 2021
+=== ban-05 | partial | ordinary | maybe | U M M M M M K
+LÂM THANH TRÚC
+Giao dịch viên tập sự
+07/2026 - nay: Giao dịch viên tập sự, Ngân hàng Sao Việt. Hỗ trợ mở tài khoản, huy động vốn, chuyển tiền.
+Đại học Ngân hàng TP.HCM, Tài chính, 2026
+TOEIC 500. Word, Excel thành thạo.
+=== ban-06 | near-miss | ordinary | maybe | U M M M M A K
+NGÔ QUỐC ANH
+Nhân viên tín dụng
+2020 - nay: Chuyên viên quan hệ khách hàng cá nhân, Ngân hàng Hải Vân. Thẩm định khoản vay, tư vấn mở tài khoản cho khách vay.
+Đại học Tài chính, Ngân hàng, 2020
+TOEIC 650. Tin học văn phòng tốt.
+=== ban-07 | near-miss | ordinary | no | U U M U U U K
+ĐẶNG THANH TÂM
+Nhân viên kế toán
+2021 - nay: Kế toán, Công ty Nhựa Bình Dương. Hạch toán, lập chứng từ.
+Cao đẳng Kế toán, 2020
+=== ban-08 | near-miss | ordinary | no | U M U U U U K
+HỒ VĂN LỰC
+Nhân viên bảo hiểm
+2022 - nay: Tư vấn bảo hiểm nhân thọ, Công ty Bảo hiểm Thịnh An. Tìm khách hàng, ký hợp đồng.
+Đại học Luật, 2021
+=== ban-09 | non-fit | ordinary | no | U U U U U U K
+LÊ VĂN THIỆN
+Thợ hàn
+2016 - nay: Thợ hàn, Xưởng Cơ khí Tân Phát.
+Trung cấp Hàn, 2015
+=== ban-10 | non-fit | ordinary | no | U M U M M U K
+ĐOÀN THỊ THU
+Giáo viên tiếng Anh
+2022 - nay: Giáo viên tiếng Anh, Trung tâm Anh ngữ Bright. Soạn bài trên Word, PowerPoint, lập bảng điểm Excel.
+Đại học Hà Nội, Ngôn ngữ Anh, 2021. IELTS 7.5.
+=== ban-11 | stuffing | hard | no | U U U U U U K
+VI THỊ NGỌC
+Giao dịch viên, thu ngân, Đại học Tài chính Ngân hàng Kế toán Kinh tế, TOEIC 450, tin học văn phòng, huy động vốn, mở tài khoản, chuyển tiền, cẩn thận, chính xác
+Quá trình làm việc: 2025 - nay, nhân viên bán vé xe buýt
+Học vấn: THPT
+=== ban-12 | messy | hard | interview | M M M M M M K
+GIAO DICH VIEN NGAN HANG
+LE THI KIM NGAN
+Kinh nghiem: 2021 - nay, Giao dich vien, Ngan hang TMCP Phuong Nam
+Nhan tien gui, huy dong von, mo tai khoan, chuyen tien
+Hoc van: Dai hoc Ngan hang, Tai chinh Ngan hang, 2020
+TOEIC 550, Tin hoc van phong tot
+=== ban-13 | partial | hard | maybe | M M M A M M K
+PHAN GIA HÂN
+Giao dịch viên
+2024 - nay: Dịch vụ khách hàng tại quầy, Ngân hàng Phú Hưng: tiền gửi, mở tài khoản, chuyển tiền.
+Cử nhân Kinh tế Phát triển, 2023.
+Tiếng Anh B1 VSTEP. Dùng Word, Excel hằng ngày.
+#why B1 VSTEP as equal to TOEIC 450 is a common but disputed mapping.

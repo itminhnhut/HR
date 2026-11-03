@@ -1,0 +1,79 @@
+@ad factory-qa
+@occupation Nhân viên QA nhà máy thực phẩm
+@req experience | Kinh nghiệm: Từ 2 năm ở vị trí QA/QC trong nhà máy sản xuất
+@req education | Học vấn: Cao đẳng trở lên
+@req education | Chuyên ngành Công nghệ thực phẩm, Hóa hoặc Sinh học
+@req skills | Am hiểu ISO 22000 và HACCP
+@req licence | Có chứng chỉ đánh giá viên nội bộ
+@req skills | Sử dụng 7 công cụ QC, lập báo cáo không phù hợp và CAPA
+@req language | Đọc hiểu tài liệu tiếng Anh
+@req soft | Có thể làm việc theo ca
+=== qas-01 | strong | ordinary | interview | M M M M M M M M
+ĐINH THỊ THANH VÂN
+Nhân viên QA
+03/2021 - nay: QA, Nhà máy Bánh kẹo Hải Hà Xanh. Xây dựng và duy trì hệ thống ISO 22000:2018, HACCP. Dùng 7 công cụ QC để phân tích lỗi, lập phiếu NCR và theo dõi CAPA. Làm 3 ca.
+Đại học Bách khoa Hà Nội, Công nghệ thực phẩm, 2020
+Chứng chỉ đánh giá viên nội bộ ISO 22000, 2023. Đọc tài liệu tiêu chuẩn bằng tiếng Anh, TOEIC 550.
+=== qas-02 | strong | ordinary | interview | M M M M M M M K
+LÊ VĂN HOÀNG
+Quality Control Executive
+2022 - hiện tại: QC, Công ty Chế biến Thủy sản Minh Phú Long. Kiểm soát CCP theo HACCP, ISO 22000, biểu đồ Pareto, xương cá, lưu đồ, ... (7 QC tools). Viết báo cáo sự không phù hợp, hành động khắc phục phòng ngừa.
+Đại học Cần Thơ, Công nghệ Sinh học, 2022
+Internal Auditor ISO 22000, 2024
+Tiếng Anh đọc hiểu tốt.
+=== qas-03 | strong | ordinary | interview | M M M M M M M M
+HOANG THI THU
+QA Specialist
+Vina Dairy Plant, June 2020 - Present. Maintain ISO 22000 and HACCP plans. Apply the seven QC tools, raise non-conformance reports and manage corrective and preventive actions. Rotating shifts.
+BSc Food Technology, Nong Lam University, 2020
+Certified internal auditor ISO 22000:2018. English: read standards and customer audit reports.
+=== qas-04 | partial | ordinary | maybe | M M M M U U U K
+NGUYỄN VĂN TUẤN
+Nhân viên QC
+2023 - nay: QC đầu vào, Nhà máy Nước giải khát Tân Lộc. Kiểm tra nguyên liệu, lấy mẫu, ghi hồ sơ theo HACCP, ISO 22000.
+Cao đẳng Công nghệ thực phẩm, 2022
+=== qas-05 | partial | ordinary | maybe | U M M A U M M M
+TRẦN KIM DUNG
+QC mới vào nghề
+09/2025 - nay: QC ca, Nhà máy Bún khô Hương Việt. Giám sát vệ sinh, nhiệt độ theo HACCP. Dùng biểu đồ kiểm soát, Pareto. Lập NCR, CAPA. Làm việc theo ca.
+Đại học Sư phạm, Hóa học, 2025. Đọc tài liệu tiếng Anh ở mức khá.
+#why HACCP only, ISO 22000 not named: judgement call.
+=== qas-06 | near-miss | ordinary | maybe | M M U U M M U K
+ĐOÀN THỊ NHƯ
+QA ngành dệt may
+2019 - nay: QA, Công ty May Xuất khẩu Thành Công. Duy trì ISO 9001, đánh giá viên nội bộ ISO 9001, phân tích lỗi bằng 7 QC tools, lập NCR, CAPA.
+Đại học Bách khoa, Công nghệ dệt may, 2018
+#why Line asks internal auditor, no standard named, so ISO 9001 auditor is M.
+=== qas-07 | near-miss | ordinary | no | U M M U U U U K
+PHẠM THỊ THU
+Nhân viên phòng thí nghiệm
+2021 - nay: Kỹ thuật viên phòng lab vi sinh, Trung tâm Kiểm nghiệm Tỉnh. Nuôi cấy, phân tích mẫu thực phẩm theo TCVN.
+Đại học Khoa học, Sinh học, 2020
+=== qas-08 | near-miss | ordinary | no | U U U U U U U K
+VŨ THÀNH NAM
+Công nhân vận hành máy
+2017 - nay: Công nhân đứng máy chiết rót, Nhà máy Bia Sông Lam. Tuân thủ quy định vệ sinh.
+Tốt nghiệp THPT
+=== qas-09 | non-fit | ordinary | no | U U U U U U U K
+TRƯƠNG THANH LỊCH
+Nhân viên trang điểm
+2021 - nay: Chuyên viên trang điểm, Studio Váy Cưới Hồng.
+Trung cấp nghề Làm đẹp
+=== qas-10 | non-fit | ordinary | no | U M U U U U U K
+HÀ MẠNH CƯỜNG
+Lập trình viên PHP
+2019 - nay: Lập trình viên, Công ty Web Việt. PHP, Laravel, MySQL.
+Cao đẳng CNTT, 2018
+=== qas-11 | stuffing | hard | no | U U U U U U U K
+NGUYỄN THỊ LOAN
+Từ khóa: QA QC, nhà máy, Công nghệ thực phẩm, Hóa, Sinh học, ISO 22000, HACCP, đánh giá viên nội bộ, 7 công cụ QC, báo cáo không phù hợp, CAPA, tiếng Anh, làm theo ca, cao đẳng, 2 năm kinh nghiệm
+Kinh nghiệm thật: 08/2025 - nay, phụ bán hàng tạp hóa.
+Trình độ: Hết lớp 12.
+=== qas-12 | messy | hard | interview | M M M M M M U M | nfd
+Q A  -  N H À  M Á Y  T H Ự C  P H Ẩ M
+ĐẶNG THANH HÀ
+08/2020 - nay  Nhân viên đảm bảo chất lượng, Công ty Xúc
+xích Đức Việt. Vận hành hệ thống ISO 22000, HACCP. 7 công
+cụ QC, báo cáo không phù hợp, CAPA. Làm ca xoay.
+2016 - 2020    Đại học Nông nghiệp, Công nghệ thực phẩm.
+Chứng chỉ đánh giá viên nội bộ 2022

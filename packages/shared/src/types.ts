@@ -260,7 +260,7 @@ export interface SubscriberDto {
 }
 
 export interface CvScoreDto {
-  /** null: nothing could be judged (no readable text, or only soft requirements). */
+  /** null: too little could be judged (no readable text, only soft requirements, or fewer than half of the rest). */
   percent: number | null;
   items: import('./cv-match/types.js').MatchItem[];
   scoredAt: string;

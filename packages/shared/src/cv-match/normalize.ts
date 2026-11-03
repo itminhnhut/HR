@@ -3,6 +3,7 @@
  * `text` (cleaned original, used for evidence quotes) and `folded` (lowercase, no tones, đ→d, used for matching),
  * so an index found in `folded` points at the same characters in `text`.
  */
+import { INVISIBLE_CHARS, repairLayout } from './pdf-repair.js';
 import { detectHeader, type SectionKind } from './sections.js';
 
 export interface CvLine {
@@ -22,18 +23,21 @@ export interface CvDoc {
 const LIGATURES: Record<string, string> = { ﬁ: 'fi', ﬂ: 'fl', ﬀ: 'ff', ﬃ: 'ffi', ﬄ: 'ffl', ﬅ: 'st', ﬆ: 'st' };
 const DASHES = /[‐-―−﹘﹣－]/g;
 const BULLETS = /[•●○◦▪▫■□►▶➢✓✔❖◆◇∙‣⁃]/g;
-const INVISIBLE = /[  -​  　﻿\t]/g;
+const WIDE_SPACES = /[\u00A0\u2000-\u200A\u202F\u205F\u3000\t]/g;
 
 /** Cleans one line: NFC, ligatures, unified dashes/bullets, collapsed whitespace. Keeps tones. */
 export function cleanLine(raw: string): string {
   return raw
     .normalize('NFC')
+    .replace(INVISIBLE_CHARS, '')
+    .replace(/Ð/g, 'Đ')
+    .replace(/ð/g, 'đ')
     .replace(/[ﬀ-ﬆ]/g, (c) => LIGATURES[c] ?? c)
     .replace(/[\uD800-\uDFFF]/g, ' ')
     .replace(/\p{M}/gu, '')
     .replace(DASHES, '-')
     .replace(BULLETS, '-')
-    .replace(INVISIBLE, ' ')
+    .replace(WIDE_SPACES, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -56,11 +60,13 @@ export function fold(raw: string): string {
   return foldClean(cleanLine(raw));
 }
 
+function isHeadingCell(cell: string): boolean {
+  const header = detectHeader(fold(cell));
+  return header !== null && !header.inline;
+}
+
 function splitRawLines(cvText: string): string[] {
-  return cvText
-    .replace(/\r\n?/g, '\n')
-    .split('\n')
-    .flatMap((l) => l.split(/(?=[•●▪■➢❖])/))
+  return repairLayout(cvText, isHeadingCell)
     .map(cleanLine)
     .filter((l) => l.length > 0);
 }
@@ -131,8 +137,9 @@ export function buildCvDoc(cvText: string): CvDoc {
   const lines: CvLine[] = splitRawLines(cvText).map((text, index) => {
     const folded = foldClean(text);
     const header = detectHeader(folded);
-    if (header) section = header.kind;
-    return { index, text, folded, section, isHeader: header !== null && !header.inline };
+    // "Học vấn: Đại học X" speaks for its own line only; the next line may well be a job.
+    if (header && !header.inline) section = header.kind;
+    return { index, text, folded, section: header?.kind ?? section, isHeader: header !== null && !header.inline };
   });
   const letterCount = countLetters(lines.map((l) => l.text).join(' '));
   return { lines, letterCount, isEnglish: detectEnglish(lines, letterCount) };

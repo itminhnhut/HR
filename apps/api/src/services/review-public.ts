@@ -66,7 +66,10 @@ function toItem(row: Awaited<ReturnType<typeof itemRows>>[number], sentAt: Date)
     jobTitle: row.jobTitle,
     appliedAt: row.appliedAt.toISOString(),
     matchPercent: row.matchPercent,
-    matchItems: (row.matchItems ?? []).map(({ requirement, verdict, reason }) => ({ requirement, verdict, reason })),
+    // The manager decides on the requirements; job description and bonus lines are HR's working notes.
+    matchItems: (row.matchItems ?? [])
+      .filter((item) => !item.section)
+      .map(({ requirement, verdict, reason }) => ({ requirement, verdict, reason })),
     hrPick: item.hrPick,
     hrComment: item.hrComment,
     message: row.message,

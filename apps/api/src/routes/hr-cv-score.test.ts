@@ -25,6 +25,7 @@ const SALES_JOB: Partial<NewJob> = {
   experience: 'Từ 2 năm',
   education: 'Đại học',
   requirements: 'Thành thạo Excel\nCó kinh nghiệm sử dụng CRM\nChịu được áp lực công việc',
+  responsibilities: '',
 };
 
 async function applyWith(job: Job, cv: { file?: string; link?: string }) {
@@ -99,6 +100,47 @@ describe('POST /api/hr/applications/:id/score', () => {
     expect(cvScore?.percent).toBe(100);
   });
 
+  it('should list the job description lines after the requirements, leaving the percent alone', async () => {
+    // Arrange
+    const job = await insertJob(t, { ...SALES_JOB, responsibilities: 'Thương lượng hợp đồng vận chuyển quốc tế' });
+    const app = await applyWith(job, { file: 'cv-simple-vi.pdf' });
+
+    // Act
+    const { cvScore } = await score(app.id);
+
+    // Assert
+    const last = cvScore?.items.at(-1);
+    expect(last).toMatchObject({ requirement: 'Thương lượng hợp đồng vận chuyển quốc tế', section: 'duties' });
+    expect(cvScore?.percent).toBe(100);
+  });
+
+  it('should list the bonus lines of the job, leaving the percent alone', async () => {
+    // Arrange
+    const job = await insertJob(t, { ...SALES_JOB, preferred: 'Biết sử dụng SAP' });
+    const app = await applyWith(job, { file: 'cv-simple-vi.pdf' });
+
+    // Act
+    const { cvScore } = await score(app.id);
+
+    // Assert
+    expect(cvScore?.items.at(-1)).toMatchObject({ requirement: 'Biết sử dụng SAP', section: 'preferred' });
+    expect(cvScore?.percent).toBe(100);
+  });
+
+  it('should score again when the job description changes', async () => {
+    // Arrange
+    const job = await insertJob(t, { ...SALES_JOB, responsibilities: 'Việc cũ cần làm' });
+    const app = await applyWith(job, { file: 'cv-simple-vi.pdf' });
+    await score(app.id);
+    await t.db.update(jobs).set({ responsibilities: 'Việc mới cần làm' }).where(eq(jobs.id, job.id));
+
+    // Act
+    const { cvScore } = await score(app.id);
+
+    // Assert
+    expect(cvScore?.items.at(-1)?.requirement).toBe('Việc mới cần làm');
+  });
+
   it('should mark a requirement the CV falls short of as unmet and lower the percent', async () => {
     const app = await applyWith(await insertJob(t, { ...SALES_JOB, experience: 'Từ 10 năm' }), {
       file: 'cv-simple-vi.pdf',
@@ -111,7 +153,10 @@ describe('POST /api/hr/applications/:id/score', () => {
   });
 
   it('should read a two-column PDF', async () => {
-    const job = await insertJob(t, { requirements: 'Sử dụng thành thạo phần mềm MISA\nTốt nghiệp Đại học' });
+    const job = await insertJob(t, {
+      requirements: 'Sử dụng thành thạo phần mềm MISA\nTốt nghiệp Đại học',
+      responsibilities: '',
+    });
     const app = await applyWith(job, { file: 'cv-two-column.pdf' });
 
     const { cvScore } = await score(app.id);
@@ -165,6 +210,26 @@ describe('POST /api/hr/applications/:id/score', () => {
     const { cvScore } = await score(app.id);
 
     expect(cvScore?.percent).toBeNull();
+  });
+
+  it('should count a degree asked on the form and again in the requirements once', async () => {
+    // Arrange
+    const job = await insertJob(t, {
+      experience: null,
+      education: 'Đại học',
+      requirements: 'Tốt nghiệp Đại học\nBiết sử dụng Photoshop',
+    });
+    const app = await applyWith(job, { file: 'cv-simple-vi.pdf' });
+
+    // Act
+    const { cvScore } = await score(app.id);
+
+    // Assert
+    const items = cvScore?.items ?? [];
+    expect(verdictOf(items, 'Học vấn: Đại học')).toBe('met');
+    expect(verdictOf(items, 'Tốt nghiệp Đại học')).toBe('met');
+    expect(verdictOf(items, 'Biết sử dụng Photoshop')).toBe('unmet');
+    expect(cvScore?.percent).toBe(50);
   });
 
   it('should show the percent in the applicant list', async () => {

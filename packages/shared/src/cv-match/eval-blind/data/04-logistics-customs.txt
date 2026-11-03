@@ -1,0 +1,457 @@
+@ad logistics-customs
+@occupation Nhân viên chứng từ xuất nhập khẩu
+@req experience | Ít nhất 2 năm làm chứng từ xuất nhập khẩu tại công ty forwarder hoặc doanh nghiệp có hàng XNK
+@req education | Tốt nghiệp ngành Ngoại thương, Logistics, Kinh tế quốc tế hoặc ngành gần tương đương
+@req skills | Tự khai báo hải quan điện tử trên phần mềm ECUS (VNACCS)
+@req skills | Tra và áp được mã HS, tính thuế nhập khẩu và thuế ưu đãi đặc biệt
+@req skills | Xin được C/O các form E, D, AK trên hệ thống của cơ quan cấp
+@req skills | Làm và kiểm tra khớp bộ chứng từ gồm invoice, packing list, vận đơn
+@req skills | Quen thủ tục kiểm tra chuyên ngành như kiểm dịch, công bố hợp quy
+@req skills | Nắm các điều kiện Incoterms 2020
+@req language | Đọc hiểu chứng từ tiếng Anh và trao đổi email được với agent nước ngoài
+@req licence bonus | Có chứng chỉ nghiệp vụ khai hải quan được ưu tiên
+@req soft | Cẩn thận với số liệu, bình tĩnh xử lý khi lô hàng bị phân luồng đỏ
+=== lgc-01 | strong | ordinary | interview | M M M M M M M M M M M
+VƯƠNG THỊ HẢI YẾN
+Trưởng nhóm chứng từ xuất nhập khẩu
+Điện thoại: 0900 000 401 | Email: yen.vuongthi@example.com
+Ngô Quyền, Hải Phòng | Sinh năm 1993
+
+ĐÔI NÉT VỀ TÔI
+Mười năm gắn với cảng Hải Phòng, tôi đã đi từ người ngồi gõ tờ khai thuê cho forwarder đến người chịu trách nhiệm cả nhóm hồ sơ của một nhà nhập khẩu thiết bị. Điều tôi tự hào nhất không phải là số tờ khai mà là gần như không có lô nào phải sửa sau khi đã nộp. Tôi muốn tìm một môi trường có lượng hàng đa dạng hơn, nhất là hàng phải qua cơ quan chuyên ngành.
+
+CÔNG VIỆC ĐÃ LÀM
+03/2021 - nay: Công ty CP Thiết bị Công nghiệp Hồng Lĩnh - Trưởng nhóm chứng từ (3 người)
+- Lên tờ khai nhập và xuất trên ECUS5-VNACCS cho máy móc, phụ tùng, khoảng 70 tờ khai mỗi tháng; tự sửa tờ khai bổ sung khi nhà cung cấp đổi số lượng sau ngày tàu chạy.
+- Tra biểu thuế để phân loại mã số hàng hóa, tính sẵn thuế nhập khẩu và VAT trước khi hàng về để kế toán chuẩn bị tiền. Áp mức ưu đãi theo ACFTA, AKFTA, ATIGA khi nhà cung cấp gửi được chứng nhận xuất xứ hợp lệ.
+- Với hàng xuất trả, phụ tùng bán lại cho đại lý Lào và Hàn Quốc: đăng ký cấp chứng nhận xuất xứ form D, AK và form E trên eCoSys, kèm bảng kê nguyên liệu.
+- So từng dòng giữa hóa đơn thương mại, phiếu đóng gói và B/L nháp, báo nhà cung cấp sửa trước khi phát hành bản gốc.
+- Đăng ký hợp quy cho thiết bị điện hạ áp, xin kiểm tra hiệu suất năng lượng, kiểm dịch pallet gỗ.
+- Tháng 8/2024, lô máy ép 4 container vào luồng đỏ do mô tả chung chung: ở lại cảng 2 ngày cùng cán bộ kiểm hóa, chuẩn bị catalogue và giải trình mã số, giữ nguyên mã đã khai, không bị phạt.
+- Lập danh mục lưu hồ sơ 5 năm, chuẩn bị đầy đủ cho đợt kiểm tra sau thông quan năm 2023.
+
+07/2016 - 02/2021: Công ty TNHH Giao nhận Vận tải Đông Hải Phát - Nhân viên documents
+- Khai thuê cho khoảng 30 khách hàng nhỏ, từ hàng tiêu dùng đến nông sản.
+- Nhận booking, gửi hướng dẫn đóng hàng, theo dõi lịch tàu, phát hành House B/L, báo đại lý nước ngoài qua email bằng tiếng Anh.
+- Tư vấn khách chọn điều kiện giao hàng phù hợp FOB, CIF, DAP theo Incoterms mới, tính chi phí phát sinh từng bên.
+
+HỌC VẤN
+2012 - 2016: Đại học Kinh tế Hàng hải Duyên Giang, ngành Kinh tế Ngoại thương. Loại Khá.
+
+CHỨNG CHỈ
+Chứng chỉ nghiệp vụ khai hải quan (2018). TOEIC 615 (2022).
+
+KỸ NĂNG
+ECUS5, Excel nâng cao, eCoSys, cổng một cửa quốc gia. Viết email tiếng Anh hằng ngày với nhà máy ở Đức, Hàn Quốc, Trung Quốc.
+
+THÀNH TÍCH
+Hai năm liền là nhân viên xuất sắc tại Hồng Lĩnh. Đề xuất đổi cách lưu mã số, tiết kiệm khoảng 1 tỷ đồng thuế nhờ áp đúng ưu đãi cho một nhóm phụ tùng trong năm 2023.
+
+SỞ THÍCH
+Bơi, làm bánh, đọc tiểu thuyết trinh thám.
+#why Đầy đủ mọi mặt, có cả câu chuyện luồng đỏ cụ thể và chứng chỉ. Các từ của ad gần như được diễn đạt lại.
+=== lgc-02 | strong | hard | interview | M M M M M M M M M A M
+PHAN MINH KHOA
+Import-Export Documentation Specialist
+0900 000 402 | khoa.phanminh@example.com | Di An, Binh Duong
+
+SUMMARY
+Six years handling trade paperwork for a machinery trader and a mid-size freight agent in the south. I prefer to own a file from the purchase order until the audit folder closes. Calm with numbers, and with customs officers.
+
+EXPERIENCE
+Sep 2022 - Present: Cao Nguyen Pump & Motor Trading Co., Ltd - Senior Documentation Officer
+- File inbound and outbound customs declarations in ECUS (VNACCS/VCIS), about 45 per month, mainly at Cat Lai and Song Than ICD.
+- Classify parts under the Vietnamese tariff schedule, compute MFN versus preferential duty rates (ACFTA, AKFTA, ATIGA) and flag savings to purchasing before each order is confirmed.
+- Apply for certificates of origin on our re-export lines through the MoIT eCoSys portal: forms E, AK and D, including the bill of materials and value-content worksheets.
+- Cross-check commercial invoice, packing list, bill of lading and L/C wording. When a shipper's draft does not match, I send back a marked-up copy and hold the release until corrected.
+- Manage conformity registration for electric motors (QCVN), energy-efficiency testing, and phytosanitary treatment for wooden packaging.
+- Red channel, March 2025: 2 containers held on a tariff query and a weight difference. Attended the physical check, reconciled the 3 per cent gap line by line against the packing list, submitted the explanation letter within a day. Goods released with no penalty.
+- Keep the 5-year clearance files in numbered sets; prepared the folder pack for the post-clearance review in 2024.
+
+Jun 2020 - Aug 2022: Nam Viet Cargo Link JSC - Customs & Documents Executive
+- Prepared declarations for about 25 small shippers, booked space with carriers, chased schedule changes and issued arrival notices.
+- Negotiated with overseas agents in Korea and Malaysia over email regarding freight terms under FOB, CIF, CFR and DAP, using the 2020 rules.
+- Trained 2 new hires on the document checklist.
+
+Jan 2019 - May 2020: Hoan My Import Store - Purchasing Assistant
+- Placed small orders with Chinese suppliers for home goods, tracked payment and pickup.
+
+EDUCATION
+2014 - 2018: Bachelor of International Economics, Ben Nghe University of Commerce. Thesis on rules of origin under regional trade agreements.
+
+SKILLS
+ECUS5, eCoSys, National Single Window, MS Excel (pivot tables, lookups), SAP purchasing screens (basic). English: TOEIC 720, written daily. Basic Mandarin for reading supplier chats.
+
+OTHER
+Member of the alumni mentoring group for final-year logistics students. Plays badminton twice a week; collects old maps of the Mekong delta; enjoys long motorbike trips with friends.
+#why Toàn tiếng Anh, từ "HS" không xuất hiện mà là "tariff schedule". Không nêu chứng chỉ nghiệp vụ hải quan nên bonus A. Có câu chuyện luồng đỏ thật nên dòng soft M.
+=== lgc-03 | strong | ordinary | interview | M M M M M M M M M A A
+DO THI THANH TAM
+Nhan vien chung tu xuat nhap khau - hang nong san, thuc pham
+SDT 0900 000 403 | tam.dothithanh@example.com | Quan 7, TP.HCM
+
+GIOI THIEU
+Minh quen go khong dau tu thoi lam o cong ty nuoc ngoai nen CV viet vay cho nhanh, mong anh chi thong cam. Da 5 nam lam giay to cho hang nong san di va ve, tinh minh can than, thich moi thu dung so lieu, khong ngai hang tuoi song phai chay gap truoc gio tau chay.
+
+KINH NGHIEM LAM VIEC
+11/2022 - nay: Cong ty TNHH Nong San Xanh Mekong Delta Trading - Nhan vien chung tu cao cap
+- Moi thang khoang 40 lo xuat tieu, dieu, hat cac loai di Trung Quoc, Han Quoc, Thai Lan va nhap nguyen lieu ve.
+- Tu lam to khai tren ECUS, in, ky so, truyen di va theo doi phan luong tren he thong.
+- Lap hoa don, packing list, doi chieu B/L theo hop dong truoc khi gui nguoi mua.
+- Lam C/O form E, form AK, form D tren cong cua Bo Cong Thuong, chuan bi quy tac xuat xu thuan tuy cho hang nong san.
+- Xin giay kiem dich thuc vat, giay chung nhan xong trung, kiem tra an toan thuc pham hang nhap, cong bo san pham. Di lay mau voi chi cuc kiem dich o cang Cat Lai khi can.
+- Tra ma so hang hoa theo bieu thue, tinh thue nhap khau, so sanh thue MFN voi thue ACFTA/AKFTA cho nguyen lieu nhap de phong mua hang chon nguon.
+- Viet mail tieng Anh voi khach va voi forwarder ve lich dong hang, FOB hay CIF, ai chiu phi local charge.
+
+06/2021 - 10/2022: Cong ty CP Giao nhan Sao Bang Quoc Te - Nhan vien documents
+- Nhan thong tin booking, gui cho khach, nhap so lieu B/L, lam tracking.
+- Ho tro anh chi khai bao, sau thang thu 4 duoc tu khai hang FCL.
+
+HOC VAN
+2017 - 2021: Dai hoc Thuong Mai Quoc Te Ben Nghe, nganh Logistics va Quan ly Chuoi Cung ung.
+
+KY NANG
+ECUS5, eCoSys, Excel, Word. Tieng Anh giao tiep trung binh kha, TOEIC 580. Tinh can than, nhin ky so lieu, it sai, chiu duoc ap luc.
+
+HOAT DONG KHAC
+Tham gia cau lac bo tieng Anh cua cong ty, moi thang mot buoi. Tu nguyen ho tro sinh vien thuc tap lam quen bo chung tu.
+
+SO THICH
+Nau an, chup hinh dien thoai, tap yoga, xem phim Han. Thinh thoang giup me ban cafe rang xay cua nha o que.
+#why Không dấu do thói quen. Đủ nghiệp vụ, cả kiểm dịch nhờ hàng nông sản. Không chứng chỉ khai hải quan. Tự nhận cẩn thận, không có ví dụ luồng đỏ nên dòng soft A.
+=== lgc-04 | partial | hard | maybe | M A U A M M U M M A K
+TRƯƠNG NGỌC LINH
+Nhân viên xuất khẩu - Ngành dệt may
+ĐT 0900 000 404 / linh.truongngoc@example.com / Hòa Xuân, Đà Nẵng
+
+MỤC TIÊU
+Sau bốn năm ở mảng xuất khẩu may mặc, em mong muốn chuyển sang một công ty làm cả hai chiều hàng hóa, để được học thêm phần nhập khẩu và phần khai báo mà hiện tại công ty em thuê ngoài.
+
+KINH NGHIỆM CÔNG TÁC
+10/2022 - nay: Công ty CP May Xuất Khẩu Hòa Phong - Nhân viên xuất khẩu
+- Theo dõi kế hoạch xuất cho 3 khách hàng Mỹ, Hàn, Nhật, trung bình 25 lô FCL mỗi tháng.
+- Soạn hóa đơn thương mại, phiếu đóng gói, soát shipping instruction, đối chiếu vận đơn nháp với hãng tàu và báo sửa trước khi tàu chạy.
+- Đăng ký form D, form AK và form E trên hệ thống cấp giấy chứng nhận xuất xứ điện tử của Bộ; làm tờ khai nguyên phụ liệu đi kèm, tính định mức để chứng minh xuất xứ.
+- Việc khai báo do đại lý hải quan bên ngoài truyền hộ. Em chỉ gửi bộ dữ liệu và kiểm tra số trên tờ khai bản nháp, không tự khai và không xuống cảng. Việc thông quan do đại lý lo trọn gói.
+- Mã số của từng mã hàng do phòng kế hoạch cung cấp sẵn, em dùng lại để làm C/O. Không phải tính thuế vì hàng xuất khẩu may mặc của công ty không có thuế.
+- Liên hệ forwarder đặt chỗ, xác nhận ngày đóng cont, nhắc hãng tàu về cut-off và theo dõi ETD, ETA cho khách hàng.
+- Viết email tiếng Anh với merchandiser nước ngoài hằng ngày, xử lý yêu cầu chỉnh hóa đơn theo điều kiện FOB, thỉnh thoảng có đơn EXW và FCA.
+
+06/2020 - 09/2022: Công ty TNHH Phụ liệu May Bạch Mã - Nhân viên theo dõi đơn hàng
+- Lên đơn nút, chỉ, nhãn cho các xưởng may trong nước, kiểm số lượng giao nhận.
+- Hỗ trợ phòng xuất khẩu đóng tập chứng từ, in tem, dán nhãn thùng.
+
+HỌC VẤN
+2016 - 2020: Đại học Ngoại ngữ Sông Hàn, Cử nhân Ngôn ngữ Anh, chuyên ngành Tiếng Anh thương mại.
+Có học môn tự chọn Thanh toán quốc tế và Vận tải quốc tế.
+
+KỸ NĂNG
+Tiếng Anh tốt (IELTS 6.5). Excel, phần mềm quản lý đơn hàng của công ty, cổng cấp C/O. Biết kiểm tra hàng theo AQL ở mức cơ bản.
+
+THÀNH TÍCH
+Không có lô nào bị trễ tàu vì lỗi hồ sơ trong năm 2025. Được chọn hướng dẫn 2 bạn mới vào phòng.
+
+HOẠT ĐỘNG
+Câu lạc bộ múa đương đại, viết nhật ký du lịch, tình nguyện dạy tiếng Anh cho công nhân tại khu nhà trọ.
+#why Giỏi chứng từ và C/O, nhưng CV tự nói không khai báo. Ngôn ngữ Anh thương mại với vài môn liên quan: có người coi là gần tương đương, có người không. Mã số dùng lại và không tính thuế nên dòng HS là A.
+=== lgc-05 | partial | ordinary | maybe | U M M M U M U M A A K
+HỒ GIA HUY
+Nhân viên chứng từ nhập khẩu
+Mobile: 0900 000 405 | Email: huy.hogia@example.com
+Tân Bình, TP. Hồ Chí Minh
+
+VỀ BẢN THÂN
+Mình vừa ra trường được hơn hai năm, trong đó gần hai năm làm thật. Học nhanh, thích tìm hiểu các quy định mới về thuế và mã số. Đang tìm một công ty có nhiều loại hàng hơn để lên tay nghề, chứ không chỉ một mặt hàng như hiện tại.
+
+KINH NGHIỆM
+01/2025 - nay: Công ty TNHH Phân Phối Bao Bì Giấy Sài Thành - Nhân viên chứng từ nhập khẩu
+- Hàng giấy cuộn và bao bì từ Thái Lan, Indonesia, Trung Quốc; khoảng 20 tờ khai mỗi tháng.
+- Tự lên tờ khai trên ECUS5, truyền đi rồi theo dõi kết quả phân luồng, nộp thuế qua ngân hàng.
+- Tự tra mã số theo chú giải, tính thuế nhập khẩu và VAT. Biết so sánh thuế ưu đãi đặc biệt theo ATIGA, ACFTA khi nhà cung cấp gửi form D, form E.
+- Kiểm hóa đơn, phiếu đóng gói, vận đơn có khớp hay không trước khi ra tờ khai.
+- C/O đều do nhà cung cấp nước ngoài cấp và gửi sang, mình chỉ kiểm tra nội dung chứ chưa bao giờ tự đăng ký xin C/O trên hệ thống của Việt Nam.
+- Mặt hàng công ty không thuộc diện kiểm tra chuyên ngành nên mình chưa có dịp làm mảng này.
+- Đi tờ khai giấy ở chi cục khi có yêu cầu, một số lần đi làm với cán bộ tại cảng Hiệp Phước. Sau đó tự sắp lại hồ sơ theo tháng, lưu vào tủ.
+- Biết các điều khoản CIF, CFR, FOB của Incoterms 2020, thường thấy trên hợp đồng công ty ký.
+
+08/2024 - 12/2024: Công ty CP Giao nhận Hòa Bình Xanh - Thực tập sinh documents
+- Thực tập cuối khóa 5 tháng: nhập số liệu, in bộ chứng từ, đi cùng anh chị ra hải quan.
+
+05/2023 - 07/2024: Quán cà phê Mây Sớm - Nhân viên phục vụ bán thời gian (đi làm khi còn đi học)
+- Pha chế, chốt ca, quản lý đặt hàng hạt cà phê theo tuần.
+
+HỌC VẤN
+2020 - 2024: Đại học Kinh tế và Vận tải Phú Xuân, ngành Logistics và Quản lý Chuỗi Cung ứng. Bằng Khá, GPA 7.4.
+
+KỸ NĂNG
+ECUS5, Excel, Word. Tiếng Anh TOEIC 450: đọc được hóa đơn, hợp đồng; phần trao đổi email với đối tác nước ngoài do chị trưởng phòng làm, mình thỉnh thoảng được xem để học.
+
+HOẠT ĐỘNG
+Câu lạc bộ logistics của trường, đạt giải ba cuộc thi "Tài năng trẻ chuỗi cung ứng" cấp thành phố năm 2023. Tham gia chạy marathon gây quỹ, thích đọc về lịch sử đường sắt.
+#why Một năm mười tháng làm thật chưa đủ 2 năm, thực tập không nên cộng trọn. Đọc được, chưa viết email nên dòng ngôn ngữ A. C/O không phải xin được, CV nói rõ.
+=== lgc-06 | near-miss | hard | maybe | U M U U U A U M M A K
+LÂM TUẤN ANH
+Sales Logistics / Chuyên viên kinh doanh cước quốc tế
+0900 000 406 • anh.lamtuan@example.com • Hải Châu, Đà Nẵng
+
+TÓM TẮT
+Gần 5 năm bán dịch vụ vận chuyển quốc tế cho doanh nghiệp vừa và nhỏ ở miền Trung. Tôi hiểu thị trường cước, hiểu khách cần gì và biết nói chuyện với hãng tàu. Vì lý do gia đình muốn chuyển sang công việc ở văn phòng, ít gặp khách và ổn định hơn.
+
+KINH NGHIỆM
+01/2022 - nay: Công ty CP Vận tải Quốc tế Bán Đảo Sơn Trà - Trưởng nhóm kinh doanh
+• Quản lý danh mục 60 khách xuất nhập khẩu, chủ yếu hàng gỗ, thủy sản đông lạnh, dệt may.
+• Xin giá cước từ 6 hãng tàu, gửi báo giá, chốt lịch rồi lấy booking cho khách, theo dõi tàu chạy và báo khách khi đổi cảng chuyển tải.
+• Giải thích cho khách sự khác biệt giữa FOB, CIF, DDP, EXW, ai chịu rủi ro và chi phí đến đâu theo bản Incoterms 2020.
+• Liên lạc với đại lý ở Singapore, Busan, Long Beach qua email bằng tiếng Anh để xin giá local và xử lý phát sinh.
+• Xem qua vận đơn nháp khi khách hỏi, còn phần chứng từ và khai báo do team documents riêng của công ty xử lý. Tôi chuyển yêu cầu sang team đó, không tự khai và không làm C/O.
+• Thu công nợ cước, nhắc khách thanh toán trước khi phát lệnh giao hàng.
+
+05/2019 - 12/2021: Công ty TNHH Giao nhận Biển Ngọc Miền Trung - Nhân viên kinh doanh
+• Gọi điện, gặp khách ở các khu công nghiệp Đà Nẵng, Quảng Nam, Huế.
+• Vượt chỉ tiêu 110% năm 2021, phát triển được 12 khách mới, trong đó có 2 nhà xuất khẩu gỗ lớn.
+
+HỌC VẤN
+2015 - 2019: Đại học Kinh tế Sông Hàn, ngành Kinh doanh Quốc tế (Ngoại thương).
+
+KỸ NĂNG
+Thuyết trình, đàm phán giá, CRM nội bộ, Excel. TOEIC 750, giao tiếp tốt qua điện thoại. Có bằng lái xe ô tô B2.
+
+THÀNH TÍCH
+Nhân viên kinh doanh của năm 2021. Xây dựng bảng so sánh cước hàng tuần cho toàn phòng.
+
+SỞ THÍCH
+Lướt sóng, đá bóng phong trào, xem bóng đá Anh, đi cà phê với bạn bè cuối tuần.
+#why Người bán cước, đúng ngành nhưng không làm chứng từ. CV nói rõ team khác làm. Xem B/L nháp có thể tính hoặc không nên dòng bộ chứng từ A. Bằng cấp và ngôn ngữ tốt, nên tuyển dụng có thể gọi đào tạo lại.
+=== lgc-07 | near-miss | hard | no | A U U U U A M U U A M
+ĐINH VĂN LỢI
+Nhân viên giao nhận hiện trường (Ops)
+SĐT: 0900 000 407 | Mail: loi.dinhvan@example.com | Hải An, Hải Phòng
+
+VÀI LỜI GIỚI THIỆU
+Em làm giao nhận ở cảng đã hơn 6 năm, xe máy và áo phản quang là bạn đồng hành. Chi cục nào, cảng nào, cửa nào em đều biết. Em mong muốn tìm công ty ổn định, được đóng bảo hiểm đầy đủ và có cơ hội học thêm phần văn phòng.
+
+QUÁ TRÌNH LÀM VIỆC
+04/2022 - nay: Công ty TNHH Dịch vụ Hàng hải Lạch Tray - Nhân viên hiện trường
+- Nhận bộ hồ sơ in sẵn từ phòng chứng từ, mang ra cảng Đình Vũ, Tân Vũ, Nam Hải để làm thủ tục. Đối chiếu số container, số seal và số kiện trên giấy với hàng thực tế.
+- Lấy lệnh giao hàng, đóng phí nâng hạ, đổi lệnh, thuê xe kéo về kho khách.
+- Hàng vào diện kiểm hóa thì trực tiếp dẫn cán bộ ra bãi, thuê công nhân rút hàng, cắt seal, chụp ảnh. Năm 2024 có lô 6 container thép vào luồng đỏ, phải đếm lại từng bó và ở lại đến tối, cuối cùng vẫn đủ số, làm xong trong ngày không để khách chịu phí lưu bãi.
+- Nộp đơn và đưa cán bộ thực vật ra lấy mẫu hàng cần kiểm dịch, mang mẫu hàng đi trung tâm kiểm định khi hàng cần kiểm tra chất lượng. Biết rõ giờ giấc và thủ tục của từng cơ quan.
+- Việc gõ tờ khai và tính thuế là của các chị văn phòng. Em chỉ mang tờ khai đã in ra để cán bộ đóng dấu và chưa dùng phần mềm khai báo lần nào.
+
+06/2020 - 03/2022: Công ty CP Vận tải Kim Bình Đông Bắc - Nhân viên điều xe
+- Điều phối đầu kéo, sắp lịch tài xế, thanh toán cầu đường, xử lý khi xe hỏng giữa đường.
+
+01/2019 - 05/2020: Xưởng cơ khí Tân Hưng - Phụ kho
+- Bốc xếp, kiểm đếm, phát vật tư theo phiếu.
+
+HỌC VẤN
+2016 - 2018: Trung cấp Kế toán Doanh nghiệp, Trường Trung cấp Kinh tế Kỹ thuật Lê Chân.
+
+KỸ NĂNG
+Biết Word, Excel cơ bản. Thông thuộc đường sá Hải Phòng. Lái xe nâng được. Tiếng Anh hạn chế, chỉ đọc được số container và tên cảng. Có quan hệ tốt với các anh em bãi.
+
+THÀNH TÍCH
+Ba năm liền được khách hàng khen vì không để xảy ra phí lưu cont do sót lịch.
+
+SỞ THÍCH
+Bóng chuyền hơi, đi câu ngoài cửa sông Cấm, sửa xe máy cho anh em.
+#why Hiểu cảng rất rõ nhưng tự nói không khai báo, không tiếng Anh. Sáu năm trong nghề nhưng phần "làm chứng từ" chỉ ở mức cầm giấy đi nộp: dòng kinh nghiệm A, đối chiếu giấy với hàng cũng A. Câu chuyện luồng đỏ cụ thể nên soft M.
+=== lgc-08 | non-fit | hard | no | U U U U U U U U A A K
+TẠ THU PHƯƠNG
+Kế toán thuế
+0900 000 408 | phuong.tathu@example.com | Long Biên, Hà Nội
+
+TÓM TẮT
+Chín năm làm kế toán thuế cho các công ty thương mại. Thành thạo mọi loại tờ khai thuế, biết rõ từng mã số thuế của khách hàng thân quen, quen làm việc với cán bộ thuế khi có đoàn thanh tra. Tôi thích công việc giấy tờ, chính xác đến từng đồng.
+
+KINH NGHIỆM LÀM VIỆC
+02/2020 - nay: Công ty CP Thương mại Thiết bị Hoàng Phú - Kế toán thuế
+- Lập tờ khai thuế GTGT theo tháng, tạm tính TNDN quý, quyết toán thuế năm trên HTKK, nộp qua cổng thuế điện tử.
+- Kiểm tra invoice đầu vào, hóa đơn đầu ra, phát hiện hóa đơn sai mã số thuế, yêu cầu người bán lập hóa đơn điều chỉnh.
+- Hạch toán thuế nhập khẩu và VAT hàng nhập căn cứ vào tờ khai hải quan do phòng xuất nhập khẩu gửi sang. Bản thân tôi không lập tờ khai hải quan, chỉ dùng bản sao làm chứng từ gốc.
+- Theo dõi tỷ giá, chênh lệch tỷ giá ngoại tệ khi thanh toán cho nhà cung cấp nước ngoài.
+- Giải trình với thanh tra thuế năm 2022 và 2025, chuẩn bị đầy đủ sổ sách, giữ hồ sơ theo năm tài chính.
+
+05/2017 - 01/2020: Công ty TNHH Dịch vụ Kế toán Thuế Hà Thành Việt - Nhân viên dịch vụ thuế
+- Nhận sổ sách của 15 doanh nghiệp nhỏ, kê khai thuế và BHXH.
+- Chốt thuế TNCN, làm hồ sơ hoàn thuế GTGT cho khách hàng có hàng xuất khẩu, đối chiếu với số liệu trên các tờ khai xuất khẩu do khách cung cấp.
+
+HỌC VẤN
+2013 - 2017: Đại học Tài chính Kế toán Hồng Châu, ngành Kế toán Doanh nghiệp. Bằng Giỏi.
+
+CHỨNG CHỈ
+Chứng chỉ Kế toán trưởng (2022). Chứng chỉ Đại lý thuế (2024).
+
+KỸ NĂNG
+HTKK, thuế điện tử, MISA, hóa đơn điện tử, Excel nâng cao. Đọc hiểu được hợp đồng và hóa đơn tiếng Anh ở mức cơ bản, chưa quen viết email.
+
+THÀNH TÍCH
+Giúp công ty hoàn được thuế GTGT 1,8 tỷ đồng năm 2021 mà không bị truy thu. Được ban giám đốc giao làm đầu mối đợt thanh tra thuế 2025.
+
+SỞ THÍCH
+Cắm hoa, đọc sách kinh tế, làm tình nguyện viên thu chi cho quỹ khuyến học của xã.
+#why Trùng rất nhiều chữ: tờ khai, thuế, hóa đơn, mã số, invoice, hải quan. Đây là kế toán, chính CV nói không lập tờ khai hải quan. Tiếng Anh có đọc hóa đơn, nhưng không viết email nên A. Chứng chỉ Đại lý thuế không phải khai hải quan nên bonus A.
+=== lgc-09 | non-fit | ordinary | no | U U U U U U U U A A K
+CAO NGỌC ÁNH
+Điều hành tour outbound và dịch vụ visa
+0900 000 409 | anh.caongoc@example.com | Phú Nhuận, TP.HCM
+
+GIỚI THIỆU NGẮN
+Sáu năm trong ngành du lịch. Tôi lo trọn vẹn một đoàn đi nước ngoài từ lúc lên lịch trình đến khi khách về đến sân bay Tân Sơn Nhất, và làm hồ sơ xin visa cho các thị trường khó như Schengen, Mỹ, Úc. Vì thị trường du lịch lên xuống thất thường, tôi muốn chuyển sang một ngành ổn định hơn, nơi vẫn dùng được khả năng làm hồ sơ cẩn thận của mình.
+
+KINH NGHIỆM
+07/2022 - nay: Công ty CP Du lịch Cánh Buồm Vàng - Trưởng nhóm điều hành outbound
+- Lập lịch trình và tính giá cho đoàn đi Hàn Quốc, Nhật Bản, Châu Âu, mỗi năm khoảng 80 đoàn.
+- Đặt vé máy bay, giữ chỗ với hãng hàng không, booking khách sạn, xe và hướng dẫn viên địa phương qua các đối tác nước ngoài (agent ở Seoul, Paris, Osaka), trao đổi email bằng tiếng Anh.
+- Theo dõi lịch bay, đổi chuyến khi hãng hủy, đón tiễn đoàn tại cảng hàng không, xử lý mất hành lý.
+- Kiểm tra hộ chiếu, chứng minh tài chính, thư mời, bảo hiểm trước khi nộp lãnh sự quán. Giữ tỷ lệ đậu visa Schengen trên 90%.
+- Phân công 4 nhân viên, kiểm hồ sơ khách, chốt danh sách đoàn, gửi tờ khai nhập cảnh mẫu cho trưởng đoàn.
+
+03/2020 - 06/2022: Công ty TNHH Lữ hành Đông Dương Xanh - Nhân viên visa
+- Chuẩn bị hồ sơ cá nhân cho khách, đặt lịch hẹn lãnh sự.
+- Dịch sao kê, giấy tờ từ tiếng Việt sang tiếng Anh. Lưu trữ giấy tờ khách theo mã đoàn.
+
+HỌC VẤN
+2015 - 2019: Đại học Văn hóa và Du lịch Phương Nam, Quản trị Dịch vụ Du lịch và Lữ hành.
+
+KỸ NĂNG VÀ NGOẠI NGỮ
+IELTS 6.0, viết email tốt, Amadeus cơ bản. Tính cách vui vẻ, cẩn thận, quen làm việc khi có sự cố gấp.
+
+THÀNH TÍCH
+Đã xử lý thành công đoàn 42 khách bị hủy chuyến ở Frankfurt năm 2023, đưa về đúng ngày. Nhân viên điều hành của năm 2024.
+
+SỞ THÍCH
+Du lịch bụi, học tiếng Pháp, nấu ăn cho bạn bè, đọc blog về hàng không.
+#why Trùng chữ: hồ sơ, booking, lịch trình, agent, cảng hàng không, tờ khai nhập cảnh. Không phải hàng hóa. Tiếng Anh có email với agent thật, nhưng chưa từng đọc chứng từ thương mại nên A. Cẩn thận chỉ là lời tự nhận, nhưng không nói gì về luồng đỏ nên K.
+=== lgc-10 | stuffing | ordinary | no | U U U U U U U U U U K
+MAI THỊ KIỀU OANH
+Chuyên viên Xuất Nhập Khẩu
+Tel: 0900 000 410 - Email: oanh.maithikieu@example.com - Thuận An, Bình Dương
+
+MỤC TIÊU NGHỀ NGHIỆP
+Mình đã có kinh nghiệm chứng từ xuất nhập khẩu, tự khai báo hải quan điện tử trên phần mềm ECUS (VNACCS), tra và áp được mã HS, tính thuế nhập khẩu và thuế ưu đãi đặc biệt, xin được C/O các form E, D, AK, làm và kiểm tra khớp bộ chứng từ gồm invoice, packing list, vận đơn. Quen thủ tục kiểm tra chuyên ngành như kiểm dịch, công bố hợp quy. Nắm các điều kiện Incoterms 2020. Bình tĩnh khi lô hàng bị phân luồng đỏ.
+
+TỪ KHÓA CHUYÊN MÔN
+ECUS5, VNACCS, VCIS, eCoSys, HS code, Form E, Form D, Form AK, C/O, CQ, invoice, packing list, B/L, AWB, FOB, CIF, EXW, DDP, DAP, Incoterms 2020, kiểm dịch, hợp quy, luồng đỏ, luồng vàng, Forwarder, chứng chỉ nghiệp vụ khai hải quan, TOEIC 800.
+
+KINH NGHIỆM LÀM VIỆC
+08/2023 - nay: Shop Mỹ Phẩm Xách Tay Hàn Quốc Kiều Oanh - Chủ shop online
+- Bán mỹ phẩm và quần áo trên Facebook, TikTok, Zalo.
+- Nhận đơn hàng từ khách, gom hàng từ các bạn sống ở Hàn và Nhật, thanh toán qua Momo.
+- Đóng gói, gửi chuyển phát nhanh nội địa, theo dõi đơn giao chậm và trả lời khách.
+- Làm livestream 2 buổi một tuần, đăng bài, chạy quảng cáo nhỏ.
+
+03/2021 - 07/2023: Công ty TNHH Giày Da Tân Lập Phát - Nhân viên văn phòng xưởng
+- Chấm công, in thẻ cho công nhân khu đế.
+- Chuyển giấy tờ giữa các phòng, đặt nước uống, gửi thư, dọn văn phòng sau giờ làm.
+- Ghi sổ cơm ca, thông báo lịch nghỉ lễ.
+
+01/2019 - 02/2021: Nhà hàng Hải Sản Sóng Biển - Thu ngân
+- Tính tiền, in hóa đơn, chốt tiền cuối ca, đặt nguyên liệu khi quản lý vắng.
+
+HỌC VẤN
+2016 - 2018: Cao đẳng Du lịch và Khách sạn Bình Minh Đông, ngành Quản trị Nhà hàng.
+
+KỸ NĂNG
+Bán hàng online, chụp hình sản phẩm, Canva. Giao tiếp tốt, siêng năng. Vui vẻ với khách.
+
+SỞ THÍCH
+Trang điểm, xem K-drama, học tiếng Hàn qua phim, đi cà phê.
+#why Đoạn mục tiêu chép từ ad và ô từ khóa dày đặc nhưng lịch sử làm việc là bán hàng online, văn phòng xưởng, thu ngân. Không có gì đằng sau nên U cả, chứng chỉ và TOEIC chỉ nằm trong ô từ khóa.
+=== lgc-11 | messy | hard | interview | M M M M M M M M M M A
+N G Ô   T H Ả O   V Y
+N H Â N   V I Ê N   C H Ứ N G   T Ừ
+Ð i ệ n  t h o ạ i :  0900 000 411
+Email:  vy.ngothao@example.com
+Kien An, Hai Phong
+
+G I Ớ I   T H I Ệ U
+Co gan 7 nam lam giay to hang hoa cho cong ty giao nhan va nha may. Tam nguyen voi nghe, thich cam giac mot bo ho so sach se tu dau den cuoi.
+
+K I N H   N G H I Ệ M
+05/2022 - nay
+Cong ty TNHH Linh Kien Dien Tu Mien Bac Tuong Lai
+Nhan vien chung tu xuat nhap khau
+• Moi thang khoang 60 to khai nhap va xuat linh kien, tu khai tren E C U S 5,
+theo doi luong, nop thue, sua to khai khi nha cung cap doi so luong.
+• Phan loai ma so, tra chu giai, tinh thue nhap khau, ap uu dai dac biet theo
+ACFTA, AKFTA, VKFTA de dua vao du toan cho phong mua hang.
+• Ðang ky C / O mau D, E, AK tren eCoSys cho hang xuat di, lap bang
+ke nguyen lieu theo tieu chi RVC va CTC.
+• So khop hoa don, phieu dong goi va van don, gui lai cho shipper khi sai,
+nhac ho sua truoc ngay tau chay.
+• Lam ho so hop quy cho ta i nghe, sac du phong (kiem dinh, dan dau CR), xin
+kiem dich go pallet. Biet ca quy trinh di lay mau.
+• Luu ho so theo nam, ho tro phong ke toan khi co kiem tra sau thong quan.
+
+08/2019 - 04/2022
+Cong ty CP Van Tai Quoc Te Thang Long Moi
+Nhan vien documents
+• Lam House B/L, debit note, thong bao hang den, nhan bo chung tu tu dai ly
+nuoc ngoai qua email. Viet mail tieng Anh ca ngay.
+• Lay booking voi hang tau, cap nhat lich tau cho khach, theo doi chuyen tai.
+• Tu van khach dieu kien FOB, CIF, DAP theo ban Incoterms 2020 moi ra.
+• Khai ho khoang 25 khach le, di cang Hai Phong khi can, xu ly lo bi yeu cau
+kiem tra thuc te.
+
+H O C   V A N
+2015 - 2019   Dai hoc Hang Hai Dong Bac Viet
+Nganh: Kinh te van tai bien
+Xep loai: Kha
+
+C H U N G   C H I
+Chung chi nghiep vu khai hai quan (2020)
+Toeic 640 (2023)
+
+K Y   N A N G
+ECUS5 / Excel / eCoSys / Cong mot cua quoc gia
+Can than, chiu kho, co trach nhiem
+
+S O   T H I C H
+Doc sach ve duong bien, nuoi meo, di bo bien Do Son
+Trang 1/1 ---- CV_NgoThaoVy_chungtu_moinhat.pdf
+#why Tiêu đề giãn chữ, mất dấu, Đ thành Ð, ECUS bị tách. Nội dung đủ mạnh. Tự nhận cẩn thận, không có câu chuyện luồng đỏ riêng ngoài "lô bị yêu cầu kiểm tra thực tế" nên soft A.
+=== lgc-12 | messy | ordinary | maybe | M A M M A M U M M A K
+T H Â N   Đ Ứ C   T R Ọ N G
+Nhân viên chứng từ hàng nhập - hãng đại lý tàu biển
+Ð T : 0900 000 412        trong.thanduc@example.com        Quan 4, TP HCM
+
+M U C   T I E U
+Làm chung tu chuyen sau hon, duoc hoc them chung tu xuat khau va hang kiem tra chuyen nganh.
+
+K I N H   N G H I E M   L A M   V I E C
+08/2024 - nay: Cong ty TNHH Dai Ly Tau Bien Nam Duong Toan Cau - Nhan vien chung tu
+- Lên to khai nhap tren ECUS, chu yeu la hang dien gia dung va do nhua tu Trung Quoc,
+Malaysia. Moi tuan khoang 12 to khai.
+- Dò ma so tren bieu thue, tinh thue nhap khau, thue tieu thu dac biet neu co, ap uu dai
+theo ACFTA, ATIGA.
+- Kiem hoa don, packing, B/L cua dai ly gui ve, bat ho sua khi sai ten hang, sai trong luong.
+- Moi lam C / O form E cho hang xuat tra lai Trung Quoc tren he thong cua Bo, form D va
+form AK thi chua tung lam. Phan lon la nhan C/O tu nhap khau, kiem tra va nop.
+- Viet email tieng Anh gui agent ben Singapore, Port Klang de xin bo chung tu.
+- Lay lich tau, doi lenh, dat cho khi co hang xuat tra. Doc CIF, CFR, FOB, FCA theo ban 2020 tren hop dong.
+- Hang kiem tra chuyen nganh thi anh truong phong lam. Minh chi moi xem qua, chua dung vao mang nay.
+
+10/2022 - 07/2024: Cong ty CP Dich Vu Thuong Mai Hong Nhat - Nhan vien bán hàng thiet bi van phong
+- Bán may in, may photocopy cho van phong nho; lap bao gia, giao hang, nhac cong no.
+
+06/2021 - 09/2022: Trung tam Tieng Anh Thai Duong - Tro giang
+- Huong dan tre em lam bai tap, ghi nhan xet moi buoi.
+
+H O C   V A N
+2017 - 2021: Dai hoc Kinh Te Cao Lanh
+Nganh Quan tri kinh doanh, chuyen nganh Quan tri chuoi cung ung (co 4 mon XNK)
+
+C H U N G   C H I
+TOEIC 655 (2024). MOS Excel.
+
+K Y   N A N G
+ECUS5, eCoSys (form E), Excel. Viet mail tieng Anh, doc hop dong ngoai thuong.
+
+D U   A N   C A   N H A N
+Viet tai lieu ngan ve loi thuong gap trong to khai cho nhan vien moi cong ty, 12 trang.
+Tu hoc khoa online ve Incoterms 2020 va giao dich thuong mai quoc te.
+
+S O   T H I C H
+Chay xe dap, hoc guitar, doc truyen kiem hiep
+#why Hai năm ba tháng đúng nghề. Quản trị kinh doanh chuyên ngành chuỗi cung ứng có môn XNK: tranh cãi về "gần tương đương". Chỉ form E, chưa D và AK: dòng C/O nhiều phần nên A. CV nói rõ chưa làm chuyên ngành.

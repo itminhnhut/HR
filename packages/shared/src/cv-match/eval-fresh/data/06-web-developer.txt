@@ -1,0 +1,86 @@
+@ad web-developer
+@occupation Lập trình viên web Fullstack
+@req experience | Kinh nghiệm: Từ 2 năm
+@req education | Học vấn: Cao đẳng trở lên
+@req skills | Thành thạo JavaScript/TypeScript và ReactJS
+@req skills | Có kinh nghiệm backend với Node.js hoặc Java Spring Boot
+@req skills | Làm việc tốt với cơ sở dữ liệu quan hệ (PostgreSQL hoặc MySQL)
+@req skills | Sử dụng Git và quen với quy trình Agile/Scrum
+@req language | Đọc hiểu tốt tài liệu kỹ thuật tiếng Anh
+@req skills bonus | Ưu tiên biết Docker hoặc AWS
+@req soft | Có trách nhiệm, làm việc nhóm tốt
+=== web-01 | strong | ordinary | interview | M M M M M M M M K
+NGUYỄN ĐỨC ANH
+Fullstack Developer
+Kinh nghiệm: 03/2022 - nay, Công ty Phần mềm CodeViet. Phát triển hệ thống đặt vé bằng ReactJS, TypeScript, NestJS (Node.js), PostgreSQL.
+Dùng Git, làm Scrum với sprint 2 tuần. Đóng gói bằng Docker, triển khai lên AWS.
+Học vấn: Đại học Bách khoa Hà Nội, Công nghệ thông tin, 2021.
+Tiếng Anh: đọc tài liệu kỹ thuật tốt, TOEIC 720.
+=== web-02 | strong | ordinary | interview | M M M M M M M A K
+TRAN QUOC BAO
+Full-stack Software Engineer
+Sunrise Soft (outsourcing), Jul 2021 - Present
+Built web apps with React, Next.js, TypeScript on the front end and Spring Boot on the back end. MySQL schema design and query tuning. GitLab flow, Agile ceremonies.
+BSc Computer Science, HCMC University of Technology, 2021
+English: read and write technical documentation daily, IELTS 6.0
+=== web-03 | strong | ordinary | interview | M M M M M M M A K
+PHẠM THÙY LINH
+Lập trình viên web
+2023 - nay: Công ty TNHH Giải pháp Số Hưng Thịnh, làm frontend React + TS, viết API bằng Express (NodeJS), lưu trữ MySQL. Quản lý mã nguồn GitHub, họp daily theo Scrum.
+2022 - 2023: Thực tập rồi lập trình viên junior cùng công ty.
+Cao đẳng FPT Polytechnic, Lập trình web, 2022
+Tự đọc tài liệu tiếng Anh, chưa có chứng chỉ, thường xuyên đọc docs React và MDN.
+=== web-04 | partial | ordinary | maybe | M M M U U M M A K
+VÕ MINH KHOA
+Frontend Developer
+05/2022 - nay: Frontend tại Công ty Thương mại điện tử Bee. Xây dựng giao diện bằng ReactJS, TypeScript, Redux, Tailwind. Git flow, Scrum.
+Không làm phía server, gọi REST API có sẵn.
+Đại học Công nghệ Thông tin, Kỹ thuật phần mềm, 2022. TOEIC 650.
+=== web-05 | partial | ordinary | maybe | U M M M M M U A K
+ĐINH THỊ HẠNH
+Junior Developer
+10/2025 - nay: Lập trình viên junior, Startup HealthPlus. React, TypeScript, Node.js, PostgreSQL, Git, Scrum.
+Đại học Thủy Lợi, Công nghệ thông tin, 2025
+=== web-06 | near-miss | ordinary | maybe | M M U M M M M M K
+HOÀNG VĂN NAM
+Backend Developer
+2020 - nay: Java Backend, Công ty Tài chính số MoneyOne. Java Spring Boot, Oracle, PostgreSQL, Kafka. Git, Scrum, Docker. Làm rất ít frontend.
+Đại học Giao thông Vận tải, CNTT, 2020. IELTS 6.5.
+=== web-07 | near-miss | ordinary | no | M M U U U U U A K
+ĐẶNG THỊ THU
+Nhân viên kiểm thử phần mềm (Manual Tester)
+2021 - nay: Tester, Công ty Phần mềm An Khang: viết test case, test thủ công, báo lỗi trên Jira.
+Cao đẳng CNTT, 2020
+=== web-08 | near-miss | ordinary | no | M M U U U U U A K
+LÝ QUANG HUY
+WordPress Developer
+2022 - nay: Làm web bán hàng bằng WordPress, cài theme, chỉnh PHP, CSS, jQuery cho khách SME.
+Cao đẳng Thiết kế web, 2021. MySQL mức dùng plugin cũng không tự thiết kế.
+=== web-09 | non-fit | ordinary | no | A U U U U U U A K
+MAI THANH TÙNG
+Thợ sửa xe máy
+2015 - nay: Tiệm sửa xe Thanh Tùng.
+Trung cấp nghề Công nghệ ô tô.
+=== web-10 | stuffing | hard | no | U U U U U U U U K
+CAO THỊ HỒNG
+Mục tiêu: Software Engineer. Skills: JavaScript TypeScript ReactJS Node.js Spring Boot Java PostgreSQL MySQL Git Agile Scrum Docker AWS Kubernetes Python Go Rust Angular Vue GraphQL Redis MongoDB
+Kinh nghiệm: 2024 - nay, nhân viên nhập liệu, Công ty Bảo hiểm Toàn Cầu. Nhập hồ sơ khách hàng vào Excel.
+Học vấn: THPT Nguyễn Du, 2023. Đang tìm hiểu lập trình trên YouTube.
+=== web-11 | messy | hard | interview | M M M M M M U A K
+L Ậ P  T R Ì N H  V I Ê N   W E B
+BÙI TUẤN KIỆT
+SKILLS            WORK EXPERIENCE
+React, TypeS-     01/2023 - nay  Công ty Phần mềm Nhất Nam
+cript, Node.js,   Fullstack Developer, làm dashboard quản lý
+PostgreSQL,       kho, Scrum team 6 người
+Git               06/2021 - 12/2022  Web Developer, Cty TNHH
+EDUCATION         Sóng Xanh
+ĐH Cần Thơ
+CNTT 2021
+=== web-12 | partial | hard | maybe | M M U U A M M A K
+TRẦN GIA BẢO
+Lập trình viên
+2020 - 2023: Lập trình viên .NET, Công ty Phần mềm Kế toán Đại Việt, C#, ASP.NET MVC, SQL Server, Azure DevOps.
+2023 - nay: Lập trình viên Angular + .NET Core. Git, Scrum.
+Đại học Sư phạm Kỹ thuật, CNTT, 2020. Đọc tài liệu kỹ thuật tiếng Anh tốt.
+Không dùng Docker, AWS.
