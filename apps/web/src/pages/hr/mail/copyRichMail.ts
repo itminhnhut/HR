@@ -1,3 +1,5 @@
+import { flattenForPaste } from './flattenForPaste';
+
 export type CopyMailResult = 'copied' | 'unsupported' | 'failed';
 
 /**
@@ -8,7 +10,7 @@ export async function copyRichMail(html: string, text: string): Promise<CopyMail
   if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) return 'unsupported';
   try {
     const item = new ClipboardItem({
-      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/html': new Blob([flattenForPaste(html)], { type: 'text/html' }),
       'text/plain': new Blob([text], { type: 'text/plain' }),
     });
     await navigator.clipboard.write([item]);
