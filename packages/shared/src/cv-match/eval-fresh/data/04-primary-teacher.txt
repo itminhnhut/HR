@@ -1,0 +1,78 @@
+@ad primary-teacher
+@occupation Giáo viên tiểu học
+@req experience | Kinh nghiệm: Từ 2 năm
+@req education | Học vấn: Đại học trở lên
+@req education | Tốt nghiệp Đại học Sư phạm chuyên ngành Giáo dục Tiểu học
+@req experience | Đã từng làm giáo viên chủ nhiệm lớp
+@req skills | Soạn giáo án và dạy theo chương trình GDPT 2018
+@req skills | Ứng dụng tốt CNTT trong giảng dạy
+@req language | Tiếng Anh tối thiểu B1 hoặc tương đương
+@req soft | Yêu trẻ, kiên nhẫn, có tác phong sư phạm
+=== tea-01 | strong | ordinary | interview | M M M M M M M K
+NGUYỄN THỊ MINH HUYỀN
+Giáo viên tiểu học
+09/2020 - nay: Giáo viên chủ nhiệm lớp 3, Trường Tiểu học Hoàng Diệu, Hà Nội
+Soạn kế hoạch bài dạy theo chương trình giáo dục phổ thông 2018. Dùng PowerPoint, Canva, Azota trong tiết học.
+Học vấn: Đại học Sư phạm Hà Nội, ngành Giáo dục Tiểu học, 2020
+Ngoại ngữ: Tiếng Anh B1 khung châu Âu.
+=== tea-02 | strong | ordinary | interview | M M M M M M M K
+LÊ THỊ THANH BÌNH
+Hơn 4 năm đứng lớp ở bậc tiểu học
+Trường Tiểu học Lê Quý Đôn, Huế (08/2022 - hiện tại): chủ nhiệm lớp 1, lớp 2. Dạy Toán, Tiếng Việt theo sách giáo khoa mới của chương trình 2018,
+viết giáo án, làm bài giảng điện tử, dùng Google Classroom và Quizizz.
+Cử nhân Sư phạm Giáo dục Tiểu học, Đại học Sư phạm Huế, 2022
+TOEIC 520
+=== tea-03 | strong | ordinary | interview | M M M M M M M K
+HOANG MINH THU
+Primary School Homeroom Teacher
+Sao Khue Primary School, Sep 2021 - Present. Homeroom teacher of Grade 4. Lesson planning for the 2018 General Education Curriculum.
+Use interactive whiteboards, Google Workspace for Education and Kahoot in class.
+Bachelor of Education in Primary Education, Thai Nguyen University of Education, 2021
+English: B2 (VSTEP)
+=== tea-04 | partial | ordinary | maybe | M M U U M M M K
+TRẦN THỊ KIM NGÂN
+Giáo viên tiếng Anh tiểu học
+2022 - nay: Giáo viên bộ môn Tiếng Anh, Trường Tiểu học Ngôi Sao. Dạy khối 3, 4, 5 theo chương trình 2018, soạn giáo án, ứng dụng PowerPoint và phần mềm trình chiếu.
+Đại học Sư phạm TP.HCM, Sư phạm Tiếng Anh, 2022. IELTS 6.5.
+=== tea-05 | partial | ordinary | maybe | M U U M M M U K
+PHẠM THỊ LỆ
+Giáo viên tiểu học, 8 năm kinh nghiệm
+2018 - nay: Trường Tiểu học xã Yên Mỹ. Chủ nhiệm lớp 2, lớp 5. Soạn giáo án theo chương trình GDPT 2018, dùng PowerPoint, Olm.
+Cao đẳng Sư phạm Tiểu học, Hưng Yên, 2018
+=== tea-06 | partial | ordinary | maybe | U M M M M M M K
+ĐỖ THU TRANG
+Giáo viên tiểu học mới vào nghề
+09/2025 - nay: Giáo viên chủ nhiệm lớp 2, Trường Tiểu học Thăng Long. Giáo án chương trình GDPT 2018, dùng bảng tương tác, Canva.
+Đại học Sư phạm Thái Nguyên, Giáo dục Tiểu học, 2025. Tiếng Anh B1.
+=== tea-07 | near-miss | ordinary | no | A M U A U M U K
+VŨ THỊ HẢI
+Giáo viên mầm non
+2021 - nay: Giáo viên lớp lá, chủ nhiệm lớp 5 tuổi, Trường Mầm non Hoa Mai. Soạn kế hoạch hoạt động theo chương trình giáo dục mầm non. Dùng PowerPoint, Kidsmart.
+Đại học Sư phạm Mầm non, Hải Phòng, 2020
+=== tea-08 | near-miss | ordinary | maybe | M M U M M M U K
+NGÔ VĂN SƠN
+Giáo viên Ngữ văn THCS
+08/2021 - nay: Giáo viên chủ nhiệm lớp 7, Trường THCS Trần Phú. Dạy Ngữ văn theo chương trình GDPT 2018, soạn giáo án điện tử.
+Cử nhân Sư phạm Ngữ văn, Đại học Vinh, 2021
+=== tea-09 | non-fit | ordinary | no | A M U U U U U K
+LÂM TUẤN KIỆT
+Nhân viên kinh doanh bất động sản
+2019 - nay: Tư vấn dự án chung cư, Công ty Địa ốc Phú Gia.
+Đại học Kinh tế, Quản trị kinh doanh, 2018
+=== tea-10 | stuffing | hard | no | U U U U U U U K
+MẠC THỊ DUNG
+Giáo viên chủ nhiệm, giáo án, GDPT 2018, Đại học Sư phạm, Giáo dục Tiểu học, tiếng Anh B1, ứng dụng CNTT, yêu trẻ, kiên nhẫn, tác phong sư phạm, 3 năm kinh nghiệm giảng dạy
+Công việc: 06/2025 - nay, nhân viên bán vé, Rạp phim Sao Việt
+Trình độ: THPT
+=== tea-11 | messy | hard | interview | M M M M M M M K | nfd
+GIÁO VIÊN TIỂU HỌC     KINH NGHIỆM GIẢNG DẠY
+TRƯƠNG THỊ HOÀI        Tháng 9 năm 2019 đến nay, Trường Tiểu
+HỌC VẤN                học Võ Thị Sáu, TP Thủ Đức, chủ nhiệm
+Đại học Sư phạm        lớp 5, soạn kế hoạch bài dạy theo
+TP.HCM - Giáo dục      Chương trình GDPT 2018. Thiết kế bài
+Tiểu học (2019)        giảng bằng PowerPoint, Canva.
+NGOẠI NGỮ: B1 Tiếng Anh
+=== tea-12 | messy | hard | maybe | K K K K K K K K
+(cid:36)(cid:72)(cid:79)(cid:80)(cid:3)(cid:42)(cid:76)(cid:105)(cid:82)(cid:3)(cid:89)(cid:76)(cid:105)(cid:81)
+(cid:21)(cid:19)(cid:20)(cid:27)(cid:3)(cid:16)(cid:3)(cid:81)(cid:68)(cid:92)
+(cid:55)(cid:85)(cid:109)(cid:82)(cid:81)(cid:74)(cid:3)(cid:55)(cid:76)(cid:105)(cid:88)(cid:3)(cid:75)(cid:108)(cid:70)

@@ -1,0 +1,459 @@
+@ad sales-engineer
+@occupation Kỹ sư kinh doanh (Sales Engineer) thiết bị cơ điện
+@req experience | Tối thiểu 2 năm bán hàng kỹ thuật (B2B) trong lĩnh vực thiết bị cơ điện, máy công nghiệp hoặc tự động hoá
+@req education | Bằng kỹ sư hoặc cử nhân khối kỹ thuật (điện, cơ khí, nhiệt lạnh, tự động hoá)
+@req skills | Tư vấn được giải pháp, chọn đúng model thiết bị theo điều kiện vận hành của khách
+@req skills | Tự làm báo giá và hồ sơ kỹ thuật dự thầu
+@req skills | Có khả năng tự tìm khách mới, tiếp cận nhà thầu cơ điện, chủ đầu tư, đơn vị tư vấn thiết kế
+@req skills | Theo sát đơn hàng từ khi ký đến khi giao hàng và thu hồi công nợ
+@req skills | Dùng CRM hoặc Excel để quản lý cơ hội bán hàng, báo cáo pipeline hằng tháng
+@req language | Tiếng Anh giao tiếp tốt, trao đổi được với hãng nước ngoài (TOEIC 600 hoặc tương đương)
+@req licence | Có bằng lái ô tô B2 trở lên
+@req skills bonus | Từng đạt doanh số cá nhân trên 5 tỷ đồng mỗi năm là điểm cộng
+@req soft | Năng động, thuyết trình tự tin, chịu áp lực doanh số
+@req soft | Sẵn sàng đi công tác thường xuyên các tỉnh miền Trung
+=== sen-01 | strong | ordinary | interview | M M M M M M M M M M M M
+VÕ ANH KHOA
+Kỹ sư kinh doanh khu vực - Bơm công nghiệp và biến tần
+Tel 0900 000 201 | khoa.voanh@example.com | Hải Châu, Đà Nẵng | Sinh năm 1991
+
+TÓM TẮT
+Mười hai năm trong ngành thiết bị: ba năm đầu đi sửa máy cho khách, sau đó chuyển hẳn sang bán. Vì từng cầm cờ lê nên khi ngồi với trưởng phòng kỹ thuật nhà máy tôi nói được cùng ngôn ngữ với họ. Hiện tìm một hãng có dòng sản phẩm rộng hơn để mở thêm thị trường Tây Nguyên.
+
+QUÁ TRÌNH LÀM VIỆC
+02/2020 - nay | Công ty TNHH Thiết bị Công nghiệp Hương Giang Phát | Kỹ sư kinh doanh khu vực Trung Bộ
+- Giữ địa bàn từ Quảng Bình tới Khánh Hòa, mỗi tháng tự lái xe đi tuyến ít nhất 10 ngày.
+- Xuống tận nhà máy thủy sản, nhà máy nước, xưởng dệt để đo cột áp, xem môi chất, lưu lượng, rồi đề xuất loại bơm, vật liệu cánh, công suất biến tần. Từng đổi cấu hình cho một nhà máy đường, giảm 18% điện năng trạm bơm so với phương án cũ.
+- Tự viết bảng chào giá, bảng đáp ứng thông số, hồ sơ năng lực khi dự thầu nhà máy nước và bệnh viện tỉnh. Thương lượng chiết khấu, tiến độ giao và điều khoản bảo hành với bên mua.
+- Khách mới phần lớn do tự săn: lấy danh sách dự án từ báo đấu thầu, gọi điện lạnh, ghé ban quản lý dự án và các văn phòng thiết kế để đưa hàng vào chỉ định kỹ thuật, kết bạn với chỉ huy trưởng của nhà thầu lắp máy.
+- Làm việc qua email và họp trực tuyến với nhà máy ở Ý về giá đặc biệt và lịch sản xuất, nhiều đơn phải đẩy sớm vì khách gấp.
+- Bám đơn đến lúc giao tại chân công trình, ký nghiệm thu, rồi nhắc thanh toán từng đợt. Năm 2024 tỷ lệ nợ quá hạn trên danh mục của tôi dưới 3%.
+- Nhập từng cơ hội vào Zoho CRM, họp phễu bán hàng đầu mỗi tháng với giám đốc kinh doanh, dự báo doanh số quý.
+- Doanh số cá nhân: 2023 đạt 8,2 tỷ; 2024 đạt 9,6 tỷ; 2025 đạt 11,3 tỷ. Chỉ tiêu năm nào cũng tăng, có hai quý không đạt và phải chạy bù.
+
+07/2017 - 01/2020 | Công ty CP Máy và Thiết bị Sông Hàn | Nhân viên kinh doanh kỹ thuật
+- Bán động cơ điện, hộp giảm tốc cho xưởng gỗ và nhà máy gạch ở Quảng Nam, Quảng Ngãi, Bình Định.
+- Trình bày sản phẩm trong hội thảo kỹ thuật do công ty tổ chức, có lần trước khoảng 60 kỹ sư.
+
+06/2014 - 06/2017 | Xưởng Dịch vụ Kỹ thuật Thành Lợi | Kỹ thuật viên dịch vụ
+- Bảo dưỡng bơm và tủ điều khiển tại nhà máy khách hàng, lập phiếu hiện trường.
+
+HỌC VẤN
+2009 - 2014 | Đại học Kỹ thuật Miền Trung Việt | Kỹ sư Tự động hóa.
+
+KỸ NĂNG, NGOẠI NGỮ, BẰNG CẤP
+Zoho CRM, Excel, AutoCAD đủ để đọc bản vẽ trạm bơm. TOEIC 725 (2023). Giấy phép lái xe hạng B2. Khóa kỹ năng đàm phán, Viện Doanh trí Thái Dương (2022).
+
+SỞ THÍCH
+Bơi biển sáng sớm, đọc lịch sử cận đại, đá bóng với hội kỹ sư Đà Nẵng.
+#why Đủ mọi mặt. Đi tuyến miền Trung, chỉ tiêu tăng, hội thảo 60 người là bằng chứng cụ thể cho hai dòng soft.
+=== sen-02 | strong | hard | interview | M M M M M M M M U M M M
+HO THI THANH VAN
+Regional Sales Engineer - Cooling Equipment
+Phone: 0900 000 202 | Email: van.hothi@example.com | Son Tra, Da Nang
+
+SUMMARY
+Refrigeration engineer who moved from design office to field sales seven years ago. I look after building owners, mechanical contractors and consultants across Central Vietnam and help them pick the right plant, not the biggest one. I enjoy long technical conversations and hard commercial ones equally.
+
+EMPLOYMENT HISTORY
+Apr 2021 - Present | Regional Sales Engineer | Thai Viet Climate Solutions JSC
+- Territory: Hue, Da Nang, Quang Nam, Quang Ngai, Binh Dinh, Khanh Hoa. On the road about two weeks in every month, usually by company car with a driver.
+- Visit hotels and factories to review load profile, plant room space and water quality, then recommend chiller type, air handlers and controls. Won the Bai Dai Resort retrofit by proposing magnetic-bearing units with a four-year payback.
+- Build priced proposals, compliance tables and full technical bid packages on my own; attend tender clarification meetings and negotiate payment terms with procurement teams.
+- Open new accounts through consultant specification visits, site walk-ins and contractor lunch seminars. 11 of my 26 active accounts in 2025 were first-time buyers.
+- Handle factory-side pricing and lead time with the principal's export desk in Thailand; weekly calls in English.
+- Follow each order through shipping, site delivery, start-up and retention release. Personally chase overdue invoices with the customer's accountant before passing to legal.
+- Keep all opportunities in Salesforce, present stage-by-stage forecast at the monthly regional review.
+- Personal booked sales: 2023 VND 7.4 billion, 2024 VND 12.1 billion, 2025 VND 9.8 billion against a rising quota.
+- Run product talks for the local chapter of the engineers' association, typically 40 to 80 people.
+
+Jul 2019 - Mar 2021 | Technical Sales Executive | Hai An Refrigeration Trading Co., Ltd
+- Sold condensing units and cold room panels to seafood processors in Khanh Hoa and Phu Yen.
+- Prepared quotations, explained capacity selection and tracked deliveries.
+
+Sep 2016 - Jun 2019 | Junior HVAC Design Engineer | Linh Dam Consulting Engineers
+- Heat load sheets, duct sizing, equipment schedules for offices and clinics.
+
+EDUCATION
+2011 - 2016 | Engineer's degree, Thermal Engineering, Duyen Hai University of Technology.
+
+LANGUAGES AND SKILLS
+English: IELTS 6.5 (2022), daily email and calls with principal. Salesforce, Excel, HAP, basic AutoCAD. Company presentation trainer since 2024.
+
+INTERESTS
+Scuba diving, cooking for friends, a monthly book club on behavioural economics.
+#why Toàn tiếng Anh, doanh số nêu bằng tỷ. Không nhắc gì đến bằng lái, còn đi xe công ty có tài xế nên dòng B2 là U theo luật. Thiếu mục này vẫn đáng phỏng vấn.
+=== sen-03 | strong | ordinary | interview | M M M M M M M M M A A M
+NGUYEN THI HOAI THU
+Nhan vien kinh doanh ky thuat - may nen khi va may phat dien
+DT: 0900 000 203 | thu.nguyenhoai@example.com | TP Vinh, Nghe An
+
+VAI DONG VE BAN THAN
+La con gai hoc co khi nen hay bi khach hoi "em co chac khong?". Sau vai lan xuong xuong tinh ap suat va do ro ri cho ho xem thi khong ai hoi nua. Minh di nhieu, thich gap khach, thich nhat la luc khach goi lai dat them may vi may cu chay on.
+
+KINH NGHIEM
+05/2022 - nay: Cong ty TNHH May Cong Nghiep Lam Hong - Ky su kinh doanh
+- Phu trach Nghe An, Ha Tinh, Quang Binh va Thanh Hoa, moi tuan toi thieu 2 ngay ngoai tinh.
+- Xuong nha may go, nha may bia, xuong may de kiem tra nhu cau khi nen, tinh luu luong, chon may truc vit co bien tan hay khong, bo sung may say va binh chua.
+- Tu lam bao gia, bang thong so, ho so thau cho may phat dien cua benh vien huyen va nha may nuoc. Ngoi lai voi phong mua hang chot gia, thoi han thanh toan.
+- Tu kiem khach moi: di tung khu cong nghiep, xin danh sach nha thau lap may, quen them may anh thiet ke o van phong tu van o Vinh.
+- Theo don hang tu khi ky, giao may, chay thu, den khi tien ve du. Khach nao tre 30 ngay la minh goi va den tan noi.
+- Co cac tap Excel theo doi co hoi theo giai doan, gui truong phong ngay 28 moi thang. Co ghi cac du an sap dau thau trong 6 thang toi.
+- Viet email cho nha may o Dai Loan xin gia dac biet va ngay giao, co hop truc tuyen voi ky su cua ho.
+- Chi tieu nam 2025 la 3,5 ty, dat 3,8 ty. Nam 2024 dat 3,1 ty.
+
+08/2019 - 04/2022: Cong ty CP Thiet bi Va Ky thuat Dai Tin - Ky thuat vien kiem hang va ho tro ban hang
+- Lap dat, chay thu may nen khi tai xuong khach, lap phieu nghiem thu.
+- Di cung nhan vien kinh doanh de giai thich ky thuat, nho do hoc duoc cach len bao gia.
+
+HOC VAN
+2014 - 2019: Dai hoc Cong nghe Bac Trung, Ky su Co khi Che tao may.
+
+NGOAI NGU VA KY NANG
+TOEIC 610 (2024). Word, Excel kha, AutoCAD doc ban ve.
+Bang lai xe hang B2, lai xe cong ty di tinh.
+Cao ap duoc phap: chung nhan an toan binh ap luc (2023).
+
+HOAT DONG KHAC
+Tung lam thu quy hoi cuu sinh vien khoa Co khi. Thich leo nui, trong rau tren san thuong, nau an cho ca nha cuoi tuan.
+#why Viết không dấu do thói quen. Doanh số cao nhất 3,8 tỷ nên bonus 5 tỷ không đạt: A. Có chỉ tiêu nhưng không có thuyết trình, chỉ tự mô tả "thích gặp khách": A.
+=== sen-04 | strong | hard | maybe | M M M M M M M U M M A K
+LƯƠNG ĐỨC THỌ
+Kỹ sư kinh doanh tủ điện và thiết bị đóng cắt
+Điện thoại: 0900 000 204
+Email: tho.luongduc@example.com
+Địa chỉ: Từ Sơn, Bắc Ninh
+Tình trạng: đã kết hôn, hai con
+
+GIỚI THIỆU NGẮN
+Tôi tốt nghiệp ngành điện, đã có gần chín năm trong nghề, trong đó hơn ba năm rưỡi là trực tiếp đi bán. Hiện công ty cũ tái cơ cấu nên muốn tìm nơi mới. Tôi có một điểm yếu cần nói trước để tránh mất thời gian đôi bên: ngoại ngữ của tôi chưa tốt, nghe nói không được, đọc chỉ đủ tra thông số trên catalogue nên từ trước đến giờ chưa trực tiếp trao đổi với đối tác nước ngoài.
+
+KINH NGHIỆM LÀM VIỆC
+Tháng 3/2023 đến nay
+Công ty CP Thiết bị Điện Trường Anh, chức danh Kỹ sư kinh doanh
+- Bán tủ phân phối, tủ tụ bù, máy cắt, ATS cho nhà máy và nhà thầu điện ở Bắc Ninh, Bắc Giang, Hải Dương, Hải Phòng.
+- Gặp phòng kỹ thuật khách, đọc sơ đồ một sợi, xem phụ tải, dòng ngắn mạch để chọn dòng máy cắt và cấu hình tủ, có lúc phản biện cả bản thiết kế của tư vấn khi thấy thừa thiếu.
+- Tự viết bảng báo giá và phần thuyết minh kỹ thuật trong hồ sơ dự thầu, ngồi với chủ đầu tư thương lượng giá, đổi điều khoản thanh toán.
+- Trong ba năm tự mở được gần 30 đầu khách mới bằng cách đi dạo các khu công nghiệp mới, tìm nhà thầu đang trúng gói điện, kết nối với kỹ sư thiết kế.
+- Bám đơn từ lúc ký đến khi tủ về chân công trình, đóng điện, rồi đi đòi tiền đợt cuối cùng kế toán.
+- Việc trao đổi giá và lịch hàng với hãng ở nước ngoài do trưởng phòng làm, tôi chỉ gửi yêu cầu bằng tiếng Việt cho trưởng phòng.
+- Theo dõi cơ hội trên file Excel chung, cập nhật mỗi thứ Sáu, tổng hợp báo cáo cuối tháng về số dự án đang theo và khả năng chốt.
+- Doanh số cá nhân: năm 2024 là 4,6 tỷ, năm 2025 là 5,4 tỷ.
+- Thi thoảng giới thiệu sản phẩm mới cho phòng kỹ thuật của khách, thường từ 5 đến 10 người.
+
+Tháng 4/2018 đến tháng 2/2023
+Công ty TNHH Lắp máy Điện Đông Anh Xanh, chức danh Kỹ sư thi công
+- Lắp tủ trung thế, hạ thế, thí nghiệm hiệu chỉnh và đóng điện cho các trạm biến áp nhà xưởng.
+- Làm hồ sơ quyết toán, đo kiểm cùng điện lực.
+
+HỌC VẤN
+2013 - 2018, Đại học Năng lượng Kinh Bắc, Kỹ sư Hệ thống điện.
+
+BẰNG CẤP KHÁC
+Chứng chỉ tiếng Anh TOEIC 355 (2017, khi ra trường). Bằng lái xe B2. An toàn điện bậc 5.
+
+KỸ NĂNG
+Đọc bản vẽ điện, Excel, ETAP mức cơ bản. Thương lượng, giữ quan hệ lâu dài với khách.
+
+SỞ THÍCH
+Cầu lông, đi câu ở hồ, đưa con đi học võ cuối tuần.
+#why Làm nghề tốt và vượt 5 tỷ một năm, nhưng tiếng Anh tự nhận không dùng được, TOEIC 355, đúng thứ ad cần khi trao đổi với hãng. Chỉ làm ở miền Bắc, không nói đến miền Trung nên K. Có thể phỏng vấn hoặc không.
+=== sen-05 | partial | hard | maybe | U M M A A A M A M A K M
+PHAN VĂN NGHĨA
+Kỹ sư dịch vụ - chuyển sang Kinh doanh máy phát điện
+0900 000 205 | nghia.phanvan@example.com | Liên Chiểu, Đà Nẵng
+
+VỀ TÔI
+Tám năm đi sửa máy phát cho khách từ Huế vào Nha Trang, tôi quen đường, quen máy, quen luôn anh em trưởng ca. Năm ngoái được sếp đề nghị thử sang kinh doanh và tôi nhận lời. Bán hàng còn mới với tôi nhưng khách vẫn tìm tôi khi cần chọn máy vì tin tôi hiểu thiết bị.
+
+KINH NGHIỆM LÀM VIỆC
+07/2025 - nay: Công ty TNHH Điện Lực Dự Phòng Tân Sơn - Nhân viên kinh doanh kỹ thuật
+- Khách chủ yếu do phòng dịch vụ chuyển sang, là các nhà máy và khách sạn đang dùng máy của công ty. Có đi chào thêm vài nhà máy ở khu công nghiệp Hòa Khánh mới, chưa chốt được đơn nào.
+- Xem phụ tải khởi động, độ cao, môi trường, tiếng ồn cho phép để đề xuất máy phát, tủ chuyển nguồn, vỏ cách âm.
+- Làm báo giá theo mẫu của công ty. Hồ sơ dự thầu thì mới phụ chị trưởng nhóm phần thông số kỹ thuật một lần ở dự án bệnh viện, chưa tự làm trọn bộ.
+- Theo dõi giao máy, lắp đặt và chạy thử. Việc đòi tiền do kế toán công nợ nhắc, tôi chỉ gọi hỗ trợ khi cần.
+- Ghi các báo giá đã gửi và khả năng chốt vào file Excel, gửi trưởng phòng mỗi cuối tháng.
+
+06/2017 - 06/2025: Công ty TNHH Điện Lực Dự Phòng Tân Sơn - Kỹ sư dịch vụ
+- Bảo dưỡng định kỳ, thay lọc, thử tải, sửa board điều khiển cho máy phát 100 - 2.000 kVA.
+- Đi công tác dài ngày Huế, Quảng Trị, Quảng Ngãi, Quy Nhơn, Nha Trang, thường xuyên trực đêm khi có bão.
+- Đọc manual bằng tiếng Anh, viết báo cáo lỗi ngắn gửi cho kỹ sư hỗ trợ của hãng qua email.
+- Dạy lại 3 kỹ thuật viên mới cách đọc mã lỗi và vận hành thử.
+
+HỌC VẤN
+2012 - 2017: Đại học Công nghệ Sông Thu, Kỹ sư Cơ điện tử.
+
+NGOẠI NGỮ
+TOEIC 520 (2021). Nghe nói còn chậm, viết email kỹ thuật được.
+
+BẰNG CẤP VÀ KỸ NĂNG
+Bằng lái xe hạng B2. Chứng nhận an toàn điện. Word, Excel căn bản, xem được bản vẽ điện.
+Doanh số năm đầu làm kinh doanh tính đến tháng 10/2026 là 1,9 tỷ đồng, kế hoạch 3 tỷ.
+
+HOẠT ĐỘNG
+Đội trưởng đội bóng công ty. Thích đi xe máy đường dài, chụp ảnh đèo Hải Vân và tình nguyện sửa điện sau bão cho bà con vùng Đại Lộc.
+#why Mới 1 năm 4 tháng bán hàng, tám năm trước là dịch vụ nên U. Báo giá có, thầu chỉ phụ; khách mới có đi chào nhưng chưa chốt; công nợ do kế toán: đều có phần có phần không. TOEIC 520 nhưng email được với hãng: A.
+=== sen-06 | partial | ordinary | maybe | M U A M M M M U M M M K
+TRẦN THỊ KIM OANH
+Trưởng nhóm kinh doanh dự án - Dây cáp điện và phụ kiện
+0900 000 206 / oanh.trankim@example.com / Long Biên, Hà Nội
+
+MỤC TIÊU
+Chị em trong ngành hay gọi tôi là "bà cáp". Sau bảy năm tôi quen gần hết các nhà thầu điện lớn nhỏ ở miền Bắc. Tôi muốn sang một công ty có chính sách dự án rõ ràng hơn, có thưởng theo doanh số thực thu.
+
+KINH NGHIỆM
+01/2021 - nay: Công ty CP Dây Cáp Điện Ngọc Hà - Trưởng nhóm kinh doanh dự án
+- Chào cáp trung thế, hạ thế, máng cáp, thang cáp cho nhà thầu cơ điện và các chủ đầu tư nhà ở, nhà xưởng, trung tâm thương mại.
+- Tự lọc thông tin dự án trên báo đấu thầu, đến tận văn phòng tư vấn để xin đưa thương hiệu vào danh mục vật tư, sau đó mới gặp nhà thầu. Năm 2025 mở mới 14 khách.
+- Làm báo giá, bảng thông số, chứng chỉ chất lượng và toàn bộ hồ sơ chào hàng cạnh tranh, có hơn chục gói thầu từ 1 đến 12 tỷ.
+- Chọn tiết diện và chủng loại cáp thì tôi thường gửi cho anh kỹ sư của công ty tính giúp, tôi chỉ nắm các mẫu thông dụng và bảng tra sẵn. Phần đi khảo sát và tính toán cấu hình là việc của phòng kỹ thuật.
+- Ký hợp đồng, xếp lịch xe giao cáp theo tiến độ công trường, thu tiền theo từng đợt, năm nào cũng về sát số nợ cho phép.
+- Toàn bộ khách và cơ hội ghi trên CRM nội bộ, cuối tháng tổng hợp cho giám đốc theo mức độ chắc chắn.
+- Doanh số cá nhân 2023: 18 tỷ, 2024: 22 tỷ, 2025: 26 tỷ. Năm 2024 đầu năm hụt 30% chỉ tiêu, tôi bù hết vào quý IV.
+- Thuyết trình tại 3 hội thảo sản phẩm cho nhà thầu, mỗi buổi 50 - 100 khách.
+
+05/2018 - 12/2020: Công ty TNHH Vật Tư Điện Bảo An - Nhân viên kinh doanh
+- Bán cáp, cầu dao, ổ cắm cho các đại lý và thầu điện nhỏ ở Hà Nội, Hưng Yên.
+- Làm chương trình khuyến mãi cho đại lý, giao hàng cùng xe công ty.
+
+HỌC VẤN
+2014 - 2018: Đại học Kinh tế Hồng Châu, Cử nhân Quản trị kinh doanh.
+
+KỸ NĂNG
+Excel, CRM nội bộ, đàm phán, giữ khách. Tiếng Anh giao tiếp cơ bản, chưa có chứng chỉ, khi cần chào khách nước ngoài thì nhờ đồng nghiệp. Lái xe B2, tự chở mẫu đến khách.
+
+THÀNH TÍCH
+Nhân viên kinh doanh xuất sắc 2022, 2024. Được cử đi học lớp quản lý đội bán hàng tại Trung tâm Doanh nhân Thái Hòa năm 2023.
+
+SỞ THÍCH
+Yoga, đọc tiểu thuyết trinh thám, đi du lịch cùng hội bạn thân.
+#why Bán hàng dự án cơ điện rất mạnh, nhưng cử nhân Quản trị kinh doanh và tiếng Anh cơ bản. Chọn cáp dùng bảng tra sẵn, phần tính nhờ kỹ sư: A. Miền Bắc, không nói đến miền Trung: K.
+=== sen-07 | near-miss | hard | maybe | A M M M U U M M U A K K
+ĐINH QUANG HUY
+Kỹ sư hỗ trợ kinh doanh (Technical Support for Sales)
+Mobile: 0900 000 207 - huy.dinhquang@example.com - Tân Bình, TP. Hồ Chí Minh
+
+GIỚI THIỆU
+Bốn năm rưỡi làm "hậu phương" của đội bán hàng tại nhà phân phối thiết bị thông gió. Khi anh em sales gặp yêu cầu khó, họ gửi về cho tôi để chọn máy, tính toán và ra hồ sơ. Tôi muốn thử sức ở phía trước, có khách của riêng mình.
+
+KINH NGHIỆM
+05/2022 - nay: Công ty TNHH Phân phối Thiết bị Gió Sao Nam - Kỹ sư hỗ trợ kinh doanh
+- Ngồi tại văn phòng, nhận thông số từ nhân viên kinh doanh rồi chọn quạt, cụm AHU, damper theo lưu lượng, cột áp, độ ồn, in đường đặc tính máy bằng phần mềm chọn máy.
+- Soạn báo giá kỹ thuật, bảng so sánh đáp ứng, catalogue trích lục, bộ hồ sơ thầu hoàn chỉnh; đã ra hơn 300 bộ. Giá cuối cùng và thương lượng là của nhóm sales.
+- Email và gọi Teams với hãng ở Malaysia hỏi giá đặc biệt, thời gian sản xuất, thông số không có trên catalogue.
+- Không đi hiện trường, không phụ trách khách riêng, chưa từng được giao chỉ tiêu cá nhân. Chỉ gặp khách khi trưởng nhóm cần ngồi cùng để giải thích kỹ thuật ở văn phòng.
+- Cập nhật lịch hàng về cho sales. Việc giao hàng và công nợ do sales và kế toán lo.
+- Làm file Excel theo dõi các gói thầu đang chào theo giai đoạn, tổng hợp báo cáo tháng cho trưởng phòng.
+- Viết bài giới thiệu sản phẩm cho website và tài liệu đào tạo nội bộ.
+
+08/2020 - 04/2022: Công ty CP Cơ điện Đại Lộc Xanh - Kỹ sư dự toán
+- Bóc tách khối lượng hệ thống ống gió, ống nước, tính giá cho các gói thầu cơ điện văn phòng.
+- Xin giá nhà cung cấp, lập bảng so sánh, chuyển cho trưởng phòng dự thầu.
+
+HỌC VẤN
+2015 - 2020: Đại học Khoa học Ứng dụng Gia Định, Kỹ sư Công nghệ Kỹ thuật Nhiệt.
+
+CHỨNG CHỈ VÀ NGOẠI NGỮ
+TOEIC 640 (2023), trao đổi email kỹ thuật hằng ngày, nói được ở mức họp trực tuyến.
+Khóa học phần mềm chọn máy của hãng (2022).
+
+KỸ NĂNG
+AutoCAD, Excel nâng cao, Word, PowerPoint, phần mềm chọn máy của hãng. Lập bảng nhanh, ít sai số.
+
+SỞ THÍCH
+Cờ vây, xếp mô hình máy bay, đạp xe cuối tuần ở khu Cần Giờ.
+#why Làm phần kỹ thuật của bán hàng nhưng không bán: dòng kinh nghiệm tranh cãi được, tự tìm khách thì CV nói rõ là không. Không nói về bằng lái: U. Không có bằng chứng về thuyết trình, chỉ tiêu hay đi tỉnh: K.
+=== sen-08 | near-miss | ordinary | no | U U A M A M M U M A A K
+MAI XUÂN TRƯỜNG
+Nhân viên kinh doanh dự án - Thiết bị văn phòng
+0900 000 208 | truong.maixuan@example.com | Ngô Quyền, Hải Phòng
+
+TÓM TẮT
+Sáu năm bán máy photocopy, máy in, máy chiếu, máy chấm công cho doanh nghiệp, trường học và cơ quan. Tôi là người chịu khó gõ cửa, không ngại bị từ chối và rất muốn được thử ở mảng thiết bị có giá trị đơn hàng lớn hơn.
+
+KINH NGHIỆM LÀM VIỆC
+03/2022 - nay: Công ty CP Giải Pháp Văn Phòng Hải Thành - Chuyên viên kinh doanh dự án
+- Gõ cửa các khu công nghiệp Đình Vũ, Tràng Duệ, tìm phòng hành chính và phòng mua hàng của doanh nghiệp để chào thuê máy in, mua máy photocopy.
+- Hỏi số trang in mỗi tháng, loại giấy, số người dùng để tư vấn dòng máy phù hợp, lắp đặt thử 2 tuần.
+- Lập báo giá, bộ hồ sơ tham gia chào giá cạnh tranh cho trường học và bệnh viện, có cả phần catalogue và bảng thông số. Đã trúng 9 gói năm 2025.
+- Theo dõi từ khi ký hợp đồng đến lúc giao lắp, thu tiền thuê và tiền máy theo kỳ, xử lý khi khách chậm trả.
+- Theo dõi khách tiềm năng trên Excel, báo cáo số cuộc gặp và số cơ hội cho trưởng phòng hằng tháng.
+- Doanh số cá nhân 2025: 2,8 tỷ đồng.
+
+06/2020 - 02/2022: Cửa hàng Máy Tính An Phát Hải Phòng - Nhân viên bán hàng
+- Bán laptop, máy in cho khách lẻ và công ty nhỏ, cài đặt tại nhà khách.
+- Trực điện thoại kỹ thuật, nhận máy bảo hành.
+
+HỌC VẤN
+2017 - 2020: Cao đẳng Công nghệ Thông tin Duyên Hải, ngành Quản trị mạng máy tính.
+
+KỸ NĂNG
+Word, Excel, Google Sheets, sửa lỗi máy in cơ bản, cài đặt mạng văn phòng. Tiếng Anh đọc được các nút bấm và thông báo của máy, chưa thi chứng chỉ.
+Giấy phép lái xe hạng B2, vẫn tự chở máy đi giao.
+
+THÀNH TÍCH VÀ HOẠT ĐỘNG
+Nhân viên tiêu biểu quý III/2024. Giải nhì hội thi bán hàng khu vực của công ty.
+Thành viên câu lạc bộ thiện nguyện "Máy cũ cho trường vùng cao", tặng hơn 40 bộ máy tính.
+
+SỞ THÍCH
+Bóng bàn, xem bóng đá, cắm trại biển Đồ Sơn.
+#why Có kỹ năng bán B2B thật, nhưng thiết bị văn phòng không phải cơ điện hay máy công nghiệp, và cao đẳng mạng máy tính. Báo giá và chào giá cạnh tranh không gắn với ngành nên M. Chọn máy in và tự tìm khách là tranh cãi được vì đối tượng khác hẳn ad.
+=== sen-09 | non-fit | hard | no | U A U M U A M M U A A K
+LE HOANG MINH
+Pre-sales Solution Engineer (SaaS, HR Tech)
+Phone 0900 000 209 | minh.lehoang@example.com | Quan 7, Ho Chi Minh City
+
+ABOUT ME
+Kỹ sư phần mềm chuyển sang pre-sales từ năm 2021. Tôi giúp đội Account Executive thắng deal lớn bằng cách demo sản phẩm, viết RFP response và thiết kế giải pháp tích hợp. Passionate about turning complex systems into simple stories for C-level buyers.
+
+EXPERIENCE
+Jun 2022 - Present | Senior Pre-sales Engineer | Nexalo Cloud Vietnam
+- Own the technical part of deals for our payroll and HRM platform: discovery calls, tailored demos, proof of concept for customers from 500 to 8,000 employees.
+- Write solution design, security questionnaires and RFP/RFQ responses; build price quotes in the CPQ tool for AE approval.
+- Map customer systems (SAP, Oracle, on-premise attendance machines) to our API; recommend suitable subscription tier and modules.
+- Track opportunities and technical blockers in HubSpot CRM, maintain pipeline dashboard, join monthly forecast meeting. Mình có thể đọc pipeline trong giấc ngủ.
+- After signature, hand over to implementation and follow until go-live. Billing and overdue invoices belong to the finance team, không thuộc phạm vi của tôi.
+- Weekly call with product team in Singapore on roadmap and pricing exceptions.
+- Team booked about VND 40 billion in 2025; pre-sales engineers do not hold individual quota.
+
+Aug 2019 - May 2022 | Software Engineer, later Technical Consultant | Tinh Van Lam Solutions
+- Built REST services for a warehouse software module, then moved to customer-facing consultant.
+- Delivered training for key users, wrote admin guides and API documents.
+- Ran webinars for 200+ HR managers about automation of timesheets.
+
+EDUCATION
+2015 - 2019 | Engineer of Information Technology, Dai hoc Tin hoc Dong Duong. Graduation thesis on message queues.
+
+CERTIFICATES
+AWS Cloud Practitioner (2023). HubSpot Sales Software certification (2024). IELTS 7.0 (2021).
+
+SKILLS
+SQL, REST API, Postman, HubSpot, Figma for demo mock-ups, Excel. Storytelling, whiteboard sessions, discovery framework MEDDPICC.
+
+SIDE PROJECTS AND INTERESTS
+Viết blog về công nghệ nhân sự, mentor ở một cộng đồng sinh viên IT, chơi guitar acoustic, chạy trail ở Bảo Lộc mỗi năm một lần.
+#why Trùng chữ: kỹ sư, CRM, pipeline, báo giá, hãng, tiếng Anh tốt, nhưng bán phần mềm chứ không phải thiết bị. Dòng báo giá và hồ sơ thầu không nêu ngành nên M. Kỹ sư CNTT có coi là khối kỹ thuật không thì tranh cãi. Không nói về bằng lái: U.
+=== sen-10 | non-fit | ordinary | no | U U U A U M M U M M A K
+ĐỖ THANH TÙNG
+Tư vấn bán hàng ô tô - Trưởng nhóm khách hàng doanh nghiệp
+ĐT 0900 000 210 · tung.dothanh@example.com · Vinh Yên, Vĩnh Phúc
+
+GIỚI THIỆU
+Hơn bảy năm ở showroom, tôi đã giao hơn 800 xe. Rất thích ngành ô tô, thích động cơ, thích đi lái thử. Hi vọng dùng kinh nghiệm chăm sóc khách để chuyển sang bán thiết bị công nghiệp, ngành mà bạn tôi nói có thu nhập tốt.
+
+KINH NGHIỆM LÀM VIỆC
+09/2021 - nay: Showroom Ô tô Lạc Hồng Vĩnh Phúc - Trưởng nhóm khách hàng doanh nghiệp
+- Tư vấn xe bán tải, xe tải nhẹ, xe 7 chỗ cho các nhà thầu xây lắp, công ty vận tải, chủ công trình cần xe đi lại công trường.
+- Giới thiệu động cơ, hộp số, công suất, mức tiêu hao nhiên liệu theo bảng của hãng, cho khách lái thử.
+- Lập bảng báo giá lăn bánh, chương trình trả góp, hợp đồng mua xe.
+- Lo từ lúc đặt cọc đến khi giao xe tại showroom, thu đủ tiền, làm việc với ngân hàng giải ngân.
+- Cập nhật mọi cuộc gọi, lịch lái thử, khả năng chốt trên phần mềm DMS/CRM của hãng, báo cáo phễu khách tiềm năng mỗi tuần và cuối tháng.
+- Doanh số cá nhân 2025: 128 xe, tương đương khoảng 78 tỷ đồng.
+
+04/2019 - 08/2021: Showroom Xe Tải Bình Xuyên - Nhân viên bán hàng
+- Đứng showroom, nhận khách đến, phát tờ rơi tại chợ đầu mối, đăng bài Zalo và Facebook.
+- Theo dõi bảo dưỡng lần đầu, nhắc lịch thay nhớt cho khách.
+
+12/2017 - 03/2019: Cửa hàng Phụ Tùng Xe Máy Kim Liên - Nhân viên bán hàng
+- Tư vấn nhớt, lốp, ắc quy cho khách lẻ, đóng gói hàng.
+
+HỌC VẤN
+2014 - 2017: Cao đẳng Thương mại Tam Đảo, ngành Quản trị kinh doanh.
+
+BẰNG CẤP, KỸ NĂNG
+Bằng lái xe hạng C. Word, Excel căn bản, Facebook Ads. Chứng chỉ bán hàng do hãng xe cấp.
+Tiếng Anh: giao tiếp đơn giản với khách đến xem xe, chưa có chứng chỉ.
+
+THÀNH TÍCH
+Top 5 tư vấn bán hàng toàn hệ thống 2023, 2024. Được thưởng chuyến du lịch Thái Lan.
+
+SỞ THÍCH
+Đua xe mô hình, chơi cầu lông, xem F1, sưu tầm các loại catalogue xe cổ.
+#why Bán ô tô, trùng chữ nhà thầu, công trường, báo giá, động cơ, hãng, CRM. Hạng C cao hơn B2 nên M. Doanh số trên 5 tỷ là thật và dòng bonus không ràng buộc ngành nên M. Báo giá xe có nhưng không có hồ sơ kỹ thuật dự thầu: A.
+=== sen-11 | stuffing | ordinary | no | U U U U U U U U U U K K
+TẠ THỊ BÍCH LOAN
+Sales Engineer / Kỹ sư kinh doanh / Technical Sales / B2B / Thiết bị cơ điện
+Điện thoại: 0900 000 211
+Email: loan.tathi@example.com
+Địa chỉ: Kiến Xương, Thái Bình
+
+TỔNG QUAN
+Tôi có tối thiểu 2 năm bán hàng kỹ thuật B2B trong lĩnh vực thiết bị cơ điện, máy công nghiệp hoặc tự động hóa. Tư vấn được giải pháp, chọn đúng model thiết bị theo điều kiện vận hành của khách. Tự làm báo giá và hồ sơ kỹ thuật dự thầu. Có khả năng tự tìm khách mới, tiếp cận nhà thầu cơ điện, chủ đầu tư, đơn vị tư vấn thiết kế. Tiếng Anh giao tiếp tốt, TOEIC 600. Có bằng lái ô tô B2. Năng động, thuyết trình tự tin, chịu áp lực doanh số. Sẵn sàng đi công tác các tỉnh miền Trung.
+
+TỪ KHÓA NĂNG LỰC
+Kỹ sư kinh doanh, M&E, HVAC, bơm công nghiệp, biến tần, PLC, tủ điện, máy nén khí, CRM, Salesforce, pipeline, doanh số 5 tỷ, báo giá, hồ sơ thầu, công nợ, B2B, KPI, đàm phán, nhà thầu, chủ đầu tư, tư vấn thiết kế, TOEIC, B2.
+
+QUÁ TRÌNH LÀM VIỆC
+08/2023 - nay: Đại lý Bảo hiểm Nhân thọ An Bình Tâm, Chi nhánh Thái Bình - Tư vấn viên
+- Gọi điện cho danh sách khách của đại lý, hẹn gặp, giới thiệu gói bảo hiểm cho gia đình.
+- Đến từng nhà giải thích quyền lợi, hướng dẫn kê khai sức khỏe, hỗ trợ khách đóng phí.
+- Dự các buổi họp sáng tại văn phòng, tham gia ngày hội khách hàng.
+
+01/2021 - 07/2023: Cửa hàng Thời Trang Loan Anh - Nhân viên bán hàng
+- Đứng quầy, tư vấn quần áo, đăng ảnh hàng mới lên Facebook, đóng gói đơn online, kiểm hàng cuối ngày.
+
+06/2019 - 12/2020: Công ty TNHH May Hoàng Thái - Công nhân
+- Đơn vị may áo sơ mi xuất khẩu. Làm ở chuyền, kiểm thành phẩm, cắt chỉ.
+
+HỌC VẤN
+2016 - 2019: Trường Trung học Phổ thông Nguyễn Mẫn Trí, Kiến Xương.
+2022: Khóa ngắn hạn Trang điểm và Chăm sóc da, Trung tâm Thẩm mỹ Hải Yến.
+
+KỸ NĂNG
+Giao tiếp, Facebook, Zalo, TikTok, Canva, ghi chép sổ sách khách hàng.
+
+SỞ THÍCH
+Hát karaoke, xem phim Hàn, nấu chè, đi lễ chùa đầu năm.
+#why Đoạn tổng quan dán từ ad, ô từ khóa ở dưới, phần làm việc là bảo hiểm, quần áo, may mặc. Không có gì để đỡ lưng: mọi dòng đo được đều U kể cả bonus, soft để K.
+=== sen-12 | messy | hard | interview | M M M M M M M M M M A M
+DUONG TAN PHAT                                     Ho so ung vien - Trang 1/2
+Ky su kinh doanh thiet bi giai nhiet va bom
+SDT 0900 000 212 / Email phat.duongtan@example.com
+Tam Ky, Quang Nam
+
+TOM TAT Ky su Nhiet lanh, hon sau nam ban thap giai nhiet,
+bom tuan hoan, thiet bi xu ly nuoc cho nha may va du an
+toa nha khu vuc mien Trung - Tay Nguyen.
+
+KINH NGHIEM LAM VIEC
+09/2020 - nay Cong ty CP Thiet bi Nhiet Lanh Dat Quang -
+Ky su kinh doanh
+- Moi thang di tuyen Quang Nam, Quang Ngai, Binh Dinh, Gia Lai,
+Dak Lak, it nhat 2 tuan xa nha, tu lai xe ban tai cong ty.
+- Khao sat he thong dang chay, do chenh lech nhiet do nuoc vao
+ra, xem chat luong nuoc, de xuat loai thap, vat lieu tam tan
+nhiet, cong suat bom va phuong an tang nhiet cho khach.
+- Soan bao gia, bang thong so dap ung va ho so du thau cho ca
+nhung goi lon, gan day nhat goi 7 ty nha may duong Gia Lai.
+- Tu lap danh sach khach muc tieu tu danh ba khu cong nghiep,
+ghe van phong tu van thiet ke o Da Nang, lam quen ban chi huy
+                                                Ho so ung vien Duong Tan Phat
+                                                CV_DuongTanPhat.pdf     Trang 1
+Ho so ung vien - Trang 2/2
+cong truong cua cac nhau thau lap may.
+- Giu don hang tu khi ky, cho den luc hang ve, lap dat, nghiem
+thu, thanh toan du. Co lan phai xuong tan cong ty khach ngoi
+doi dot cuoi 2 ngay, nhung khach van giu quan he.
+- Lien he qua email voi nha may o Malaysia xin gia va lich
+san xuat, hop video khi gap ca kho.
+- Dung Excel de theo doi tung co hoi, moi thang gui truong
+phong bang tong hop giai doan va du bao thang sau.
+- Doanh so ca nhan: 2024 dat 6,8 ty. 2025 dat 7,5 ty.
+
+03/2018 - 08/2020 Cong ty TNHH Co Dien Lanh Song Vu - Ky su du
+toan va ho tro ky thuat
+- Boc tach khoi luong, xin gia, chay thu thap giai nhiet cung
+doi lap dat.
+
+HOC VAN 2013-2018 Dai hoc Ky thuat Sao Bien, Ky su Nhiet
+lanh, do an: toi uu he thap giai nhiet cho nha may bia.
+
+KY NANG Excel, AutoCAD doc ban ve.
+TOEIC 615 (2024). Giay phep lai xe hang B2 (2017).
+Hoat dong: Chia se ve su dung nuoc tiet kiem o lop tap huan
+cho phong ky thuat cua mot cong ty thuy san.
+                                                Ho so ung vien Duong Tan Phat
+                                                CV_DuongTanPhat.pdf     Trang 2
+SO THICH
+Di xe may Tay Nguyen, nghe nhac trinh, chup anh hoa ca phe.
+#why Mất dấu, xuống dòng hỏng, đầu và chân trang chèn giữa một câu, người đọc vẫn nối được. Đủ mọi dòng. Có doanh số nhưng buổi chia sẻ nhỏ không đủ cho "thuyết trình tự tin": A.

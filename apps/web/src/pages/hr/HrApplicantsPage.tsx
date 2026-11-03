@@ -94,8 +94,9 @@ function useApplicantsModel() {
   // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
   const tab: TabKey = isTab(list.tabParam) ? list.tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
   const queue = useApplicantQueue(all, tab, list.selectedId, list.byMatch);
-  // CV files without a percent yet are scored in the background so the list can be sorted by match.
-  const scoring = useScorePending((all ?? []).some((a) => a.hasCv && a.matchPercent == null));
+  // CV files without an up-to-date result are scored in the background so the list can be sorted by match. A CV with a
+  // percent may still be out of date when the scoring rules changed, and only the server can tell.
+  const scoring = useScorePending((all ?? []).some((a) => a.hasCv));
   const picking = usePicking(all ?? []);
   const openRow = (id: string | undefined) => (id ? () => list.open(id, tab) : undefined);
   return {

@@ -1,0 +1,84 @@
+@ad chef
+@occupation Bếp trưởng nhà hàng Á
+@req experience | Kinh nghiệm: Từ 5 năm
+@req experience | Tối thiểu 2 năm ở vị trí bếp phó hoặc bếp trưởng
+@req education | Học vấn: Trung cấp trở lên
+@req licence | Có bằng nghề hoặc chứng chỉ nghề nấu ăn
+@req licence | Có giấy xác nhận kiến thức an toàn thực phẩm
+@req skills | Xây dựng thực đơn, định lượng món và kiểm soát food cost
+@req skills | Quản lý được đội bếp từ 10 người
+@req soft | Chịu được áp lực giờ cao điểm, làm được ca gãy
+=== che-01 | strong | ordinary | interview | M M M M M M M K
+PHAN VĂN THÀNH
+Bếp trưởng món Á
+05/2021 - nay: Bếp trưởng, Nhà hàng Long Phụng, Hà Nội. Quản lý đội bếp 14 người, xây dựng thực đơn theo mùa, lập định lượng món, kiểm soát food cost dưới 32%.
+03/2016 - 04/2021: Đầu bếp rồi bếp phó, Khách sạn Thăng Long Palace.
+Học vấn: Trung cấp Nấu ăn, Trường Cao đẳng Du lịch Hà Nội, 2015
+Chứng chỉ: Chứng chỉ nghề Kỹ thuật chế biến món ăn bậc 5/7. Giấy xác nhận kiến thức an toàn thực phẩm, 2025.
+=== che-02 | strong | ordinary | interview | M M M M M M M K
+HỒ QUANG VINH
+Sous Chef chuyển lên Head Chef
+2013 - 2018: Commis, Demi chef, Resort Biển Xanh Nha Trang
+2018 - 2022: Sous chef nhà hàng Trung Hoa Golden Lotus
+2022 - nay: Head chef, Nhà hàng Hương Sen, dẫn dắt 12 đầu bếp. Lên menu, tính giá vốn món ăn và định lượng từng món.
+Cao đẳng Kỹ thuật chế biến món ăn, 2012
+Giấy chứng nhận ATVSTP còn hạn
+=== che-03 | strong | ordinary | interview | M M M M M M M K
+NGUYEN VAN HIEP
+Executive Chef - Asian cuisine
+Executive Chef, Lotus Garden Restaurant, June 2019 - Present. Lead a kitchen brigade of 15. Menu engineering, recipe costing, food cost control at 30%.
+Sous Chef, Pearl River Hotel, 2014 - 2019.
+Vocational Diploma in Culinary Arts, Saigon Tourism College, 2013
+Food Safety Certificate (HACCP level 2), Department of Health food-safety knowledge certificate, 2025
+=== che-04 | partial | ordinary | maybe | M U M M M A U K
+LƯƠNG VĂN TÂM
+Đầu bếp chính
+2017 - nay: Đầu bếp chính, Quán Lẩu Nướng Ngon Ngon, phụ trách line nóng, làm cùng 3 phụ bếp. Góp ý món mới, tuân thủ định lượng của chủ quán.
+Trung cấp Nấu ăn, 2016. Chứng chỉ nghề nấu ăn. Giấy xác nhận kiến thức an toàn thực phẩm 2024.
+=== che-05 | partial | ordinary | maybe | U M M M U M U K
+ĐOÀN THÀNH LONG
+Bếp phó
+2023 - nay: Bếp phó, Nhà hàng Hải Sản Biển Đông, phụ trách line hải sản, đề xuất thực đơn, kiểm soát định lượng và food cost.
+2022 - 2023: Đầu bếp, Nhà hàng Hải Sản Biển Đông.
+Trung cấp Kỹ thuật chế biến món ăn, 2021
+=== che-06 | near-miss | ordinary | no | M U U U U U U K
+TRỊNH VĂN ĐẠI
+Phụ bếp lâu năm
+2018 - nay: Phụ bếp, sơ chế, Bếp ăn công nghiệp Hưng Phát. Sơ chế rau củ, thịt cá theo định lượng có sẵn.
+Học hết lớp 12.
+=== che-07 | near-miss | ordinary | no | A U M U U U U K
+PHÙNG THỊ THU
+Quản lý nhà hàng
+2019 - nay: Quản lý ca, Nhà hàng Ngon Phố: phụ trách 20 nhân viên phục vụ, doanh thu, đặt bàn, xử lý khiếu nại.
+Cao đẳng Quản trị nhà hàng khách sạn, 2018
+=== che-08 | near-miss | ordinary | maybe | M M M M U U M K
+HÀ NGỌC SƠN
+Bếp trưởng bếp bánh Âu
+2015 - 2020: Thợ bánh, Tiệm bánh Paris Corner
+2020 - nay: Bếp trưởng bánh ngọt khách sạn, quản lý đội bánh 10 người, quản lý nguyên liệu.
+Trung cấp Làm bánh và nấu ăn, 2014. Chứng chỉ nghề.
+=== che-09 | non-fit | ordinary | no | A U U U U U U K
+NÔNG THỊ TUYẾT
+Nhân viên giao hàng
+2020 - nay: Giao hàng, Công ty chuyển phát Sao Bắc.
+Tốt nghiệp THPT, 2019
+=== che-10 | stuffing | hard | no | U U U U U U U K
+NGUYỄN VĂN HÙNG
+Skills: bếp trưởng, bếp phó, thực đơn, menu, định lượng món, food cost, quản lý đội bếp 10 người, an toàn thực phẩm, chứng chỉ nghề nấu ăn, bằng nghề, trung cấp, 8 năm kinh nghiệm
+Experience: 2025 - nay, nhân viên pha chế, Trà sữa Mê Ly
+Education: THCS
+=== che-11 | messy | hard | interview | M M M M M M M K
+HO SO DAU BEP - TRAN VAN MANH
+Bep truong nha hang Trung Hoa
+2012-2019 Dau bep, Nha hang Thuy Ta
+2019-nay Bep truong Nha hang Dai Phat, quan ly 11 dau bep
+Len thuc don, dinh luong, kiem soat food cost
+Trung cap nau an 2011 / Chung chi nghe nau an / Giay xac nhan kien thuc ATTP 2025
+=== che-12 | partial | hard | maybe | M A M M U A M M
+QUÁCH TIẾN ĐẠT
+Tổ trưởng bếp, 9 năm trong nghề
+2017 - 2021: Đầu bếp, Bếp Nhật Sakura
+2021 - nay: Tổ trưởng bếp nóng, Nhà hàng Buffet Thái Thịnh, quản lý 18 người, làm 2 ca gãy 10h-14h và 17h-22h vào giờ đông khách.
+Tham gia xây dựng menu buffet.
+Trung cấp Nấu ăn, 2016. Bằng nghề bậc 4/7.
+#why Tổ trưởng bếp is not literally sous chef; menu mentioned but not costing, so both are judgement calls.

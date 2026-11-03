@@ -1,17 +1,17 @@
 /**
  * Fallback for tools and certificates the dictionary does not know: "Biết sử dụng phần mềm KiotViet",
- * "Có chứng chỉ vận hành xe nâng". The name is searched word for word; absence gives "unknown", because the CV
- * may spell it differently.
+ * "Có chứng chỉ vận hành xe nâng". The name is searched word for word. Absence from a CV with a real work history
+ * means not met; a CV that shows little stays open, because it may simply not list such things.
  */
 import { result, type AtomResult, type LiteralAtom } from './atoms.js';
-import { cleanLine, foldClean, type CvDoc } from './normalize.js';
+import { cleanLine, foldClean, type CvDoc, type CvLine } from './normalize.js';
 import { classify } from './skills.js';
-import { findTerm, snippet } from './text-match.js';
+import { findTerm, snippet, type Span } from './text-match.js';
 
 const VERB =
   /\b(biet su dung|biet dung|co the su dung|su dung duoc|su dung thanh thao|su dung tot|su dung|thanh thao|nam vung|lam viec voi|biet|co|know|use|using|proficient in|experience with|familiar with|knowledge of)\b\s*/;
-const OBJECT_STOP = /[,;.()]|\s(?:va|de|trong|for|and|to)\s/;
-const CERTIFICATE = /^(chung chi|bang|giay phep|the)\b/;
+const OBJECT_STOP = /[,;.()]|\s(?:va|de|trong|for|and|to|hoac|or)\s/;
+const CERTIFICATE = /^(chung chi|chung nhan|bang|giay phep|the(?! (?:tang|lam|di|nhan|dam|hien)))\b/;
 
 function objectOf(clean: string, folded: string): { text: string; folded: string } | null {
   const verb = VERB.exec(folded);
@@ -45,17 +45,36 @@ export function parseLiteralRequirement(line: string): LiteralAtom | null {
   return { kind: 'literal', term: foldClean(words), label: words };
 }
 
-/** Literal verdict: found → met; negated or only wished for → unmet; not found → unknown. */
-export function evaluateLiteral(atom: LiteralAtom, doc: CvDoc): AtomResult {
+/** All the words of the name on one line ("thẻ hướng dẫn viên du lịch quốc tế" for "thẻ hướng dẫn viên quốc tế"). */
+function wordsOnLine(folded: string, term: string): Span | null {
+  const words = term.split(' ').filter((w) => w.length > 0);
+  if (words.length < 3) return null;
+  const hits = words.map((w) => findTerm(folded, w)[0]);
+  if (hits.some((h) => h === undefined)) return null;
+  const first = hits[0];
+  return first ?? null;
+}
+
+function spansOf(line: CvLine, term: string): Span[] {
+  const exact = findTerm(line.folded, term);
+  if (exact.length > 0) return exact;
+  const loose = wordsOnLine(line.folded, term);
+  return loose ? [loose] : [];
+}
+
+/** Literal verdict: found → met; negated or only wished for → unmet; not found → unmet or unknown (see above). */
+export function evaluateLiteral(atom: LiteralAtom, doc: CvDoc, hasWorkHistory: boolean): AtomResult {
   let weak: AtomResult | null = null;
   for (const line of doc.lines) {
-    for (const span of findTerm(line.folded, atom.term)) {
+    for (const span of spansOf(line, atom.term)) {
       const cls = classify(line, span);
-      if (cls === 'ok') return result('met', `CV có ${atom.label}`, snippet(line, span));
+      if (cls === 'ok' || cls === 'basic') return result('met', `CV có ${atom.label}`, snippet(line, span));
       if (cls === 'negated' || cls === 'weak') {
         weak = weak ?? result('unmet', `CV chỉ nhắc ${atom.label} ở dạng chưa biết / muốn học`, snippet(line, span));
       }
     }
   }
-  return weak ?? result('unknown', `Không thấy "${atom.label}" trong CV (có thể ghi tên khác), HR xem trực tiếp`);
+  if (weak) return weak;
+  if (hasWorkHistory) return result('unmet', `Không thấy "${atom.label}" trong CV`);
+  return result('unknown', `Không thấy "${atom.label}" trong CV (có thể ghi tên khác), HR xem trực tiếp`);
 }

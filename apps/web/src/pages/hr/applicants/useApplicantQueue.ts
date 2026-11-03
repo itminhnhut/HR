@@ -33,7 +33,7 @@ export function useApplicantQueue(
     const list = (applications ?? []).filter(
       (a) => tab === 'all' || a.status === tab || a.id === selectedId || visited.has(a.id),
     );
-    // Best match first; applications not scored yet go last, newest first among them.
+    // Best match first; applications without a percent (not scored, not enough data) go last, newest first among them.
     return byMatch ? [...list].sort((a, b) => (b.matchPercent ?? -1) - (a.matchPercent ?? -1)) : list;
   }, [applications, tab, byMatch, selectedId, visited]);
   const at = rows.findIndex((r) => r.id === selectedId);

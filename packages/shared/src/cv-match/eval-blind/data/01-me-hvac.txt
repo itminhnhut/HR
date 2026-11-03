@@ -1,0 +1,510 @@
+@ad me-hvac
+@occupation Kỹ sư cơ điện (M&E) mảng HVAC
+@req experience | Có ít nhất 4 năm làm kỹ thuật cơ điện, trong đó có giai đoạn trực tiếp làm về điều hoà thông gió
+@req education | Tốt nghiệp đại học hoặc cao đẳng các ngành Nhiệt lạnh, Cơ điện, Cơ khí
+@req skills | Triển khai được bản vẽ shop drawing đường ống gió, ống nước lạnh trên AutoCAD
+@req skills | Tính được tải lạnh sơ bộ và chọn thiết bị FCU, AHU cho công trình
+@req skills | Từng giám sát lắp đặt hệ thống VRV/VRF hoặc chiller ngoài công trường
+@req skills | Biết lập biên bản nghiệm thu, hồ sơ hoàn công phần cơ điện
+@req skills | Có kiến thức về chạy thử, cân chỉnh lưu lượng gió và nước trước khi bàn giao
+@req skills bonus | Biết Revit MEP là lợi thế
+@req licence bonus | Ưu tiên có chứng chỉ hành nghề giám sát cơ điện
+@req language | Đọc được catalogue, tài liệu kỹ thuật của hãng bằng tiếng Anh
+@req soft | Chịu được công việc ngoài công trường, sẵn sàng đi công tác tỉnh
+@req soft | Phối hợp tốt với thầu phụ và đội thi công
+=== mev-01 | strong | ordinary | interview | M M M M M M M M M M M M
+PHẠM QUỐC BẢO
+Kỹ sư Nhiệt lạnh - Chỉ huy phó phần cơ điện
+Điện thoại: 0900 000 111 | Email: bao.pham.me@example.com
+Địa chỉ: Hà Đông, Hà Nội | Năm sinh: 1992
+
+TÓM TẮT
+Hơn chín năm theo các công trình văn phòng, khách sạn và nhà xưởng, chủ yếu ở phần lạnh và thông gió. Quen làm từ khâu đọc hồ sơ mời thầu, dựng bản vẽ, đến lúc đo gió bàn giao cho khách. Mong muốn về một nhà thầu có dự án ổn định để phát triển lên vai trò quản lý dự án.
+
+QUÁ TRÌNH CÔNG TÁC
+05/2021 - nay: Công ty CP Xây lắp Cơ điện Trường Phát - Chỉ huy phó phụ trách phần cơ điện
+- Dự án khách sạn Hải Âu Xanh (Quảng Ninh, 28 tầng): quản lý tổ kỹ sư 4 người, 3 thầu phụ lắp ống gió, bảo ôn và điện động lực. Ở công trường liên tục 22 tháng.
+- Kiểm tra tuyến ống thực tế, chốt thay đổi với tư vấn giám sát, ký xác nhận khối lượng phát sinh.
+- Làm việc trực tiếp với hãng khi lắp 2 cụm chiller giải nhiệt nước 500RT, theo dõi căn tâm, đấu nối và khởi động lần đầu.
+- Tổ chức đo gió từng miệng thổi, chỉnh van cân bằng trên nhánh nước lạnh, lập bảng kết quả so với thiết kế trước khi mời chủ đầu tư nghiệm thu.
+- Tập hợp biên bản nghiệm thu công việc, nhật ký công trình và bộ as-built để bàn giao.
+
+07/2017 - 04/2021: Công ty TNHH Kỹ thuật Lạnh Bình Minh - Kỹ sư hiện trường, sau đó Kỹ sư triển khai bản vẽ
+- Dựng bản vẽ thi công đường gió, ống nước ngưng, ống gas VRV trên CAD, phối hợp đường đi với điện và chữa cháy trên trần.
+- Tính cooling load bằng HAP cho các tầng văn phòng thuê lại, chọn lại model dàn lạnh và cụm xử lý gió khi khách đổi công năng.
+- Theo dõi lắp đặt hệ VRV 3 toà văn phòng tại Hà Nội và Vĩnh Phúc: thử kín gas, hút chân không, nạp gas bổ sung.
+- Xử lý bảo hành sau bàn giao, hướng dẫn kỹ thuật viên toà nhà vận hành và vệ sinh định kỳ.
+
+HỌC VẤN
+2012 - 2017: Đại học Kỹ thuật Hoàng Long, Kỹ sư Kỹ thuật Nhiệt, chuyên ngành Điều hoà không khí và Thông gió. Tốt nghiệp loại Khá.
+
+CHỨNG CHỈ
+- Chứng chỉ hành nghề giám sát lắp đặt thiết bị công trình, hạng II (2023)
+- An toàn lao động nhóm 3
+
+KỸ NĂNG
+AutoCAD, Revit MEP (dựng mô hình phần gió và nước cho dự án khách sạn), HAP, Excel. Tiếng Anh: đọc catalogue, manual hãng và O&M thường xuyên, TOEIC 560.
+
+DỰ ÁN TIÊU BIỂU
+- Khách sạn Hải Âu Xanh, Quảng Ninh (2022 - 2024): 2 cụm 500RT, 210 dàn FCU, 18 cụm xử lý gió, giá trị gói thầu khoảng 62 tỷ đồng.
+- Văn phòng Ngọc Lan, Hà Nội (2019 - 2020): VRV tổng 180HP, cải tạo trong lúc tòa nhà vẫn hoạt động nên phải thi công ban đêm.
+- Nhà xưởng cơ khí Phú Lộc, Vĩnh Phúc (2018): quạt hút mái, cấp gió tươi cho khu hàn, ống gió chống cháy.
+
+ĐÀO TẠO VÀ CHIA SẺ
+Khóa quản lý dự án xây dựng ngắn hạn tại Trung tâm Bồi dưỡng Nghiệp vụ Xây dựng Tân Tiến (2022). Hằng quý hướng dẫn kỹ sư mới cách đọc bản vẽ phối hợp và cách lập phiếu kiểm tra.
+
+SỞ THÍCH
+Chạy bộ, câu cá cuối tuần, dạy con lắp mô hình.
+#why Đủ mọi mặt, nhiều cách diễn đạt khác ad. Công trường dài ngày và ba thầu phụ là bằng chứng cụ thể cho hai dòng soft.
+=== mev-02 | strong | hard | interview | M M M M M M M A A M M M
+TRAN HUU NGHIA
+Senior Mechanical Engineer (HVAC)
+Mobile: 0900 000 112 - Email: nghia.tran.hvac@example.com - Binh Thanh, Ho Chi Minh City
+
+PROFILE
+Mechanical engineer with 8 years on commercial and industrial building sites in Southern Vietnam. My comfort zone is air-side and water-side work: from sizing and coordination drawings through commissioning and handover. Looking for a contractor where I can own the HVAC package from start to finish.
+
+WORK EXPERIENCE
+Mar 2022 - Present | Senior Mechanical Engineer | Dong Nam Building Services JSC
+- Lead the HVAC package on a 21-storey office tower and a 40,000 m2 pharmaceutical factory in Long An.
+- Check heat gain calculations with HAP and Excel sheets, then size air handling units, fan coils, cooling towers and pumps; push back on the consultant when the numbers do not agree.
+- Prepare coordinated duct and chilled water routing in AutoCAD, resolve clashes with electrical trays and sprinklers on site.
+- Direct two subcontractor crews (ductwork, insulation) with weekly look-ahead plans and daily walk-throughs.
+- Supervise installation of a 3 x 350 RT water-cooled chiller plant, including alignment, piping and first start-up with the manufacturer's engineer.
+- Run air and water balancing with an independent TAB team, review their reports, and sign off before the owner inspection.
+- Compile inspection records, method statements, as-built drawings and O&M manuals for handover.
+
+Aug 2018 - Feb 2022 | Site Engineer (Mechanical) | Song Tien Engineering Co., Ltd
+- Worked on residential towers and a shopping mall in Binh Duong and Can Tho; lived on site for most projects.
+- Supervised multi-split VRF outdoor and indoor unit installation; pressure tested refrigerant lines and checked vacuum and charging records.
+- Took quantity take-offs for monthly progress payment and logged variations.
+- Helped the design team prepare shop drawings and material submittals.
+
+EDUCATION
+2013 - 2018 | Bachelor of Mechanical Engineering, Nam Phuong Institute of Engineering, Thu Duc campus. GPA 7.6/10.
+
+SKILLS
+AutoCAD, MS Project, Excel, HAP. Comfortable reading Carrier, Trane and Daikin product catalogues and installation manuals in English. IELTS 5.5 (2019).
+
+KEY PROJECTS
+- Long An pharmaceutical plant (2023 - 2025): cleanroom air handling with HEPA terminals, pressure cascade checks, 2,400 m of chilled water pipework.
+- Tan Son office tower (2022 - 2023): VAV boxes on 21 floors, 3 chillers, stair pressurisation fans tested together with the fire contractor.
+- Can Tho shopping mall (2020 - 2021): food court exhaust, kitchen hoods, 1,100 HP of VRF.
+
+TRAINING
+Manufacturer's commissioning workshop for water-cooled chillers, 3 days (2023). Basic project scheduling course, Dong Nam in-house academy (2022). Occupational safety card, group 3.
+
+OTHER
+Volunteer in a neighbourhood repair club, fixing fans and small air conditioners for elderly residents. Enjoys football and travel photography.
+#why Toàn tiếng Anh, không có chữ shop drawing theo nghĩa của ad nhưng "coordinated duct and chilled water routing" và hỗ trợ shop drawing là đủ. Không Revit, không chứng chỉ: bonus nên A.
+=== mev-03 | strong | ordinary | interview | M M M M M M M A A M M M
+LE VAN TOAN
+Ky su giam sat he thong lanh
+SDT 0900 000 113 | toan.levan.lanh@example.com | Le Chan, Hai Phong
+
+GIOI THIEU BAN THAN
+Xuat than tu tho lanh, hoc lien thong trong luc di lam nen minh quen tay chan ngoai cong truong. Da lam may cong trinh nha xuong va van phong o Hai Phong, Bac Ninh, Thanh Hoa. Khong ngai di xa, tung o lai cong truong Thanh Hoa gan mot nam.
+
+KINH NGHIEM
+10/2020 - nay: Cong ty TNHH Co dien Lanh Dai Duong - Ky su giam sat
+- Giam sat doi thau phu thi cong he dieu hoa trung tam cho 2 nha xuong dien tu va 1 toa van phong: VRV IV hon 300 HP, cum xu ly gio tuoi, ong gio ton ma kem.
+- Dung lai ban ve thi cong tren CAD khi tuyen ong vuong dam, trinh tu van duyet, cap nhat ban ve hoan cong.
+- Uoc luong tai lanh theo m2 va theo phan mem cua hang de chon dan lanh khi chu dau tu doi phong, doi cong suat quat cap.
+- Lam bien ban nghiem thu tung dot, ho so chat luong, chung chi xuat xuong thiet bi, gop thanh bo ho so hoan cong.
+- Do luu luong gio bang phong ke, chinh damper, lap bang ket qua; chinh van tren nhanh nuoc lanh cua he AHU nha xuong truoc khi ban giao.
+- Moi tuan hop voi thau phu chot tien do, ai cham thi cung ngoi lai chia to, chua de cong trinh nao tre qua 2 tuan.
+
+03/2018 - 09/2020: Cong ty CP Nhiet Lanh An Khanh - Ky thuat vien roi To truong thi cong
+- Lap dat may dieu hoa treo tuong, am tran, multi cho van phong va nha hang.
+- Han ong dong, thu kin, hut chan khong, nap gas, ve sinh dinh ky.
+- Truc bao hanh, di xu ly loi theo phieu cua khach.
+
+06/2015 - 02/2018: Xuong co dien Ngoc Son - Tho co dien
+- Quan motor, sua bom nuoc, dau noi tu dien nho.
+
+HOC VAN
+2012 - 2015: Cao dang Co dien Duyen Hai, nganh Ky thuat Nhiet lanh va Dieu hoa khong khi.
+2017 - 2020: Lien thong dai hoc, Dai hoc Cong nghe Thanh Dong, nganh Cong nghe Ky thuat Nhiet (he vua hoc vua lam).
+
+KY NANG VA NGOAI NGU
+AutoCAD 2D thanh thao. Word, Excel. Doc duoc catalogue Mitsubishi, Daikin va tai lieu huong dan lap dat tieng Anh, ky thuat thi tu tra tu dien chuyen nganh.
+
+CONG TRINH DA LAM
+- Nha xuong dien tu Tan Phong, Bac Ninh (2023 - 2025): VRV 320 HP, gio tuoi xu ly am cho khu lap rap, thoi gian thi cong 11 thang.
+- Nha may nhua Hoa Thang Dat, Thanh Hoa (2021 - 2022): AHU nuoc lanh, ong gio ton ma kem, o lai cong truong gan mot nam.
+- Toa van phong Bach Dang Xanh, Hai Phong (2020 - 2021): 14 tang, thay doi cong nang nhieu lan theo khach thue.
+
+KHOA HOC NGAN HAN
+Lop an toan lao dong nhom 3 (2024). Lop tap huan lap dat VRV cua dai ly hang tai Ha Noi (2021). Lop ky nang quan ly to doi, Trung tam Dao tao Nghe Hai Cang (2022).
+
+SO THICH
+Chay xe may phuot, sua do dien gia dinh giup hang xom.
+#why Không dấu do thói quen của người viết, không phải PDF hỏng. Hai giai đoạn sau đủ HVAC và tuổi nghề đủ quá 4 năm. Không Revit, không chứng chỉ.
+=== mev-04 | partial | hard | maybe | M A U U M M A A M M M M
+ĐOÀN MINH TUẤN
+Kỹ sư điện - Giám sát cơ điện
+ĐT: 0900 000 114 · tuan.doanminh@example.com · Thanh Xuân, Hà Nội
+
+MỤC TIÊU
+Sau nhiều năm với điện nặng và điện nhẹ, tôi muốn mở rộng sang hẳn phần cơ của hệ thống tòa nhà, nơi mới được làm một phần ở dự án gần đây.
+
+KINH NGHIỆM LÀM VIỆC
+06/2023 - nay: Công ty CP Đầu tư Xây lắp Kim Sơn - Giám sát cơ điện
+- Dự án tòa văn phòng Sao Mai (Hà Nội), 14 tháng đầu được giao thay anh kỹ sư lạnh nghỉ việc: theo dõi nhà thầu lắp hệ VRF cho 18 tầng, kiểm tra treo đỡ dàn lạnh, ép nitơ đường gas, lập phiếu kiểm tra.
+- Phần bản vẽ đường ống gió và ống nước vẫn do nhà thầu cấp và đơn vị thiết kế làm, tôi không trực tiếp vẽ, chỉ kiểm tra đối chiếu ngoài hiện trường.
+- Có đi cùng kỹ sư của hãng trong đợt chạy thử VRF, ghi lại số liệu. Việc đo và chỉnh gió do đơn vị thuê ngoài thực hiện.
+- Lập biên bản nghiệm thu nội bộ và nghiệm thu với tư vấn, hoàn thiện hồ sơ hoàn công phần điện và phần lạnh.
+- Bóc khối lượng máng cáp, dây, tủ điện, đèn để đề xuất vật tư hàng tháng.
+
+02/2018 - 05/2023: Công ty TNHH Điện Công Nghiệp Thanh Vân - Kỹ sư điện công trường
+- Thi công điện động lực, tủ MSB, máy phát, hệ tiếp địa cho nhà máy may ở Thanh Hóa và kho lạnh ở Hải Phòng.
+- Vẽ shop drawing máng cáp, sơ đồ nguyên lý tủ điện trên AutoCAD.
+- Điều phối 2 đội thầu phụ điện khoảng 30 người, xử lý trùng tuyến với các nhóm khác.
+- Đi công tác xa nhà gần như quanh năm.
+
+HỌC VẤN
+2013 - 2017: Đại học Công nghiệp Thái Hà, ngành Công nghệ kỹ thuật Điện, Điện tử.
+
+CHỨNG CHỈ
+Chứng chỉ hành nghề giám sát lắp đặt thiết bị công trình, hạng III (2021).
+Kỹ thuật an toàn điện bậc 4/5.
+
+KỸ NĂNG
+AutoCAD, Dialux, Excel, MS Project. Đọc tài liệu tủ điện, ATS và catalogue thiết bị bằng tiếng Anh, TOEIC 480.
+
+DỰ ÁN ĐÃ THAM GIA
+- Tòa văn phòng Sao Mai, Hà Nội (2023 - nay): 22 tầng, điện động lực, hệ VRF 18 tầng, BMS giao tiếp qua nhà thầu khác.
+- Nhà máy may Sông Mã, Thanh Hóa (2020 - 2022): trạm biến áp 1.500 kVA, 2 máy phát, 6 km máng cáp.
+- Kho lạnh thủy sản Cát Hải, Hải Phòng (2018 - 2019): chỉ làm phần điện cấp nguồn và chiếu sáng, cụm máy nén do nhà thầu lạnh chuyên môn lo.
+
+KHÓA ĐÀO TẠO
+Lớp đọc bản vẽ cơ điện tòa nhà (2022). Hội thảo tiết kiệm năng lượng cho tòa nhà văn phòng (2024).
+
+HOẠT ĐỘNG KHÁC
+Thành viên nhóm thiện nguyện lắp điện mặt trời cho trường vùng cao. Thích chơi cầu lông và đọc sách lịch sử.
+#why Điện chứ không phải Nhiệt lạnh/Cơ điện/Cơ khí nên dòng ngành là tranh cãi. Có 14 tháng thật với VRF nên dòng kinh nghiệm đạt. Chạy thử chỉ đi cùng hãng, không tự chỉnh gió nên A. CV tự nói không vẽ phần ống.
+=== mev-05 | partial | hard | maybe | M M U U A U A A A M K M
+VŨ THANH SƠN
+Trưởng ca kỹ thuật tòa nhà
+0900 000 115 | son.vuthanh@example.com | Nam Từ Liêm, Hà Nội
+
+GIỚI THIỆU
+Tám năm trong ngành quản lý vận hành tòa nhà. Tôi hiểu một hệ thống lạnh trung tâm "sống" như thế nào sau khi nhà thầu rời đi: máy nào hay trip, van nào hay kẹt, tầng nào luôn kêu nóng.
+
+KINH NGHIỆM
+09/2021 - nay: Công ty Quản lý Tòa nhà Vạn Lộc - Trưởng ca kỹ thuật, tòa nhà Lộc Phát Plaza
+- Điều hành ca trực 6 người vận hành 3 chiller 450RT, tháp giải nhiệt, bơm và 34 AHU.
+- Lập lịch bảo trì tuần, tháng, năm trên phần mềm CMMS. Vệ sinh giàn, thay lọc, kiểm tra dầu, theo dõi nhiệt độ nước vào ra.
+- Năm 2023 làm đầu mối theo dõi nhà thầu thay mới 1 chiller: xem biện pháp, nhắc an toàn, xác nhận khối lượng. Bản vẽ, nghiệm thu và hồ sơ do ban quản lý dự án của chủ đầu tư phụ trách.
+- Dùng đồng hồ đo lưu lượng và điều chỉnh van cân bằng khi các tầng trên thiếu lạnh; gọi đơn vị ngoài khi cần đo gió toàn nhà.
+- Xử lý sự cố đêm, hướng dẫn nhân viên mới đọc sơ đồ nguyên lý, làm việc với nhà thầu bảo trì thang máy và PCCC mỗi tháng.
+
+06/2018 - 08/2021: Công ty CP Dịch vụ Kỹ thuật Hưng An - Kỹ thuật viên điện lạnh
+- Trực vận hành và bảo dưỡng hệ thống lạnh, điện, nước tại trung tâm thương mại Thiên Ân.
+- Sửa FCU, thay motor quạt, thông ống nước ngưng, kiểm tra tủ điện tầng.
+- Đọc nhật ký vận hành và báo cáo lãnh đạo ban quản lý.
+
+HỌC VẤN
+2015 - 2018: Cao đẳng Nghề Kỹ thuật Hồng Hà, ngành Kỹ thuật máy lạnh và Điều hòa không khí.
+
+CHỨNG CHỈ VÀ KHÓA HỌC
+Khóa vận hành chiller do đại lý hãng tổ chức (2022). Chứng nhận an toàn thiết bị áp lực (2023).
+
+KỸ NĂNG
+Biết xem bản vẽ CAD để tra đường ống, chưa dựng bản vẽ mới. Đọc được manual Trane, York bằng tiếng Anh khi cần tra mã lỗi. Sử dụng Excel, CMMS.
+
+THÀNH TÍCH
+- Giảm khoảng 9% điện năng của cụm lạnh năm 2024 nhờ đổi lịch chạy và nâng nhiệt độ nước lạnh ngoài giờ cao điểm.
+- Ba năm liền không để xảy ra sự cố dừng lạnh toàn tòa nhà quá 2 giờ.
+- Viết sổ tay vận hành ca đêm cho nhân viên mới, gồm 40 tình huống xử lý mã lỗi thường gặp.
+
+DỰ ÁN NỘI BỘ
+Chuyển sổ nhật ký vận hành giấy sang bảng tính dùng chung, tự động nhắc lịch thay lọc và lịch hiệu chuẩn cảm biến. Hỗ trợ ban quản lý chuẩn bị số liệu khi làm việc với đoàn kiểm tra PCCC hằng năm.
+
+SỞ THÍCH
+Cờ tướng, nuôi cá cảnh, đi cắm trại cuối tuần với gia đình.
+#why Người vận hành tòa nhà: giỏi hệ thống nhưng chưa thi công. Theo dõi thay 1 chiller có thể coi hoặc không coi là giám sát lắp đặt. Không nói gì về đi công trường, đi tỉnh nên K.
+=== mev-06 | near-miss | hard | no | U A U U U M A M A M M M
+HOÀNG ĐỨC KHẢI
+Kỹ sư cấp thoát nước và PCCC
+0900 000 116 - khai.hoangduc@example.com - Long Biên, Hà Nội
+
+TÓM TẮT
+Năm năm rưỡi làm hệ thống đường ống trong tòa nhà: nước sinh hoạt, nước thải, chữa cháy vách tường và sprinkler. Đã đi công trình ở nhiều tỉnh miền Bắc.
+
+KINH NGHIỆM
+04/2021 - nay: Công ty CP PCCC và Cơ điện Nam Giang - Kỹ sư thi công
+- Dựng mô hình Revit cho sprinkler và cấp thoát nước ở dự án chung cư 2 tòa 30 tầng tại Hưng Yên, xuất bản vẽ thi công.
+- Chỉ huy 2 đội thầu phụ lắp đường ống thép, cụm bơm chữa cháy; họp phối hợp mỗi tuần với thầu điện và thầu lạnh để nhường tuyến trên trần.
+- Chạy thử bơm chữa cháy, thử áp đường ống, đo lưu lượng đầu phun cuối tuyến để nghiệm thu với cảnh sát PCCC.
+- Lập biên bản nghiệm thu giai đoạn, hồ sơ hoàn công, xin giấy nghiệm thu PCCC.
+- Công trình có hệ điều hòa do nhà thầu khác làm, tôi chỉ phối hợp mặt bằng tuyến ống, không tham gia phần này.
+
+03/2019 - 03/2021: Công ty TNHH Nước và Môi trường Thiên Hải - Kỹ sư hiện trường
+- Thi công bể nước ngầm, trạm bơm tăng áp, đường ống HDPE ngoài nhà ở khu công nghiệp tại Bắc Giang và Thái Nguyên.
+- Bóc tách khối lượng ống và phụ kiện, đề nghị vật tư.
+
+HỌC VẤN
+2014 - 2019: Đại học Xây dựng Đông Phương, Kỹ sư Cấp thoát nước.
+
+CHỨNG CHỈ
+Nghiệp vụ PCCC. Chứng chỉ giám sát công tác xây dựng hạng III (lĩnh vực hạ tầng kỹ thuật cấp nước, thoát nước).
+
+KỸ NĂNG
+AutoCAD, Revit MEP, Navisworks ở mức xem và kiểm tra va chạm, Excel. Đọc hiểu tiêu chuẩn NFPA và catalogue đầu phun tiếng Anh.
+
+DỰ ÁN TIÊU BIỂU
+- Chung cư Lạc Hồng, Hưng Yên (2022 - 2025): 2 tòa 30 tầng, 12.000 đầu phun, 2 trạm bơm chữa cháy, thử nghiệm với đơn vị PCCC 4 đợt.
+- Khu công nghiệp Bình Xuyên Mới, Bắc Giang (2020): 3,2 km đường ống HDPE thoát nước mưa và trạm bơm chuyển bậc.
+- Trường phổ thông Đồng Tâm Xanh, Thái Nguyên (2019): cấp thoát nước toàn trường, thi công trong kỳ nghỉ hè.
+
+ĐÀO TẠO
+Lớp nâng cao mô hình hóa đường ống trên Revit (2023). Tập huấn tiêu chuẩn thoát nạn và chữa cháy cho nhà cao tầng (2024).
+
+SỞ THÍCH
+Bơi lội, đọc sách kỹ thuật, nuôi chim cảnh.
+#why Cơ điện thật nhưng không có giai đoạn HVAC, CV nói rõ. Dòng chạy thử có phần nước mà không có phần gió. Chứng chỉ giám sát thuộc cấp thoát nước, không hẳn là cơ điện: A. Chữa cháy không phải tải lạnh.
+=== mev-07 | near-miss | ordinary | maybe | M M M M U U A M A M U K
+NGÔ THỊ MAI ANH
+Kỹ sư thiết kế HVAC
+Điện thoại 0900 000 117 | maianh.ngo@example.com | Hoàng Mai, Hà Nội
+
+GIỚI THIỆU
+Tôi làm ở văn phòng tư vấn thiết kế từ khi ra trường. Thế mạnh là tính toán và lập hồ sơ thiết kế kỹ thuật phần điều hòa thông gió. Do hoàn cảnh gia đình có con nhỏ nên hiện chỉ tìm công việc tại văn phòng ở Hà Nội, không đi công tác xa và chưa có điều kiện theo công trường.
+
+KINH NGHIỆM LÀM VIỆC
+08/2020 - nay: Công ty CP Tư vấn Thiết kế Bình Nguyên - Kỹ sư thiết kế chính bộ môn thông gió
+- Tính nhiệt thừa ẩm thừa bằng Trace 700 và HAP, lập bảng chọn dàn lạnh, cụm AHU, quạt, tháp giải nhiệt cho văn phòng, bệnh viện, trung tâm thương mại.
+- Thể hiện bản vẽ thiết kế và bản vẽ triển khai cho đường gió, ống nước lạnh trên AutoCAD và Revit.
+- Viết thuyết minh, chỉ dẫn kỹ thuật, bóc khối lượng cho hồ sơ mời thầu.
+- Trả lời câu hỏi kỹ thuật của nhà thầu qua email và phiếu RFI. Chưa đi giám sát hiện trường, việc đó do đội giám sát tác giả của công ty làm.
+- Biết lý thuyết về cân bằng gió và nước từ các đề bài TAB khi viết chỉ dẫn, chưa tự thực hiện đo.
+
+07/2019 - 07/2020: Công ty TNHH Kiến Trúc và Kỹ thuật Vân Hà - Họa viên cơ điện
+- Vẽ lại bản vẽ theo sổ tay thiết kế, dựng mặt bằng đường ống, xuất bản in.
+
+HỌC VẤN
+2014 - 2019: Đại học Kỹ thuật Hoàng Long, Kỹ sư Kỹ thuật Nhiệt.
+
+KỸ NĂNG
+AutoCAD, Revit MEP, Trace 700, HAP, McQuay Duct Sizer. Đọc tốt catalogue và tài liệu ASHRAE bằng tiếng Anh (TOEIC 650).
+
+DỰ ÁN THIẾT KẾ TIÊU BIỂU
+- Bệnh viện đa khoa Thành Đạt, Phú Thọ (2024 - 2025): khu mổ áp suất dương, phòng cách ly áp suất âm, tổng tải lạnh 1.300 kW.
+- Trung tâm thương mại Vạn Thịnh, Thái Bình (2022 - 2023): chiller giải nhiệt nước, 96 cụm AHU, thuyết minh tiết kiệm năng lượng.
+- Tòa văn phòng Hưng Long, Hà Nội (2021): hệ VAV, hút khói tầng hầm, tăng áp cầu thang bộ.
+
+ĐÀO TẠO
+Khóa thiết kế hệ thống phòng sạch (2023). Khóa mô hình hóa năng lượng công trình (2024). Đang học chứng chỉ tính toán tiết kiệm năng lượng của hội ngành.
+
+HOẠT ĐỘNG
+Tham gia câu lạc bộ kỹ sư trẻ thành phố, viết blog hướng dẫn chọn thiết bị. Thích vẽ màu nước.
+#why Thiết kế giỏi nhưng công việc là giám sát hiện trường. CV tự nói không đi công trường nên dòng soft đầu là U. Có đọc đề TAB nên dòng chạy thử là A. Tuổi nghề: 7 năm, đúng lĩnh vực.
+=== mev-08 | non-fit | hard | no | U U U U U U U A A A A K
+ĐẶNG THỊ HỒNG NHUNG
+Chuyên viên M&E dự án phát triển cộng đồng
+0900 000 118 / nhung.dang@example.com / Tây Hồ, Hà Nội
+
+GIỚI THIỆU
+Hơn sáu năm làm giám sát và đánh giá (Monitoring & Evaluation, M&E) cho các dự án phi lợi nhuận về nước sạch, vệ sinh môi trường và sinh kế ở miền núi phía Bắc. Tôi thiết kế hệ thống chỉ số, chạy khảo sát và viết báo cáo cho nhà tài trợ.
+
+KINH NGHIỆM CÔNG TÁC
+01/2022 - nay: Tổ chức Phi lợi nhuận Hành Trình Xanh - Cán bộ M&E cao cấp
+- Thiết kế khung kết quả và hệ thống giám sát dự án nước sạch cho 42 xã, đặt chỉ tiêu và cách đo.
+- Đi thực địa hằng tháng ở Hà Giang, Cao Bằng, Điện Biên để kiểm tra công trình nước tự chảy cùng cán bộ xã.
+- Xây dựng biểu mẫu nghiệm thu đầu ra, đối chiếu với báo cáo tài chính, làm việc với đội thi công cộng đồng về số hộ hưởng lợi.
+- Xử lý dữ liệu khảo sát bằng KoboToolbox, SPSS. Viết báo cáo giữa kỳ và cuối kỳ bằng tiếng Anh cho nhà tài trợ.
+
+05/2020 - 12/2021: Trung tâm Nghiên cứu Phát triển Bền vững An Lạc - Cán bộ dự án
+- Hỗ trợ đánh giá tác động chương trình cải thiện thông gió và bếp sạch cho nhà ở vùng cao: khảo sát hộ dân, đo mức hài lòng, tổng hợp nhận xét.
+- Lập kế hoạch hoạt động quý, theo dõi ngân sách, viết tin bài.
+
+HỌC VẤN
+2015 - 2019: Đại học Khoa học Xã hội Minh Đức, Cử nhân Xã hội học.
+2022: Chứng chỉ ngắn hạn về Monitoring, Evaluation & Learning, Viện Phát triển Cộng đồng Tân Việt.
+
+KỸ NĂNG
+SPSS, KoboToolbox, Power BI, Excel nâng cao. Tiếng Anh IELTS 7.0, thuyết trình và viết báo cáo tốt. Điều phối thảo luận nhóm.
+
+DỰ ÁN VÀ SẢN PHẨM
+- Báo cáo đánh giá cuối kỳ chương trình nước sạch 3 tỉnh (2024), 180 trang, được nhà tài trợ dùng làm tài liệu tham khảo.
+- Xây dựng bảng điều khiển theo dõi chỉ số trên Power BI cho 6 dự án, cập nhật theo tháng.
+- Tập huấn cho 60 cán bộ xã về cách ghi chép số liệu, cách phân biệt đầu ra và kết quả.
+- Đồng tác giả tài liệu hướng dẫn "Lắng nghe người dân trong giám sát cộng đồng".
+
+SỞ THÍCH
+Leo núi, chụp ảnh tư liệu, tình nguyện dạy tiếng Anh cho trẻ em.
+#why M&E ở đây là Monitoring & Evaluation. Nhiều chữ chung: hệ thống, giám sát, nghiệm thu, đội thi công, thông gió. Không có gì thuộc cơ điện. Tiếng Anh giỏi nhưng chưa đọc tài liệu hãng, đi tỉnh thật nhưng không phải công trường: tranh cãi được.
+=== mev-09 | non-fit | ordinary | no | U U U U U U U A A U A K
+BÙI TRỌNG HIẾU
+Chuyên viên kinh doanh dự án bất động sản
+0900 000 119 | hieu.buitrong@example.com | Gia Lâm, Hà Nội
+
+TÓM TẮT
+Bảy năm tư vấn căn hộ và nhà xưởng cho thuê. Quen làm việc với chủ đầu tư, đại lý, ngân hàng. Thu nhập chủ yếu từ hoa hồng và đã nhiều lần lọt top doanh số.
+
+KINH NGHIỆM
+02/2022 - nay: Công ty CP Địa ốc Thịnh Gia Phát - Trưởng nhóm kinh doanh
+- Phân phối 2 dự án căn hộ tại Hưng Yên và Bắc Ninh, dẫn đội 8 người.
+- Đọc bản vẽ mặt bằng căn hộ, giải thích cho khách vị trí cục nóng điều hòa, hướng gió, hệ thống thông gió tầng hầm theo tài liệu bán hàng của chủ đầu tư.
+- Đưa khách ra thăm công trường, theo dõi tiến độ xây dựng để trả lời khách, hỗ trợ khách nhận bàn giao căn hộ và ký biên bản bàn giao.
+- Chạy quảng cáo Facebook, chăm sóc data khách, đi hội chợ bất động sản ở các tỉnh.
+
+06/2019 - 01/2022: Công ty TNHH Bất động sản Công nghiệp Kim Long - Chuyên viên cho thuê nhà xưởng
+- Giới thiệu xưởng xây sẵn cho doanh nghiệp FDI, phối hợp phiên dịch khi có khách nước ngoài.
+- Soạn hồ sơ pháp lý, biên bản nghiệm thu hiện trạng khi bàn giao, theo dõi công nợ tiền thuê.
+
+HỌC VẤN
+2015 - 2019: Cao đẳng Kinh tế Kỹ thuật Hoài Đức, ngành Quản trị kinh doanh.
+
+KỸ NĂNG
+Thuyết trình, chốt sale, Canva, Word, Excel cơ bản, Facebook Ads.
+
+THÀNH TÍCH
+Top 3 doanh số khu vực năm 2023. Chứng chỉ môi giới bất động sản.
+
+DỰ ÁN ĐÃ PHÂN PHỐI
+- Căn hộ Lạc Việt Garden, Hưng Yên: 1.200 căn, bàn giao năm 2025, đạt tỷ lệ bán 94% trong 18 tháng.
+- Khu đô thị Sen Hồng, Bắc Ninh: nhà phố và shophouse, phối hợp ngân hàng hỗ trợ vay cho hơn 70 khách.
+- Khu xưởng cho thuê Kim Long 2, Bắc Giang: 8 xưởng diện tích từ 1.500 đến 6.000 m2, khách chủ yếu là công ty điện tử quy mô vừa.
+
+KỸ NĂNG QUẢN LÝ NHÓM
+Lên chỉ tiêu tháng, kèm nhân viên mới cách gọi điện, mỗi tuần họp rút kinh nghiệm. Tổ chức 2 sự kiện mở bán quy mô 300 khách. Xây dựng kịch bản xử lý từ chối cho đội bán hàng và bộ câu hỏi thường gặp về pháp lý căn hộ.
+
+SỞ THÍCH
+Golf, gặp gỡ bạn bè, đọc sách tài chính cá nhân.
+#why Trùng chữ: công trường, chủ đầu tư, bàn giao, biên bản nghiệm thu, điều hòa, thông gió. Không phải kỹ thuật. Không nêu tiếng Anh nên U. Đi tỉnh có nhưng công trường chỉ dẫn khách nên A.
+=== mev-10 | stuffing | ordinary | no | U U U U U U U U U U K K
+TRỊNH CÔNG LỰC
+Nhân viên kỹ thuật
+0900 000 120 | luc.trinhcong@example.com | Thường Tín, Hà Nội
+
+MỤC TIÊU NGHỀ NGHIỆP
+Có ít nhất 4 năm làm kỹ thuật cơ điện, chịu được công việc ngoài công trường, sẵn sàng đi công tác tỉnh, phối hợp tốt với thầu phụ và đội thi công. Triển khai được bản vẽ shop drawing đường ống gió, ống nước lạnh trên AutoCAD. Tính được tải lạnh sơ bộ và chọn thiết bị FCU, AHU cho công trình.
+
+TỪ KHÓA
+HVAC, M&E, VRV, VRF, chiller, FCU, AHU, AutoCAD, Revit MEP, TAB, shop drawing, as-built, nghiệm thu, hoàn công, chứng chỉ hành nghề giám sát, cân chỉnh lưu lượng, điều hòa không khí, thông gió, catalogue, Daikin, Trane, Carrier.
+
+KINH NGHIỆM LÀM VIỆC
+03/2022 - nay: Cửa hàng Điện máy Thanh Bình - Nhân viên giao hàng và lắp đặt
+- Chở tủ lạnh, máy giặt, quạt, bình nóng lạnh tới nhà khách trong huyện.
+- Treo máy điều hòa gia đình 9000 BTU cùng thợ chính, cầm đồ và khoan tường theo chỉ dẫn.
+- Nhận tiền, gửi phiếu bảo hành cho khách, ghi sổ giao hàng cho chủ cửa hàng.
+
+09/2019 - 02/2022: Quán Sửa Xe Hùng Anh - Thợ phụ
+- Vá lốp, thay nhớt, rửa xe, dọn dẹp xưởng. Mua phụ tùng khi hết hàng.
+
+01/2018 - 08/2019: Công ty TNHH May Thái Tân - Công nhân bốc xếp
+- Bốc xếp thành phẩm lên container, kiểm đếm cuối ca.
+
+HỌC VẤN
+2016 - 2017: Trung cấp Nghề Thường Xuân, Sửa chữa xe máy.
+
+KỸ NĂNG
+Lái xe tải nhỏ, lái xe máy, sử dụng Zalo. Trung thực, chăm chỉ.
+
+THÔNG TIN THÊM
+Đã có gia đình, hai con nhỏ, ở cùng bố mẹ tại Thường Tín. Có xe máy riêng, biết đường trong huyện và các huyện lân cận. Có thể đi làm ngay khi được nhận. Trong 3 năm ở cửa hàng chưa để mất hàng lần nào, khách quen hay gọi đích danh khi cần chở đồ. Thường đỡ chủ cửa hàng trông quầy buổi trưa, bán ổ cắm, bóng đèn, dây điện, quạt bàn. Dịp Tết có làm thêm chở hoa và cây cảnh cho một vườn ở Thường Tín.
+
+NGƯỜI THAM KHẢO
+Anh Thanh, chủ Cửa hàng Điện máy Thanh Bình, 0900 000 190.
+
+SỞ THÍCH
+Bóng đá, xem phim hành động, câu cá.
+#why Đoạn mục tiêu dán từ ad và một ô từ khóa, phần công việc không hề có. Cầm đồ treo máy gia đình không phải kỹ thuật cơ điện. Mọi dòng đo được đều U kể cả bonus, soft để K.
+=== mev-11 | messy | hard | interview | M M M M M M M M M M M M
+LY THANH DAT                                     KY NANG
+Ky su co dien lanh                               AutoCAD (thanh thao) - Revit MEP
+SDT: 0900 000 121                                Excel - MS Project - Elite CHVAC
+dat.lythanh@example.com                          Tieng Anh: doc tot tai lieu hang,
+Thu Dau Mot, Binh Duong                          catalogue Daikin, LG (TOEIC 590)
+
+KINH NGHIEM LAM VIEC                             HOC VAN
+08/2020 - nay  Cong ty CP Co dien                2013 - 2018 Dai hoc Cong nghe
+Song Bac - Ky su truong phan lanh                Phuong Nam, Ky su Co khi
+* Giam sat nha thau phu lap he VRF               Che tao may, chuyen sau he
+cho 3 toa van phong va khach san                 thong lanh trong do an tot
+tai Binh Duong, Da Lat, Nha Trang.               nghiep
+
+* Lam viec tai cong truong dai ngay,             SO THICH
+di tinh theo tung du an, co dot o                Di bo duong dai, dan guitar,
+Da Lat 9 thang.                                  mo hinh tau thuy
+* Tinh sa bo tai lanh cac tang thay
+doi cong nang, de xuat lai dan lanh,             THANH TICH
+AHU, duong kinh ong gio.                         Ky su xuat sac nam 2023 cua
+* Dung ban ve thi cong ong gio, ong              cong ty. Du an khach san
+nuoc lanh tren CAD, phoi hop voi                 Bien Ngoc ban giao dung han.
+ben dien va chua chay.
+* Lap to chay thu: do gio tung cua, chinh damper, can van nuoc lanh, ghi bang so lieu cho tu van.
+* Lap bien ban nghiem thu theo dot, tap hop ho so hoan cong va ban ve as-built.
+* Hop giao ban voi cac thau phu, chia lai to khi cham tien do.
+
+06/2018 - 07/2020 Cong ty TNHH Ky thuat Binh Duong Xanh - Ky su hien
+truong
+* Giam sat lap dat he chiller gio cho nha may
+thuc pham, kiem tra ong nuoc lanh va bao on.
+* Boc tach khoi luong hang thang, lam ho so thanh toan cho thau phu.
+* Tiep nhan bao hanh, huong dan ky thuat vien cua nha may su dung he thong.
+
+DU AN TIEU BIEU                                  HOAT DONG
+Khach san Bien Ngoc, Nha Trang (2023-2025)       Ho tro dao tao ky su moi hang
+VRF 410 HP, 2 AHU gio tuoi, 260 dan lanh         quy ve cach ghi phieu kiem tra
+Toa van phong Binh Duong Star (2021-2022)        va cach phoi hop voi tu van
+16 tang, thay doi cong nang 3 lan
+Khach san Thong Xanh, Da Lat (2020-2021) thi cong tren doi, 9 thang o cong truong, xu ly nuoc ngung va on quat cap gio tuoi.
+
+CHUNG CHI: Chung chi hanh nghe giam sat lap dat thiet bi, hang III (2022).
+Trang 1/1 - CV_LyThanhDat_final_v3.pdf
+#why PDF hai cột bị trộn và mất dấu, người đọc vẫn gỡ được. Chứng chỉ bị đẩy xuống cuối trang nhưng vẫn tính. Ngành Cơ khí nên đạt. Revit chỉ có ở cột kỹ năng, nhưng người này làm bản vẽ ở dự án lớn nên chấp nhận.
+=== mev-12 | messy | hard | maybe | U M M M A M A A A A K K
+N G U Y Ễ N   V Ă N   D Ũ N G
+K Ỹ   S Ư   N H I Ệ T   L Ạ N H
+Đ i ệ n  t h o ạ i : 0900 000 122
+Email: dung.nguyenvan.hvac@example.com
+Đ ị a  c h ỉ : Ninh Kiều, Cần Thơ
+
+M ụ c  t i ê u
+Kỹ sư trẻ muốn được đi sâu vào thi công và giám sát hệ thống lạnh trung tâm.
+
+K I N H   N G H I Ệ M   L À M   V I Ệ C
+03/2024 - nay:  Công ty TNHH Điện Lạnh Miền Tây Sông Nước - Kỹ sư hỗ trợ
+thi công
+- Thể hiện bản vẽ triển khai ống gió, ống nước lạnh cho 2 khách sạn ở Cần
+Thơ và Phú Quốc trên Auto CAD.
+- Tính tải theo phần mềm hãng, đề xuất model dàn FCU và AHU cho anh kỹ sư
+chính ký duyệt.
+- Được phân công cùng trưởng nhóm theo dõi lắp hệ VRV ở khách sạn Phú Quốc, tự
+đi kiểm tra các tầng từ tầng 5 đến 12, nhưng người ký phiếu vẫn là trưởng nhóm.
+- Viết biên bản nghiệm thu công việc, tập hợp bộ hồ sơ hoàn công tầng do
+mình theo dõi.
+- Có đọc quy trình đo gió và chỉnh van và ghi số liệu cho nhóm đo, chưa
+tự chủ trì một đợt chạy thử nào.
+
+10/2023 - 02/2024: Xưởng Cơ Khí Hậu Giang - Thực tập sinh
+- Hàn, gia công giá đỡ ống, làm mẫu ống gió ton mạ kẽm.
+
+H Ọ C   V Ấ N
+2019 - 2023: Đại học Kỹ thuật Cửu Long
+Ngành: Công nghệ Kỹ thuật Nhiệt.   Xếp loại: Khá
+Đồ án: Tính toán hệ thống điều hòa cho tòa văn phòng 12 tầng.
+
+K Ỹ   N Ă N G
+Auto CAD   -   Word   -   Excel
+Tiếng Anh: chứng chỉ B1 khung châu Âu, đọc tài liệu cần tra thêm từ điển
+
+D Ự   Á N   T H A M   G I A
+Khách sạn Sóng Ngọc Phú Quốc (2024 - 2026): 12 tầng, VRV 260 HP,
+4 AHU cấp gió tươi. Thể hiện bản vẽ ống gió tầng 5 đến tầng 12.
+Khách sạn Tây Đô Mới Cần Thơ (2024): cải tạo hệ FCU 8 tầng, thay
+đường ống nước lạnh trong lúc khách sạn vẫn đón khách nên chỉ thi
+công ban đêm từng khu.
+
+H O Ạ T   Đ Ộ N G
+Câu lạc bộ kỹ sư trẻ của trường, đạt giải khuyến khích cuộc thi
+mô hình tiết kiệm năng lượng cấp trường năm 2022. Làm trợ giảng thực
+hành môn kỹ thuật lạnh một học kỳ. Tham gia chiến dịch tình nguyện
+mùa hè sửa quạt và điện dân dụng cho hộ nghèo ven sông.
+
+S Ở   T H Í C H
+Đọc sách, câu lạc bộ cờ vua, đi xe đạp ven sông.
+#why Hai năm tám tháng làm nghề, chưa đủ 4 năm. Chữ giãn nhưng đọc được. Giám sát VRV có thật nhưng dưới quyền trưởng nhóm. B1 cùng "tra từ điển": đúng loại tranh cãi về đọc tài liệu. Revit, chứng chỉ không có nên A vì là bonus.

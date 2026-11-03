@@ -1,0 +1,161 @@
+[
+{"id":"s01-office-suite-wordings","notes":"Word, Excel, PowerPoint listed.","cvText":"NGUYỄN THỊ HUỆ\nNhân viên hành chính\n\nKỸ NĂNG\nTin học văn phòng: Word, Excel, PowerPoint\n\nKINH NGHIỆM\n2021 - nay: Hành chính, Công ty CP Xi măng Bỉm Sơn Mới\n","items":[
+["Thành thạo tin học văn phòng","met","skills"],
+["Sử dụng tốt Word, Excel","met","skills"],
+["Biết sử dụng MS Office","met","skills"],
+["Sử dụng thành thạo PowerPoint","met","skills"],
+["Biết dùng SAP","unmet","skills"]]},
+{"id":"s02-ms-office-expands","notes":"MS Office is Word plus Excel plus PowerPoint.","cvText":"LÊ TRUNG KIÊN\nTrợ lý kinh doanh\n\nKỸ NĂNG\nThành thạo Microsoft Office\n\nKINH NGHIỆM\n2022 - nay: Trợ lý kinh doanh, Công ty Thương mại Thái Hà\n","items":[
+["Thành thạo Excel","met","skills"],
+["Biết Word","met","skills"],
+["Biết PowerPoint","met","skills"],
+["Tin học văn phòng tốt","met","skills"]]},
+{"id":"s03-google-sheets-vs-excel","notes":"Google Sheets for a spreadsheet requirement.","cvText":"VƯƠNG THỊ KIM\nNhân viên vận hành shop online\n\nKỸ NĂNG\nGoogle Sheets, Google Docs, Canva\n\nKINH NGHIỆM\n2023 - nay: Vận hành shop, Thời trang Mộc Miên\n","items":[
+["Biết sử dụng bảng tính","met","skills"],
+["Thành thạo Excel","ambiguous","skills","Google Sheets gần với Excel nhưng không phải Excel"],
+["Biết Canva","met","skills"]]},
+{"id":"s04-excel-basic-vs-advanced","notes":"Only basic Excel.","cvText":"PHẠM THANH NGA\nThủ kho\n\nKỸ NĂNG\nExcel cơ bản\n\nKINH NGHIỆM\n2020 - nay: Thủ kho, Công ty Thực phẩm Sao Khuê\n","items":[
+["Biết Excel","met","skills"],
+["Excel nâng cao (Pivot Table, VLOOKUP)","unmet","skills","Ghi rõ chỉ cơ bản"],
+["Thành thạo Excel","ambiguous","skills","Cơ bản không phải thành thạo, nhưng nhiều HR vẫn coi có Excel là đạt"]]},
+{"id":"s05-excel-advanced-functions","notes":"Pivot and VLOOKUP named.","cvText":"NGUYỄN MẠNH CƯỜNG\nChuyên viên báo cáo\n\nKỸ NĂNG\nExcel: Pivot Table, VLOOKUP, Power Query, macro\n\nKINH NGHIỆM\n2019 - nay: Chuyên viên báo cáo, Công ty CP Sữa Ba Vì\n","items":[
+["Excel nâng cao","met","skills"],
+["Thành thạo các hàm Excel","met","skills"]]},
+{"id":"s06-misa-fast-software","notes":"Accounting software names.","cvText":"NGUYỄN THANH HƯƠNG\nKế toán\n\nPHẦN MỀM\nFast Accounting, BRAVO\n\nKINH NGHIỆM\n2018 - nay: Kế toán viên, Công ty Sơn Tường An\n","items":[
+["Sử dụng phần mềm kế toán","met","skills"],
+["Thành thạo phần mềm MISA","unmet","skills"],
+["Biết phần mềm kế toán MISA hoặc FAST","met","skills"],
+["Sử dụng phần mềm Bravo","met","skills"]]},
+{"id":"s07-design-abbreviations","notes":"PS, AI, AE abbreviations.","cvText":"TRẦN NHẬT HẠ\nGraphic Designer\n\nCÔNG CỤ\nAdobe PS, AI, AE, Premiere\n\nKINH NGHIỆM\n2020 - nay: Designer, Agency Mùa Xuân\n","items":[
+["Thành thạo Photoshop, Illustrator","met","skills","PS, AI là viết tắt phổ biến"],
+["Biết After Effects","met","skills"],
+["Biết Premiere","met","skills"],
+["Biết Figma","unmet","skills"]]},
+{"id":"s08-js-ts-abbreviations","notes":"JS and TS abbreviations, framework spellings.","cvText":"Hoàng Quang Duy\nFrontend Developer\n\nSKILLS\nJS, TS, React.js, Next.js, Node.js, Tailwind\n\nEXPERIENCE\n2021 - nay: Frontend Dev, Công ty Công nghệ Tinh Vân Mới\n","items":[
+["Thành thạo JavaScript","met","skills"],
+["TypeScript","met","skills"],
+["ReactJS","met","skills"],
+["NodeJS","met","skills"],
+["Có kinh nghiệm VueJS","unmet","skills"],
+["NextJS là một lợi thế","met","skills"]]},
+{"id":"s09-java-not-javascript","notes":"JavaScript does not make Java.","cvText":"NGUYỄN ĐỨC TRÍ\nWeb Developer\n\nSKILLS\nJavaScript, HTML, CSS\n\nKINH NGHIỆM\n2022 - nay: Web Dev, Công ty Web Sài Gòn Xanh\n","items":[
+["Thành thạo Java","unmet","skills"],
+["Biết JavaScript","met","skills"]]},
+{"id":"s10-wordpress-excellent-not-office","notes":"Word only inside WordPress; Excel only inside excellent.","cvText":"Vy Tran\nContent Writer\n\nSKILLS\nWordPress, SEO writing, excellent communication\n\nEXPERIENCE\n2022 - Present Content Writer, Green Tea Media\n","items":[
+["Biết Word","unmet","skills"],
+["Excel","unmet","skills"],
+["WordPress","met","skills"],
+["SEO","met","skills"]]},
+{"id":"s11-sap-vs-sap-xep","notes":"Sắp xếp folds to sap xep; not SAP. SAP2000 is civil-engineering software, not SAP ERP.","cvText":"ĐẶNG VĂN CƯỜNG\nNhân viên kho kiêm kỹ thuật\n\nKINH NGHIỆM\n2020 - nay: Nhân viên kho, Công ty Xây dựng Sông Thao\nSắp xếp hàng hoá, sắp đặt pallet theo sơ đồ\nHỗ trợ kỹ sư nhập mô hình trên SAP2000\n","items":[
+["Sử dụng phần mềm SAP ERP","unmet","skills"],
+["Biết SAP2000","met","skills"]]},
+{"id":"s12-cad-software","notes":"AutoCAD 2D, Revit.","cvText":"VƯƠNG HỮU LỘC\nKỹ sư kết cấu\n\nPHẦN MỀM\nAutoCAD 2D, Revit, Etabs\n\nKINH NGHIỆM\n2017 - nay: Kỹ sư kết cấu, Công ty Tư vấn Thiết kế Hoà Bình Xanh\n","items":[
+["Thành thạo AutoCAD","met","skills"],
+["Biết Revit","met","skills"],
+["Sử dụng Etabs","met","skills"],
+["Biết Tekla","unmet","skills"],
+["Biết Autocad 3D","unmet","skills"]]},
+{"id":"s13-marketing-tools","notes":"Facebook Ads, Google Ads and synonym lines.","cvText":"TRƯƠNG HOÀI ÂN\nDigital Marketer\n\nKỸ NĂNG\nFB Ads, Google Ads, SEO, Google Analytics\n\nKINH NGHIỆM\n2021 - nay: Digital Marketing, Công ty Nội thất Tân Á\n","items":[
+["Có kinh nghiệm chạy quảng cáo Facebook","met","skills"],
+["Biết chạy Google Ads","met","skills"],
+["Có kinh nghiệm Digital Marketing","met","skills"],
+["Biết chạy TikTok Ads","unmet","skills"]]},
+{"id":"s14-tax-accounting-knowledge","notes":"Tax work in duties.","cvText":"HOÀNG THỊ THU\nKế toán thuế\n\nKINH NGHIỆM\n2019 - nay: Kế toán thuế, Công ty CP Gốm sứ Minh Long Việt\nKê khai thuế GTGT, TNCN, quyết toán thuế TNDN, lập báo cáo tài chính\n","items":[
+["Am hiểu về thuế","met","skills"],
+["Biết lập báo cáo tài chính","met","skills"],
+["Biết lập báo cáo thuế","met","skills"],
+["Có kinh nghiệm kiểm toán","unmet","skills"]]},
+{"id":"s15-hr-skills","notes":"BHXH synonym.","cvText":"TRỊNH KHÁNH VY\nChuyên viên C&B\n\nKINH NGHIỆM\n2020 - nay: C&B, Công ty TNHH Bao bì Tân Tiến\nTính lương, làm BHXH, tuyển dụng công nhân\nHọc vấn: ĐH Lao động Xã hội\n","items":[
+["Am hiểu bảo hiểm xã hội","met","skills"],
+["Có kinh nghiệm tuyển dụng","met","skills"],
+["Có kinh nghiệm tính lương","met","skills"],
+["Có kinh nghiệm đào tạo nội bộ","unmet","skills"]]},
+{"id":"s16-import-export","notes":"Customs, Incoterms, logistics.","cvText":"ĐÀO THỊ THANH\nNhân viên xuất nhập khẩu\n\nKINH NGHIỆM\n2021 - nay: Xuất nhập khẩu, Công ty TNHH Logistics Hải Vân\nLàm thủ tục hải quan, C/O, Incoterms, booking tàu\n","items":[
+["Am hiểu thủ tục hải quan","met","skills"],
+["Biết Incoterms","met","skills"],
+["Có kinh nghiệm XNK","met","skills"],
+["Biết L/C","unmet","skills"]]},
+{"id":"s17-nursing-skills","notes":"Clinical skills.","cvText":"NGUYỄN THỊ NHUNG\nĐiều dưỡng\n\nKINH NGHIỆM\n2018 - nay: Điều dưỡng khoa Ngoại, Bệnh viện Thiện Tâm\nTiêm truyền, thay băng, chăm sóc bệnh nhân sau mổ\n","items":[
+["Có kỹ năng tiêm truyền","met","skills"],
+["Có kinh nghiệm chăm sóc bệnh nhân","met","skills"],
+["Có kinh nghiệm siêu âm","unmet","skills"]]},
+{"id":"s18-cooking-barista","notes":"Food and drink specifics.","cvText":"TRẦN VĂN LÂM\nPha chế\n\nKINH NGHIỆM\n2022 - nay: Barista, Quán Hẻm Coffee\nPha espresso, latte, cocktail cơ bản\n","items":[
+["Biết pha chế","met","skills"],
+["Có kinh nghiệm Barista","met","skills"],
+["Biết nấu món Âu","unmet","skills"]]},
+{"id":"s19-equipment","notes":"Laptop and motorbike stated.","cvText":"CHU MINH QUÂN\nCộng tác viên khảo sát\n\nTHÔNG TIN KHÁC\nCó laptop cá nhân\nPhương tiện đi lại: xe máy\n\nKINH NGHIỆM\n2024 - nay: Cộng tác viên, Công ty Nghiên cứu Thị trường Bình Minh\n","items":[
+["Có laptop","met","skills"],
+["Có xe máy","met","skills"],
+["Có ô tô riêng","unknown","skills","CV im lặng về việc sở hữu xe: HR phải hỏi, không kết luận được"],
+["Có laptop và xe máy","met","skills"]]},
+{"id":"s20-no-diacritics-skills","notes":"No diacritics in CV.","cvText":"LE THI HOA\nNhan vien ke toan\n\nKY NANG\nThanh thao Excel, Word, su dung MISA\nKe toan tong hop, ke khai thue\n\nKINH NGHIEM\n2018 - nay: Ke toan, Cong ty May Duc Giang Moi\n","items":[
+["Thành thạo Excel","met","skills"],
+["Sử dụng MISA","met","skills"],
+["Có kinh nghiệm kế toán tổng hợp","met","skills"],
+["Biết sử dụng phần mềm SAP","unmet","skills"]]},
+{"id":"s21-diacritic-free-requirement","notes":"Ad itself without diacritics; CV with diacritics.","cvText":"PHẠM THỊ TRÚC\nNhân viên kinh doanh\n\nKỸ NĂNG\nSử dụng thành thạo Excel, Word\nKỹ năng bán hàng qua điện thoại\n\nKINH NGHIỆM\n2020 - nay: Kinh doanh, Công ty Sữa Hoàng Long\n","items":[
+["Thanh thao tin hoc van phong","met","skills"],
+["Co kinh nghiem ban hang tu 3 nam","met","experience"],
+["Biet su dung phan mem CRM","unmet","skills"]]},
+{"id":"s22-or-any-mode","notes":"Hoặc means any.","cvText":"NGUYỄN VĂN QUÝ\nLập trình viên\n\nKỸ NĂNG\nPython, Django, MySQL\n\nKINH NGHIỆM\n2022 - nay: Lập trình viên, Công ty Công nghệ Bắc Việt\n","items":[
+["Biết Python hoặc Java","met","skills"],
+["Biết PHP hoặc Ruby","unmet","skills"],
+["Biết MySQL hoặc PostgreSQL","met","skills"]]},
+{"id":"s23-and-all-mode","notes":"Và means all.","cvText":"LÂM NGỌC BÍCH\nNhân viên kế hoạch\n\nKỸ NĂNG\nExcel\n\nKINH NGHIỆM\n2022 - nay: Kế hoạch sản xuất, Công ty Nhựa Hưng Yên Mới\n","items":[
+["Biết Excel và PowerPoint","unmet","skills"],
+["Thành thạo Excel, Word, PowerPoint","unmet","skills"]]},
+{"id":"s24-data-tools","notes":"PowerBI spelled without space, Python libraries.","cvText":"Tuấn Anh\nData Analyst\n\nSKILLS\nSQL, Python (Pandas, NumPy), PowerBI, Tableau\n\nEXPERIENCE\n2021 - Present Data Analyst, Sao Mai Retail\n","items":[
+["Biết Power BI","met","skills"],
+["Có kỹ năng phân tích dữ liệu","met","skills"],
+["Thành thạo SQL, Python","met","skills"],
+["Có kinh nghiệm dùng Looker","unmet","skills"],
+["Có kiến thức R","unmet","skills"]]},
+{"id":"s25-testing-tools","notes":"Tester tool list.","cvText":"NGÔ THU THỦY\nQA Engineer\n\nKỸ NĂNG\nManual test, Selenium, Postman, JIRA\n\nKINH NGHIỆM\n2021 - nay: Tester, Công ty Phần mềm An Nam\n","items":[
+["Có kinh nghiệm kiểm thử phần mềm","met","skills"],
+["Biết viết automation test","met","skills"],
+["Sử dụng Postman","met","skills"],
+["Biết dùng Cypress","unmet","skills"]]},
+{"id":"s26-customer-service-synonyms","notes":"CSKH and tổng đài.","cvText":"VŨ HOÀNG YẾN\nTổng đài viên\n\nKINH NGHIỆM\n2022 - nay: Tổng đài viên, Trung tâm Call Center Viettin\nTrả lời khách hàng, gọi telesale gói cước\n","items":[
+["Có kinh nghiệm chăm sóc khách hàng","met","skills"],
+["Có kinh nghiệm Telesales","met","skills"],
+["Có kinh nghiệm CSKH","met","skills"]]},
+{"id":"s27-english-skills-section","notes":"English CV skills, English requirement wording.","cvText":"Alex Mai\nOperations Coordinator\n\nSKILLS\nProficient in MS Office, Strong SQL, Trello, Notion\n\nEXPERIENCE\n2022 - Present Operations Coordinator, Blue Ocean Logistics\n","items":[
+["Proficient in Excel","met","skills"],
+["Strong SQL skills","met","skills"],
+["Experience with Trello or Asana","met","skills"],
+["Knowledge of Salesforce","unmet","skills"]]},
+{"id":"s28-machine-skills","notes":"Machinist skills.","cvText":"PHẠM VĂN KHANG\nKỹ thuật viên CNC\n\nKINH NGHIỆM\n2017 - nay: Vận hành máy CNC, Công ty Khuôn mẫu Đông Á\nĐọc bản vẽ kỹ thuật, lập trình G-code, hàn TIG cơ bản\n","items":[
+["Vận hành máy CNC","met","skills"],
+["Biết đọc bản vẽ kỹ thuật","met","skills"],
+["Biết lập trình PLC","unmet","skills"],
+["Biết hàn TIG","met","skills"]]},
+{"id":"s29-unusual-tools-literal","notes":"Tools a fixed list may not know.","cvText":"NGUYỄN KIM NGÂN\nVận hành sàn thương mại điện tử\n\nKỸ NĂNG\nShopee, Lazada, KiotViet, Zalo OA, Odoo\n\nKINH NGHIỆM\n2022 - nay: Vận hành sàn, Thời trang Thu Hà\n","items":[
+["Có kinh nghiệm bán hàng trên Shopee","met","skills"],
+["Biết dùng KiotViet","met","skills"],
+["Biết dùng Odoo","met","skills"],
+["Biết dùng Sapo","unmet","skills"],
+["Vận hành sàn Tiki","unmet","skills"]]},
+{"id":"s30-sewing-factory","notes":"Garment trade.","cvText":"NGUYỄN THỊ LOAN\nCông nhân may\n\nKINH NGHIỆM\n2010 - nay: May công nghiệp, Công ty May Nhà Bè Mới\nThành thạo máy 1 kim, máy vắt sổ\n","items":[
+["Biết may công nghiệp","met","skills"],
+["Biết sử dụng máy 1 kim","met","skills"],
+["Biết sử dụng máy thêu vi tính","unmet","skills"]]},
+{"id":"s31-backend-synonyms","notes":"K8s, Postgres, CI/CD via concrete tools.","cvText":"Bao Nguyen\nBackend Engineer\n\nSKILLS\nGolang, Postgres, K8s, Docker, GitHub Actions\n\nEXPERIENCE\n2019 - Present Backend Engineer, Stellar Pay\n","items":[
+["Biết Go","met","skills"],
+["PostgreSQL","met","skills"],
+["Kubernetes","met","skills"],
+["Có kinh nghiệm CI/CD","met","skills"],
+["Có kiến thức cơ sở dữ liệu","met","skills"],
+["Biết MongoDB","unmet","skills"]]},
+{"id":"s32-c-family-languages","notes":"C#, C++ and C are different.","cvText":"Phan Thành Công\nPhần mềm nhúng\n\nKỸ NĂNG\nC++, Linux, Git\n\nKINH NGHIỆM\n2020 - nay: Kỹ sư nhúng, Công ty Điện tử Viettronics Mới\n","items":[
+["Biết C#","unmet","skills"],
+["Thành thạo C++","met","skills"],
+["Biết dùng Git","met","skills"]]},
+{"id":"s33-react-native-vs-react","notes":"React Native does not clearly equal ReactJS.","cvText":"Trần Minh Quân\nMobile Developer\n\nSKILLS\nReact Native, Swift, Firebase\n\nEXPERIENCE\n2022 - nay: Mobile Dev, Công ty App Sài Gòn\n","items":[
+["Biết React Native","met","skills"],
+["Có kinh nghiệm ReactJS","ambiguous","skills","Chung nền React nhưng khác nền tảng"],
+["Biết Flutter","unmet","skills"],
+["Biết Swift","met","skills"]]},
+{"id":"s34-soft-with-measurable","notes":"Lines mixing soft and measurable parts.","cvText":"NGUYỄN NGỌC SƠN\nTrợ lý phòng kinh doanh\n\nKỸ NĂNG\nExcel, Word\n\nKINH NGHIỆM\n2022 - nay: Trợ lý, Công ty TNHH Thiết bị Bếp Hoà Phát Mới\n","items":[
+["Giao tiếp tốt, thành thạo Excel","ambiguous","skills","Phần Excel đạt, phần giao tiếp không đánh giá được từ CV"],
+["Cẩn thận, biết sử dụng PowerPoint","unmet","skills","Phần đo được thiếu rõ ràng"]]}
+]

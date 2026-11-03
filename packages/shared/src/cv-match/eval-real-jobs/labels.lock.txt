@@ -1,0 +1,6 @@
+# SHA-256 of the label files, frozen before the scorer was first run on these CVs (2026-11-03T06:20:16Z)
+b87e951d24ca5ba22c2c86f7a9bbf136fc2db30a9f27e15c4079aac4d98f6f2d  cvs-hvac.ts
+905e706cd2e17b940bfd4c8090eb8c2242af3257247db83f82953c83aeb63fc3  cvs-assistant.ts
+17b2319398a546f9bae20dc86311f32ac99dfdd69aa8112e94164b1367fe515a  cvs-logistics.ts
+1df646fe998a70c999f32a3a07da9b5437a9a69bc26fa935cf87b08ea9793969  cvs-sales-engineer.ts
+c189cea360a601dd65b09d87d70fc6d6da072f2d10a713a9c57fdacee7d9fbb1  line-truth.ts

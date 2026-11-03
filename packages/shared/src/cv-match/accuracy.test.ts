@@ -155,12 +155,13 @@ describe('cv-match accuracy on labelled fixtures', () => {
     expect(wrong, `empty CVs must be all "unknown" with percent null: ${wrong.join(', ')}`).toEqual([]);
   });
 
-  it('computes percent as round(100 * met / (met + unmet)), or null when nothing was judged', () => {
+  it('computes percent over the counted lines, or null when fewer than half of them were judged', () => {
     const wrong = scored
       .map(({ testCase, result }) => {
-        const met = result.items.filter((item) => item.verdict === 'met').length;
-        const unmet = result.items.filter((item) => item.verdict === 'unmet').length;
-        const want = met + unmet === 0 ? null : Math.round((100 * met) / (met + unmet));
+        const counted = result.items.filter((item) => item.counted);
+        const met = counted.filter((item) => item.verdict === 'met').length;
+        const judged = counted.filter((item) => item.verdict !== 'unknown').length;
+        const want = judged === 0 || judged * 2 < counted.length ? null : Math.round((100 * met) / counted.length);
         return { id: testCase.id, want, got: result.percent };
       })
       .filter(({ want, got }) => want !== got);

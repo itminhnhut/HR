@@ -48,7 +48,11 @@ const DATE_RE = new RegExp(
 
 const PRESENT_RE =
   /^(?:den\s+)?(?:nay|hien tai|hien nay|bay gio|present|now|current|currently|today|to date|ongoing)\b/;
-const SEPARATOR_RE = /^\s*(?:-{1,2}|~|->|=>|>|→|den|toi|to|until|till)\s*(?:thang\s+)?$/;
+const RANGE_DASH = '-{1,2}|~|->|=>|>|→|\\||den|toi|to|until|till';
+const SEPARATOR_RE = new RegExp(`^\\s*(?:${RANGE_DASH})\\s*(?:thang\\s+|nam\\s+)?$`);
+const SEPARATOR_START_RE = new RegExp(`^\\s*(?:${RANGE_DASH})?\\s*`);
+/** "Từ 03/2023: Điều dưỡng", "since 2021": started then, still going. */
+const OPEN_START_RE = /(?:^|[\s(,:;-])(?:tu|since|bat dau tu)\s+(?:nam\s+|thang\s+)?$/;
 
 function validMonth(m: number): number | null {
   return m >= 1 && m <= 12 ? m : null;
@@ -118,6 +122,19 @@ function closeRange(a: DateToken, end: number, ongoing: boolean, spanEnd: number
   return { start: a.start, end: spanEnd, startMonth, endMonth, ongoing };
 }
 
+/** A range without a closing date: "03/2021 – nay", or a line that opens with "Từ 03/2023". */
+function openRange(folded: string, a: DateToken, todayMonth: number | null): MonthInterval | null {
+  if (todayMonth === null) return null;
+  const rest = folded.slice(a.end);
+  const sep = SEPARATOR_START_RE.exec(rest);
+  const present = PRESENT_RE.exec(rest.slice(sep ? sep[0].length : 0));
+  if (present && sep && sep[0].trim().length > 0) {
+    return closeRange(a, todayMonth + 1, true, a.end + sep[0].length + present[0].length, todayMonth);
+  }
+  if (!OPEN_START_RE.test(folded.slice(0, a.start))) return null;
+  return closeRange(a, todayMonth + 1, true, a.end, todayMonth);
+}
+
 /** Date ranges ("03/2021 – nay", "2019 - 2022", "Tháng 3/2020 đến tháng 5/2022") in a folded line. */
 export function findRanges(folded: string, todayMonth: number | null): MonthInterval[] {
   const dates = findDates(folded);
@@ -131,14 +148,8 @@ export function findRanges(folded: string, todayMonth: number | null): MonthInte
       i += 1;
       continue;
     }
-    const rest = folded.slice(a.end);
-    const sep = /^\s*(?:-{1,2}|~|->|=>|>|→|den|toi|to|until|till)?\s*/.exec(rest);
-    const after = rest.slice(sep ? sep[0].length : 0);
-    const present = PRESENT_RE.exec(after);
-    if (present && sep && sep[0].trim().length > 0 && todayMonth !== null) {
-      const r = closeRange(a, todayMonth + 1, true, a.end + (sep[0].length + present[0].length), todayMonth);
-      if (r) out.push(r);
-    }
+    const r = openRange(folded, a, todayMonth);
+    if (r) out.push(r);
   }
   return out;
 }

@@ -1,0 +1,78 @@
+@ad warehouse-keeper
+@occupation Thủ kho
+@req experience | Kinh nghiệm: Từ 2 năm
+@req education | Học vấn: Trung cấp trở lên
+@req skills | Quản lý nhập - xuất - tồn, kiểm kê định kỳ
+@req skills | Sử dụng Excel và phần mềm quản lý kho
+@req skills | Hiểu nguyên tắc FIFO/FEFO và 5S
+@req licence bonus | Ưu tiên có chứng chỉ lái xe nâng
+@req soft | Trung thực, chịu khó, sức khỏe tốt
+@req soft | Có xe máy riêng
+=== war-01 | strong | ordinary | interview | M M M M M M K M
+HOÀNG VĂN BÌNH
+Thủ kho
+04/2020 - nay: Thủ kho, Công ty Thực phẩm Bắc Việt. Quản lý nhập xuất tồn hàng ngày, kiểm kê tháng và cuối năm. Cập nhật tồn trên phần mềm WMS, báo cáo Excel. Sắp xếp theo FIFO, FEFO, duy trì 5S kho.
+Trung cấp Quản trị kinh doanh, 2019
+Chứng chỉ vận hành xe nâng, 2022. Có xe máy riêng.
+=== war-02 | strong | ordinary | interview | M M M M M A K K
+NGUYỄN TIẾN LỰC
+Nhân viên kho - Thủ kho
+Công ty Phụ tùng Đại Phát, 2022 đến nay: phụ trách kho 2000m2, xuất nhập hàng, đối chiếu thẻ kho, kiểm kê định kỳ. Dùng SAP module kho và Excel. Hàng vào trước xuất trước, 5S.
+Cao đẳng Logistics, 2021
+=== war-03 | strong | ordinary | interview | M M M M M M K K
+TRAN VAN LOC
+Warehouse Keeper
+Golden Foods Distribution, 2021 - Present. Manage goods receipt, issue and stock levels, periodic stocktakes. Use warehouse management software and Excel. Apply FIFO, FEFO and 5S.
+Vocational Diploma, Business Administration, 2020
+Forklift operator certificate.
+=== war-04 | partial | ordinary | maybe | M M M U M A K K
+LÊ VĂN HÙNG
+Thủ kho vật tư
+2021 - nay: Thủ kho công trình, Công ty Xây dựng Trường Thành. Ghi sổ nhập xuất, kiểm kê vật tư cuối tháng. Không dùng phần mềm, Excel mức cơ bản. Áp dụng FIFO, 5S.
+Trung cấp Xây dựng, 2020
+=== war-05 | partial | ordinary | maybe | U M M M U A K M
+PHAN THANH TÙNG
+Nhân viên kho
+01/2026 - nay: Thủ kho phụ, Công ty Sữa Nam Long. Nhập xuất tồn, kiểm kê, Excel, phần mềm kho nội bộ, xe máy riêng đi làm.
+Cao đẳng Thương mại, 2025
+=== war-06 | partial | ordinary | maybe | M U M A U M K K
+ĐOÀN VĂN HẢI
+Lái xe nâng kiêm thủ kho
+2018 - nay: Lái xe nâng, kiêm ghi nhập xuất hàng, kiểm kê, Công ty Thép Hòa Phước. Excel. Chưa rõ FIFO, 5S.
+Tốt nghiệp THPT. Chứng chỉ lái xe nâng 2019.
+=== war-07 | near-miss | ordinary | maybe | M M U M M A K K
+BẠCH THỊ HẰNG
+Nhân viên giao nhận
+2020 - nay: Nhân viên giao nhận hàng, Công ty Phân phối Hoàng Long. Soạn hàng, giao hàng theo tuyến, dùng WMS để quét đơn và Excel lập bảng kê. Biết FIFO, FEFO, 5S.
+Cao đẳng Kinh tế, 2019
+=== war-08 | near-miss | ordinary | no | A M U U U A K K
+VŨ THỊ HỒNG
+Kế toán mua hàng
+2019 - nay: Kế toán mua hàng, Công ty Cao su Sao Vàng. Lập đơn mua, theo dõi công nợ.
+Đại học Kinh tế, Kế toán, 2018
+=== war-09 | non-fit | ordinary | no | A M U U U A K K
+LƯU MINH QUÂN
+Nhân viên bán hàng thời trang
+2022 - nay: Tư vấn bán hàng, Shop Áo Dài Việt.
+Cao đẳng Thời trang, 2021
+=== war-10 | non-fit | ordinary | no | U M U U U A K K
+NGUYỄN NGỌC DIỆP
+Sinh viên năm cuối ngành Dược
+Làm thêm: gia sư Toán, 2025 - 2026.
+Đại học Dược, dự kiến tốt nghiệp 2027. Bằng hiện có: Trung cấp Dược 2022.
+=== war-11 | stuffing | hard | no | U U U U U U K K
+TẠ VĂN KHẢI
+Thủ kho, nhập xuất tồn, kiểm kê, Excel, phần mềm quản lý kho, FIFO, FEFO, 5S, lái xe nâng, trung cấp, 4 năm kinh nghiệm, xe máy riêng, sức khỏe tốt, trung thực
+Việc đã làm: 03/2026 - nay, phục vụ quán nhậu
+Trình độ: Hết lớp 8
+=== war-12 | messy | hard | interview | M M M M M A K M
+T H Ủ  K H O
+ĐINH QUANG VINH         Kinh nghiệm
+Sinh 1990, có xe        2016 - nay Thủ kho, Công ty Giấy
+máy                     Hưng Thịnh. Nhập - xuất - tồn,
+Học vấn                 kiểm kê, phần mềm kho, Excel.
+Cao đẳng Kinh           FIFO, 5S.
+tế 2015
+=== war-13 | messy | hard | maybe | K K K K K K K K
+#why Scanned CV with one stray word from the footer: no usable text.
+Trang 1

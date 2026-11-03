@@ -1,0 +1,97 @@
+@ad nurse
+@occupation Điều dưỡng viên
+@req experience | Kinh nghiệm: Từ 1 năm
+@req education | Học vấn: Cao đẳng trở lên
+@req education | Tốt nghiệp Cao đẳng hoặc Đại học chuyên ngành Điều dưỡng
+@req licence | Có chứng chỉ hành nghề điều dưỡng còn hiệu lực
+@req skills | Thực hiện thành thạo kỹ thuật tiêm truyền, thay băng, đặt sonde
+@req licence bonus | Ưu tiên có chứng nhận cấp cứu cơ bản BLS hoặc ACLS
+@req language | Giao tiếp tiếng Anh cơ bản với người bệnh nước ngoài
+@req soft | Sẵn sàng trực đêm, làm việc theo ca
+@req soft | Tận tâm, nhẹ nhàng với người bệnh
+=== nur-01 | strong | ordinary | interview | M M M M M M M M K
+NGUYỄN THỊ HỒNG NHUNG
+Điều dưỡng viên
+Kinh nghiệm
+06/2021 - nay: Điều dưỡng khoa Nội tổng hợp, Bệnh viện Đa khoa tỉnh Hà Nam
+Tiêm truyền tĩnh mạch, thay băng vết thương, đặt sonde dạ dày và sonde tiểu. Trực 3 ca, gồm ca đêm.
+Học vấn
+Cao đẳng Y tế Hà Nội, chuyên ngành Điều dưỡng, 2021
+Chứng chỉ
+Chứng chỉ hành nghề điều dưỡng do Sở Y tế Hà Nam cấp năm 2022, đang còn hiệu lực
+Chứng nhận BLS, 2024
+Tiếng Anh giao tiếp cơ bản, hay hỗ trợ bệnh nhân người nước ngoài.
+=== nur-02 | strong | ordinary | interview | M M M M M M M M K
+PHẠM QUỐC VIỆT
+Cử nhân điều dưỡng, 5 năm tại khoa Hồi sức tích cực
+Bệnh viện Đa khoa An Phước, 09/2021 - hiện tại, điều dưỡng ICU: chăm sóc người bệnh thở máy, truyền dịch, tiêm thuốc, băng vết thương,
+đặt ống thông dạ dày, ống thông tiểu. Trực đêm theo lịch khoa.
+Đại học Điều dưỡng Nam Định, cử nhân Điều dưỡng, 2021
+Chứng chỉ hành nghề số 01234/CCHN-ĐD, còn giá trị. ACLS 2025.
+IELTS 5.0.
+=== nur-03 | strong | ordinary | interview | M M M M M M M M K
+TRAN THI NGOC ANH
+Registered Nurse
+Surgical Ward, Hoa Binh General Hospital, Aug 2022 - Present
+IV cannulation and infusion, wound dressing, nasogastric tube and urinary catheter insertion. Rotating shifts including nights.
+EDUCATION: Bachelor of Nursing, Hue University of Medicine and Pharmacy, 2022
+LICENCE: Nursing practising certificate, issued 2023, valid
+Certified in Basic Life Support (BLS), 2025
+LANGUAGES: Conversational English with foreign patients
+=== nur-04 | partial | ordinary | maybe | U M M U M A U M K
+ĐOÀN THỊ YẾN
+Điều dưỡng mới tốt nghiệp
+03/2026 - nay: điều dưỡng khoa Ngoại, Phòng khám Đa khoa Thiện Tâm. Tiêm truyền, thay băng, đặt sonde theo y lệnh.
+Cao đẳng Điều dưỡng, Trường Cao đẳng Y Dược Sài Gòn, 2025
+Chứng chỉ hành nghề: đang chờ cấp, đã nộp hồ sơ.
+Sẵn sàng trực đêm.
+=== nur-05 | partial | ordinary | maybe | M M M U A A U U K
+VÕ THANH TRÚC
+Điều dưỡng phòng khám da liễu
+2020 - nay: Phòng khám Da liễu Ánh Dương. Tiêm thuốc, truyền dịch, thay băng sau thủ thuật. Không làm các kỹ thuật đặt ống thông.
+Cao đẳng Điều dưỡng Bạch Mai, 2019
+Chứng chỉ hành nghề cấp 2019, thời hạn 5 năm, đã hết hạn năm 2024 và chưa gia hạn.
+Chỉ làm giờ hành chính, không nhận trực đêm.
+=== nur-06 | near-miss | ordinary | maybe | A M U U M A U M K
+LÊ THỊ MỸ DUYÊN
+Hộ sinh
+05/2022 - nay: Hộ sinh khoa Sản, Bệnh viện Phụ sản Hồng Ngọc. Đỡ đẻ thường, tiêm truyền, thay băng tầng sinh môn, đặt sonde tiểu. Trực ca đêm.
+Cao đẳng Hộ sinh, Trường Cao đẳng Y tế Thanh Hóa, 2022
+Chứng chỉ hành nghề hộ sinh, 2022.
+=== nur-07 | near-miss | ordinary | no | A M U U U A U K K
+ĐINH VĂN PHONG
+Kỹ thuật viên xét nghiệm
+2023 - nay: Phòng xét nghiệm Medlab: lấy máu tĩnh mạch, chạy máy huyết học, sinh hóa.
+Cao đẳng Xét nghiệm Y học, 2023. Chứng chỉ hành nghề kỹ thuật y.
+=== nur-08 | non-fit | ordinary | no | A U U U U A U K K
+HUỲNH KIM OANH
+Kỹ thuật viên spa
+2022 - nay: Kỹ thuật viên chăm sóc da, massage, Spa Mộc Lan.
+Trung cấp Thẩm mỹ, 2021
+=== nur-09 | non-fit | ordinary | no | A M U U U A U K K
+TRƯƠNG MINH ĐỨC
+Nhân viên kinh doanh mỹ phẩm online
+2024 - nay: bán hàng trên Shopee, TikTok Shop, trả lời khách hàng.
+Đại học Văn Lang, Quản trị kinh doanh, 2023
+Tiếng Anh: chưa có chứng chỉ, chỉ đọc được từ đơn giản.
+=== nur-10 | stuffing | hard | no | U U U U U U U K K
+PHAN HẢI YẾN
+Từ khóa ứng tuyển: điều dưỡng, cao đẳng điều dưỡng, đại học điều dưỡng, chứng chỉ hành nghề điều dưỡng còn hiệu lực, tiêm truyền, thay băng,
+đặt sonde, BLS, ACLS, tiếng Anh giao tiếp, trực đêm, làm việc theo ca, tận tâm, nhẹ nhàng
+Kinh nghiệm: 10/2025 - nay, nhân viên phục vụ, quán cà phê Rêu.
+Học vấn: Tốt nghiệp THPT, 2025
+=== nur-11 | messy | hard | interview | M M M M M M U M K
+HO SO XIN VIEC - MAI THI THANH TAM
+Dieu duong vien
+Kinh nghiem lam viec
+07/2019 - nay: Dieu duong khoa Tim mach, Benh vien Da khoa Quoc te Hong Duc
+Tiem truyen tinh mach, thay bang, dat sonde da day, sonde tieu. Lam viec theo ca, truc dem.
+Hoc van: Cao dang Dieu duong, Truong Cao dang Y te Binh Duong, 2019
+Chung chi hanh nghe dieu duong con hieu luc, Chung nhan BLS 2023
+=== nur-12 | messy | hard | maybe | K K K K K K K K K
+=== nur-13 | partial | hard | maybe | M M M M A A U K K
+BÙI THANH HÀ
+Điều dưỡng trưởng tua, hơn 12 năm trong nghề
+2014 - 2021: Điều dưỡng khoa Nhi, Bệnh viện Nhi tỉnh.
+2021 - nay: Điều dưỡng chăm sóc tại nhà, Công ty Sức Khỏe Vàng: tiêm thuốc, thay băng cho người cao tuổi.
+Cao đẳng Điều dưỡng, 2013. Liên thông Đại học Điều dưỡng, 2019. CCHN còn hạn.

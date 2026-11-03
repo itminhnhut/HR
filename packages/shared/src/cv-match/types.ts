@@ -14,10 +14,28 @@ export interface MatchItem {
   evidence: string | null;
   /** Vietnamese explanation for HR, e.g. "CV ghi 1 năm, yêu cầu từ 2 năm". */
   reason: string | null;
+  /**
+   * Whether the line takes part in the percent. False for soft lines, bonuses, lines CVs do not normally state and a
+   * line repeating another (education asked twice). Absent on results stored before version 2.
+   */
+  counted?: boolean;
+  /**
+   * The parser could not read the line, but its words are in the CV's work or study lines: left unknown with the quote
+   * for HR to check, since only 64% of these were right on the blind set. Never counted in the percent.
+   */
+  isHint?: boolean;
+  /**
+   * "duties" for a "Mô tả công việc" line and "preferred" for a bonus ("Ưu tiên"), neither ever counted; absent means a
+   * "Yêu cầu" line.
+   */
+  section?: 'duties' | 'preferred';
 }
 
 export interface CvMatchResult {
-  /** round(100 * met / (met + unmet)); null when nothing could be judged. */
+  /**
+   * round(100 * met / counted lines): a counted line left unknown lowers it. null when fewer than half of the counted
+   * lines could be judged ("chưa đủ dữ liệu"), or there is nothing to count.
+   */
   percent: number | null;
   items: MatchItem[];
   /** Bumped whenever scoring rules change, so stored results can be recomputed. */
@@ -29,6 +47,10 @@ export interface ScoreInput {
   cvText: string;
   /** Requirement lines: the job's "Yêu cầu" lines plus e.g. "Kinh nghiệm: Từ 2 năm", "Học vấn: Đại học trở lên". */
   requirements: string[];
+  /** The job's "Mô tả công việc" lines, shown after the requirements and left out of the percent. */
+  duties?: string[];
+  /** The job's "Ưu tiên" lines: a bonus the CV shows is listed, one it does not show costs nothing. */
+  preferred?: string[];
   /** "Today" in Vietnam (YYYY-MM-DD), to resolve "nay"/"hiện tại" in date ranges. */
   today: string;
 }

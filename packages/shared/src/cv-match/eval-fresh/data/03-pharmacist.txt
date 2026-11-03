@@ -1,0 +1,87 @@
+@ad pharmacist
+@occupation Dược sĩ bán thuốc tại nhà thuốc
+@req experience | Kinh nghiệm: Từ 1 năm
+@req education | Học vấn: Cao đẳng trở lên
+@req education | Tốt nghiệp Cao đẳng Dược hoặc Đại học Dược
+@req licence | Có Chứng chỉ hành nghề Dược
+@req skills | Tư vấn được thuốc kê đơn và không kê đơn cho khách hàng
+@req skills | Nắm rõ tiêu chuẩn GPP nhà thuốc
+@req skills | Biết dùng phần mềm bán hàng nhà thuốc
+@req soft | Có thể làm xoay ca, kể cả cuối tuần
+@req soft | Nhanh nhẹn, thân thiện với khách
+=== pha-01 | strong | ordinary | interview | M M M M M M M M K
+LƯU THỊ PHƯƠNG
+Dược sĩ
+Kinh nghiệm
+02/2022 - nay: Dược sĩ tư vấn, Chuỗi nhà thuốc Thiên Ân. Tư vấn thuốc kê đơn và OTC, kiểm tra đơn bác sĩ. Bán hàng trên phần mềm quản lý nhà thuốc KiotViet Pharma.
+Thực hiện các quy trình GPP: bảo quản, theo dõi nhiệt độ, sổ sách. Làm xoay ca, có ca thứ Bảy, Chủ nhật.
+Học vấn: Đại học Dược Hà Nội, 2021
+Chứng chỉ hành nghề Dược số 4521/HN, cấp 2022
+=== pha-02 | strong | ordinary | interview | M M M M M M M K K
+NGUYỄN ĐÌNH TOÀN
+Dược sĩ cao đẳng
+2021 - nay: Nhà thuốc Minh Khang (đạt chuẩn GPP): bán thuốc theo toa và thuốc không cần toa, hướng dẫn cách dùng cho người bệnh.
+Dùng phần mềm Sapo nhà thuốc để bán hàng, kiểm tồn.
+Cao đẳng Dược, Trường Cao đẳng Y Dược Pasteur, 2020
+Đã có CCHN Dược (đứng quầy) năm 2023.
+=== pha-03 | strong | ordinary | interview | M M M M M M M M K
+PHAM THU TRANG
+Community Pharmacist
+Long Chau Pharmacy chain, Jan 2023 - Present. Counsel customers on prescription and over-the-counter medicines, check prescriptions, GPP compliance,
+pharmacy POS software. Rotating shifts and weekends.
+Bachelor of Pharmacy, Can Tho University of Medicine and Pharmacy, 2022
+Pharmacy practice certificate (CCHN Duoc), 2024
+=== pha-04 | partial | ordinary | maybe | U M M U M M M K K
+HỒ NGỌC ÁNH
+Dược sĩ mới ra trường
+Thực tập 3 tháng tại nhà thuốc Bình An (06/2026 - 09/2026): tư vấn thuốc OTC và thuốc theo đơn dưới sự hướng dẫn, quy trình GPP, phần mềm bán hàng.
+Cao đẳng Dược, 2026. Chưa có chứng chỉ hành nghề.
+=== pha-05 | partial | ordinary | maybe | M M M U A M U U K
+TẠ THỊ HỒNG
+Trình dược viên kiêm bán thuốc
+2023 - nay: Nhà thuốc gia đình, bán thuốc không kê đơn, thực phẩm chức năng. Biết chuẩn GPP.
+Cao đẳng Dược Phú Thọ, 2022. Chưa xin chứng chỉ hành nghề.
+Không dùng phần mềm, ghi sổ tay. Chỉ làm giờ hành chính từ thứ Hai đến thứ Sáu.
+=== pha-06 | near-miss | ordinary | maybe | A M M M U U U K K
+CAO THỊ LINH
+Trình dược viên
+04/2020 - nay: Trình dược viên ETC, Công ty Dược phẩm Tâm Việt: giới thiệu thuốc cho bác sĩ, đạt chỉ tiêu doanh số tại 12 bệnh viện.
+Đại học Dược Thái Bình, 2020. Có chứng chỉ hành nghề Dược 2023.
+=== pha-07 | near-miss | ordinary | no | A U U U U U U K K
+ĐẶNG THỊ KIỀU
+Nhân viên bán hàng nhà thuốc
+2022 - nay: Phụ quầy, sắp xếp thuốc, thu tiền tại nhà thuốc Hạnh Phúc.
+Trung cấp Dược, 2021. Chưa có chứng chỉ hành nghề.
+=== pha-08 | near-miss | ordinary | no | A M U U U U U K K
+TRẦN THỊ HẠNH
+Điều dưỡng
+2021 - nay: Điều dưỡng khoa Nội, Bệnh viện Đa khoa Tâm Anh: tiêm truyền, phát thuốc theo y lệnh, chăm sóc người bệnh.
+Cao đẳng Điều dưỡng, 2020. Chứng chỉ hành nghề điều dưỡng.
+=== pha-09 | non-fit | ordinary | no | A M U U U U U K K
+NGUYỄN TIẾN DŨNG
+Nhân viên IT helpdesk
+2019 - nay: Hỗ trợ máy tính, mạng nội bộ, cài phần mềm tại Công ty Điện tử Sao Mai.
+Cao đẳng Công nghệ thông tin, 2018
+=== pha-10 | stuffing | hard | no | U U U U U U U K K
+LÝ THỊ BÍCH
+Dược sĩ dược sĩ dược sĩ. Tốt nghiệp Đại học Dược, Cao đẳng Dược. Chứng chỉ hành nghề Dược. Tư vấn thuốc kê đơn và không kê đơn. Tiêu chuẩn GPP nhà thuốc. Phần mềm bán hàng nhà thuốc.
+Công việc đã làm: 2024 - nay, phụ bán tạp hóa cho gia đình.
+Trình độ: lớp 12.
+=== pha-11 | messy | hard | interview | M M M M M M M K K
+D Ư Ợ C  S Ĩ   Đ Ạ I  H Ọ C
+VƯƠNG THU GIANG
+K I N H  N G H I Ệ M    H Ọ C  V Ấ N
+01/2023 - nay           Đại học Y Dược
+Nhà thuốc Pha-          Thái Nguyên, 2022,
+na, dược sĩ bán lẻ.     ngành Dược
+Tư vấn thuốc kê         C H Ứ N G  C H Ỉ
+đơn và không kê đơn,    Chứng chỉ hành
+quy trình GPP, phần     nghề Dược, 2023
+mềm quản lý nhà thuốc
+Trang 1
+=== pha-12 | partial | hard | maybe | M M M A M M M K K
+DƯƠNG VĂN THẮNG
+Dược sĩ, 3 năm bán thuốc tại nhà thuốc Bảo Ngọc, từ 2023 đến nay: tư vấn thuốc theo toa và không theo toa; GPP; dùng phần mềm bán hàng.
+Đại học Dược, 2023.
+Chứng chỉ hành nghề: đã thi đạt, Sở Y tế đang xử lý hồ sơ, dự kiến nhận tháng 12/2026.
+#why Exam passed but certificate not yet issued: recruiters differ on whether this counts.

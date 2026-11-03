@@ -1,0 +1,460 @@
+@ad hr-generalist
+@occupation Chuyên viên nhân sự tổng hợp
+@req experience | Có từ 3 năm làm nhân sự tổng hợp, từng trải qua ít nhất hai mảng: tuyển dụng, C&B, quan hệ lao động
+@req education | Đại học ngành Quản trị nhân lực, Luật hoặc Quản trị kinh doanh
+@req skills | Tính lương, các khoản trích BHXH và thuế TNCN hằng tháng
+@req skills | Làm hồ sơ tăng giảm lao động, chế độ ốm đau thai sản với cơ quan BHXH
+@req skills | Tự đăng tin, sàng lọc hồ sơ và phỏng vấn vòng đầu
+@req skills | Nắm Bộ luật Lao động 2019, soạn được hợp đồng lao động, nội quy và xử lý kỷ luật
+@req skills | Xây dựng hoặc vận hành được đánh giá KPI định kỳ
+@req skills bonus | Biết dùng một phần mềm quản lý nhân sự (HRM) là điểm cộng
+@req licence bonus | Ưu tiên có chứng chỉ chuyên môn về C&B hoặc nghiệp vụ nhân sự
+@req language | Đọc hiểu tiếng Anh tài liệu chính sách của công ty mẹ
+@req soft | Giữ bảo mật về lương và hồ sơ cá nhân của nhân viên
+=== hrg-01 | strong | ordinary | interview | M M M M M M M M M M M
+TRƯƠNG THỊ HẢI YẾN
+Trưởng nhóm Nhân sự
+Điện thoại: 0900 000 601 | Email: yen.truong.hr@example.com
+Địa chỉ: Thuận An, Bình Dương | Sinh năm 1991 | Nữ, đã lập gia đình
+
+TÓM TẮT
+Mười năm gắn với công việc nhân sự trong các nhà máy từ 300 đến 900 người, phần lớn lao động phổ thông làm theo ca. Tôi đi lên từ vị trí làm lương và bảo hiểm, sau đó được giao thêm chuyện tìm người, giải quyết tranh chấp với công nhân và công đoàn. Điều tôi tự tin nhất là số liệu không sai và người lao động biết họ được tính thế nào.
+
+KINH NGHIỆM LÀM VIỆC
+03/2020 - nay: Công ty TNHH Nhựa Kỹ thuật Vĩnh Hòa (vốn Đài Loan, khoảng 850 người) - Trưởng nhóm Nhân sự
+- Phụ trách nhóm 4 người, chịu trách nhiệm chính về bảng lương tháng: lấy dữ liệu máy chấm công, tính tăng ca, phụ cấp ca đêm, khấu trừ đóng bảo hiểm 10,5% và thuế thu nhập cá nhân lũy tiến, chuyển ngân hàng trước ngày 7.
+- Quyết toán thuế TNCN cuối năm, cấp chứng từ khấu trừ cho nhân viên nghỉ việc.
+- Báo tăng, báo giảm lao động trên cổng giao dịch điện tử của bảo hiểm xã hội; làm hồ sơ thai sản, dưỡng sức, ốm đau, tai nạn lao động cho công nhân; trung bình 15 hồ sơ mỗi tháng.
+- Lên tin tuyển trên trang việc làm và nhóm Facebook khu công nghiệp, đọc CV kỹ sư và nhân viên văn phòng, gọi điện trao đổi trước khi chuyển cho trưởng bộ phận. Mùa cao điểm tổ chức ngày hội tuyển công nhân ngay tại cổng nhà máy.
+- Viết lại nội quy lao động theo luật mới năm 2019, đăng ký với Sở Lao động; soạn mẫu hợp đồng, phụ lục, thỏa ước; chủ trì 11 phiên họp kỷ luật có công đoàn tham dự, chưa bị khiếu nại vụ nào.
+- Cùng ban giám đốc đưa bộ chỉ tiêu cho khối gián tiếp vào chạy từ 2022, mỗi 6 tháng thu kết quả, chấm điểm, gắn với thưởng.
+- Đón nhân viên mới buổi đầu tiên, giới thiệu nội quy và an toàn. Tổ chức tiệc cuối năm, ngày gia đình cho khoảng 1.000 người.
+- File lương đặt mật khẩu, chỉ hai người có quyền mở. Phiếu lương gửi riêng từng người qua hệ thống, hồ sơ giấy khóa trong tủ.
+
+07/2016 - 02/2020: Công ty CP May Mặc Tân Phú Khang - Nhân viên tiền lương và bảo hiểm
+- Tính lương sản phẩm cho 300 công nhân, chốt công với tổ trưởng.
+- Làm hồ sơ bảo hiểm, nhận thẻ, trả sổ cho người nghỉ việc.
+
+HỌC VẤN
+2012 - 2016: Đại học Lao động và Xã hội Đông Bắc, Cử nhân Quản trị nhân lực, loại Khá.
+
+CHỨNG CHỈ
+Chứng chỉ Quản trị tiền lương và phúc lợi (C&B), Trung tâm Đào tạo Nhân lực An Bình (2021).
+Huấn luyện an toàn vệ sinh lao động nhóm 1.
+
+KỸ NĂNG
+Phần mềm quản lý nhân sự Base HRM và máy chấm công vân tay; Excel nâng cao (Power Query, hàm mảng). Tiếng Anh TOEIC 650: đọc bộ quy định của tập đoàn ở Đài Loan bản tiếng Anh và tóm tắt lại cho quản lý. Tiếng Trung sơ cấp.
+
+SỞ THÍCH
+Trồng lan, làm bánh, đi bộ cuối tuần cùng hội phụ huynh trong xóm.
+#why Làm đủ tất cả. Ý về bảo mật có bằng chứng cụ thể (mật khẩu, tủ khóa, gửi riêng phiếu lương) nên M chứ không chỉ là tự nhận.
+=== hrg-02 | strong | hard | interview | M M M M M M M M A M M
+NGUYEN BAO CHAU
+HR Generalist
+Phone: 0900 000 602 | Email: chau.nguyenbao@example.com | Long Bien, Hanoi
+
+PROFILE
+People-operations professional with close to seven years in manufacturing subsidiaries of foreign groups. I like being the one person who can answer a worker's question about their payslip and a director's question about headcount cost in the same morning. Fluent English, used daily with regional HR in Singapore.
+
+EXPERIENCE
+Jun 2021 - Present | HR Generalist | Kestrel Precision Vietnam Co., Ltd (420 employees, German-owned)
+- Run monthly gross-to-net payroll: overtime, shift allowance, compulsory insurance deductions and progressive personal income tax; year-end PIT finalisation with the external auditor.
+- Register joiners and leavers with the Social Insurance agency through the e-portal; prepare sickness, maternity and work-accident claims and follow them until the money reaches the employee.
+- Hire for office and technical positions: write job adverts, publish on job boards and LinkedIn, screen applications, hold first-round calls, then shortlist for line managers. 38 positions filled in 2024.
+- Maintain employment contract templates and annexes under the 2019 Labour Code, updated the internal work rules in 2021 and led the registration with the provincial labour department. Prepare disciplinary files and take minutes in hearings together with the trade union.
+- Coordinate the half-year and year-end performance cycle: cascade goals from the plant manager, collect scores and calibrate with managers, link outcomes to bonus.
+- Translate group policies (code of conduct, travel, data protection) from the English originals and adapt them to Vietnamese law for local release.
+- Hold new-joiner induction every second Monday.
+- Payroll files sit in a restricted folder that only the finance director and I can open; I also signed a data-privacy undertaking with the group.
+
+Sep 2019 - May 2021 | HR Officer | Tan Viet Auto Parts JSC
+- Time and attendance for 600 workers, leave balance, social insurance book handover.
+- Helped the recruiter on walk-in hiring days and on campus visits.
+
+Jul 2018 - Aug 2019 | HR Intern, then Assistant | Lotus Garden Hospitality Group
+- Filing, ID badges, contract printing, onboarding kits.
+
+EDUCATION
+2014 - 2018 | Bachelor of Human Resource Management, Bac Ha University of Economics. GPA 3.2/4.
+
+TOOLS
+SuccessFactors (Employee Central and Performance modules), Excel, Power BI at a basic level, Microsoft Teams.
+
+LANGUAGES
+English: IELTS 7.0 (2023). Vietnamese: native.
+
+ACTIVITIES
+Mentor in a women-in-industry network. Enjoys badminton, trail running and hosting board-game nights.
+#why Toàn tiếng Anh, nghề đủ, có đọc và dịch chính sách của tập đoàn. Không có chứng chỉ riêng về C&B nên bonus là A.
+=== hrg-03 | strong | ordinary | interview | M M M M M M M M A M K
+HO VAN THANG
+Chuyen vien nhan su
+0900 000 603 - thang.hovan.hr@example.com - Hai Chau, Da Nang
+
+GIOI THIEU
+Hoc luat ra nhung di lam nhan su tu dau. Lam viec o doanh nghiep co khi va doanh nghiep san xuat, viec gi cua phong nhan su cung da cham vao.
+
+KINH NGHIEM
+06/2019 - nay: Cong ty TNHH Co Khi Phu Cuong Mien Trung (260 nguoi, cong ty me o Nhat) - Chuyen vien nhan su
+- Tuyen tho han, tho tien, ky su: dang tuyen, doc ho so, goi test tay nghe, hen phong van va phong van dau tien.
+- Lam luong thang cho toan nha may: cong, tang ca, phu cap, tru BH 10.5%, tru thue TNCN. Chuyen cho ke toan doi chieu truoc khi tra.
+- Nop bao tang giam lao dong tren cong BHXH, lam ho so om dau, thai san, duong suc; gap can bo BHXH quan khi co vuong mac.
+- Dung Luat Lao dong 2019 de sua hop dong, phu luc; viet noi quy, thang bang luong, nop So; xu ly ky luat 2-3 vu moi nam (nghi khong phep, trom cap vat tu), ghi bien ban, moi cong doan.
+- Moi 6 thang gom bang tu danh gia, lay diem KPI tu truong bo phan, tong hop thuong.
+- To chuc year-end party, team building He 2023, 2024.
+
+02/2017 - 05/2019: Van phong Luat Hai Van - Tro ly luat su
+- Tiep khach, soan don tu, nghien cuu ho so tranh chap lao dong, dat dai.
+- Di nop ho so toa an va So Lao dong.
+
+HOC VAN
+2012 - 2016: Dai hoc Luat Mien Trung Phu Xuan, Cu nhan Luat.
+
+KY NANG
+Phan mem nhan su HRM cua cong ty (ho so, ngay phep, hop dong). Excel: SUMIFS, pivot, VLOOKUP. Doc duoc policy gui tu cong ty me ban tieng Anh, TOEIC 520. Tieng Nhat N5.
+
+THANH TICH
+Giam ty le nghi viec cong nhan tu 24% xuong 15% sau 2 nam, nho doi quy trinh don tiep va phong van.
+
+SO THICH
+Da bong, doc truyen kiem hiep, ca phe sang voi anh em xuong.
+#why Không dấu do thói quen. Không nói gì tới bảo mật nên K. Không có chứng chỉ nghiệp vụ.
+=== hrg-04 | partial | hard | maybe | A U U U M A U M M M K
+PHẠM THÙY LINH
+Talent Acquisition Specialist
+Mobile: 0900 000 604 | linh.phamthuy@example.com | Quận 7, TP. Hồ Chí Minh
+LinkedIn: tìm theo tên, ảnh áo xanh
+
+VỀ TÔI
+Năm năm rưỡi đi tìm người cho khối công nghệ, bán lẻ và sản xuất. Tôi yêu việc này. Nhưng một năm rưỡi gần đây, khi công ty bị tinh gọn, tôi được kéo thêm sang các việc khác của phòng và thấy mình muốn làm rộng hơn thay vì chỉ một mảng.
+
+CÔNG VIỆC
+01/2023 - nay: Công ty CP Chuỗi Bán Lẻ Hồng Phúc (2.300 nhân viên) - Chuyên viên tuyển dụng cấp cao, kiêm nhiệm quan hệ nhân viên từ 05/2025
+- Tuyển quản lý cửa hàng và nhân sự văn phòng: viết job description, chạy tin, săn trên LinkedIn, chọn hồ sơ, phỏng vấn sơ bộ qua điện thoại, thương lượng lương, gửi offer.
+- Trung bình 18 vị trí văn phòng và 60 nhân viên cửa hàng mỗi tháng trong mùa cao điểm.
+- Từ 05/2025: soạn hợp đồng thử việc và hợp đồng chính thức từ mẫu có sẵn, làm thủ tục nhận việc và nghỉ việc, phỏng vấn thôi việc.
+- Có ngồi trong 3 cuộc họp kỷ luật để ghi biên bản, người chủ trì là pháp chế. Nội quy công ty cũng do pháp chế viết, tôi chưa viết bao giờ.
+- Bảng lương và bảo hiểm xã hội do nhóm C&B phía kế toán phụ trách, tôi chỉ gửi danh sách người mới và người nghỉ cho họ.
+- Điều phối tiệc tất niên 2024 và 2025 cho khối văn phòng.
+
+06/2021 - 12/2022: Công ty TNHH Công Nghệ Bản Đồ Số Vina - Recruiter
+- Tuyển lập trình viên, QA, business analyst; làm việc với các trưởng nhóm kỹ thuật.
+- Xây dựng kênh giới thiệu nội bộ, đóng góp 30% hồ sơ trúng tuyển.
+- Tổ chức 2 ngày hội nghề nghiệp ở trường đại học.
+
+04/2020 - 05/2021: Công ty Dịch vụ Nhân sự Cầu Nối - Headhunter tập sự
+- Tìm ứng viên cho khách hàng sản xuất, gọi điện lạnh, viết hồ sơ giới thiệu ứng viên.
+
+HỌC VẤN
+2016 - 2020: Đại học Ngoại ngữ Bình Minh, Cử nhân Ngôn ngữ Anh, chuyên ngành Biên phiên dịch.
+
+CHỨNG CHỈ
+Chứng chỉ Nghiệp vụ Tuyển dụng và Phỏng vấn, Trung tâm Phát triển Nhân lực Kiến Tâm (2022).
+
+CÔNG CỤ
+Workable và phân hệ tuyển dụng của HRM nội bộ, LinkedIn Recruiter, Google Sheets, Canva cho bài đăng tuyển.
+
+NGOẠI NGỮ
+IELTS 7.0. Thường đọc quy chế từ cổ đông nước ngoài và dịch sang tiếng Việt cho ban tuyển dụng, ví dụ chính sách chống phân biệt khi tuyển dụng.
+
+SỞ THÍCH
+Podcast nghề nghiệp, pilates, nuôi hai con mèo.
+#why Tuyển dụng mạnh, nhưng lương và BHXH do người khác làm, CV nói rõ. Mảng thứ hai mới 1,5 năm và ở mức thủ tục, nên có đủ "hai mảng" hay không là tranh cãi. Luật lao động chỉ có một phần: hợp đồng có, nội quy và chủ trì kỷ luật không.
+=== hrg-05 | partial | hard | maybe | U U M M U A A M M M M
+ĐINH THU HƯƠNG
+Chuyên viên C&B
+0900 000 605 • huong.dinhthu@example.com • Đống Đa, Hà Nội
+
+MỤC TIÊU
+Trải qua hơn bốn năm với lương thưởng cho chuỗi siêu thị lớn, tôi muốn sang một công ty vừa để tiếp xúc nhiều mảng nhân sự hơn.
+
+KINH NGHIỆM
+05/2022 - nay: Công ty CP Siêu Thị Bốn Mùa (3.400 người) - Chuyên viên tiền lương và phúc lợi
+- Chốt công từ 46 siêu thị, tính lương theo ca, doanh số, phụ cấp thâm niên, trừ các khoản đóng bảo hiểm và khấu trừ thuế thu nhập cá nhân.
+- Quyết toán TNCN năm, ủy quyền quyết toán, đối chiếu với kế toán thuế.
+- Làm D02, tờ khai tham gia bảo hiểm trên phần mềm kê khai, chế độ thai sản và ốm đau mỗi tháng khoảng 60 trường hợp, nhận tiền rồi trả cho nhân viên.
+- Thu điểm chỉ tiêu từ các khối để tính thưởng quý theo công thức có sẵn. Bộ chỉ tiêu do phòng chiến lược xây dựng, tôi không tham gia đặt hay đánh giá.
+- Soạn phụ lục điều chỉnh lương; nắm các điều về tiền lương và thời giờ làm việc trong Bộ luật Lao động 2019. Hợp đồng gốc và kỷ luật do bộ phận pháp chế xử lý.
+- Tuyển dụng thuộc nhóm tuyển dụng riêng, tôi không tham gia.
+- Dữ liệu lương nằm trên hệ thống phân quyền, tôi ký cam kết bảo mật và chỉ trả lời thắc mắc lương qua kênh riêng với từng người.
+
+09/2019 - 04/2022: Công ty TNHH Kiểm Toán và Tư Vấn Đại Hưng - Trợ lý kiểm toán, sau chuyển sang nhóm dịch vụ tính lương thuê ngoài
+- Thực hiện dịch vụ làm lương cho 5 khách hàng vốn nước ngoài trong năm cuối.
+- Trước đó đi kiểm toán khoản mục chi phí nhân công, thuế TNCN.
+
+HỌC VẤN
+2015 - 2019: Học viện Tài chính Kế toán Thăng Hoa, Cử nhân Kế toán.
+
+CHỨNG CHỈ
+Chứng chỉ Chuyên viên Tiền lương và Phúc lợi (C&B Specialist), Viện Nghiệp vụ Nhân lực Kiến Tâm (2023).
+
+KỸ NĂNG
+Hệ thống SAP SuccessFactors phân hệ lương, Excel nâng cao. TOEIC 600, đọc thang bậc lương và grading policy từ cổ đông nước ngoài bằng tiếng Anh.
+
+DỰ ÁN
+Tham gia chuyển dữ liệu lương từ bảng tính lên hệ thống mới năm 2024: làm sạch 3.400 hồ sơ, chạy song song 3 kỳ lương, sai số dưới 0,1%.
+
+SỞ THÍCH
+Yoga, đọc tiểu thuyết trinh thám, học pha cà phê.
+#why Chỉ có một mảng C&B. Có "chỉ tiêu" nhưng chỉ tính thưởng theo số người khác đặt nên vận hành KPI là tranh cãi. Ngành Kế toán không thuộc danh sách.
+=== hrg-06 | near-miss | ordinary | no | A M U U A U U A A U K
+LƯƠNG THỊ KIM NGÂN
+Nhân viên Hành chính - Nhân sự
+Số điện thoại: 0900 000 606
+Email: ngan.luongkim@example.com
+Địa chỉ: Từ Sơn, Bắc Ninh
+
+GIỚI THIỆU BẢN THÂN
+Tôi làm hành chính nhân sự ở công ty nhỏ nên mỗi ngày một việc, từ đặt nước uống đến gọi điện cho ứng viên. Tính tình vui vẻ, được đồng nghiệp tin tưởng, chịu khó học hỏi thêm.
+
+KINH NGHIỆM CÔNG TÁC
+08/2022 - nay: Công ty TNHH Thiết Bị Vệ Sinh Mỹ An (khoảng 40 người) - Nhân viên Hành chính Nhân sự
+- Lễ tân, nhận công văn, đặt văn phòng phẩm, đặt xe, đặt cơm trưa, theo dõi hợp đồng thuê văn phòng và thiết bị máy in.
+- Đăng tin khi có nhu cầu lên trang việc làm và Zalo, chọn sơ bộ hồ sơ, gọi hẹn. Giám đốc trực tiếp phỏng vấn, tôi ngồi cùng để ghi lại.
+- Theo dõi máy chấm công, gửi bảng tổng hợp công cho kế toán để kế toán làm lương.
+- Mọi thủ tục bảo hiểm do công ty dịch vụ kế toán bên ngoài làm, tôi chỉ gửi họ danh sách.
+- In hợp đồng lao động theo mẫu luật sư soạn sẵn, xin chữ ký, lưu tủ hồ sơ.
+- Hướng dẫn người mới ngày đầu, phát đồng phục, thẻ, giới thiệu các phòng.
+- Lên kế hoạch du lịch công ty, sinh nhật, Trung thu cho con nhân viên.
+
+03/2020 - 07/2022: Công ty CP Nội Thất Hoa Sen Vàng - Nhân viên Lễ tân kiêm Hành chính
+- Tiếp khách showroom, trả lời điện thoại, sắp xếp phòng họp.
+- Lưu trữ hồ sơ nhân viên, cập nhật danh sách điện thoại nội bộ, mua quà tặng đối tác.
+
+HỌC VẤN
+2016 - 2020: Đại học Kinh tế Quản lý Kinh Bắc, Cử nhân Quản trị kinh doanh.
+
+KỸ NĂNG
+Word, Excel cơ bản, Google Drive. Giao tiếp tốt, có thể làm MC cho các sự kiện nội bộ. Sắp xếp công việc khoa học.
+
+SỞ THÍCH
+Cầu lông, ca hát, tình nguyện cuối tuần tại mái ấm trẻ em.
+#why Hành chính là chính, một phần nhân sự rất mỏng. Đăng tin và lọc có làm nhưng phỏng vấn thì không. Lương và BHXH do người khác làm. Không nêu tiếng Anh nên U.
+=== hrg-07 | near-miss | hard | no | U M U U U M U A A M K
+CAO MINH ĐỨC
+Chuyên viên Pháp chế Doanh nghiệp
+0900 000 607 | duc.caominh@example.com | Cầu Giấy, Hà Nội
+
+TÓM TẮT
+Sáu năm làm pháp chế trong doanh nghiệp, mảng tôi làm nhiều nhất là lao động, sau đó là thương mại và sở hữu trí tuệ. Được phòng nhân sự xem như người "gác cổng" cho mọi quyết định sa thải và tranh chấp với người lao động.
+
+KINH NGHIỆM LÀM VIỆC
+10/2021 - nay: Công ty CP Dược Phẩm Thanh Giang (công ty con của tập đoàn Singapore) - Chuyên viên Pháp chế
+- Soạn và rà soát bộ hợp đồng lao động, thỏa thuận bảo mật, không cạnh tranh, biên bản chấm dứt hợp đồng theo Bộ luật Lao động 2019.
+- Viết nội quy lao động, thỏa ước tập thể, làm hồ sơ đăng ký với Sở.
+- Đại diện người sử dụng lao động trong các phiên họp xử lý kỷ luật; đại diện công ty tại hòa giải và 2 vụ kiện lao động ở tòa án quận.
+- Dịch và rà soát chính sách từ công ty mẹ (phòng chống hối lộ, quy tắc ứng xử, dữ liệu cá nhân) từ tiếng Anh sang tiếng Việt, đối chiếu với luật Việt Nam.
+- Tư vấn cho phòng Nhân sự khi có vướng mắc, còn việc tính lương, đóng bảo hiểm và tuyển dụng thuộc hẳn về phòng Nhân sự, tôi không làm.
+- Ngoài lao động: rà hợp đồng phân phối, đăng ký nhãn hiệu, giấy phép quảng cáo thuốc.
+
+03/2019 - 09/2021: Công ty Luật TNHH Hữu Nghị Tín - Chuyên viên pháp lý
+- Tư vấn pháp lý cho khách hàng doanh nghiệp vừa và nhỏ về thành lập, góp vốn, lao động.
+- Soạn đơn khởi kiện, chuẩn bị bản luận cứ, đi cùng luật sư ra tòa.
+
+HỌC VẤN
+2014 - 2018: Đại học Luật Hoàng Sơn, Cử nhân Luật, chuyên ngành Luật Kinh tế.
+2020: Khóa đào tạo nghề luật sư, Học viện Tư pháp Việt Mỹ (đã tốt nghiệp, chưa làm thủ tục cấp thẻ).
+
+KỸ NĂNG
+Nghiên cứu luật, soạn thảo, đàm phán. Word thành thạo, Excel ở mức thường. Tiếng Anh pháp lý, IELTS 7.0.
+
+BÀI VIẾT VÀ CHIA SẺ
+Diễn giả nội bộ về phòng chống quấy rối tại nơi làm việc. Viết bài phân tích về sa thải đơn phương cho tạp chí chuyên ngành của hội.
+
+SỞ THÍCH
+Cờ vua, xe đạp đường trường, đọc sách lịch sử chính trị.
+#why Rất mạnh về quan hệ lao động ở góc pháp lý, nhưng không phải nhân sự tổng hợp. CV tự nói không làm lương, bảo hiểm, tuyển dụng.
+=== hrg-08 | non-fit | hard | no | U M U U U U U A A A K
+VÕ NGỌC TRÂM
+Chuyên viên tư vấn tuyển sinh
+Điện thoại 0900 000 608 | tram.vongoc@example.com | Thủ Đức, TP. Hồ Chí Minh
+
+GIỚI THIỆU
+Trên năm năm đồng hành với học sinh và phụ huynh khi chọn trường. Tôi thích nghe câu chuyện của mỗi em và giúp các em tìm con đường phù hợp.
+
+QUÁ TRÌNH LÀM VIỆC
+08/2022 - nay: Trường Đại học Quốc tế Phương Đông Sài Gòn - Chuyên viên Phòng Tuyển sinh
+- Sàng lọc hồ sơ xét tuyển, kiểm tra học bạ và chứng chỉ IELTS của thí sinh.
+- Phỏng vấn thí sinh học bổng, ghi nhận đánh giá theo biểu mẫu của Hội đồng tuyển sinh.
+- Đăng tin tuyển sinh lên fanpage, website, phối hợp đối tác truyền thông chạy quảng cáo theo từng đợt.
+- Đi các trường trung học phổ thông ở miền Tây và Tây Nguyên giới thiệu ngành học, tham gia ngày hội tư vấn.
+- Tổ chức tuần sinh hoạt đầu khóa và chương trình đào tạo kỹ năng cho sinh viên năm nhất.
+- Được giao chỉ tiêu tuyển sinh theo quý, tự theo dõi số hồ sơ nộp trên bảng tính của phòng.
+
+05/2020 - 07/2022: Trung tâm Anh ngữ Bầu Trời Xanh - Tư vấn khóa học
+- Gọi điện cho danh sách học viên quan tâm, kiểm tra trình độ đầu vào, chốt khóa học, nhắc học phí.
+- Hỗ trợ giáo viên nước ngoài thủ tục lớp, chăm sóc phụ huynh, tổng kết cuối khóa.
+
+HỌC VẤN
+2016 - 2020: Đại học Thương Mại Dịch Vụ Nam Tiến, Cử nhân Quản trị kinh doanh.
+
+KỸ NĂNG
+Tư vấn, thuyết trình trước đám đông, CRM tuyển sinh, Facebook Ads, Canva, Excel. Tiếng Anh IELTS 6.5, giao tiếp với phụ huynh quốc tế.
+
+THÀNH TÍCH
+Vượt 112% chỉ tiêu tuyển sinh năm 2024. Giải thưởng Nhân viên được sinh viên yêu thích năm 2023.
+
+SỞ THÍCH
+Du lịch bụi, viết nhật ký, làm tình nguyện viên hướng nghiệp cho trẻ vùng xa, đọc sách tâm lý học.
+#why Sàng lọc hồ sơ, phỏng vấn, đăng tin, đào tạo đều là của học sinh, không phải người lao động. Bằng QTKD đúng danh sách nên dòng ngành M. Tiếng Anh tốt nhưng chưa đọc chính sách công ty mẹ nên A.
+=== hrg-09 | non-fit | ordinary | no | U U U U U U U A A U K
+TẠ THỊ PHƯƠNG THẢO
+Chuyên viên tư vấn tài chính bảo hiểm nhân thọ
+0900 000 609 | thao.taphuong@example.com | Nam Định
+
+TÓM TẮT
+Bảy năm trong ngành bảo hiểm nhân thọ, phục vụ hơn 400 gia đình. Mỗi hợp đồng đối với tôi là một lời hứa dài hạn với khách hàng.
+
+KINH NGHIỆM
+01/2021 - nay: Công ty Bảo hiểm Nhân thọ An Tâm Trọn Đời, Văn phòng Nam Định - Trưởng nhóm tư vấn
+- Tư vấn các gói bảo vệ sức khỏe, hưu trí, học vấn cho con, trong đó có quyền lợi thai sản và nằm viện.
+- Giải thích hợp đồng và điều khoản loại trừ. Làm hồ sơ yêu cầu chi trả quyền lợi khi khách ốm đau, tai nạn, nhập viện, sinh con.
+- Thu phí định kỳ, nhắc tái tục, làm thủ tục thay đổi người thụ hưởng.
+- Nhóm 7 người. Hướng dẫn thành viên mới cách tiếp cận khách hàng, rủ bạn bè và người quen tham gia làm đại lý.
+- Giữ kín thông tin sức khỏe và thu nhập của khách hàng theo quy định công ty.
+
+06/2018 - 12/2020: Ngân hàng TMCP Sông Vị (chi nhánh Nam Định) - Nhân viên tín dụng khách hàng cá nhân
+- Thẩm định khoản vay mua nhà, tiêu dùng cho hộ gia đình, bán chéo bảo hiểm.
+- Lập hồ sơ vay, thẩm định tài sản đảm bảo.
+
+03/2017 - 05/2018: Cửa hàng Mẹ và Bé Tuổi Thơ - Nhân viên bán hàng
+- Bán sữa, tã, đồ sơ sinh, tư vấn cho các mẹ mang thai.
+
+HỌC VẤN
+2014 - 2017: Cao đẳng Tài chính Ngân hàng Vị Hoàng, ngành Tài chính.
+
+CHỨNG CHỈ
+Chứng chỉ đại lý bảo hiểm nhân thọ. Thành viên Câu lạc bộ triệu đô của công ty năm 2023, 2024.
+
+KỸ NĂNG
+Lắng nghe, thuyết phục, lập kế hoạch tài chính gia đình. Excel cơ bản.
+
+SỞ THÍCH
+Chạy bộ, nấu ăn cho con, đọc sách về đầu tư.
+#why Trùng chữ: bảo hiểm, hợp đồng, quyền lợi, thai sản, ốm đau. Là bán bảo hiểm thương mại cho khách hàng, không phải BHXH cho người lao động. Chuyện giữ kín thông tin là của khách hàng, nên dòng soft vẫn K.
+=== hrg-10 | stuffing | ordinary | no | U U U U U U U U U U K
+MAI VĂN HÙNG
+Ứng tuyển: Chuyên viên nhân sự tổng hợp
+0900 000 610 | hung.maivan@example.com | Hóc Môn, TP. Hồ Chí Minh
+
+TÓM TẮT NĂNG LỰC
+Có từ 3 năm làm nhân sự tổng hợp, từng trải qua ít nhất hai mảng: tuyển dụng, C&B, quan hệ lao động. Tính lương, các khoản trích BHXH và thuế TNCN hằng tháng. Làm hồ sơ tăng giảm lao động, chế độ ốm đau thai sản với cơ quan BHXH. Nắm Bộ luật Lao động 2019, soạn được hợp đồng lao động, nội quy và xử lý kỷ luật.
+
+TỪ KHÓA NGHỀ NGHIỆP
+HR Generalist, HRBP, C&B, Payroll, BHXH, TNCN, KPI, OKR, BSC, HRM, Base HRM, SAP HCM, Talent Acquisition, Recruitment, Onboarding, Employee Relations, Labor Code 2019, IELTS, TOEIC, chứng chỉ C&B, chứng chỉ nghiệp vụ nhân sự, đọc hiểu tiếng Anh, Kế hoạch nhân lực, Đánh giá hiệu suất.
+
+KINH NGHIỆM LÀM VIỆC
+07/2023 - nay: Siêu thị Mini Hóc Môn Xanh - Nhân viên bán hàng và thu ngân
+- Quét mã, tính tiền, xếp hàng lên kệ, kiểm hạn sử dụng. Đóng ca cộng sổ tiền với chủ.
+- Đôi khi nhắn tin trong nhóm Zalo cho các bạn phục vụ khác đổi ca với nhau.
+
+11/2021 - 06/2023: Quán Cà Phê Góc Phố 79 - Phục vụ và pha chế
+- Nhận order, pha cà phê, trà sữa, rửa ly, dọn bàn ghế, khóa cửa buổi tối.
+
+02/2020 - 10/2021: Giao hàng công nghệ tự do
+- Giao đồ ăn và hàng hóa bằng xe máy trong khu vực Hóc Môn, Củ Chi.
+
+HỌC VẤN
+2016 - 2019: Trường Trung học Phổ thông Hóc Môn Mới. Đã tốt nghiệp.
+
+KỸ NĂNG
+Sử dụng máy POS, máy pha cà phê. Word cơ bản. Trung thực, chăm chỉ, thích học hỏi. Muốn đổi sang làm văn phòng, sẵn sàng học thêm các kiến thức cần thiết.
+
+SỞ THÍCH
+Game online, bóng đá, nghe nhạc, đi phượt cùng nhóm bạn.
+#why Đoạn tóm tắt dán từ tin tuyển, thêm ô từ khóa. Phần công việc là thu ngân, phục vụ, giao hàng. Đổi ca trong nhóm Zalo không phải nhân sự. Mọi dòng đo được đều U kể cả bonus, dòng soft K.
+=== hrg-11 | messy | hard | interview | M M M M M M M M A M K
+HỒ SƠ ỨNG VIÊN - LÂM THỊ THU TRANG - Trang 1/3
+LÂM THỊ THU TRANG
+Chuyên viên Nhân sự Tổng hợp
+ĐT: 0900 000 611     Email: trang.lamthu@example.com
+Biên Hòa, Đồng Nai
+
+TÓM TẮT
+Gần sáu năm làm nhân sự trong khu công nghi-
+ệp, công ty có vốn Hàn Quốc và công ty trong nư-
+ớc. Có khả năng tự xử lý gần như toàn bộ công vi-
+ệc của phòng nhân sự cho nhà máy dưới 500 người.
+
+KINH NGHIỆM LÀM VIỆC
+02/2022 - nay: Công ty TNHH Linh Kiện Điện Tử Dae Min Vi-
+na (450 người) - Chuyên viên Nhân sự
+- Làm lương hằng tháng, tính công ca, tăng ca đêm, trợ cấp, tr-
+ừ phần đóng bảo hiểm người lao động và thuế thu nhập cá nh-
+ân; quyết toán thuế cuối năm với đại diện kế toán.
+- Hồ sơ tăng lao động, giảm lao động, báo qua giao dịch điện t-
+ử; làm chế độ ốm đau, thai sản, dưỡng sức cho công nh-
+ân nữ, chiếm hơn 70% nhà máy.
+- Đăng thông báo tuyển lên trang việc làm và cổng khu công ngh-
+iệp, xem hồ sơ, gọi điện mời, phỏng vấn đầu vào cho nhân viên v-
+ăn phòng và kỹ thuật viên trước khi trưởng bộ phận gặp.
+HỒ SƠ ỨNG VIÊN - LÂM THỊ THU TRANG - Trang 2/3
+- Rà lại mẫu hợp đồng và phụ lục theo Bộ luật Lao đ-
+ộng 2019, cập nhật nội quy, đăng ký thang lương với Sở; làm bi-
+ên bản, mời công đoàn họp xử lý kỷ luật khi vi phạm n-
+ội quy, ví dụ nghỉ quá 5 ngày không phép.
+- Điều phối đợt đánh giá nhân viên giữa và cuối năm, thu điểm từ quản l-
+ý các chuyền, kiểm tra chỉ tiêu, tính thưởng theo điểm.
+- Đọc và tóm tắt quy định từ tổng công ty ở Hàn Quốc, bản tiếng Anh, g-
+ửi cho giám đốc nhà máy. Có dịch một phần sổ tay ứng xử.
+- Đón người mới, giới thiệu nội quy, an toàn, đào tạo ngắn trong ngày đ-
+ầu.
+
+06/2019 - 01/2022: Công ty CP Gỗ Mỹ Nghệ Đồng Tâm - Nhân viên Nhân s-
+ự
+- Theo dõi chấm công, phép năm, phụ trách hồ sơ nhân viên giấy.
+- Hỗ trợ tuyển công nhân: phát tờ rơi, phỏng vấn tại cổng, xếp ng-
+ười vào xưởng.
+- Nhận sổ bảo hiểm của người mới, trả lại cho người nghỉ.
+HỒ SƠ ỨNG VIÊN - LÂM THỊ THU TRANG - Trang 3/3
+HỌC VẤN
+2015 - 2019: Đại học Công Thương Đồng Nai Mới, Cử nhân Quản tr-
+ị kinh doanh, chuyên ngành Quản trị nhân lực.
+
+KỸ NĂNG
+Phần mềm nhân sự Fast HRM (quản lý hồ sơ, chấm công, l-
+ương). Excel: pivot, IF lồng, VLOOKUP. Tiếng Anh: TOEIC 575, đọc t-
+ài liệu chính sách, viết email nội bộ. Tiếng Hàn sơ cấp.
+
+DỰ ÁN VÀ THÀNH TÍCH
+- Chuyển từ thẻ giấy sang chấm công khuôn mặt cho toàn nhà máy (2023), giảm hơn nửa số khiếu nại sai công.
+- Giảm thời gian ra bảng lương từ 7 xuống 4 ngày làm việc.
+
+SỞ THÍCH
+Nấu ăn Hàn, đi chùa dịp lễ, cầu lông.
+#why Từ bị ngắt ở giữa, có dòng tiêu đề lặp giữa nội dung, nhưng nội dung đủ. Không nói gì về bảo mật nên K, không có chứng chỉ riêng nên A.
+=== hrg-12 | strong | hard | maybe | M U M M M M M A M U A
+NGUYỄN THỊ BÍCH LOAN
+Phụ trách nhân sự
+Số ĐT: 0900 000 612 - Mail: loan.nguyenbich@example.com - Vĩnh Yên, Vĩnh Phúc
+
+ĐÔI NÉT
+Sáu năm rưỡi một mình một phòng tại doanh nghiệp gia đình 180 lao động. Không có ai để hỏi nên việc gì cũng phải tìm hiểu cho đến khi làm được. Trước đó có làm hành chính văn phòng hai năm. Hiện học thêm vào buổi tối để lấy bằng đại học nhưng chưa xong.
+
+KINH NGHIỆM
+04/2020 - nay: Công ty TNHH Gạch Men Hưng Yên Vĩnh - Phụ trách nhân sự (một mình)
+- Mỗi tháng chốt công, tính lương khoán và lương thời gian, cộng trợ cấp, trừ bảo hiểm theo tỷ lệ, tính thuế TNCN cho nhóm có thu nhập cao, lập ủy nhiệm chi.
+- Tự làm tờ khai tăng giảm bảo hiểm, đến cơ quan bảo hiểm huyện khi có vướng; làm chế độ sinh con, nghỉ ốm cho anh chị em xưởng.
+- Khi xưởng cần người: đăng tuyển lên các nhóm Facebook và trang việc làm trong tỉnh, nhận hồ sơ, loại bớt, trao đổi với ứng viên trước khi giám đốc gặp.
+- Soạn hợp đồng lao động theo đúng quy định mới, thay mẫu cũ năm 2021; viết nội quy công ty, đăng ký ở Sở Lao động tỉnh Vĩnh Phúc; đã xử lý kỷ luật sa thải 2 trường hợp trộm cắp theo đúng trình tự, có công đoàn.
+- Từ 2023 tự đề xuất bảng chỉ tiêu cho tổ kho và tổ kinh doanh, chấm hằng quý, được giám đốc đồng ý gắn vào thưởng.
+- Đón người mới, giới thiệu xưởng, làm khóa an toàn cơ bản cùng tổ trưởng.
+- Bảng lương là chuyện nhạy cảm ở công ty gia đình nhưng tôi không bao giờ tiết lộ cho ai.
+
+02/2018 - 03/2020: Công ty CP Vận Tải Đường Thủy Lập Thạch - Nhân viên văn phòng
+- Soạn văn bản, nhận fax, đóng dấu, theo dõi cước vận chuyển, in biên lai.
+- Hỗ trợ kế toán đối chiếu sổ chi tiền mặt.
+
+HỌC VẤN
+2015 - 2018: Cao đẳng Thương Mại Vĩnh Tường, ngành Quản trị văn phòng.
+2024 - nay: Đang học liên thông đại học Quản trị kinh doanh, hệ vừa học vừa làm (dự kiến tốt nghiệp 2027).
+
+CHỨNG CHỈ
+Chứng nhận hoàn thành khóa Nghiệp vụ Quản trị Nhân sự, Trung tâm Bồi dưỡng Doanh nhân Tân Việt Phát (2022).
+
+KỸ NĂNG
+Excel thành thạo cho làm lương. Word. Chấm công vân tay nhưng chưa có phần mềm nhân sự riêng, hiện dùng bảng tính. Chưa dùng tiếng Anh trong công việc, công ty toàn người Việt.
+
+SỞ THÍCH
+Trồng rau sạch, đi lễ đầu năm, đọc mục tư vấn pháp luật lao động trên báo.
+#why Năng lực đủ nghề nhưng thiếu bằng đại học và không có tiếng Anh, nên ứng viên đáng cân nhắc nhưng không chắc. Bảo mật chỉ là tự nhận nên A. Không có phần mềm nên bonus A.

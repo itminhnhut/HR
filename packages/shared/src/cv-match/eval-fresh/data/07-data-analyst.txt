@@ -1,0 +1,83 @@
+@ad data-analyst
+@occupation Chuyên viên phân tích dữ liệu
+@req experience | Kinh nghiệm: Từ 2 năm
+@req education | Học vấn: Đại học trở lên
+@req education | Tốt nghiệp ngành Toán, Thống kê, CNTT, Kinh tế lượng hoặc ngành liên quan
+@req skills | Viết thành thạo SQL
+@req skills | Xây dựng dashboard trên Power BI hoặc Tableau
+@req skills | Biết Python để xử lý dữ liệu
+@req language | IELTS 6.0 hoặc tương đương
+@req soft | Tư duy logic, trình bày số liệu rõ ràng
+=== dat-01 | strong | ordinary | interview | M M M M M M M K
+NGUYỄN HOÀNG LONG
+Data Analyst
+02/2022 - nay: Chuyên viên phân tích dữ liệu, Công ty Bán lẻ Tiến Phát. Viết truy vấn SQL trên BigQuery, xây dashboard Power BI cho ban điều hành, làm sạch dữ liệu bằng Python (pandas).
+Học vấn: Đại học Kinh tế Quốc dân, Toán Kinh tế, 2021
+IELTS 6.5
+=== dat-02 | strong | ordinary | interview | M M M M M M M K
+LÊ PHƯƠNG ANH
+Business Intelligence Analyst
+Ngân hàng TMCP Đông Dương, 2021 - hiện tại. Tổng hợp dữ liệu từ Oracle bằng câu lệnh SQL phức tạp (window function, CTE). Trực quan hóa trên Tableau. Viết script Python tự động hóa báo cáo.
+Đại học Bách khoa, Khoa học máy tính, 2021
+TOEIC 800
+=== dat-03 | strong | ordinary | interview | M M M M M M M K
+VU THI HONG NHUNG
+Data Analyst
+Shopfast Vietnam, May 2023 - Present. Write complex SQL queries, build Power BI dashboards for the supply chain team, Python with pandas and NumPy for data wrangling.
+Mekong Logistics, Data Associate, Jul 2021 - Apr 2023.
+BSc Statistics, Vietnam National University, 2021
+IELTS Academic 7.0
+=== dat-04 | partial | ordinary | maybe | M M M M M U U K
+TRẦN THANH TÂM
+Chuyên viên báo cáo
+2022 - nay: Chuyên viên báo cáo, Công ty Bảo hiểm Bình Minh. Dùng SQL Server viết truy vấn, làm báo cáo trên Power BI, Excel.
+Đại học Tài chính Ngân hàng, Tin học Kinh tế, 2021
+=== dat-05 | partial | ordinary | maybe | U M M M U M M K
+ĐỖ TUẤN MINH
+Junior Data Analyst
+10/2025 - nay: Junior Data Analyst, Startup Fintech Ví Xanh. SQL, Python pandas, chưa làm dashboard, chủ yếu xuất file Excel.
+Đại học Khoa học Tự nhiên, Toán Tin, 2025
+IELTS 6.0
+=== dat-06 | partial | ordinary | maybe | M M U U M U U K
+PHẠM THỊ DIỄM
+Nhân viên phân tích kinh doanh
+2021 - nay: Sales Admin kiêm báo cáo, Công ty Dược Hà Thành. Làm dashboard Tableau từ file Excel do IT cung cấp. Chưa dùng SQL hay Python.
+Đại học Thương mại, Quản trị kinh doanh, 2020
+=== dat-07 | near-miss | ordinary | maybe | M M M M U M M K
+HOÀNG ĐÌNH KHÔI
+Data Engineer
+2020 - nay: Data Engineer, Công ty Viễn thông Thiên Long. Dựng pipeline ETL bằng Airflow, Spark, viết SQL, Python. Ít làm dashboard, phần đó do team BI phụ trách.
+Đại học Công nghệ, CNTT, 2020
+IELTS 6.5
+=== dat-08 | near-miss | ordinary | no | M M U U U U U K
+NGUYỄN THỊ HẰNG
+Kế toán quản trị
+2019 - nay: Kế toán quản trị, Công ty Nhựa Tân Á. Làm báo cáo chi phí, ngân sách bằng Excel và SAP.
+Đại học Kinh tế, Kế toán, 2018
+#why Management accounting counts as related number work, so "Từ 2 năm" is M, not A; field is not related under the ad's list.
+=== dat-09 | non-fit | ordinary | no | A U U U U U U K
+CAO VĂN TIẾN
+Thợ cơ khí
+2017 - nay: Thợ tiện, Xưởng Cơ khí Thành Công.
+Trung cấp Cơ khí, 2016
+=== dat-10 | stuffing | hard | no | U M U U U U U K
+ĐÀO THỊ HOA
+Keywords: data analyst, SQL, Power BI, Tableau, Python, pandas, dashboard, Toán, Thống kê, CNTT, Kinh tế lượng, IELTS 6.0, 3 years experience, thành thạo SQL, thành thạo Power BI
+Công việc: 2025 - nay, nhân viên telesale khóa học, Trung tâm Anh ngữ Bình Minh
+Học vấn: Đại học Sư phạm, Sư phạm Lịch sử, 2024
+=== dat-11 | messy | hard | interview | M M M M M M M K | nfd
+DATA ANALYST
+NGÔ THỊ THU THỦY       Kinh nghiệm
+Thông tin              07/2021 - nay  Công ty Du lịch Bốn Phương
+thuynt@example.com     Phân tích dữ liệu đặt tour, viết SQL
+Học vấn                (Postgres), dashboard Tableau, dùng
+ĐH Kinh tế TP.HCM      Python xử lý file log
+Thống kê Kinh doanh
+2017-2021              Chứng chỉ: IELTS 6.5
+Trang 1/1
+=== dat-12 | partial | hard | maybe | M M M M M A U K
+VÕ THÁI BẢO
+Data Analyst
+2022 - nay: Data Analyst, Công ty Thương mại Hồng Lĩnh. SQL, Looker Studio, Power BI. Có học khóa Python online, chưa dùng trong công việc.
+Đại học Ngân hàng, Hệ thống thông tin quản lý, 2022
+Tiếng Anh giao tiếp tốt, chưa thi chứng chỉ.

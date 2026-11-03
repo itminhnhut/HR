@@ -1,0 +1,78 @@
+@ad receptionist
+@occupation Lễ tân khách sạn
+@req experience | Kinh nghiệm: Từ 1 năm tại vị trí lễ tân khách sạn
+@req education | Học vấn: Cao đẳng trở lên
+@req education | Chuyên ngành Du lịch hoặc Quản trị khách sạn
+@req language | Tiếng Anh giao tiếp tốt, IELTS 5.5 hoặc tương đương
+@req language bonus | Ưu tiên biết thêm tiếng Hàn, tiếng Trung hoặc tiếng Nhật
+@req skills | Sử dụng phần mềm quản lý khách sạn (Opera PMS hoặc tương tự)
+@req skills | Thành thạo quy trình check-in, check-out, đặt phòng
+@req soft | Ngoại hình ưa nhìn, làm được ca đêm
+=== rec-01 | strong | ordinary | interview | M M M M M M M K
+TRẦN THỊ QUỲNH NHƯ
+Lễ tân khách sạn
+05/2022 - nay: Lễ tân, Khách sạn Sao Mai 4 sao, Đà Nẵng. Check-in, check-out, nhận đặt phòng qua Booking, xử lý yêu cầu khách. Dùng Opera PMS.
+Cao đẳng Du lịch Đà Nẵng, Quản trị khách sạn, 2021
+IELTS 6.0. Tiếng Hàn TOPIK 3.
+=== rec-02 | strong | ordinary | interview | M M M M A M M A
+NGUYỄN THU UYÊN
+Front Desk Agent
+Khách sạn Biển Ngọc, Nha Trang, từ 2023 đến nay. Làm thủ tục nhận và trả phòng, nhận booking, thu ngân, dùng phần mềm SmilePMS. Làm ca đêm 2 lần/tuần.
+Đại học Văn hóa, Quản trị Du lịch, 2022
+TOEIC 700, giao tiếp tốt với khách nước ngoài.
+=== rec-03 | strong | ordinary | interview | M M M M M M M K
+LE THI THANH THUY
+Hotel Receptionist
+Grand River Hotel, Hoi An, Feb 2021 - Present. Guest check-in and check-out, reservations, Opera PMS.
+BA Hospitality Management, Hue University of Tourism, 2020
+English: IELTS 6.5, fluent with guests. Chinese: HSK 3.
+=== rec-04 | partial | ordinary | maybe | M M M U A U M K
+ĐẶNG THỊ THU
+Lễ tân khách sạn nhỏ
+2022 - nay: Lễ tân, Khách sạn Hoa Đào 2 sao, Đà Lạt. Nhận khách, trả phòng, đặt phòng ghi vào sổ, không dùng phần mềm.
+Cao đẳng Du lịch Đà Lạt, Quản trị khách sạn, 2021
+Tiếng Anh giao tiếp đơn giản, chưa thi chứng chỉ.
+=== rec-05 | partial | ordinary | maybe | U M M M A M M K
+PHAN THÙY DUNG
+Lễ tân mới
+04/2026 - nay: Lễ tân, Khách sạn Cát Bà Bay. Check-in, check-out, đặt phòng, Opera.
+Đại học Hải Phòng, Quản trị Du lịch, 2025. IELTS 6.0.
+=== rec-06 | partial | ordinary | maybe | M M U M A M M K
+ĐỖ HẠNH NGUYÊN
+Lễ tân
+2021 - nay: Lễ tân, Khách sạn Thành Công. Check-in, check-out, nhận đặt phòng trên phần mềm Opera. Trước đây học không đúng ngành.
+Đại học Hà Nội, Ngôn ngữ Anh, 2020. IELTS 7.5.
+=== rec-07 | near-miss | ordinary | maybe | U M M M A U U K
+TRƯƠNG THỊ THANH LOAN
+Lễ tân văn phòng
+2021 - nay: Lễ tân tòa nhà, Công ty Cho thuê Văn phòng Sông Hồng. Đón khách, trực điện thoại, gửi nhận thư.
+Cao đẳng Du lịch Hà Nội, Quản trị khách sạn, 2020
+IELTS 6.0.
+=== rec-08 | near-miss | ordinary | no | U U U U A U U K
+HÀ THỊ THU
+Nhân viên phục vụ phòng
+2022 - nay: Buồng phòng, Khách sạn Mường Thanh Xanh. Dọn phòng, thay ga.
+Tốt nghiệp THPT.
+=== rec-09 | near-miss | ordinary | maybe | U M M M A U A K
+LÝ MINH CHÂU
+Nhân viên phục vụ nhà hàng khách sạn
+2022 - nay: Phục vụ nhà hàng, Resort Sea Links. Có hỗ trợ lễ tân nhận khách vào giờ đông, không tự làm thủ tục.
+Cao đẳng Quản trị Nhà hàng Khách sạn, 2021. IELTS 5.5.
+=== rec-10 | non-fit | ordinary | no | U U U U A U U K
+BÙI VĂN TÀI
+Thợ xây
+2010 - nay: Thợ xây dân dụng.
+Hết lớp 9.
+=== rec-11 | stuffing | hard | no | U U U U U U U K
+PHẠM THỊ NGÂN
+Lễ tân khách sạn, Opera PMS, check-in, check-out, đặt phòng, IELTS 5.5, tiếng Hàn, tiếng Trung, tiếng Nhật, Du lịch, Quản trị khách sạn, cao đẳng, ngoại hình ưa nhìn, làm ca đêm
+Công việc: 11/2025 - nay, nhân viên đóng gói, Xưởng Bao Bì Sao Sáng
+Học vấn: THPT
+=== rec-12 | messy | hard | interview | M M M M A M M A | nfd
+LỄ TÂN KHÁCH SẠN
+TÔ THANH NHÃ             Kinh nghiệm
+Ngoại ngữ                06/2020 - nay Khách sạn Đông Á, Huế
+IELTS 6.0                Lễ tân. Check-in, check-out, đặt
+Học vấn                  phòng, phần mềm Opera PMS.
+CĐ Du lịch Huế,          Làm ca đêm.
+Quản trị khách sạn, 2019

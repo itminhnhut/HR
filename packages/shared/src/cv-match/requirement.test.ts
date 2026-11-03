@@ -103,7 +103,7 @@ describe('parseRequirement: language', () => {
 
 describe('parseRequirement: skills, licences, assets', () => {
   it('should require every tool on a multi-item line', () => {
-    expect(atomsOf('Thành thạo Excel, Word')[0]).toEqual({
+    expect(atomsOf('Thành thạo Excel, Word')[0]).toMatchObject({
       kind: 'keywords',
       groupIds: ['excel', 'word'],
       mode: 'all',

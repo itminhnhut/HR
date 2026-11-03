@@ -68,7 +68,7 @@ export const jobs = pgTable(
     /** Multi-line text, one bullet per line. Rendered as text, never as HTML. */
     responsibilities: text('responsibilities').notNull().default(''),
     requirements: text('requirements').notNull().default(''),
-    /** "Ưu tiên (không bắt buộc)": nice-to-haves, one per line; never scored as requirements. */
+    /** "Ưu tiên (không bắt buộc)": nice-to-haves, one per line; listed as bonuses by the CV check, never in its percent. */
     preferred: text('preferred').notNull().default(''),
     benefits: text('benefits').array().notNull().default([]),
     /** One text per probation milestone (ROADMAP_MILESTONES); empty means no roadmap. */

@@ -1,0 +1,77 @@
+@ad graphic-designer
+@occupation Nhân viên thiết kế đồ họa
+@req experience | Kinh nghiệm: Từ 2 năm
+@req education | Học vấn: Cao đẳng trở lên
+@req education | Chuyên ngành Thiết kế đồ họa hoặc Mỹ thuật công nghiệp
+@req skills | Thành thạo Photoshop và Illustrator
+@req skills | Biết dàn trang in ấn bằng InDesign
+@req skills | Có portfolio sản phẩm thực tế
+@req skills bonus | Ưu tiên dựng được video ngắn bằng After Effects hoặc Premiere
+@req soft | Thẩm mỹ tốt, đúng deadline
+=== gra-01 | strong | ordinary | interview | M M M M M M M K
+ĐẶNG THANH NGÂN
+Graphic Designer
+08/2021 - nay: Designer, Công ty Quảng cáo Sao Biển. Thiết kế key visual, banner, bao bì bằng Photoshop, Illustrator. Dàn trang catalogue, profile bằng InDesign. Dựng video ngắn bằng Premiere.
+Đại học Mỹ thuật Công nghiệp, Thiết kế đồ họa, 2021
+Portfolio: behance.net/example-thanhngan
+=== gra-02 | strong | ordinary | interview | M M M M M M A K
+LÝ THỊ THU THẢO
+Nhân viên thiết kế
+2020 - nay: Studio In ấn Vạn Lợi. Thiết kế tờ rơi, catalogue, bao bì. Dùng thành thạo Ai, Ps, Id, làm file in offset. Link sản phẩm: drive.example.com/thaoly-portfolio
+Cao đẳng Mỹ thuật Trang trí Đồng Nai, Thiết kế đồ họa, 2019
+=== gra-03 | strong | ordinary | interview | M M M M M M M K
+NGUYEN THANH DAT
+Senior Graphic Designer
+Blue Ocean Agency, Apr 2022 - Present. Adobe Photoshop, Illustrator, InDesign for campaigns and print. Motion graphics in After Effects. Portfolio on Behance.
+BA Graphic Design, Van Lang University, 2021
+=== gra-04 | partial | ordinary | maybe | M M M M U M A K
+TRẦN MINH HIẾU
+Thiết kế đồ họa mạng xã hội
+2022 - nay: Designer, Công ty Mỹ phẩm Hương Lan. Làm ảnh quảng cáo Facebook bằng Photoshop, Illustrator. Portfolio: behance.net/example-minhhieu
+Cao đẳng FPT Arena, Thiết kế đồ họa, 2022
+=== gra-05 | partial | ordinary | maybe | U M M M M M A K
+HỒ THỊ LAN ANH
+Designer mới ra trường
+01/2026 - nay: Thiết kế, Công ty In Hoa Sen. Photoshop, Illustrator, InDesign. Có bộ sản phẩm thực tế lưu trên Behance.
+Đại học Kiến trúc, Thiết kế đồ họa, 2025
+=== gra-06 | partial | ordinary | maybe | M U U U U U A K
+VÕ THỊ KIM
+Thiết kế tự do
+2021 - nay: Freelancer thiết kế banner trên Canva và Photoshop mức cơ bản.
+Tốt nghiệp THPT, tự học thiết kế.
+=== gra-07 | near-miss | ordinary | maybe | M M U U U U M K
+PHAN THANH SANG
+Dựng phim
+2020 - nay: Editor video, Công ty Truyền thông Mây Trắng. Premiere, After Effects, chỉnh màu DaVinci. Biết Photoshop cơ bản.
+Cao đẳng Truyền hình, Quay phim, 2019
+=== gra-08 | near-miss | ordinary | no | A M U U U U A K
+LÊ THÀNH NAM
+Kiến trúc sư nội thất
+2019 - nay: Thiết kế nội thất, Công ty Nội thất Ngọc Lan. AutoCAD, SketchUp, 3ds Max.
+Đại học Kiến trúc, Nội thất, 2018
+=== gra-09 | non-fit | ordinary | no | A M U U U U A K
+TRẦN THỊ NHUNG
+Nhân viên hành chính
+2021 - nay: Văn thư, Công ty Điện lực Đông Hải.
+Đại học Luật, 2020
+=== gra-10 | stuffing | hard | no | U U U U U U U K
+MA THỊ HIỀN
+Tags: Photoshop Illustrator InDesign After Effects Premiere portfolio Thiết kế đồ họa Mỹ thuật công nghiệp cao đẳng 3 năm kinh nghiệm thẩm mỹ tốt đúng deadline Photoshop Illustrator
+Experience: 2025 - nay, thu ngân quán bún
+Education: THPT
+=== gra-11 | messy | hard | interview | M M M M M M A K
+T H I Ế T  K Ế  Đ Ồ  H Ọ A
+BÙI NGỌC MINH        Kỹ năng
+Kinh nghiệm          Photoshop, Illus-
+2022 - nay           trator, InDesign
+Công ty Quảng        Học vấn
+cáo Thiên Long,      CĐ Mỹ thuật
+thiết kế ấn phẩm     Công nghiệp, Thiết
+Portfolio:           kế đồ họa, 2021
+behance.net/example-ngocminh
+=== gra-12 | partial | hard | maybe | M M M M A A A K
+QUÁCH THANH TRÀ
+UI/UX và thiết kế ấn phẩm
+2021 - nay: Công ty Sách Hòa Bình. Thiết kế bìa sách, Photoshop, Illustrator; làm trang trong sách bằng phần mềm QuarkXPress, biết sơ InDesign.
+Cao đẳng Mỹ thuật Công nghiệp, Thiết kế đồ họa, 2020
+Sản phẩm: bìa sách đã xuất bản, xem khi phỏng vấn.

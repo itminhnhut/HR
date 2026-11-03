@@ -23,7 +23,7 @@ function MatchRing({ percent }: { percent: number | null }) {
       <span className="flex size-[58px] shrink-0 items-center justify-center rounded-full bg-tint text-center text-[10px] leading-tight text-slate">
         Chưa
         <br />
-        chấm
+        có %
       </span>
     );
   }

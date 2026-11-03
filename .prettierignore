@@ -3,3 +3,7 @@ dist
 package-lock.json
 apps/web/design-mockup
 apps/api/drizzle
+# Labels frozen by hash (labels.lock.txt): reformatting them would break the lock.
+packages/shared/src/cv-match/eval-real-jobs/cvs-*.ts
+packages/shared/src/cv-match/eval-real-jobs/line-truth.ts
+packages/shared/src/cv-match/eval-holdout/fixtures

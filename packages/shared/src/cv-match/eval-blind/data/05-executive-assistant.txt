@@ -1,0 +1,479 @@
+@ad executive-assistant
+@occupation Trợ lý Tổng Giám đốc
+@req experience | Trên 3 năm làm thư ký hoặc trợ lý cho cấp quản lý cao (giám đốc, tổng giám đốc)
+@req education | Có bằng đại học, ngành không bắt buộc
+@req language | Tiếng Anh lưu loát, IELTS 6.5 hoặc tương đương
+@req language bonus | Biết thêm tiếng Trung hoặc tiếng Nhật là lợi thế
+@req skills | Quản lý lịch làm việc, sắp xếp chuyến công tác, vé và khách sạn cho lãnh đạo
+@req skills | Chuẩn bị tài liệu họp, ghi biên bản và theo dõi việc thực hiện kết luận cuộc họp
+@req skills | Soạn công văn, tờ trình, thư đối ngoại bằng cả tiếng Việt và tiếng Anh
+@req skills | Làm slide trình bày cho ban lãnh đạo bằng PowerPoint
+@req skills | Đọc hiểu số liệu tài chính cơ bản và hợp đồng để tóm tắt cho Tổng Giám đốc
+@req soft | Kín đáo, giữ bí mật thông tin
+@req soft | Sẵn sàng làm ngoài giờ khi lãnh đạo cần
+=== eas-01 | strong | ordinary | interview | M M M M M M M M M M M
+LÊ THỊ PHƯƠNG THẢO
+Trợ lý điều hành cấp cao
+Di động: 0900 000 501 | Thư điện tử: phuongthao.le@example.com
+Nơi ở hiện tại: Phú Nhuận, Thành phố Hồ Chí Minh | Sinh năm 1990
+
+ĐÔI NÉT VỀ TÔI
+Mười năm đi làm thì hơn sáu năm ngồi ngay phòng bên cạnh Tổng Giám đốc của một doanh nghiệp vật liệu xây dựng có vốn Nhật. Tôi thích kiểu công việc mà người khác không nhìn thấy: buổi họp diễn ra trơn tru, sếp bước lên máy bay với đúng bộ hồ sơ cần đọc, và những việc đã hứa trong phòng họp không rơi mất sau một tuần.
+
+QUÁ TRÌNH LÀM VIỆC
+03/2020 - nay: Công ty CP Vật liệu Nhật Việt Sông Hàn - Trợ lý Tổng Giám đốc
+• Giữ toàn bộ nhật ký công tác của sếp trên Outlook, cân đối giữa khách hàng, cơ quan nhà nước và lịch họp với công ty mẹ ở Osaka; trung bình mỗi tháng hai chuyến trong nước, một chuyến nước ngoài. Tự đặt chuyến bay, phòng khách sạn, xe đưa đón, xin visa Nhật và Hàn.
+• Trước mỗi kỳ họp ban điều hành: gom báo cáo từ tám phòng ban, đọc lại, hỏi lại chỗ vô lý, đóng thành tập gửi trước hai ngày. Trong họp ghi lại ai nhận việc gì và hạn nào, sau họp gửi bảng theo dõi và hỏi thăm từng trưởng bộ phận cho tới khi xong.
+• Viết thảo tờ trình gửi Hội đồng quản trị, văn bản gửi Sở Xây dựng, thư gửi đối tác Nhật và Singapore. Bản tiếng Anh tự viết, bản tiếng Nhật nhờ phiên dịch công ty rà lại.
+• Dựng bộ slide báo cáo tháng cho sếp thuyết trình với công ty mẹ, thường 25-30 trang, có biểu đồ doanh thu và biên lợi nhuận.
+• Trước khi sếp ký hợp đồng lớn: đọc bản hợp đồng và kết quả kinh doanh của đối tác, viết tóm tắt một trang về giá trị, điều khoản thanh toán, phạt và những điểm pháp chế còn lưu ý.
+• Giữ tủ hồ sơ lương của ban điều hành và tài liệu thương vụ mua lại nhà máy Long Thành năm 2023; tôi nằm trong danh sách bốn người được biết thương vụ trước khi công bố.
+• Quyết toán chi phí tiếp khách, thẻ công ty, tạm ứng công tác của sếp mỗi tháng với kế toán.
+• Mùa đại hội cổ đông và các đợt đàm phán thường ở lại công ty tới khuya, cuối tuần vẫn nghe điện thoại của sếp, đã quen với nhịp đó.
+
+06/2016 - 02/2020: Công ty TNHH Thương mại Đông Hải Phát - Nhân viên hành chính, sau là Thư ký phòng kinh doanh
+• Quản lý công văn đến đi, đặt phòng họp, mua văn phòng phẩm, đón khách.
+• Từ 2018 hỗ trợ trưởng phòng làm báo giá, theo dõi hợp đồng đại lý.
+
+HỌC VẤN
+2012 - 2016: Đại học Ngoại ngữ và Du lịch Vạn An, Cử nhân Ngôn ngữ Anh, loại Giỏi.
+
+NGOẠI NGỮ
+Tiếng Anh: IELTS 7.0 (cấp 2022), họp và viết hằng ngày. Tiếng Nhật: JLPT N3, đủ để tiếp khách và hiểu ý chính trong họp với công ty mẹ.
+
+KỸ NĂNG
+PowerPoint, Excel (biểu đồ, bảng tổng hợp), Outlook, Teams, Zoom, phần mềm trình ký điện tử.
+
+THÀNH TÍCH
+Nhân viên xuất sắc toàn công ty năm 2021 và 2024. Xây dựng quy trình theo dõi kết luận họp mà ba công ty con đang áp dụng lại.
+
+SỞ THÍCH
+Trà đạo, làm gốm, đọc tiểu thuyết trinh thám, chạy bộ buổi sáng.
+#why Đủ mọi mặt và có bằng chứng cụ thể cho cả hai dòng soft: giữ tài liệu thương vụ, ở lại khuya mùa đại hội.
+=== eas-02 | strong | hard | interview | M M M A M M M M M M M
+DINH NGOC KHANH LINH
+Executive Assistant to the CEO
+Mobile 0900 000 502 · khanhlinh.dinh@example.com · District 7, Ho Chi Minh City
+
+ABOUT ME
+I have spent eight years making very busy people slightly less busy. I enjoy being the person who knows where everyone needs to be, what they have to read on the way, and which promise from last Tuesday is about to be missed. Calm in a crisis, allergic to surprises.
+
+EXPERIENCE
+Executive Assistant to the CEO | Meridian Harbour Logistics Vietnam | Jan 2021 - Present
+- Run the CEO's diary end to end across three time zones, protecting thinking time and negotiating slots with the regional office in Kuala Lumpur.
+- Plan multi-city itineraries for him and for visiting directors: flights, hotels, airport transfers, visas, plus a one-page trip brief for each stop.
+- Prepare board and leadership-team packs, chase contributors, take the minutes, keep the action log, and report overdue items each Friday.
+- Draft external correspondence in English and Vietnamese: letters to port authorities, ministry submissions, partner proposals, and speeches.
+- Build executive presentations in PowerPoint for quarterly business reviews and the annual strategy offsite.
+- Read the monthly P&L and cash report and flag what moved against budget; summarise key terms of customer and lease contracts in plain language before signature.
+- Sole keeper, outside the CFO, of restructuring papers during the 2024 reorganisation; worked under a personal NDA and kept them off shared drives.
+- Regularly online at night for calls with the US shareholder, and travelled at weekends when deals needed it.
+
+Executive Assistant to the Managing Director | Bluefern Consumer Goods | Jun 2018 - Dec 2020
+- Supported the MD and two commercial directors with scheduling, expense claims coordination through the finance team, and meeting logistics.
+- Translated distributor contracts and internal policies between Vietnamese and English.
+- Organised the national sales conference for 400 people, including venue, speakers and budget tracking.
+
+Receptionist & Office Coordinator | Hollow Oak Serviced Offices | Aug 2016 - May 2018
+- Front desk for 30 tenant companies; handled mail, meeting room bookings and visitor passes.
+
+EDUCATION
+Bachelor of Arts in English Studies, Lac Viet University of Foreign Studies, 2012 - 2016.
+
+CERTIFICATES
+Cambridge C1 Advanced, grade B (2019). Executive Assistant Masterclass, online, 40 hours (2023).
+
+TOOLS
+PowerPoint, Excel, Outlook, Teams, Notion, DocuSign, SAP Concur.
+
+ACHIEVEMENTS
+Cut board-pack turnaround from 9 working days to 5 by moving contributors to one shared template. Coordinated the CEO's move of office to a new tower with no missed client meeting.
+
+INTERESTS
+Sourdough baking, open-water swimming, volunteer English tutor at a neighbourhood learning club.
+#why CV tiếng Anh, C1 Advanced tương đương IELTS 6.5. Không có tiếng Trung hay Nhật nên dòng bonus là A. Hồ sơ tái cấu trúc và làm khuya là bằng chứng soft.
+=== eas-03 | strong | ordinary | interview | M M M M M M M M M A K
+TRUONG THUY VAN
+Thu ky Giam doc
+SDT 0900 000 503, Email thuyvan.truong@example.com
+Dia chi: Ngo Quyen, Hai Phong
+
+MUC TIEU
+Minh muon chuyen tu cong ty quy mo vua sang mot to chuc lon hon, duoc lam truc tiep voi Tong Giam doc va hoc them ve quan tri. Tinh minh kin dao, it noi, lam viec gi thi lam den noi den chon.
+
+KINH NGHIEM LAM VIEC
+09/2022 - nay. Cong ty TNHH Duong Thuy Thanh Xuan Bac - Thu ky Giam doc dieu hanh
+- Cam lich cua Giam doc: khach ngoai, hop trong, kiem tra cang, di cong tac Quang Ninh, Da Nang va Thuong Hai. Dat ve, khach san, xe, gui lich trinh truoc 1 ngay.
+- Hop giao ban thu Hai va hop quy: thu bao cao cac phong, in tap tai lieu, viet bien ban ngay sau khi hop, cuoi tuan ra soat viec nao chua xong thi nhan truong phong.
+- Viet cong van gui Cang vu, To trinh gui Hoi dong thanh vien. Thu gui doi tac Trung Quoc va Han Quoc bang tieng Anh, thu tieng Trung tu viet roi nho anh phien dich xem lai.
+- Lam slide bao cao 6 thang va cuoi nam cho sep di trinh bay voi chu so huu.
+- Tong hop doanh thu, chi phi, cong no moi thang tu file ke toan gui, ghi 3-5 dong xem thang nay co gi la de sep doc nhanh. Doc hop dong thue tau, hop dong bao hiem, gach chan cac dieu khoan can luu y.
+- Theo doi tam ung, ve may bay, hoa don tiep khach cua sep, nop ke toan dung han.
+
+03/2019 - 08/2022. Cong ty CP Dich vu Hang hai Bach Long - Nhan vien hanh chinh, kiem thu ky phong khai thac
+- Van thu, luu tru, soan thong bao noi bo.
+- Ho tro truong phong khai thac lap lich hop, ghi lai noi dung cuoc hop tuan, dat tiec tiep khach.
+- Gui email cho dai ly tau nuoc ngoai khi can xac nhan lich.
+
+HOC VAN
+2015 - 2019: Dai hoc Hang hai va Kinh te Bien Dong, Cu nhan Kinh te van tai bien.
+
+NGOAI NGU
+Tieng Anh IELTS 6.5 (2023). Tieng Trung HSK 4, tu hoc va hoc buoi toi 2 nam.
+
+KY NANG
+Word, Excel, PowerPoint o muc kha, Outlook, phan mem quan ly cong van. Biet ghi nhanh bang ky hieu rieng.
+
+THANH TICH
+Nam 2024 giup cong ty chuan bi dot kiem toan cua khach hang chau Au, duoc ban giam doc khen thuong. De xuat dung bang theo doi chung cho cac phong, giam nhac viec bang mieng.
+
+HOAT DONG, SO THICH
+Dan tranh, tap yoga, lam tinh nguyen cho nhom doc sach thieu nhi o Ngo Quyen. Thinh thoang viet bai review sach.
+#why Viết không dấu do thói quen. Mới hơn 4 năm thư ký Giám đốc nên đủ. Kín đáo chỉ là tự nhận nên A; làm ngoài giờ không nói gì nên K.
+=== eas-04 | partial | hard | maybe | A M A A M M A M U K K
+PHAN NGỌC DIỆP
+Assistant - Marketing & Business
+ĐT: 0900 000 504 | ngocdiep.phan@example.com | Hai Bà Trưng, Hà Nội
+
+TÓM TẮT
+Hơn năm năm rưỡi ở vai trò hỗ trợ cho người quản lý trong ngành hàng tiêu dùng. Vừa được chuyển lên làm trợ lý cho Giám đốc khối từ năm ngoái. Hướng ngoại, thích tổ chức sự kiện và làm nội dung đẹp mắt, hiện mong muốn thử sức ở vị trí trợ lý điều hành.
+
+KINH NGHIỆM
+03/2025 - nay: Công ty CP Hàng Tiêu Dùng Kim Ngân Việt - Trợ lý Giám đốc khối Thương mại
+- Lên lịch cho Giám đốc khối, sắp đặt vé máy bay và phòng khách sạn khi đi thị trường, đi hội chợ.
+- Tổng hợp báo cáo tuần từ 5 quản lý vùng, viết lại biên bản họp khối và hỏi tiến độ các việc được giao.
+- Làm slide cho buổi họp khối, buổi trình kế hoạch năm với ban giám đốc.
+- Viết email tiếng Anh cho nhà cung cấp bao bì ở Thái Lan. Công văn, tờ trình của khối do chị thư ký phòng Tổng hợp soạn, tôi chỉ gửi yêu cầu.
+- Phần hợp đồng đại lý do bộ phận pháp chế lo, số liệu tài chính do kế toán khối giữ và trình thẳng lên Giám đốc, tôi không tham gia đọc hay tóm tắt.
+- Chi phí đi lại và tiếp khách của khối cũng do kế toán khối xử lý theo quy định.
+
+03/2021 - 02/2025: Công ty CP Hàng Tiêu Dùng Kim Ngân Việt - Trợ lý Trưởng phòng Marketing
+- Sắp lịch cho trưởng phòng, đặt phòng họp, chuẩn bị tài liệu tung sản phẩm mới.
+- Theo dõi tiến độ các chiến dịch với agency, nhắc deadline, cập nhật kế hoạch trên Trello.
+- Dịch brief tiếng Anh do tập đoàn gửi sang tiếng Việt cho cả phòng.
+- Tổ chức hai hội nghị khách hàng, mỗi hội nghị khoảng 200 người.
+
+07/2020 - 02/2021: Công ty TNHH Sự Kiện Mây Hồng - Nhân viên điều phối sự kiện
+- Liên hệ nhà cung cấp, chạy chương trình tại địa điểm, quản lý bảng tên và quà tặng.
+
+HỌC VẤN
+2016 - 2020: Đại học Thương mại Đông Kinh, Cử nhân Marketing.
+
+NGOẠI NGỮ
+Tiếng Anh TOEIC 730 (2024), thuyết trình được, viết email hằng ngày. Tiếng Hàn sơ cấp TOPIK 2, học khi thích phim Hàn.
+
+KỸ NĂNG
+PowerPoint, Canva, Trello, Google Workspace, Excel cơ bản. Chụp ảnh sản phẩm, dựng video ngắn trên điện thoại.
+
+DỰ ÁN NỔI BẬT
+Dự án đổi bao bì dòng nước giặt Kim Ngân 2023: làm đầu mối theo dõi giữa phòng Marketing, phòng Mua hàng và nhà in, đúng hạn ra mắt. Bộ slide cho hội nghị đại lý miền Bắc 2024 được phòng truyền thông dùng lại làm mẫu.
+
+SỞ THÍCH
+Khiêu vũ thể thao, cắm hoa, du lịch bụi Đông Nam Á, viết blog về thức ăn đường phố.
+#why Bốn năm cho trưởng phòng và 20 tháng cho Giám đốc khối: có người tính cấp quản lý cao, có người không. TOEIC 730 so với IELTS 6.5 cũng tranh cãi được. Tiếng Hàn không phải tiếng bonus. CV nói rõ không đọc hợp đồng và số liệu.
+=== eas-05 | partial | hard | no | M M U A M M U M M A M
+TẠ THỊ HỒNG VÂN
+Thư ký Giám đốc
+Số điện thoại: 0900 000 505
+Hộp thư: hongvan.ta@example.com
+Quê quán và nơi ở: Thành phố Vinh, Nghệ An
+
+GIỚI THIỆU NGẮN
+Tôi là người chỉn chu, hoà nhã, biết giữ kín chuyện của công ty. Bảy năm làm thư ký cho một ông giám đốc rất khó tính ở doanh nghiệp gia đình, không có việc gì liên quan đến giấy tờ của công ty mà tôi không biết. Nay gia đình chuyển vào Hà Nội nên tôi tìm công việc mới.
+
+KINH NGHIỆM CÔNG TÁC
+10/2019 - nay: Công ty TNHH Xây dựng Thương mại Lam Sơn Châu - Thư ký Giám đốc
+Công việc hằng ngày:
+1. Ghi sổ các cuộc hẹn của Giám đốc, sắp xếp đi họp ở Sở, ở huyện; đặt vé máy bay vào Sài Gòn, đặt khách sạn khi đi tỉnh.
+2. Chuẩn bị phòng họp, tài liệu, ghi biên bản họp giao ban, họp công trường. Sau họp tôi nhắc từng trưởng phòng làm đúng việc Giám đốc đã kết luận.
+3. Soạn công văn, tờ trình, quyết định, báo cáo gửi cơ quan nhà nước, đối tác trong nước. Trình bày văn bản đúng thể thức.
+4. Làm slide giới thiệu năng lực công ty khi đi đấu thầu, slide tổng kết năm.
+5. Hằng tháng đọc báo cáo kế toán, ghi lại doanh thu, công nợ các công trình để báo Giám đốc. Đọc hợp đồng thi công, tóm tắt giá trị và tiến độ thanh toán.
+6. Quản lý các khoản chi tiếp khách, quà biếu dịp lễ của Giám đốc.
+7. Khi đấu thầu, quyết toán công trình thì ở lại đến 9-10 giờ tối, có tuần làm cả Chủ nhật.
+
+Công ty có một đối tác Hàn Quốc, thư từ bằng tiếng Anh gửi cho họ đều thuê trung tâm dịch thuật viết hộ vì tôi không tự viết được.
+
+07/2017 - 09/2019: Trường Trung cấp Nghề Hưng Nguyên - Nhân viên văn thư
+- Vào sổ công văn, photo, đóng dấu, lưu trữ hồ sơ giáo viên.
+- Soạn giấy mời họp, phục vụ nước trong phòng họp của Ban giám hiệu.
+
+HỌC VẤN
+2013 - 2017: Đại học Sư phạm và Công nghệ Bắc Trung, hệ chính quy, ngành Quản trị Văn phòng.
+
+NGOẠI NGỮ, TIN HỌC
+Tiếng Anh trình độ A2, đọc được tiêu đề email, chưa giao tiếp được. Tin học văn phòng thành thạo Word, Excel, PowerPoint.
+
+KHEN THƯỞNG
+Giấy khen Lao động tiên tiến của công ty năm 2021, 2023.
+
+SỞ THÍCH
+Nấu ăn, đọc báo, đi chùa, chăm sóc vườn rau của gia đình.
+#why Rất hợp về nghề thư ký nhưng tiếng Anh A2 và tự nhận không viết được thư tiếng Anh. Với một vị trí đòi lưu loát, nhà tuyển dụng sẽ không gọi. Làm khuya có mô tả cụ thể nên M, kín đáo chỉ là lời tự nói nên A.
+=== eas-06 | near-miss | hard | maybe | U M M A A A M M U K K
+HỒ MINH CHÂU
+Office Manager - Quản lý văn phòng
+Tel: 0900 000 506 | minhchau.ho@example.com | Quận 3, Thành phố Hồ Chí Minh
+
+GIỚI THIỆU
+Tôi điều hành một văn phòng 120 người của công ty công nghệ có vốn nước ngoài, từ hợp đồng thuê mặt bằng cho tới khay trà đặt ở phòng họp. Tiếng Anh dùng cả ngày, sếp trực tiếp của tôi là Giám đốc Nhân sự người Úc.
+
+LỊCH SỬ LÀM VIỆC
+02/2022 - nay: Công ty TNHH Phần mềm Cầu Vồng Bắc Âu - Trưởng nhóm Hành chính
+- Quản lý 3 nhân viên lễ tân và tạp vụ, nhà cung cấp vệ sinh, bảo vệ, căn tin.
+- Lo vé máy bay và khách sạn cho toàn bộ nhân viên đi công tác theo chính sách, kể cả khi ban giám đốc đi. Lịch riêng của Tổng Giám đốc do thư ký riêng phụ trách, tôi chỉ phối hợp khi có khách đến văn phòng.
+- Ghi biên bản họp giao ban hành chính hằng tuần. Không dự họp ban điều hành.
+- Viết thông báo nội bộ hai thứ tiếng, soạn công văn gửi ban quản lý tòa nhà, thư tiếng Anh gửi nhà cung cấp nước ngoài về thiết bị văn phòng.
+- Làm slide cho buổi town hall, phần "Văn phòng của chúng ta" và trình bày trước ban lãnh đạo khi xin ngân sách năm.
+- Đón đoàn khách từ châu Âu, đặt nhà hàng, chuẩn bị quà và phòng họp.
+- Tổng hợp chi phí văn phòng, gửi bộ phận tài chính đối chiếu. Các hợp đồng lớn và số liệu tài chính thì bộ phận tài chính xử lý, tôi chỉ giữ bản gốc hợp đồng thuê.
+
+08/2018 - 01/2022: Công ty CP Dịch vụ Văn phòng Hoa Mai - Nhân viên hành chính lễ tân
+- Trực quầy lễ tân, nhận thư, sắp phòng họp, quản lý thẻ ra vào.
+- Mua văn phòng phẩm, theo dõi hợp đồng in ấn, nước uống.
+- Tổ chức tiệc cuối năm, teambuilding cho khoảng 80 người.
+
+HỌC VẤN
+2014 - 2018: Đại học Xã hội và Nhân văn Tân Bình, Cử nhân Đông Phương học (chuyên ngành Hàn Quốc học).
+
+NGOẠI NGỮ
+IELTS 7.0 (2021). Tiếng Hàn trung cấp TOPIK 3.
+
+KỸ NĂNG
+Google Workspace, PowerPoint, Excel, quản lý nhà cung cấp, thương lượng giá, tổ chức sự kiện nội bộ.
+
+THÀNH TÍCH
+Chuyển toàn bộ văn phòng sang tòa nhà mới năm 2023 trong 6 tuần, tiết kiệm 12% chi phí thuê so với năm trước. Giảm 30% rác nhựa nhờ chương trình văn phòng xanh.
+
+SỞ THÍCH
+Bơi, leo tường trong nhà, học làm bánh, chăm mèo cứu hộ.
+#why Quản lý văn phòng, không phải trợ lý cá nhân của lãnh đạo: CV nói rõ lịch sếp do người khác lo. Đặt vé có nhưng cho mọi người, biên bản có nhưng chỉ họp hành chính nên hai dòng này A. Tiếng Anh rất tốt và kỹ năng gần, nên nhà tuyển dụng có thể cân nhắc.
+=== eas-07 | near-miss | ordinary | no | A M U M A M U A U K M
+NGUYỄN THANH BÌNH
+Phiên dịch tiếng Nhật - 通訳
+Điện thoại: 0900 000 507 | thanhbinh.nguyen@example.com
+Thuận An, Bình Dương
+
+MỤC TIÊU NGHỀ NGHIỆP
+Tôi đã có năm năm rưỡi đứng cạnh các giám đốc người Nhật tại nhà máy. Muốn chuyển sang làm trợ lý thực thụ, tham gia công việc quản lý nhiều hơn là chỉ chuyển lời.
+
+KINH NGHIỆM
+04/2021 - nay: Công ty TNHH Linh Kiện Điện Tử Sakura Bình An - Phiên dịch cho Giám đốc nhà máy
+- Theo sát Giám đốc người Nhật trong các buổi họp giao ban, họp với khách hàng, họp công đoàn, kiểm tra xưởng; dịch nói Nhật - Việt hai chiều.
+- Dịch nội quy, quy trình ISO, báo cáo chất lượng, thông báo nội bộ, thư gửi các đối tác Nhật.
+- Ghi biên bản họp bằng tiếng Nhật, gửi các trưởng bộ phận Việt Nam bản dịch và ngày hẹn hoàn thành, tuần sau hỏi lại rồi báo cho Giám đốc.
+- Dịch slide báo cáo của các bộ phận sang tiếng Nhật, không dựng nội dung.
+- Khi Giám đốc cần đi ngân hàng hay đi khu công nghiệp thì gọi xe, nhắc giờ; lịch chính do Tổng vụ quản lý trên hệ thống, chuyến đi Nhật do công ty mẹ đặt.
+- Tiếp đón đoàn kiểm toán từ công ty mẹ, đi cùng Giám đốc tới các buổi ăn tối tiếp khách, nhiều hôm về sau 11 giờ đêm, cuối tuần có khi đi đánh golf cùng để dịch.
+- Sổ sách chi phí tiếp khách do bộ phận tổng vụ theo dõi, phiên dịch không tham gia.
+
+09/2019 - 03/2021: Trung tâm Nhật Ngữ Hoa Anh Đào Thuận An - Giáo viên tiếng Nhật
+- Dạy lớp N5, N4 cho thực tập sinh sắp đi Nhật.
+- Soạn đề thi thử, chấm bài, gọi điện trao đổi với phụ huynh.
+
+HỌC VẤN
+2015 - 2019: Đại học Đông Á Học Bình Dương, Cử nhân Ngôn ngữ Nhật.
+2018: Trao đổi 6 tháng tại một trường Nhật ngữ ở Fukuoka theo học bổng của trường.
+
+NGOẠI NGỮ
+Tiếng Nhật JLPT N1 (2022). Tiếng Anh TOEIC 450, đọc được email đơn giản, không tự tin khi nói.
+
+KỸ NĂNG
+Dịch nói và dịch viết, thuật ngữ sản xuất và chất lượng, Word, Excel cơ bản, PowerPoint ở mức chỉnh chữ và dịch, gõ tiếng Nhật nhanh.
+
+THÀNH TÍCH
+Giải Nhì cuộc thi hùng biện tiếng Nhật toàn miền Nam năm 2018. Biên soạn sổ tay thuật ngữ sản xuất Nhật - Việt 600 mục cho nhà máy.
+
+SỞ THÍCH
+Thư pháp Nhật, đọc manga, đánh cầu lông, xem bóng chày.
+#why Phiên dịch cho giám đốc có thể xem là gần trợ lý, cũng có thể không, nên dòng kinh nghiệm A. Tiếng Anh không đạt là điểm chặn. Làm tối, cuối tuần có mô tả cụ thể nên M.
+=== eas-08 | non-fit | hard | no | U M U A U A U U A A K
+ĐỖ THU TRANG
+Thư ký Tòa án
+Liên hệ: 0900 000 508, thutrang.do@example.com, Hà Đông, Hà Nội
+
+GIỚI THIỆU
+Tốt nghiệp ngành Luật, hơn tám năm công tác tại Tòa án nhân dân cấp huyện. Quen với áp lực thời hạn tố tụng và với yêu cầu chính xác của từng con chữ trong hồ sơ. Nay muốn chuyển sang môi trường doanh nghiệp.
+
+QUÁ TRÌNH CÔNG TÁC
+05/2018 - nay: Tòa án Nhân dân huyện Ngọc Sơn Tây - Thư ký Tòa án
+- Lập biên bản phiên tòa, biên bản lấy lời khai, biên bản hòa giải, biên bản nghị án theo đúng biểu mẫu.
+- Tống đạt giấy triệu tập, thông báo thụ lý, quyết định đưa vụ án ra xét xử cho các đương sự.
+- Sắp xếp hồ sơ vụ án dân sự, kinh doanh thương mại, hôn nhân gia đình, lập bút lục đánh số từng trang.
+- Phối hợp với Thẩm phán lập lịch xét xử theo tuần, thông báo cho Viện kiểm sát, luật sư.
+- Soạn công văn gửi Ủy ban nhân dân xã, cơ quan thi hành án, cơ quan đăng ký đất đai để thu thập tài liệu.
+- Đọc hợp đồng vay, hợp đồng mua bán, hợp đồng thuê trong các vụ tranh chấp để chuẩn bị tóm tắt nội dung vụ án cho Thẩm phán.
+- Có trách nhiệm không tiết lộ nội dung nghị án và hồ sơ vụ án chưa công khai theo quy định của ngành.
+- Thống kê án hằng tháng, báo cáo Chánh án, tham gia chuẩn bị phòng xử.
+- Tham dự các phiên họp cơ quan, viết biên bản Chi bộ khi được phân công.
+
+09/2016 - 04/2018: Văn phòng Luật sư Minh Công Hà Đông - Nhân viên pháp lý
+- Soạn đơn khởi kiện, đơn đề nghị, tra cứu văn bản pháp luật.
+- Tiếp khách hàng đến tư vấn, ghi lại nội dung vụ việc, nộp hồ sơ tại tòa và cơ quan thuế.
+- Lưu trữ hồ sơ và theo dõi thời hạn kháng cáo.
+
+HỌC VẤN
+2012 - 2016: Đại học Luật Thăng Long Mới, Cử nhân Luật, chuyên ngành Luật Dân sự.
+2019: Lớp Nghiệp vụ Thư ký Tòa án, Trường Bồi dưỡng Cán bộ Pháp đình.
+
+KỸ NĂNG
+Soạn thảo văn bản hành chính, tư pháp. Word thành thạo, gõ nhanh 70 từ một phút. Excel cơ bản.
+
+THÀNH TÍCH
+Chiến sĩ thi đua cơ sở năm 2022, 2024. Giấy khen của Chánh án tỉnh về hoàn thành thống kê án.
+
+HOẠT ĐỘNG, SỞ THÍCH
+Thư ký Câu lạc bộ Đọc sách của phụ nữ huyện, chụp ảnh lớp học tiếng Anh của con, tập dưỡng sinh. Thích đi bộ vào cuối tuần.
+#why Thư ký tòa án: chữ biên bản, công văn, phiên họp, hợp đồng đều trùng nhưng nghề khác. Không nói gì về tiếng Anh. Biên bản phiên tòa, đọc hợp đồng và bí mật hồ sơ có điểm giống nên để A.
+=== eas-09 | non-fit | ordinary | no | U M M A U U U A U K K
+PHÙNG GIA HUY
+AI Engineer - Virtual Assistant Products
+0900 000 509 | giahuy.phung@example.com | github: giahuy-demo | Cầu Giấy, Hà Nội
+
+TÓM TẮT
+Kỹ sư phần mềm, năm năm rưỡi xây dựng trợ lý ảo, chatbot và callbot tiếng Việt cho doanh nghiệp. Tôi mê bài toán làm sao để máy hiểu người nói thật sự muốn gì. Sản phẩm gần đây nhất có thể đặt lịch họp cho lãnh đạo thông qua giọng nói.
+
+KINH NGHIỆM LÀM VIỆC
+06/2023 - nay: Công ty CP Công nghệ Trí Tuệ Vân Sơn - Kỹ sư AI chính
+- Phát triển Executive Assistant Bot, một trợ lý ảo tích hợp Google Calendar và Outlook API, tự đề xuất giờ họp, gửi lời mời và nhắc lịch.
+- Xây dựng pipeline tự tóm tắt biên bản họp từ file ghi âm: nhận dạng giọng nói, tách người nói, sinh danh sách công việc.
+- Huấn luyện và đánh giá mô hình phân loại ý định, viết công cụ đo độ chính xác, gắn nhãn dữ liệu.
+- Làm demo cho khách hàng, chuẩn bị slide kỹ thuật khi trình bày với lãnh đạo khách hàng.
+- Triển khai dịch vụ trên Kubernetes, theo dõi log, sửa lỗi production.
+
+04/2021 - 05/2023: Công ty TNHH Giải Pháp Số Hòa Bình Xanh - Lập trình viên Backend
+- Viết API bằng Python và Node.js cho chatbot chăm sóc khách hàng ngân hàng và bảo hiểm.
+- Thiết kế cơ sở dữ liệu PostgreSQL, kết nối tổng đài, viết tài liệu API bằng tiếng Anh.
+- Tham gia họp sprint, review code cho hai bạn mới.
+
+HỌC VẤN
+2017 - 2021: Đại học Công nghệ Thông tin Hồng Lĩnh, Kỹ sư Khoa học Máy tính.
+
+NGOẠI NGỮ
+IELTS 6.5 (2024), đọc paper và trao đổi với team ở Singapore.
+
+KỸ NĂNG
+Python, PyTorch, Node.js, PostgreSQL, Docker, Kubernetes, LangChain, Whisper, Google Calendar API, Microsoft Graph API.
+
+DỰ ÁN CÁ NHÂN
+Slide Helper: thư viện tự động tạo file PowerPoint từ dàn ý, 400 sao trên GitHub. Lịch Âm Bot: nhắc giỗ, ngày rằm cho gia đình trên Telegram. Viết blog về xử lý tiếng Việt.
+
+HOẠT ĐỘNG
+Diễn giả hội thảo AI của sinh viên năm 2024. Hỗ trợ giảng dạy khóa nhập môn học máy cho nhóm cộng đồng. Sở thích: mô hình Lego, chơi cờ vây, leo núi.
+#why Làm ra phần mềm trợ lý, chứ không phải làm trợ lý. Tiếng Anh đạt thật nhưng không đổi kết luận. Slide kỹ thuật có thể tính một phần nên A, còn lại không có.
+=== eas-10 | stuffing | ordinary | no | U U U U U U U U U K K
+MAI THỊ KIỀU OANH
+Trợ lý Tổng Giám đốc
+Phone: 0900 000 510 - Email: kieuoanh.mai@example.com - Tân Bình, TP.HCM
+
+GIỚI THIỆU
+Trên 3 năm làm thư ký hoặc trợ lý cho cấp quản lý cao. Tiếng Anh lưu loát, IELTS 6.5 hoặc tương đương, biết thêm tiếng Trung hoặc tiếng Nhật. Quản lý lịch làm việc, sắp xếp chuyến công tác, vé và khách sạn cho lãnh đạo. Chuẩn bị tài liệu họp, ghi biên bản và theo dõi việc thực hiện kết luận cuộc họp. Soạn công văn, tờ trình, thư đối ngoại bằng tiếng Việt và tiếng Anh. Kín đáo, giữ bí mật thông tin.
+
+TỪ KHÓA KỸ NĂNG
+Executive Assistant, Personal Assistant, CEO support, thư ký giám đốc, calendar management, biên bản, board meeting, PowerPoint, báo cáo tài chính, hợp đồng, HSK, JLPT, IELTS, tờ trình, công văn, travel arrangement, ngoại giao.
+
+KINH NGHIỆM LÀM VIỆC
+08/2023 - nay: Cửa hàng Mỹ Phẩm Xuân Nhi - Nhân viên bán hàng
+- Tư vấn kem chống nắng, son, serum cho khách tại quầy, gợi ý theo loại da.
+- Đăng bài lên Facebook, TikTok của cửa hàng, trả lời tin nhắn khách hỏi giá.
+- Kiểm hàng khi nhập, xếp kệ, đếm tồn cuối tuần, tính tiền bằng phần mềm bán hàng.
+- Đóng gói đơn hàng online, gọi shipper, nhắc khách lấy hàng.
+
+03/2021 - 07/2023: Công ty TNHH Bảo Hiểm Tiêu Dùng Tân Lộc - Nhân viên telesales
+- Gọi điện theo danh sách có sẵn, mỗi ngày khoảng 120 cuộc, giới thiệu gói bảo hiểm sức khỏe.
+- Nhập thông tin vào file, hẹn lịch gọi lại, báo số cuộc gọi cho trưởng nhóm cuối ngày.
+- Được thưởng hai tháng vì đạt chỉ tiêu.
+
+05/2019 - 02/2021: Quán Cà Phê Ngày Mới - Phục vụ, thu ngân
+- Pha chế cơ bản, nhận order, ghi sổ thu chi của ca, dọn quán.
+
+HỌC VẤN
+2017 - 2019: Trung cấp Kinh tế Tân Sơn, ngành Kinh doanh nhà hàng.
+
+KỸ NĂNG THỰC TẾ
+Bán hàng, tư vấn, giao tiếp với khách, chụp ảnh sản phẩm, sử dụng Canva, CapCut.
+
+SỞ THÍCH
+Trang điểm, xem drama Trung Quốc có phụ đề, học nhảy. Đang là trợ lý cho huấn luyện viên lớp nhảy của phường vào tối thứ Bảy.
+#why Giới thiệu dán từ ad và một ô từ khóa, công việc thật chỉ là bán hàng, telesales, phục vụ. Trung cấp nên bằng cấp cũng không đạt. Mọi dòng đo được đều U kể cả bonus, soft để K.
+=== eas-11 | messy | hard | interview | M M M M M M M M M K M
+VŨ HẢI YẾN                                  NGON NGU VA KY NANG
+Trợ lý Tổng Giám đốc                        Tieng Anh: IELTS 7.0 (2021), hop va
+0900 000 511  haiyen.vu@example.com         viet thu moi ngay voi sep nguoi Uc
+Tây Hồ, Hà Nội                              Tieng Trung: HSK 3, giao tiep co ban
+KINH NGHIỆM LÀM VIỆC                        khi tiep doi tac Quang Chau
+07/2022 - nay Tập đoàn Năng lượng Thái      PowerPoint: dung bo trinh bay cho
+An Sơn - Trợ lý Tổng Giám đốc               HDQT, co bieu do va mo hinh tai chinh
+Sắp xếp toàn bộ lịch trong tuần của sếp,    don gian
+ưu tiên các cuộc gặp nhà đầu tư; tự đặt     Excel: bang tong hop, bieu do
+vé bay, phòng khách sạn, xe và lịch trình   Outlook, Teams, Zoom, phan mem trinh
+chi tiết khi sếp sang Úc, Singapore.        ky dien tu, Notion
+Soạn tờ trình Hội đồng quản trị, công văn   Ky nang: ghi chep nhanh, tom tat, doc
+gửi Bộ, thư tiếng Anh tới nhà đầu tư và     bao cao tai chinh va hop dong o muc
+bên cho vay.                                can thiet de bao cao lai
+Đọc kết quả kinh doanh quý, hợp đồng mua
+điện, hợp đồng vay; viết bản tóm tắt nửa
+trang gửi sếp trước khi ký.                 CHUNG CHI
+Chuẩn bị tài liệu họp ban điều hành, ghi    Khoa quan tri van phong dieu hanh,
+biên bản, gửi danh sách đầu việc và mỗi     Vien Dao tao Doanh Nhan Tay Ho (2023)
+sáng thứ Hai báo các việc trễ hạn.          Khoa doc bao cao tai chinh cho nguoi
+Theo dõi các đầu việc liên phòng ban của    khong chuyen, 24 gio (2022)
+dự án điện gió ngoài khơi, báo tiến độ.
+Quyết toán chi phí tiếp khách, thẻ tín      THANH TICH
+dụng công ty của sếp với phòng Tài chính.   Cung sep chuan bi vong goi von 2024
+Đợt đàm phán vốn 2024: có tuần làm tới      thanh cong, duoc thuong dac biet
+khuya, cuối tuần trực điện thoại.           Xay dung so tay tro ly noi bo
+
+03/2020 - 06/2022 Công ty CP Xây dựng       SO THICH
+Năng lượng Bắc Hà - Thư ký Giám đốc dự án   Cheo thuyen kayak, ve mau nuoc,
+Lên lịch họp, ghi biên bản giao ban         doc sach kinh te, di bo o Ho Tay
+công trường, làm slide báo cáo cho
+Giám đốc dự án, đón khách, đặt vé.
+Theo dõi hợp đồng thầu phụ, nhắc hạn
+thanh toán cho phòng kế toán.
+
+10/2018 - 02/2020 Trung tâm Anh Ngữ Sao Khuê - Nhân viên học vụ
+Xếp lớp, gọi học viên, nhập điểm, hỗ trợ
+sự kiện cuối khóa.
+
+HỌC VẤN
+2014 - 2018 Đại học Kinh tế và Quản lý Sông Hồng, Cử nhân Quản trị Kinh doanh.
+CV_HaiYen_2026 (2).pdf - Trang 1
+#why Hai cột trộn: cột sự nghiệp có dấu, cột ngôn ngữ và kỹ năng mất dấu, người đọc vẫn gỡ được. Trợ lý TGĐ hơn 4 năm cộng thư ký Giám đốc dự án. Không có dấu hiệu cụ thể về giữ bí mật nên K.
+=== eas-12 | strong | hard | maybe | M U M A M M M M M M M
+CAO THỊ NGỌC ÁNH
+Thư ký Chủ tịch Hội đồng Quản trị
+0900 000 512 · ngocanh.cao@example.com · Đống Đa, Hà Nội
+
+TỰ GIỚI THIỆU
+Mười năm trong nghề, gần chín năm phục vụ trực tiếp Chủ tịch một tập đoàn gia đình quy mô hơn 2.000 nhân sự. Tôi vào nghề từ trường cao đẳng, học tiếng Anh theo cách của mình và vẫn chưa có điều kiện đi học đại học. Đây là điều tôi nói ngay từ đầu để anh chị cân nhắc.
+
+KINH NGHIỆM
+11/2017 - nay: Tập đoàn Dệt May và Bất Động Sản Hòa Bình Ngọc - Thư ký Chủ tịch HĐQT
+• Điều phối thời gian biểu cả tuần của Chủ tịch; đi cùng hoặc chuẩn bị trọn gói mọi chuyến đi trong nước và sang châu Âu, Hoa Kỳ: visa, vé hạng thương gia, khách sạn, lịch gặp, hồ sơ của người sắp gặp.
+• Làm thư ký các phiên họp HĐQT, họp cổ đông, họp ban điều hành: gửi giấy mời, tập tài liệu, biên bản và nghị quyết, sau đó lập bảng theo dõi từng nghị quyết và hỏi trực tiếp các Tổng Giám đốc công ty con.
+• Thảo tờ trình, văn bản gửi tỉnh, gửi ngân hàng. Viết thư tiếng Anh cho đối tác mua hàng ở Mỹ, Đức, đọc lại các thư họ gửi và tóm ý cho Chủ tịch.
+• Dựng slide cho Chủ tịch phát biểu, trình bày trước ngân hàng và khách hàng lớn.
+• Mỗi tháng đọc báo cáo hợp nhất, ghi ra những khoản lệch so với kế hoạch; đọc các hợp đồng bán buôn, hợp đồng vay trước khi trình ký, đánh dấu điều cần hỏi lại phòng Pháp chế.
+• Giữ con dấu riêng của Chủ tịch, sổ cổ đông và tài liệu về thu nhập của gia đình ông. Nhiều năm chưa để lộ chuyện gì ra ngoài văn phòng.
+• Chi tiêu tiếp khách, thẻ tín dụng, các khoản ủng hộ từ thiện của Chủ tịch đều qua tay tôi, mỗi tháng đối chiếu với kế toán trưởng.
+• Những tuần đại hội cổ đông, đàm phán với ngân hàng, tôi ở lại văn phòng tới gần nửa đêm, thứ Bảy, Chủ nhật vẫn đi cùng khi cần.
+
+07/2016 - 10/2017: Công ty TNHH May Thêu Ngọc Hà - Nhân viên văn thư
+• Vào sổ công văn, soạn thông báo, đặt phòng họp, chuẩn bị nước và tài liệu.
+
+HỌC VẤN
+2013 - 2016: Cao đẳng Văn thư và Quản trị Văn phòng Hà Tây Mới, ngành Quản trị Văn phòng. Chưa học đại học.
+
+NGOẠI NGỮ
+IELTS 7.0 (2023), tự học suốt tám năm, luyện thi tại Trung tâm Anh ngữ Sao Bắc. Tiếng Pháp giao tiếp sơ cấp.
+
+KỸ NĂNG
+Word, Excel, PowerPoint, Outlook. Tốc ký bằng ký hiệu riêng, trình bày văn bản đúng thể thức.
+
+THÀNH TÍCH
+Ba năm liền được bầu là Nhân viên tiêu biểu khối văn phòng tập đoàn. Tổ chức đại hội cổ đông đầu tiên sau khi tập đoàn đại chúng hóa, 600 đại biểu.
+
+SỞ THÍCH
+Hát thính phòng trong dàn hợp xướng của phường, cắm hoa, dạy đàn piano cho hai con.
+#why Năng lực vượt yêu cầu nhưng tự nêu rõ chưa có bằng đại học, mà ad đặt điều này thành bắt buộc. Có nhà tuyển dụng sẽ vẫn gọi, có người loại ngay, nên tier maybe.

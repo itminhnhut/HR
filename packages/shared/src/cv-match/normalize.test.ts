@@ -90,3 +90,29 @@ describe('buildCvDoc', () => {
     expect(buildCvDoc('  \n 12/2020 \n').letterCount).toBe(0);
   });
 });
+
+describe('headings naming a kind of experience', () => {
+  it.each(['KINH NGHIỆM GIẢNG DẠY', 'Kinh nghiệm bán hàng', 'Kinh nghiệm công tác', 'Teaching Experience'])(
+    'should read "%s" as a work history heading',
+    (heading) => {
+      // Act
+      const doc = buildCvDoc(`Mai Lan\n${heading}\n2020 - nay: Nhân viên, Công ty A`);
+
+      // Assert
+      expect(doc.lines[1]?.isHeader).toBe(true);
+      expect(doc.lines[2]?.section).toBe('experience');
+    },
+  );
+
+  it.each([
+    'Kinh nghiệm quản lý đội 10 người',
+    'Kinh nghiệm: 3 năm',
+    'Kinh nghiệm dày dạn trong việc thương lượng với khách hàng lớn',
+  ])('should not read "%s" as a heading', (line) => {
+    // Act
+    const doc = buildCvDoc(`Mai Lan\n${line}`);
+
+    // Assert
+    expect(doc.lines[1]?.isHeader).toBe(false);
+  });
+});

@@ -1,0 +1,512 @@
+@ad accounting
+@occupation Kế toán công nợ kiêm thuế
+@req experience | Có 2 năm trở lên làm kế toán doanh nghiệp
+@req education | Trình độ cao đẳng trở lên ngành kế toán, kiểm toán
+@req skills | Theo dõi công nợ phải thu, phải trả và xác nhận đối chiếu định kỳ
+@req skills | Kiểm tra tính hợp lệ của hoá đơn, chứng từ trước khi thanh toán
+@req skills | Lập tờ khai GTGT theo tháng hoặc quý trên HTKK
+@req skills | Hạch toán trên một phần mềm kế toán như MISA, Fast hoặc Bravo
+@req skills | Nắm chế độ kế toán theo Thông tư 200
+@req skills | Làm việc với ngân hàng: lập uỷ nhiệm chi, đối chiếu sổ phụ
+@req skills bonus | Từng tập hợp chi phí theo công trình là một điểm cộng
+@req licence bonus | Có CPA hoặc ACCA (đang theo học cũng tính) là điểm cộng
+@req soft | Làm việc kỷ luật với số liệu, chốt sổ đúng hạn
+=== kto-01 | strong | ordinary | interview | M M M M M M M M M M M
+LƯƠNG THỊ PHƯƠNG THẢO
+Kế toán - Thuế, doanh nghiệp xây lắp
+Di động: 0900 000 801
+Thư điện tử: thao.luongphuong@example.com
+Nơi ở: Hoàng Mai, Hà Nội | Sinh năm 1995
+
+VÀI DÒNG VỀ BẢN THÂN
+Chín năm đi làm, trong đó gần bảy năm ở một nhà thầu hạ tầng với hàng chục đội thi công và nhà cung cấp vật liệu. Tôi thích những việc có đầu có cuối: một khoản nợ phải biết vì sao phát sinh và khi nào hết, một tờ hoá đơn phải biết có được khấu trừ hay không. Hiện đang thi dần các môn ACCA buổi tối.
+
+KINH NGHIỆM
+03/2020 - nay | Công ty CP Xây dựng Hạ tầng Đông Bình | Kế toán viên phần nợ và thuế
+- Quản sổ chi tiết của khoảng 180 nhà cung cấp và 12 chủ đầu tư, mỗi quý gửi biên bản xác nhận số dư, truy đến cùng các khoản lệch trước khi kế toán trưởng ký.
+- Soát bộ hồ sơ đề nghị trả tiền của đội thi công: hợp đồng, biên bản khối lượng, hoá đơn, tra mã số thuế và trạng thái hoá đơn trên cổng của Tổng cục Thuế, trả lại bộ thiếu hoặc sai tên hàng.
+- Làm tờ khai thuế giá trị gia tăng theo tháng bằng HTKK, nộp qua mạng; khấu trừ và kê khai thuế thu nhập cá nhân cho nhân sự công trường theo quý.
+- Định khoản hằng ngày trên phần mềm Bravo theo hệ thống tài khoản của Thông tư 200.
+- Tạo lệnh chuyển tiền trên internet banking của 3 ngân hàng, in sổ phụ cuối tháng và khớp từng dòng với TK 112; kiểm quỹ tiền mặt với thủ quỹ mỗi thứ Sáu.
+- Tập hợp chi phí từng công trình theo vật liệu, nhân công, máy, chung; so với dự toán và báo cáo lãi lỗ cho ban giám đốc mỗi quý.
+- Xuất hoá đơn điện tử khi chủ đầu tư ký nghiệm thu thanh toán, lưu hoá đơn đầu vào theo công trình.
+- Khoá sổ tháng trước ngày mùng 5 suốt 4 năm gần đây. Năm 2024 ngồi cùng kế toán trưởng tiếp đoàn thanh tra thuế 5 ngày, chuẩn bị giải trình và số liệu lập báo cáo năm.
+
+07/2017 - 02/2020 | Công ty TNHH Vật liệu Xây dựng Minh Khuê | Kế toán bán hàng
+- Lên hoá đơn cho đại lý, nhắc đại lý thanh toán, mỗi tháng gửi bảng số dư cho từng đại lý ký.
+- Lập phiếu thu, phiếu chi, nhập liệu trên MISA.
+- Theo dõi hàng trả lại và chiết khấu cuối năm.
+
+HỌC VẤN
+2013 - 2017: Đại học Kinh tế Kim Liên, cử nhân Kế toán, loại Khá.
+2023 - nay: ACCA, đã đạt 6 môn (F1 - F6), đang học F7.
+
+KỸ NĂNG
+Bravo, MISA, HTKK, eTax. Excel: SUMIFS, XLOOKUP, Power Query mức cơ bản. Tiếng Anh đọc tài liệu chuẩn mực, TOEIC 610.
+
+GHI NHẬN
+Nhân viên tiêu biểu 2022 vì phát hiện gần 400 triệu đồng hoá đơn đầu vào không đủ điều kiện khấu trừ trước khi quyết toán.
+
+SỞ THÍCH
+Trồng rau ban công, đạp xe buổi sáng, đọc tiểu thuyết trinh thám.
+#why Đủ cả, nêu bằng từ riêng của ứng viên. Khoá sổ trước mùng 5 và phát hiện hoá đơn là bằng chứng cụ thể cho dòng soft.
+=== kto-02 | strong | hard | interview | M M M M M M M M A A M
+MAI KHANH LINH
+Accountant - Payables, Receivables & VAT
++84 900 000 802 (0900 000 802) | linh.maikhanh@example.com | District 7, Ho Chi Minh City
+
+SUMMARY
+Accountant with more than seven years in manufacturing and logistics firms. I look after what the company owes and what it is owed, keep the tax filings clean and make sure the bank agrees with the books. I work mostly with a foreign-owned management team, so I report in both English and Vietnamese.
+
+PROFESSIONAL EXPERIENCE
+
+Hoa Mai Packaging Joint Venture Co., Ltd, Long An
+Accountant, AP/AR and Tax | January 2021 - Present
+- Maintain vendor and customer sub-ledgers for about 340 accounts; send balance confirmations every quarter and clear disputed items with purchasing and sales.
+- Three-way match purchase order, goods receipt and supplier invoice; verify tax code, invoice status on the tax authority's lookup portal and the legal wording before releasing any payment.
+- Prepare monthly VAT returns in HTKK and submit them through the eTax portal; prepare quarterly PIT withholding returns for 420 staff.
+- Post all entries in Bravo under the Circular 200/2014/TT-BTC chart of accounts; help the group reporting team map the local chart to IFRS headings.
+- Key payment orders into the online banking system of two banks for approval by the finance manager; reconcile bank statements against account 112 at each month end; carry out surprise cash counts with the cashier.
+- Issue e-invoices to customers and keep the input invoice register up to date.
+- Prepare schedules for the external audit and for year-end financial statements with the Chief Accountant; supported the tax inspection of 2023, which closed with no material adjustment.
+- Own the month-end close calendar: my ledgers have been closed by working day 4 in every month since mid-2022.
+
+Kim Phat Freight Services Co., Ltd, Binh Duong
+Junior Accountant | June 2019 - December 2020
+- Booked agent invoices, followed collection from customers, and matched carrier statements line by line.
+- Prepared payment vouchers and supporting files for the senior accountant to review.
+
+EDUCATION
+Saigon Riverside University, Bachelor of Accounting, 2015 - 2019. Thesis on internal control over supplier payments.
+
+SKILLS
+Bravo, HTKK, eTax, Excel (Power Pivot, XLOOKUP), some SAP FI reading access through the group. English: TOEIC 780, daily email with the regional finance team.
+
+ACHIEVEMENTS AND PROJECTS
+- Moved vendor invoice approval from paper to shared drive tracking, cut late payment complaints by roughly half within a year.
+- Built a small aging dashboard for the sales team, used in the weekly sales meeting.
+
+INTERESTS
+Baking, long-distance running, volunteering at a Sunday reading corner for children.
+#why CV tiếng Anh toàn phần, ý tứ khớp đầy đủ. Không làm công trình, không CPA hay ACCA nên hai dòng cộng là A.
+=== kto-03 | strong | ordinary | interview | M M M M M M M M A A M
+DO THI NGOC ANH
+Ke toan vien
+SDT 0900 000 803
+Email: ngocanh.dothi@example.com
+Dia chi: Thanh Khe, Da Nang
+
+GIOI THIEU NGAN
+Em ra truong tu 2021, tung lam kho roi chuyen han sang so sach. Em thich cong viec on dinh, chi tiet, khong ngai thang cuoi nam phai o lai muon. Em viet CV khong dau vi may tinh o nha khong cai bo go, mong anh chi thong cam.
+
+QUA TRINH LAM VIEC
+05/2023 den nay - Cong ty TNHH Noi That Phuong Dong Xanh - Ke toan tong hop nho
+Cong ty khoang 60 nguoi, ban noi that cho du an khach san va van phong.
+* Moi thang em lap bang so du cho tung khach va tung xuong cung cap go, gui mail cho ben kia ky xac nhan, co chenh lech thi ngoi lai voi phong kinh doanh tim nguyen nhan.
+* Truoc khi trinh sep duyet chi, em xem lai hoa don co dung ten cong ty, ma so thue, ngay thang, co khop hop dong va phieu nhap kho khong, sai la tra ve lien.
+* Lam to khai thue GTGT theo quy bang phan mem HTKK, nop qua eTax, lam luon khai thue TNCN cho nhan vien.
+* Nhap lieu, dinh khoan tren phan mem Fast Accounting theo TT200, lam quen ca but toan ket chuyen cuoi thang.
+* Tu lap UNC tren web ngan hang roi trinh ky so, cuoi thang lay so phu doi lai voi so 112, kiem ke quy cung chi thu quy.
+* Xuat hoa don dien tu cho khach, luu hoa don dau vao theo thang.
+* Cuoi nam gom so lieu, bang ke cong no gui chi ke toan truong de lam bao cao nam, nam 2025 co theo chi di giai trinh voi can bo thue.
+* Tu dat lich: ngay 3 hang thang phai xong so sach thang truoc, 2 nam nay chua tre lan nao.
+
+08/2021 - 04/2023 - Cong ty CP Thuong Mai Dai Loc Phat - Ke toan kho
+* Ghi phieu nhap xuat tren phan mem, doi the kho voi thu kho moi tuan.
+* Lap phieu chi tam ung cho nhan vien giao hang, tong hop bang ke hoan ung.
+* Ho tro kiem ke cuoi nam, lap bien ban chenh lech.
+
+HOC VAN
+2018 - 2021: Cao dang Kinh te Tai chinh Song Han, nganh Ke toan doanh nghiep. Tot nghiep loai kha.
+
+KY NANG
+Fast Accounting, HTKK, Excel (Vlookup, Sumif, Pivot), Word. Tieng Anh co ban doc duoc hoa don nuoc ngoai.
+
+KHOA HOC NGAN HAN
+Lop cap nhat chinh sach thue moi nam 2024 do Hoi nghe nghiep ke toan Song Han to chuc. Lop hoa don dien tu theo quy dinh moi, 2 buoi, nam 2025.
+
+THANH TICH
+Nam 2024 duoc khen vi phat hien mot xuong go ghi trung 2 hoa don, gia tri khoang 85 trieu dong.
+
+SO THICH
+Nau an, xem phim Han, di bien buoi sang cuoi tuan, tham gia doi van nghe cong ty dip 8/3.
+#why Không dấu vì thói quen và CV tự nói vậy. Tổng 5 năm kế toán, đúng ngành cao đẳng. Không có phần công trình, không CPA, ACCA.
+=== kto-04 | partial | hard | maybe | M M M M U M A M A A M
+HÀ THỊ BÍCH NGỌC
+Nhân viên kế toán thanh toán
+0900 000 804 • ngoc.habich@example.com • Bắc Từ Liêm, Hà Nội
+
+MỤC TIÊU
+Sau gần năm năm chỉ làm phần tiền và công nợ, em mong được học thêm mảng thuế để phát triển lên kế toán tổng hợp, không muốn dừng ở việc nhập liệu.
+
+KINH NGHIỆM LÀM VIỆC
+
+04/2022 - nay: Công ty CP Thực phẩm Sạch An Phước, Kế toán thanh toán
+Công ty có 2 nhà máy và 400 nhân viên, phòng kế toán 6 người.
++ Theo dõi tiền nợ của hơn 200 nhà cung cấp nguyên liệu, bao bì; đến kỳ thì gửi thư xác nhận số dư, tìm nguyên nhân khi hai bên không khớp; song song theo dõi tiền phải thu từ 30 nhà phân phối.
++ Xem xét đề nghị thanh toán: đủ hợp đồng, phiếu nhập, hoá đơn; hoá đơn đúng thông tin bên mua, còn hiệu lực, thuế suất đúng thì mới trình.
++ Nhập bút toán 131, 331, 111, 112 trên MISA SME, in sổ chi tiết cho kế toán trưởng soát.
++ Làm uỷ nhiệm chi trên hệ thống ngân hàng, cuối tháng lấy sổ phụ về khớp từng khoản với sổ tiền gửi; chốt số dư công nợ vào ngày 25 hằng tháng và đến nay chưa lần nào chậm.
++ Phần kê khai thuế GTGT, TNCN, lập báo cáo tài chính và làm việc với thuế do kế toán trưởng phụ trách. Em chỉ chuyển bảng kê hoá đơn đầu vào sang cho chị ấy mỗi tháng, chưa tự làm tờ khai lần nào và chưa tiếp đoàn thanh tra.
++ Hoá đơn điện tử đầu ra do bạn kế toán bán hàng phụ trách; em lưu và tra cứu hoá đơn đầu vào.
+
+06/2020 - 03/2022: Công ty TNHH Dịch vụ Vận tải Đại Hưng, Thủ quỹ kiêm nhân viên kế toán
++ Thu chi tiền mặt cho lái xe, ghi sổ quỹ, kiểm quỹ cuối ngày.
++ Tổng hợp phiếu dầu, phí cầu đường, đề nghị tạm ứng và hoàn ứng.
++ Nhập phiếu vào MISA dưới sự kiểm tra của kế toán trưởng.
+
+10/2019 - 05/2020: Thực tập rồi làm thử ở văn phòng kế toán Tín Việt, phô tô và sắp xếp chứng từ khách hàng.
+
+TRÌNH ĐỘ
+2017 - 2020: Cao đẳng Thương mại và Kế toán Đồng Hỷ, ngành Kế toán, tốt nghiệp loại Giỏi.
+
+KỸ NĂNG
+MISA SME, Excel (hàm tra cứu, bảng tổng hợp), sử dụng internet banking, ký số. Giao tiếp được với nhà cung cấp qua điện thoại. Tiếng Anh ở mức đọc hiểu đơn giản.
+
+HOẠT ĐỘNG VÀ SỞ THÍCH
+Đại diện công đoàn bộ phận tài chính. Tham gia nhóm từ thiện góp sách cho trẻ vùng cao. Yêu thích làm đồ handmade, chơi bóng chuyền hơi cùng đồng nghiệp sau giờ làm.
+#why Làm tốt công nợ và ngân hàng nhưng chưa tự làm thuế: CV nói rõ. Vị trí "kiêm thuế" nên thiếu là đáng kể. Chỉ thấy số tài khoản 131, 331, không nói gì về chế độ nên dòng Thông tư 200 là A.
+=== kto-05 | partial | ordinary | maybe | U M M M M M M A A A K
+PHAN MINH HOÀNG
+Kế toán viên
+Điện thoại: 0900 000 805 | Email: hoang.phanminh@example.com
+Địa chỉ: Thuận An, Bình Dương
+
+GIỚI THIỆU
+Mới tốt nghiệp hai năm, đang làm kế toán viên ở công ty thương mại nhỏ. Được các anh chị giao việc khá đa dạng nên học hỏi rất nhanh. Tính tôi hơi ít nói, chăm chỉ, thích làm việc với con số hơn là giao tiếp đám đông.
+
+KINH NGHIỆM
+
+04/2025 - nay
+Công ty TNHH Thiết Bị Điện Gia Hưng Phát
+Vị trí: Kế toán viên (công ty 25 người, 3 kế toán)
+• Ghi nhận tiền hàng khách còn nợ và tiền công ty còn nợ các hãng, cuối mỗi quý gửi bảng số dư cho hai bên ký.
+• Khi có đề nghị chi, xem hoá đơn đã đủ các yếu tố, đúng tên và mã số thuế của công ty chưa rồi mới chuyển chị trưởng nhóm duyệt.
+• Hai quý đầu làm tờ khai GTGT cùng chị trưởng nhóm, từ quý 1/2026 tự làm trên HTKK và chị chỉ kiểm tra lại.
+• Nhập nghiệp vụ mua bán, thu chi trên MISA theo danh mục tài khoản Thông tư 200, đã nắm tương đối các tài khoản đầu 1, 3, 5, 6.
+• Tạo lệnh chuyển khoản (UNC) trên web ngân hàng trước 15 giờ mỗi ngày.
+• Xuất hoá đơn điện tử theo đơn hàng của phòng kinh doanh.
+
+06/2024 - 08/2024
+Công ty CP Đầu Tư Sông Bé Xanh
+Thực tập sinh kế toán
+• Sắp xếp, đóng chứng từ theo tháng. Nhập danh mục hàng hoá.
+• Quan sát đồng nghiệp khi kiểm kê quỹ và hàng tồn.
+
+09/2023 - 05/2024 (làm thêm khi đi học)
+Quán cà phê Mộc Lan
+Phục vụ, thỉnh thoảng trực thu ngân ca tối.
+
+HỌC VẤN
+2021 - 2024
+Cao đẳng Công Thương Thuận Thành
+Chuyên ngành Kế toán - Kiểm toán, điểm trung bình 7,8/10.
+Đề tài cuối khoá: Kế toán doanh thu tại một công ty thương mại nhỏ.
+
+KỸ NĂNG
+Tin học: MISA, HTKK, Word, Excel (VLOOKUP, SUMIF).
+Ngoại ngữ: tiếng Anh A2.
+Kỹ năng mềm: lập kế hoạch cá nhân, ghi chú công việc hằng ngày, tự học qua video.
+
+CHỨNG CHỈ
+Chứng chỉ Tin học ứng dụng cơ bản. Khoá kế toán thực hành 3 tháng tại Trung tâm Đào tạo Nghề Tài Chính Bình An (2024).
+
+HOẠT ĐỘNG
+Lớp phó học tập năm thứ hai. Thành viên đội tình nguyện tiếp sức mùa thi của trường.
+
+SỞ THÍCH
+Cầu lông, nghe podcast, tự học guitar, chăm mèo.
+#why Một năm bảy tháng chính thức, thực tập vài tháng không đủ bù cho 2 năm. Nội dung việc khá đúng. UNC có mà sổ phụ không có nên dòng ngân hàng là A. Dòng soft không có bằng chứng.
+=== kto-06 | partial | hard | maybe | M A U A M M M A A M M
+TRƯƠNG QUANG VINH
+Chuyên viên dịch vụ kế toán thuế
+Liên hệ: 0900 000 806 | vinh.truongquang@example.com | Tân Bình, TP. Hồ Chí Minh
+
+TÓM TẮT NGHỀ NGHIỆP
+Gần sáu năm ở công ty dịch vụ kế toán, lúc nào cũng cầm 12 đến 15 doanh nghiệp nhỏ cùng lúc, từ tiệm in, xưởng bánh, đến nhà thầu cơ điện. Tôi quen với áp lực hạn nộp và các quy định thuế thay đổi. Muốn chuyển sang làm trong một doanh nghiệp để gắn bó sâu với một bộ sổ, thay vì chạy theo nhiều bộ cùng lúc.
+
+CÔNG VIỆC ĐÃ LÀM
+
+01/2021 đến nay: Công ty TNHH Tư vấn Thuế Trí Tín Nam, Chuyên viên, từ 2024 là Trưởng nhóm 4 người
+- Mỗi kỳ nhận chứng từ của khách qua Zalo và email, phân loại rồi nhập sổ trên MISA, chế độ Thông tư 200 cho công ty vừa, Thông tư 133 cho công ty rất nhỏ.
+- Rà hoá đơn đầu vào xem có đủ điều kiện khấu trừ, có thuộc diện rủi ro, báo khách xin lại nếu sai. Tiền nong khách tự trả, nên việc soát diễn ra lúc kê khai, sau khi khách đã thanh toán.
+- Lập tờ khai thuế GTGT trên HTKK theo tháng và quý, TNCN, TNDN tạm tính; nộp qua eTax bằng chữ ký số của khách. Ba năm gần đây nhóm tôi không có doanh nghiệp nào bị phạt nộp chậm.
+- Không giữ sổ công nợ cho khách: gói dịch vụ không bao gồm, khách tự theo dõi và tự đòi nợ, chúng tôi chỉ lên số dư tổng theo chứng từ.
+- Không đụng vào tiền và không lập uỷ nhiệm chi, việc đó chủ doanh nghiệp làm. Chỉ nhận sổ phụ khách gửi để lên sổ tiền gửi và đối chiếu số dư cuối tháng.
+- Xuất hộ hoá đơn điện tử cho 4 khách nhỏ, quản lý bảng kê hoá đơn đầu vào cho mọi khách.
+- Lập báo cáo tài chính năm, tờ khai quyết toán. Đã 3 lần đại diện khách ngồi giải trình với đoàn thanh tra thuế quận.
+
+07/2019 - 12/2020: Công ty TNHH Tin Học Hoàng Nguyên, Nhân viên kinh doanh phần mềm
+- Bán phần mềm quản lý bán hàng cho cửa hàng tạp hoá, gọi điện giới thiệu, cài đặt, hướng dẫn sử dụng.
+
+HỌC VẤN
+2015 - 2019: Đại học Kinh Tế Tân Định, Cử nhân Tài chính - Ngân hàng. Có học 2 học phần Kế toán tài chính và Thuế.
+2021: Khoá kế toán thực hành 6 tháng cho người trái ngành, Trung tâm Đào tạo Kế toán Tân Long.
+
+CHỨNG CHỈ
+Đã thi đạt 2 môn của kỳ thi CPA Việt Nam (Thuế và Pháp luật), đang ôn tiếp năm 2027. Chứng chỉ hành nghề đại lý thuế đang chờ cấp.
+
+KỸ NĂNG
+MISA, HTKK, eTax, Excel, chữ ký số các hãng. Tiếng Anh đọc văn bản đơn giản.
+
+DỰ ÁN CÁ NHÂN
+Viết một loạt bài ngắn trên trang cá nhân về lỗi hoá đơn thường gặp của hộ kinh doanh, được vài nhóm kế toán chia sẻ lại.
+
+SỞ THÍCH
+Bơi, đọc sách lịch sử kinh tế, làm tình nguyện kế toán cho một quỹ học bổng nhỏ.
+#why Thuế và lên sổ rất mạnh, nhưng tự nói không giữ công nợ. Ngành Tài chính có học thêm kế toán là chuyện tranh cãi. Soát hoá đơn lúc kê khai chứ không phải trước khi trả tiền, sổ phụ có mà UNC không: đều A.
+=== kto-07 | near-miss | ordinary | no | U U U U U U U A A A A
+CAO THỊ THÙY DƯƠNG
+Trưởng quầy thu ngân
+0900 000 807 - duong.caothuy@example.com - Thủ Dầu Một, Bình Dương
+
+GIỚI THIỆU
+Tám năm trong ngành bán lẻ, bắt đầu từ thu ngân rồi lên phụ trách toàn bộ khu vực quầy tính tiền của siêu thị. Rất cẩn thận với tiền, ít sai sót, được cấp trên tin tưởng giao két. Nay muốn tìm môi trường văn phòng, giờ giấc ổn định hơn và đang suy nghĩ học thêm kế toán.
+
+KINH NGHIỆM LÀM VIỆC
+08/2021 - nay: Siêu thị Tân Hưng Mart (chi nhánh Thủ Dầu Một) - Trưởng quầy thu ngân
+- Quản lý 14 nhân viên thu ngân, xếp ca, đào tạo bạn mới sử dụng máy POS và máy quẹt thẻ.
+- Cuối mỗi ca kiểm két, khớp tiền mặt với báo cáo POS; tiền lệch quá 50.000 đồng phải lập biên bản. Năm 2024 mức lệch chỉ còn dưới 0,01% doanh thu.
+- Mỗi sáng lập bảng kê và nộp tiền doanh thu vào ngân hàng. Dò giao dịch quẹt thẻ trên sao kê máy POS, báo lại khoản ngân hàng chưa ghi có.
+- Xuất hoá đơn điện tử tại quầy khi khách lấy hoá đơn công ty, xử lý hoá đơn sai tên hoặc mã số thuế, hoàn tiền theo phiếu trả hàng.
+- Gửi bảng tổng hợp doanh thu ngày về phòng kế toán công ty. Sổ sách và thuế là việc của phòng đó, tôi không tham gia.
+- Hỗ trợ kiểm kê hàng hoá cuối năm với ban quản lý siêu thị.
+
+03/2018 - 07/2021: Siêu thị Tân Hưng Mart (chi nhánh Dĩ An) - Nhân viên thu ngân
+- Tính tiền, đóng gói, giới thiệu thẻ thành viên, nhắc khách chương trình khuyến mãi.
+- Được chọn làm người hướng dẫn cho nhân viên thử việc từ năm 2020.
+
+10/2016 - 02/2018: Cửa hàng Thời trang Mộc Vy - Bán hàng kiêm thu tiền
+- Tư vấn cho khách, ghi sổ bán hàng tay, cuối tuần nộp tiền cho chủ cửa hàng.
+
+HỌC VẤN
+2013 - 2016: Cao đẳng Kinh Tế Công Nghiệp Bình Hoà, ngành Quản trị kinh doanh.
+
+KỸ NĂNG
+Thao tác POS nhanh, Excel cơ bản (cộng, lọc), Word, in mã vạch, ghi nhận hoàn tiền trên hệ thống bán lẻ. Giao tiếp tốt, chịu áp lực dịp lễ Tết.
+
+THÀNH TÍCH
+Quầy thu ngân đạt đánh giá tốt nhất khu vực miền Đông năm 2023. Hai năm liền là cá nhân xuất sắc của chi nhánh.
+
+SỞ THÍCH
+Múa dân vũ, đi chợ đêm, nấu các món miền Tây cho gia đình.
+#why Giỏi tiền mặt, không phải kế toán: không có sổ, không có thuế, CV nói rõ. Sao kê POS và nộp tiền có dính tới ngân hàng nên dòng đó tranh cãi được. Chênh lệch két thấp là bằng chứng cho kỷ luật số liệu, nhưng chưa phải chốt sổ.
+=== kto-08 | near-miss | hard | maybe | U M A U U A U U A A A
+TẠ THỊ HẢI YẾN
+Sales Admin / Trợ lý kinh doanh
+Tel: 0900 000 808 | yen.tahai@example.com | Gò Vấp, TP.HCM
+
+VỀ TÔI
+Học kế toán nhưng ra trường đi làm trợ lý bán hàng, đã bảy năm với một nhà phân phối sơn nước. Công việc gần với tiền hàng mỗi ngày nên tôi nghĩ mình đủ nền để quay về đúng ngành đã học, dù chưa từng ngồi ghế kế toán.
+
+KINH NGHIỆM
+09/2019 - nay: Công ty TNHH Phân phối Sơn Việt Kim, Sales Admin
+- Nhận đơn của 70 đại lý, tạo đơn bán trên phân hệ bán hàng của Bravo (chỉ có quyền ở phân hệ này, không vào được phần sổ cái).
+- Đề nghị xuất hoá đơn điện tử theo đơn đã giao; từ 2024 được cấp quyền trực tiếp phát hành hoá đơn nháp và ký gửi cho khách.
+- Theo dõi tiền đại lý còn thiếu trên file Excel, nhắc thanh toán, khoá đơn hàng khi quá hạn; ngày 25 hằng tháng gửi đại lý bảng số dư để ký trả. Tiền công ty nợ nhà cung cấp thì phòng kế toán lo, tôi không xem.
+- Làm hợp đồng đại lý, báo cáo doanh số tuần, tính chiết khấu quý.
+- Phối hợp kho sắp xe giao, xử lý hàng đổi trả màu.
+- Không làm thuế, không làm chứng từ chi tiền.
+
+01/2019 - 08/2019: Công ty CP Bao Bì Nam Sài Gòn, Nhân viên hành chính
+- Nhận công văn, chấm công, đặt văn phòng phẩm, đón khách.
+
+HỌC VẤN
+2016 - 2019: Cao đẳng Tài chính Kế toán Phú Mỹ, ngành Kế toán doanh nghiệp, trung bình khá.
+
+KỸ NĂNG
+Excel tốt (Vlookup, Pivot, SUMIFS, file theo dõi công nợ đại lý tự thiết kế). Bravo phần bán hàng. Word, PowerPoint. Giao tiếp điện thoại với đại lý, xử lý khách khó tính. Tiếng Anh cơ bản, đọc được email ngắn của hãng.
+
+KHÓA HỌC
+Khoá ngắn "Kỹ năng thu hồi công nợ cho nhân viên bán hàng", 2022. Đăng ký học lại kế toán thực hành dự kiến đầu năm 2027.
+
+KẾT QUẢ
+- Giảm số dư quá hạn hơn 90 ngày từ 3,1 tỷ xuống còn dưới 900 triệu đồng trong năm 2023.
+- Đề xuất mẫu nhắc nợ đại lý qua Zalo được áp dụng toàn khu vực miền Nam.
+- Chưa có khiếu nại nào về sai số lượng hoá đơn trong hai năm gần đây.
+
+HOẠT ĐỘNG
+Ban tổ chức tiệc cuối năm của công ty ba năm liên tiếp. Trưởng nhóm cầu lông nữ của công ty.
+
+SỞ THÍCH
+Đi du lịch biển, nuôi cây sen đá, học làm bánh mì, xem kịch cuối tuần.
+#why Đúng bằng cấp nhưng 7 năm là sale admin, CV nói rõ chưa từng là kế toán. Chỉ phải thu chứ không phải trả, lại trên Excel: A. Bravo chỉ phần bán hàng: A. Có ngày 25 chốt số dư nhưng chỉ cho đại lý: A.
+=== kto-09 | non-fit | ordinary | no | U U U U U U U U A A A
+NGUYỄN TRƯỜNG GIANG
+Quản lý ca nhà hàng thức ăn nhanh
+ĐT: 0900 000 809
+Email: giang.nguyentruong@example.com
+Cẩm Lệ, Đà Nẵng
+
+MỤC TIÊU
+Phát triển lên quản lý cửa hàng trong chuỗi ăn uống, học thêm về cách vận hành nhiều điểm bán cùng lúc.
+
+KINH NGHIỆM LÀM VIỆC
+
+06/2022 - nay: Chuỗi FastBite Burger, chi nhánh Cẩm Lệ - Quản lý ca (Shift Manager)
+- Phụ trách mỗi ca 12 đến 18 bạn phục vụ và bếp. Phân vị trí, xếp giờ nghỉ, xử lý khách phàn nàn.
+- Kiểm kê thịt, bánh, rau, bao bì đầu và cuối ca, tính hao hụt so với định mức, nhập vào file kiểm kê của chi nhánh.
+- Kiểm quỹ tiền mặt ở máy tính tiền, đối chiếu ca với báo cáo bán hàng, ghi chênh lệch vào sổ bàn giao ca và ký tên. Chốt ca đúng 22h30.
+- Nhận hàng từ xe tổng kho, soát số lượng và hạn dùng trên phiếu giao, ký nhận; trả hàng khi lạnh không đủ tiêu chuẩn.
+- Gửi tiền doanh thu theo ca cho quản lý cửa hàng để nộp ngân hàng.
+- Kiểm tra vệ sinh an toàn thực phẩm theo checklist, nhiệt độ tủ đông 3 lần trong ca.
+- Tham gia tuyển và đào tạo nhân viên thời vụ mùa hè.
+
+03/2020 - 05/2022: Chuỗi FastBite Burger, chi nhánh Hải Châu - Trưởng nhóm phục vụ
+- Đạt nhóm dẫn đầu về thời gian phục vụ trong tháng khuyến mãi.
+- Hướng dẫn bạn mới thao tác quầy, xử lý đơn giao hàng qua ứng dụng.
+
+07/2018 - 02/2020: Nhà hàng Hải Sản Biển Xanh - Phục vụ bàn
+- Ghi món, giới thiệu đặc sản, chăm sóc đoàn khách du lịch.
+- Làm thêm ca cuối tuần phụ quầy bar.
+
+HỌC VẤN
+2015 - 2018: Cao đẳng Du lịch Non Nước, ngành Quản trị nhà hàng và dịch vụ ăn uống.
+
+KỸ NĂNG VÀ CHỨNG NHẬN
+- Chứng nhận kiến thức an toàn thực phẩm (2023).
+- Chương trình đào tạo quản lý ca nội bộ của chuỗi (120 giờ).
+- Sử dụng phần mềm quản lý nhà hàng, Excel cơ bản, tiếng Anh giao tiếp phục vụ khách du lịch.
+
+THÀNH TÍCH
+Quản lý ca của quý 2/2024 toàn miền Trung. Cửa hàng đạt 96 điểm khi đánh giá bí mật.
+
+SỞ THÍCH
+Đá bóng phong trào, thử quán mới, xem chương trình nấu ăn, câu cá với bố.
+#why Trùng chữ: Fast (tên chuỗi), kiểm kê, kiểm quỹ, đối chiếu ca, nộp ngân hàng. Không có kế toán. Chốt ca đúng giờ và ghi chênh lệch có thể coi hoặc không coi là kỷ luật số liệu.
+=== kto-10 | non-fit | hard | no | U U U A U U A A A A K
+ĐINH NGỌC TRÂM
+Chuyên viên quan hệ khách hàng doanh nghiệp
+0900 000 810 • tram.dinhngoc@example.com • Ba Đình, Hà Nội
+
+TÓM TẮT
+Bảy năm làm tại ngân hàng thương mại, ban đầu là giao dịch viên, sau chuyển sang tín dụng doanh nghiệp vừa và nhỏ. Hiểu dòng tiền và cách đọc sổ sách của khách hàng, muốn thử sức ở một vị trí phía doanh nghiệp.
+
+KINH NGHIỆM
+02/2022 - nay: Ngân hàng TMCP Hưng Nghiệp, chi nhánh Ba Đình - Chuyên viên quan hệ khách hàng doanh nghiệp
+- Phát triển danh mục khoảng 60 doanh nghiệp vừa và nhỏ, dư nợ gần 450 tỷ đồng.
+- Đọc báo cáo tài chính khách nộp, lập theo Thông tư 200, tính các hệ số thanh khoản, vòng quay phải thu và hàng tồn kho để viết tờ trình cấp tín dụng.
+- Trước khi giải ngân, xem hợp đồng, hoá đơn, phiếu xuất kho của khách để xác định đúng mục đích vay. Tra cứu hoá đơn trên cổng thuế khi nghi ngờ.
+- Sau giải ngân kiểm tra sử dụng vốn, nhắc nợ gốc và lãi, đề xuất phương án cơ cấu nợ khi khách khó khăn.
+- Giới thiệu dịch vụ bảo lãnh, thanh toán quốc tế, tài khoản số.
+
+08/2019 - 01/2022: Ngân hàng TMCP Hưng Nghiệp, phòng giao dịch Kim Mã - Giao dịch viên
+- Nhận và xử lý uỷ nhiệm chi của khách doanh nghiệp, kiểm tra chữ ký, số dư, hạn mức.
+- In sổ phụ, sao kê cho khách, giải thích các khoản phí.
+- Kiểm đếm tiền mặt, chốt quỹ cuối ngày với kiểm soát viên.
+- Mở tài khoản, phát hành thẻ, bán chéo bảo hiểm.
+
+HỌC VẤN
+2015 - 2019: Học viện Tiền Tệ Hòa Lạc, Cử nhân ngành Ngân hàng.
+
+CHỨNG CHỈ
+Chứng chỉ phân tích tín dụng nội bộ của ngân hàng, cấp năm 2022. Chứng chỉ tiền gửi và phòng chống rửa tiền, gia hạn 2025.
+
+KỸ NĂNG
+Core banking, Excel phân tích dòng tiền, viết tờ trình. Tiếng Anh TOEIC 720. Thuyết trình trước hội đồng tín dụng.
+
+THÀNH TÍCH
+Hoàn thành 118% chỉ tiêu dư nợ năm 2024. Tư vấn viên được khách đánh giá cao nhất chi nhánh năm 2020.
+
+HOẠT ĐỘNG VÀ SỞ THÍCH
+Tình nguyện viên dạy tài chính cá nhân cho sinh viên năm nhất. Thích trekking, đọc sách kinh doanh, tập yoga buổi sáng.
+#why Rất nhiều chữ chung: uỷ nhiệm chi, sổ phụ, báo cáo tài chính, Thông tư 200, hoá đơn, nhưng đều từ phía ngân hàng và phía đọc của khách. Chưa từng lên sổ cho doanh nghiệp. Soát hoá đơn trước giải ngân giống mà không phải là việc của kế toán: A.
+=== kto-11 | stuffing | ordinary | no | U U U U U U U U U U K
+LÂM THỊ KIỀU OANH
+Kế toán công nợ / Kế toán thuế / Kế toán tổng hợp
+Hotline: 0900 000 811 - Zalo cùng số
+Email: oanh.lamkieu@example.com
+Địa chỉ: Ninh Kiều, Cần Thơ
+
+MỤC TIÊU NGHỀ NGHIỆP
+Có 2 năm trở lên làm kế toán doanh nghiệp. Theo dõi công nợ phải thu, phải trả và xác nhận đối chiếu định kỳ. Kiểm tra tính hợp lệ của hoá đơn, chứng từ trước khi thanh toán. Làm việc kỷ luật với số liệu, chốt sổ đúng hạn. Mong muốn được đóng góp cho sự phát triển của công ty.
+
+TỪ KHÓA CHUYÊN MÔN
+kế toán, kiểm toán, công nợ, GTGT, HTKK, MISA, Fast, Bravo, Thông tư 200, TT200, uỷ nhiệm chi, UNC, sổ phụ, phiếu chi, hoá đơn điện tử, thuế TNCN, tập hợp chi phí công trình, CPA, ACCA, báo cáo tài chính.
+
+KINH NGHIỆM LÀM VIỆC
+
+01/2023 - nay: Spa Hương Lan Beauty - Lễ tân kiêm tư vấn dịch vụ
+Đón khách, tư vấn liệu trình chăm sóc da, đặt lịch cho kỹ thuật viên. Thu tiền khách theo gói, ghi vào sổ của chủ spa. Đăng hình lên fanpage, trả lời tin nhắn. Nhắc khách đến lịch tiếp theo. Bán thêm mỹ phẩm, đạt chỉ tiêu tháng thì có thưởng.
+
+04/2020 - 12/2022: Shop Mỹ Phẩm Online Oanh Beauty (tự kinh doanh tại nhà)
+Nhập mỹ phẩm từ một mối ở TP.HCM, chụp hình, livestream vào buổi tối. Ghi đơn trong sổ tay và tính lời lỗ tháng cho riêng mình, không có sổ sách kế toán, không có hoá đơn. Gửi hàng qua các đơn vị chuyển phát, nhận tiền thu hộ về tài khoản cá nhân.
+
+06/2018 - 03/2020: Cửa hàng Điện thoại Tây Đô - Nhân viên bán hàng
+Tư vấn điện thoại, dán màn hình, làm trả góp cho khách qua nhân viên công ty tài chính. Trưng bày hàng và lau kính cửa hàng vào buổi sáng.
+
+HỌC VẤN
+2016 - 2018: Trung cấp Nghề Thẩm Mỹ Tây Đô, ngành Chăm sóc sắc đẹp.
+
+KỸ NĂNG
+Livestream, chụp ảnh sản phẩm, trả lời khách trên Zalo, Facebook, TikTok, Canva. Trung thực, chăm chỉ, học hỏi nhanh, chịu được áp lực.
+
+THÀNH TÍCH
+Nhân viên tư vấn của tháng 3 lần trong năm 2024 tại spa.
+
+SỞ THÍCH
+Trang điểm, xem phim, chạy bộ, đọc truyện ngôn tình, đi cà phê với bạn bè.
+#why Đoạn mục tiêu dán nguyên từ ad cùng một ô từ khoá, công việc thật là lễ tân spa và bán online. Dòng đo được đều U kể cả bonus, soft để K.
+=== kto-12 | messy | hard | interview | M M M M M M M M M A M
+VO THI KIM CHI
+KE TOAN VIEN
+0900 000 812
+kimchi.vothi@example.com
+Quan 12, TP HCM
+
+Muc tieu
+Tim moi truong on dinh de lam lau dai o mang cong no va thue, co the kiem nhiem them mang gia thanh cong trinh.
+
+Kinh nghiem lam viec
+Cong ty CP Xay lap Dien Nuoc Minh Thien        Ke toan cong no va thue
+09/2021
+nay
+* quan ly so chi tiet phai thu chu dau tu, phai tra thau phu va nha cung cap vat tu, cu 3 thang gui bien ban xac nhan so du
+* xem ho so de nghi thanh toan: hoa don, bien ban nghiem thu, bang khoi luong
+co dung, co hop le moi trinh
+* ke khai GTGT hang thang tren HTKK, nop eTax. khai TNCN theo quy
+* dung phan mem MISA
+AMIS, dinh khoan theo TT200
+* lam UNC tren internet banking 2 ngan hang, cuoi thang lay so phu doi voi TK
+112
+* bo chi phi theo tung cong trinh de biet lai lo, bao cao 2 ky mot nam
+* khoa so moi thang truoc ngay
+5
+, tu 2023 chua de cham ky nao
+* xuat hoa don dien tu sau khi nghiem thu dot, quan ly hoa don dau vao
+
+Cong ty TNHH Thuong mai Vat Tu Thien An         Ke toan vien
+03/2019
+08/2021
+* nhap chung tu mua ban, doi so voi thu kho
+* lap phieu thu, phieu chi, kiem quy cuoi thang
+* theo doi cong no khach le, nhac no qua dien thoai
+* cuoi nam gom so lieu cho ke toan truong, ho tro chuan bi ho so khi co doan thue kiem tra 2020
+
+Hoc van
+Cao dang Tai chinh Hai Quan Thanh Loc     Nganh Ke toan
+2016                2019
+Xep loai Kha
+
+Ky nang
+MISA    HTKK    eTax    Excel    Word
+Tieng Anh    doc hieu co ban
+
+Thanh tich
+Du an
+Tu xay dung file Excel theo doi cong no 60 thau phu, duoc ca phong ke toan su dung
+2023
+Phat hien thau phu xuat trung hoa don, giup cong ty tranh mat
+120 trieu dong
+2024
+
+Hoat dong
+Thu quy cong doan cong ty
+2022
+Thanh vien nhom chay bo cuoi tuan, thich trong hoa, hoc nau an chay
+
+Tao CV mien phi tai mauCVdep.example.com   -  Mau so 17  -  Trang 1/1
+-------------------------------------------------
+Mau so 17   Trang 1/1
+Nguoi tham chieu: Chi Hanh, Ke toan truong, 0900 000 890
+#why Trích xuất mất dấu, ngày và con số trôi khỏi dòng, thêm chân trang rác. Người đọc vẫn ghép được: 09/2021 - nay và 03/2019 - 08/2021, trên 7 năm, cao đẳng đúng ngành, có công trình, không CPA hay ACCA.

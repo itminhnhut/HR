@@ -27,6 +27,19 @@ export function requirementLines(job: Pick<Job, 'requirements' | 'experience' | 
   ];
 }
 
+/** What a stored result was made from: requirement lines alone keep the key they always had. */
+export function scoreKey(
+  job: Pick<Job, 'requirements' | 'experience' | 'education' | 'responsibilities' | 'preferred'>,
+): string {
+  const duties = toItems(job.responsibilities).join('\n');
+  const preferred = toItems(job.preferred).join('\n');
+  return [
+    requirementLines(job).join('\n'),
+    ...(duties ? [`--\n${duties}`] : []),
+    ...(preferred ? [`++\n${preferred}`] : []),
+  ].join('\n');
+}
+
 type ScoreRow = typeof cvScores.$inferSelect;
 
 const toDto = (row: ScoreRow): CvScoreDto => ({
@@ -60,7 +73,7 @@ export async function storedScore(db: Db, applicationId: string): Promise<CvScor
  */
 export async function scoreApplication(deps: Deps, app: Application, job: Job): Promise<CvScoreDto> {
   const requirements = requirementLines(job);
-  const requirementsKey = requirements.join('\n');
+  const requirementsKey = scoreKey(job);
   const existing = await deps.db.query.cvScores.findFirst({ where: eq(cvScores.applicationId, app.id) });
   if (
     existing &&
@@ -71,7 +84,13 @@ export async function scoreApplication(deps: Deps, app: Application, job: Job): 
     return toDto(existing);
   }
   const { text, note } = await readCv(deps, app);
-  const result = scoreCv({ cvText: text, requirements, today: todayInVietnam(deps.now()) });
+  const result = scoreCv({
+    cvText: text,
+    requirements,
+    duties: toItems(job.responsibilities),
+    preferred: toItems(job.preferred),
+    today: todayInVietnam(deps.now()),
+  });
   const items: MatchItem[] = result.items;
   const row = {
     applicationId: app.id,
@@ -106,7 +125,7 @@ export async function scorePending(deps: Deps): Promise<{ scored: number; remain
       !score ||
       score.version !== CV_MATCH_VERSION ||
       score.cvPathname !== app.cvPathname ||
-      score.requirementsKey !== requirementLines(job).join('\n'),
+      score.requirementsKey !== scoreKey(job),
   );
   const batch = stale.slice(0, SCORE_BATCH);
   for (const { app, job } of batch) await scoreApplication(deps, app, job);

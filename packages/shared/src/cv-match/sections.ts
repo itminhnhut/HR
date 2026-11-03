@@ -33,6 +33,13 @@ const HEADERS: Record<Exclude<SectionKind, 'none'>, string[]> = {
     'employment',
     'work history',
     'career history',
+    'cong tac',
+    'lich su cong tac',
+    'thuc tap',
+    'kinh nghiem thuc tap',
+    'qua trinh thuc tap',
+    'internship',
+    'internships',
   ],
   education: [
     'hoc van',
@@ -45,6 +52,8 @@ const HEADERS: Record<Exclude<SectionKind, 'none'>, string[]> = {
     'education background',
     'educational background',
     'hoc tap',
+    'trinh do',
+    'trinh do chuyen mon',
   ],
   skills: [
     'ky nang',
@@ -61,6 +70,10 @@ const HEADERS: Record<Exclude<SectionKind, 'none'>, string[]> = {
     'tools',
     'ky nang mem',
     'soft skills',
+    'phan mem',
+    'keywords',
+    'tu khoa',
+    'tags',
   ],
   certificates: [
     'chung chi',
@@ -140,6 +153,7 @@ const HEADERS: Record<Exclude<SectionKind, 'none'>, string[]> = {
     'phuong tien',
     'thiet bi',
     'giay to phuong tien',
+    'thong tin cua toi',
     'additional information',
     'other information',
   ],
@@ -172,12 +186,19 @@ function exactHeader(stripped: string): Exclude<SectionKind, 'none'> | null {
   return null;
 }
 
+/** "Kinh nghiệm giảng dạy", "Teaching experience": a short title naming the kind of work, without figures or a sentence. */
+function isNamedWorkHeading(stripped: string): boolean {
+  if (/[\d:,.;]/.test(stripped) || stripped.split(' ').length > 5) return false;
+  return /^kinh nghiem\s/.test(stripped) || /^[a-z]+(?: [a-z]+)? experience$/.test(stripped);
+}
+
 /** Detects a section header in a folded line; null when the line is ordinary content. */
 export function detectHeader(folded: string): HeaderMatch | null {
   const stripped = stripDecor(folded);
   if (stripped.length === 0) return null;
   const exact = stripped.length <= 60 ? exactHeader(stripped) : null;
   if (exact) return { kind: exact, inline: false };
+  if (isNamedWorkHeading(stripped)) return { kind: 'experience', inline: false };
   const inline = /^([a-z ]{3,40}?)\s*:\s*\S/.exec(stripped);
   if (!inline) return null;
   const kind = PHRASE_TO_KIND.get(inline[1].trim());

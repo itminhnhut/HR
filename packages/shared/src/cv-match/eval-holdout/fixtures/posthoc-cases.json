@@ -1,0 +1,12 @@
+[
+{"id":"h01-wish-clause-on-a-skill-line","notes":"POST-HOC probe, written after reading skills.ts: a wish later on the same line must not cancel a real skill.","cvText":"ĐỖ THU HÀ\nNhân viên văn phòng\n\nKỸ NĂNG\nThành thạo Excel, đang học thêm Python\n\nHọc vấn: Đại học Thương mại\n","items":[
+["Biết Excel","met","skills"],
+["Biết Python","unmet","skills"]]},
+{"id":"h02-only-job-open-ended-at-a-school","notes":"POST-HOC probe, written after reading experience.ts: the only job is open-ended and its line names a school.","cvText":"NGUYỄN THỊ HOÀI\nGiáo viên\n\nKINH NGHIỆM\n09/2020 - nay: Giáo viên, Trường Tiểu học Hoa Hồng\n\nHỌC VẤN\nĐại học Sư phạm Huế, 2016 - 2020\n","items":[
+["Từ 1 năm kinh nghiệm","met","experience"],
+["Từ 10 năm kinh nghiệm","unmet","experience"]]},
+{"id":"h03-two-languages-both-required","notes":"POST-HOC probe, written after reading language.ts: only the first language of a line is checked.","cvText":"NGUYỄN THU LAN\nNhân viên văn phòng tại Công ty Sao Mai\n\nHọc vấn: Đại học Thương mại\nTiếng Anh TOEIC 800\n","items":[
+["Tiếng Anh và tiếng Trung","unmet","language"]]},
+{"id":"h04-fc-licence-with-a-motorbike-licence","notes":"POST-HOC probe, written after reading license.ts: FC is not parsed as a class, so any licence satisfies it.","cvText":"ĐỖ VĂN HÀ\nNhân viên giao hàng tại Công ty Sao Mai\n\nBằng lái xe A1\nTốt nghiệp THPT\n","items":[
+["Có bằng lái FC","unmet","licence"]]}
+]

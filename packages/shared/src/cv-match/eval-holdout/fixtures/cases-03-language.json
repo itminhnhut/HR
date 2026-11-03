@@ -1,0 +1,105 @@
+[
+{"id":"l01-toeic-thresholds","notes":"TOEIC 650 against thresholds.","cvText":"NGUYỄN THỊ THU THẢO\nThư ký\n\nNGOẠI NGỮ\nTOEIC 650 (2024)\n\nKINH NGHIỆM\n2020 - nay: Thư ký, Công ty TNHH Điện tử Hoa Sao\nHỌC VẤN\nĐại học Ngoại ngữ Huế\n","items":[
+["TOEIC 600 trở lên","met","language"],
+["Tiếng Anh TOEIC từ 700 điểm","unmet","language"],
+["TOEIC 650+","met","language"],
+["Có chứng chỉ TOEIC","met","language"]]},
+{"id":"l02-ielts-half-band","notes":"IELTS 6.5 with sub-scores.","cvText":"PHẠM ANH THƯ\nChuyên viên đối ngoại\n\nCHỨNG CHỈ\nIELTS Academic: Overall 6.5 (Listening 7.0, Reading 7.5, Writing 5.5, Speaking 6.0)\n\nKINH NGHIỆM\n2022 - nay: Chuyên viên đối ngoại, Tổ chức Hỗ trợ Giáo dục Mekong\nCử nhân Quan hệ quốc tế, Học viện Ngoại giao\n","items":[
+["IELTS 6.0 trở lên","met","language"],
+["IELTS 7.0 trở lên","unmet","language","Overall 6.5; 7.0/7.5 chỉ là điểm kỹ năng"],
+["IELTS từ 6.5","met","language"],
+["Tiếng Anh tốt","met","language"]]},
+{"id":"l03-cross-test-equivalence","notes":"IELTS 7.0 reasonably satisfies TOEIC 700 or equivalent.","cvText":"LÊ HOÀNG NAM\nTrợ lý dự án\n\nNGOẠI NGỮ\nIELTS 7.0\n\nKINH NGHIỆM\n2021 - nay: Trợ lý dự án, Công ty CP Năng lượng Gió Xanh\nHỌC VẤN\nĐại học Ngoại thương\n","items":[
+["TOEIC 700 hoặc tương đương","met","language"],
+["IELTS 6.0 hoặc tương đương","met","language"]]},
+{"id":"l04-toeic-low-vs-ielts","notes":"TOEIC 400 is far below IELTS 6.0.","cvText":"VŨ THỊ HẠNH\nNhân viên kho\n\nChứng chỉ: TOEIC 400\nKINH NGHIỆM\n2022 - nay: Nhân viên kho, Công ty TNHH Logistic Sơn Hà\nHọc vấn: Cao đẳng Thương mại\n","items":[
+["IELTS 6.0 trở lên hoặc tương đương","unmet","language"],
+["Tiếng Anh giao tiếp lưu loát","unmet","language","TOEIC 400 không phải lưu loát"]]},
+{"id":"l05-jlpt-levels-reversed","notes":"JLPT N2: smaller number is higher.","cvText":"ĐỖ THANH TÙNG\nPhiên dịch tiếng Nhật\n\nNGOẠI NGỮ\nTiếng Nhật JLPT N2\n\nKINH NGHIỆM\n2019 - nay: Phiên dịch, Công ty TNHH Yamada Việt Nam\nĐại học Hà Nội, Ngôn ngữ Nhật\n","items":[
+["Tiếng Nhật N3 trở lên","met","language"],
+["Tiếng Nhật N2","met","language"],
+["Tiếng Nhật N1","unmet","language"],
+["Thành thạo tiếng Nhật","met","language"]]},
+{"id":"l06-jlpt-n4-weak","notes":"N4 is below N3.","cvText":"TRẦN THỊ HỒNG\nCông nhân lắp ráp\n\nTiếng Nhật N4\nKINH NGHIỆM\n2023 - nay: Công nhân, Khu công nghiệp Thăng Long\nTốt nghiệp THPT\n","items":[
+["Tiếng Nhật từ N3 trở lên","unmet","language"],
+["Biết tiếng Nhật cơ bản","met","language"]]},
+{"id":"l07-hsk-levels","notes":"HSK: larger is higher.","cvText":"LÝ MINH ĐỨC\nNhân viên mua hàng Trung Quốc\n\nNGOẠI NGỮ\nHSK 5, tiếng Trung giao tiếp tốt\n\nKINH NGHIỆM\n2021 - nay: Mua hàng, Công ty TNHH Taobao Việt Express\nĐại học Hà Nội\n","items":[
+["HSK 4 trở lên","met","language"],
+["HSK 6","unmet","language"],
+["Tiếng Hoa giao tiếp","met","language","Tiếng Hoa = tiếng Trung"],
+["Biết tiếng Trung Quốc","met","language"]]},
+{"id":"l08-topik-korean","notes":"TOPIK 4 synonyms.","cvText":"CHU THỊ HOA\nTrợ lý Giám đốc\n\nNGOẠI NGỮ\nTiếng Hàn TOPIK 4\n\nKINH NGHIỆM\n2020 - nay: Trợ lý, Công ty TNHH Daesang Vina\nĐại học Xã hội và Nhân văn, Hàn Quốc học\n","items":[
+["TOPIK 3 trở lên","met","language"],
+["Tiếng Hàn Quốc giao tiếp","met","language"],
+["TOPIK 5 trở lên","unmet","language"],
+["Tiếng Nhật N3","unmet","language"]]},
+{"id":"l09-fluent-without-score","notes":"Fluent claim, no certificate.","cvText":"NGÔ TUẤN KIỆT\nNhân viên kinh doanh quốc tế\n\nNGOẠI NGỮ\nTiếng Anh: giao tiếp lưu loát\n\nKINH NGHIỆM\n2019 - nay: Kinh doanh quốc tế, Công ty CP Cà phê Đại Việt\nĐại học Thương mại\n","items":[
+["Tiếng Anh giao tiếp tốt","met","language"],
+["Có chứng chỉ IELTS","unmet","language"],
+["IELTS 6.5 hoặc tương đương","ambiguous","language","Không có chứng chỉ, tự nhận lưu loát: chưa thể quy đổi"]]},
+{"id":"l10-negated-english","notes":"Explicit không biết and chưa có.","cvText":"PHẠM VĂN THUẬN\nThợ sửa xe máy\n\nGIỚI THIỆU\nTôi không biết tiếng Anh, chưa có chứng chỉ ngoại ngữ nào.\nKINH NGHIỆM\n2015 - nay: Thợ sửa xe, Tiệm Thuận Phát\n","items":[
+["Tiếng Anh giao tiếp","unmet","language"],
+["TOEIC 500 trở lên","unmet","language"]]},
+{"id":"l11-wish-higher-score","notes":"Target score and prep; current IELTS 5.0.","cvText":"NGUYỄN BẢO NGỌC\nNhân viên hành chính\n\nNGOẠI NGỮ\nIELTS 5.0. Đang ôn thi, mục tiêu đạt IELTS 7.0 trong năm 2027.\nKhông có chứng chỉ TOEIC.\n\nKINH NGHIỆM\n2023 - nay: Hành chính, Công ty CP Vận tải Hải Âu\nHỌC VẤN: Đại học Hải Phòng\n","items":[
+["IELTS 6.0 trở lên","unmet","language"],
+["Tiếng Anh cơ bản","met","language","IELTS 5.0"],
+["Có chứng chỉ TOEIC","unmet","language"]]},
+{"id":"l12-english-center-employer","notes":"English only in the employer's name.","cvText":"LƯU VĂN HOÀ\nNhân viên bảo vệ\n\nKINH NGHIỆM\n2020 - nay: Bảo vệ tại Trung tâm Anh ngữ Quốc tế Apollo Star\n2017 - 2020: Bảo vệ, English Town Academy\nHọc vấn: 9/12\n","items":[
+["Biết tiếng Anh","unmet","language","Chỉ là tên chỗ làm"],
+["Tiếng Anh giao tiếp cơ bản","unmet","language"]]},
+{"id":"l13-japanese-company-not-language","notes":"Works at a Japanese firm, no Japanese ability.","cvText":"VÕ THỊ ÁNH\nCông nhân kiểm hàng\n\nKINH NGHIỆM\n2018 - nay: Công nhân, Công ty TNHH Toyota Boshoku Nhật Bản tại Hải Phòng\nKiểm tra ghế xe, ghi biên bản lỗi\nTốt nghiệp THPT\n","items":[
+["Tiếng Nhật N3","unmet","language"],
+["Biết tiếng Nhật","unmet","language"]]},
+{"id":"l14-major-in-english","notes":"Bachelor of English language.","cvText":"NGUYỄN THU UYÊN\nBiên dịch viên\n\nHỌC VẤN\nCử nhân Ngôn ngữ Anh, Đại học Hà Nội, 2017 - 2021\n\nKINH NGHIỆM\n2021 - nay: Biên dịch tiếng Anh, Công ty Dịch thuật Bách Việt\n","items":[
+["Tiếng Anh tốt","met","language"],
+["Thành thạo tiếng Anh 4 kỹ năng","met","language"],
+["IELTS 6.5 trở lên","ambiguous","language","Không có điểm nhưng chuyên ngành Anh"]]},
+{"id":"l15-native-chinese","notes":"Native Chinese.","cvText":"TRƯƠNG MỸ LỆ\nNhân viên sale\n\nNGÔN NGỮ\nTiếng Quảng Đông, tiếng Hoa: bản ngữ\nTiếng Việt: bản ngữ\n\nKINH NGHIỆM\n2019 - nay: Sale, Công ty TNHH Giày Bình Tiên\nHọc vấn: Cao đẳng\n","items":[
+["Thành thạo tiếng Trung","met","language"],
+["Tiếng Anh giao tiếp","unmet","language"]]},
+{"id":"l16-basic-english","notes":"Only basic English.","cvText":"HỒ THỊ DIỄM\nNhân viên lễ tân spa\n\nNGOẠI NGỮ\nTiếng Anh cơ bản, đọc hiểu đơn giản\n\nKINH NGHIỆM\n2024 - nay: Lễ tân, Spa Sen Việt\n","items":[
+["Tiếng Anh cơ bản","met","language"],
+["Tiếng Anh lưu loát","unmet","language"],
+["Thành thạo tiếng Anh","unmet","language"],
+["Giao tiếp tiếng Anh tốt","unmet","language"]]},
+{"id":"l17-cefr-vstep","notes":"CEFR B2 from VSTEP.","cvText":"TẠ THỊ MAI\nGiáo viên Tiểu học\n\nCHỨNG CHỈ\nTiếng Anh B2 khung châu Âu (VSTEP), 2023\n\nCÔNG TÁC\n2018 - nay: Giáo viên, Trường Tiểu học Tô Hiệu\nĐại học Sư phạm Thái Nguyên\n","items":[
+["Tiếng Anh B1 trở lên","met","language"],
+["Tiếng Anh C1","unmet","language"],
+["Chứng chỉ tiếng Anh B2","met","language"]]},
+{"id":"l18-old-a-b-c-certificate","notes":"Old-style Bằng C tiếng Anh.","cvText":"NGUYỄN VĂN THÔNG\nCán bộ văn phòng\n\nBẰNG CẤP\nBằng C tiếng Anh (2008)\nBằng B Tin học\n\nCÔNG TÁC\n2008 - nay: Văn phòng, Xí nghiệp In Thống Nhất\nCử nhân Quản trị kinh doanh\n","items":[
+["Có bằng B tiếng Anh trở lên","met","language"],
+["Có chứng chỉ tin học B","met","licence"]]},
+{"id":"l19-no-diacritics","notes":"No diacritics in CV; ad with diacritics.","cvText":"TRAN DUC ANH\nKy su co khi\n\nNGOAI NGU\nTieng Anh: TOEIC 750\nTieng Nhat: N3\n\nKINH NGHIEM\n2018 - nay: Ky su, Cong ty TNHH Cokhi Hoa Lam\nDai hoc Bach khoa Ha Noi\n","items":[
+["Tiếng Anh TOEIC 700 trở lên","met","language"],
+["Tiếng Nhật N2","unmet","language"],
+["Tiếng Nhật N3 trở lên","met","language"],
+["TOEIC 800 trở lên","unmet","language"]]},
+{"id":"l20-english-cv-languages","notes":"English CV, language section.","cvText":"Peter Hoang\nCustomer Success Lead\n\nLANGUAGES\nEnglish: upper-intermediate (IELTS 6.5)\nJapanese: JLPT N3\n\nEXPERIENCE\n2019 - Present Customer Success Lead, Maple SaaS\nBachelor of Arts, University of Social Sciences\n","items":[
+["Good command of English","met","language"],
+["Fluent in Japanese (JLPT N1)","unmet","language"],
+["IELTS 6.0 or above","met","language"],
+["Basic Korean","unmet","language"]]},
+{"id":"l21-or-and-language","notes":"Chinese only; or and and.","cvText":"TÔN NỮ KIM CHI\nThông dịch viên\n\nNGOẠI NGỮ\nTiếng Trung HSK 5\n\nKINH NGHIỆM\n2020 - nay: Thông dịch, Công ty Giày Pou Lương\nĐại học Sư phạm Huế\n","items":[
+["Tiếng Anh hoặc tiếng Trung","met","language"],
+["Tiếng Anh và tiếng Trung","unmet","language"],
+["Biết một trong các ngoại ngữ: Anh, Trung, Hàn","met","language"]]},
+{"id":"l22-score-with-other-numbers","notes":"Score written after other numbers; phone and year around it.","cvText":"NGUYỄN THẾ VINH\nKỹ sư phần mềm\nĐT: 0903 800 750\n\nNGOẠI NGỮ\nThi TOEIC năm 2022, đạt 550 điểm\n\nKINH NGHIỆM\n2020 - nay: Kỹ sư, Công ty Phần mềm Hùng Vương\nĐại học Bách khoa Đà Nẵng\n","items":[
+["TOEIC 500 trở lên","met","language"],
+["TOEIC 700 trở lên","unmet","language","Số 750, 800 trong SĐT; năm 2022 không phải điểm"]]},
+{"id":"l23-preference-language","notes":"Preference line: present and absent.","cvText":"KHƯƠNG THỊ NGÂN\nNhân viên xuất khẩu\n\nNGOẠI NGỮ\nTiếng Hàn giao tiếp, TOPIK 3\n\nKINH NGHIỆM\n2021 - nay: Xuất khẩu, Công ty Dệt Phong Châu\nĐại học Ngoại thương\n","items":[
+["Ưu tiên biết tiếng Hàn","met","language"],
+["Ưu tiên ứng viên biết tiếng Nhật","ambiguous","language","Điểm cộng CV không có: không đạt, hay không tính"]]},
+{"id":"l24-english-teacher","notes":"Teaching English implies English.","cvText":"NGUYỄN MINH TRANG\nGiáo viên tiếng Anh\n\nKINH NGHIỆM\n2019 - nay: Giáo viên tiếng Anh, Trường THCS Đồng Đa\nHỌC VẤN\nĐại học Sư phạm Tiếng Anh\n","items":[
+["Tiếng Anh tốt","met","language"],
+["Có chứng chỉ IELTS 7.0","unmet","language"]]},
+{"id":"l25-toefl-equivalent","notes":"TOEFL iBT 90 is well over TOEIC 700 equivalence.","cvText":"Rachel Do\nGrant Writer\n\nCERTIFICATES\nTOEFL iBT 90 (2024)\n\nEXPERIENCE\n2022 - Present Grant Writer, Riverbank NGO\nBA in Sociology, Hanoi\n","items":[
+["TOEIC 700 hoặc tương đương","met","language"],
+["TOEFL iBT từ 100 điểm","unmet","language"]]},
+{"id":"l26-reading-only-english","notes":"Reads technical documents only.","cvText":"HOÀNG HẢI SƠN\nLập trình viên nhúng\n\nNGOẠI NGỮ\nTiếng Anh: đọc hiểu tài liệu kỹ thuật\n\nKINH NGHIỆM\n2020 - nay: Lập trình viên, Công ty Thiết bị Điện Trường Giang\nĐại học Bách khoa\n","items":[
+["Đọc hiểu tài liệu tiếng Anh","met","language"],
+["Giao tiếp tiếng Anh lưu loát","unmet","language"]]},
+{"id":"l27-french-german","notes":"Less common languages.","cvText":"NGUYỄN QUỲNH CHI\nHướng dẫn viên\n\nNGOẠI NGỮ\nTiếng Pháp DELF B2\nTiếng Đức A2\n\nKINH NGHIỆM\n2019 - nay: Hướng dẫn viên, Công ty Du lịch Hoàng Hôn\nCử nhân Ngôn ngữ Pháp\n","items":[
+["Tiếng Pháp giao tiếp tốt","met","language"],
+["Tiếng Đức B2","unmet","language"],
+["Tiếng Tây Ban Nha","unmet","language"]]}
+]
