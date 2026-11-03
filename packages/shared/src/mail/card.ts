@@ -12,7 +12,7 @@ import {
 import type { InterviewParts } from './interview-date.js';
 import type { MailContent, MailDetails } from './types.js';
 
-export const LABEL = 'font-size:11px;letter-spacing:1.5px;color:#999;';
+export const LABEL = 'font-size:12px;letter-spacing:1px;color:#666;';
 export const ROW_LINE = 'padding:12px 0;border-bottom:1px solid #f3e3e5;';
 
 function dateTile(parts: InterviewParts | null, calendarUrl: string): string {
@@ -71,7 +71,7 @@ function infoRows(content: MailContent, details: MailDetails): string {
 /** "THÔNG TIN BUỔI PHỎNG VẤN": date tile on the left, details on the right. */
 export function detailsCardRow(content: MailContent, details: MailDetails): string {
   return `<tr><td class="px" style="padding:22px 40px 0;">
-  <div style="font-size:11px;font-weight:bold;letter-spacing:2px;color:#C8102E;padding-bottom:8px;">THÔNG TIN BUỔI PHỎNG VẤN</div>
+  <div style="font-size:14px;font-weight:bold;letter-spacing:1.5px;color:#C8102E;padding-bottom:8px;">THÔNG TIN BUỔI PHỎNG VẤN</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #ecd3d6;border-radius:8px;border-collapse:separate;overflow:hidden;">
     <tr>
       ${dateTile(interviewPartsOf(details), calendarLinkOf(content.key, details))}

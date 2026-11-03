@@ -12,10 +12,10 @@ const EXAMPLE_TIMES = ['Thứ Tư: 9:00 – 11:00', 'Thứ Năm: sau 14:00'];
 export function callCardRow(details: MailDetails): string {
   const phone = details.hrPhone.trim();
   const phoneLine = phone
-    ? `<div style="font-size:13px;color:#555;margin-top:2px;">HR sẽ gọi từ số: <b style="color:#C8102E;">${escapeHtml(phone)}</b></div>`
+    ? `<div style="font-size:14px;color:#555;margin-top:2px;">HR sẽ gọi từ số: <b style="color:#C8102E;">${escapeHtml(phone)}</b></div>`
     : '';
   return `<tr><td class="px" style="padding:22px 40px 0;">
-  <div style="font-size:11px;font-weight:bold;letter-spacing:2px;color:#C8102E;padding-bottom:8px;">THÔNG TIN CUỘC GỌI</div>
+  <div style="font-size:14px;font-weight:bold;letter-spacing:1.5px;color:#C8102E;padding-bottom:8px;">THÔNG TIN CUỘC GỌI</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #ecd3d6;border-top:3px solid #C8102E;border-radius:8px;border-collapse:separate;">
     <tr><td style="padding:6px 22px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">

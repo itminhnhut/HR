@@ -699,3 +699,15 @@ describe('a mail that survives being copied and pasted', () => {
     expect(html).toMatch(/Website: <a href="https:\/\/topflow\.vn"/);
   });
 });
+
+describe('the heading of a details box', () => {
+  it.each(['interview_onsite', 'interview_online', 'call'] as const)('should be readable at 14px in %s', (key) => {
+    // Act
+    const html = renderMailHtml(filled(key), details);
+
+    // Assert
+    expect(html).toMatch(
+      /<div style="font-size:14px;font-weight:bold;[^"]*">THÔNG TIN (BUỔI PHỎNG VẤN|CUỘC GỌI)<\/div>/,
+    );
+  });
+});
