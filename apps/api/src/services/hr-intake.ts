@@ -140,12 +140,16 @@ export async function updateContact(deps: Deps, id: string, raw: unknown): Promi
   if (!parsed.success) throw invalid('Kiểm tra lại các ô được đánh dấu.', fieldErrors(parsed.error));
   const { phone, email, source, referrer } = parsed.data;
   await checkUsableSource(deps.db, source, app.source);
-  if (phone !== app.phone) {
-    const duplicate = await existingFor(deps.db, app.jobId, phone);
-    if (duplicate) throw duplicateError(duplicate);
-  }
-  await deps.db
-    .update(applications)
-    .set({ phone, email, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
-    .where(eq(applications.id, app.id));
+  await deps.db.transaction(async (tx) => {
+    // Same lock as adding one: two edits at once cannot both take a phone that is free when each looks.
+    if (phone !== app.phone) {
+      await lockJobAndPhone(tx, app.jobId, phone);
+      const duplicate = await existingFor(tx, app.jobId, phone);
+      if (duplicate) throw duplicateError(duplicate);
+    }
+    await tx
+      .update(applications)
+      .set({ phone, email, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
+      .where(eq(applications.id, app.id));
+  });
 }

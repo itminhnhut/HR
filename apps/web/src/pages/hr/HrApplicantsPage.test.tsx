@@ -25,6 +25,7 @@ const row = (id: string, fullName: string, status: ApplicationStatus, over: Part
   createdAt: '2026-10-20T03:00:00.000Z',
   hasCv: true,
   matchPercent: 80,
+  matchBonus: 0,
   noteLine: null,
   interviewAt: null,
   review: null,
@@ -54,7 +55,10 @@ function listReply() {
       interview: count('interview'),
       rejected: count('rejected'),
     },
-    jobs: [{ id: 'j1', title: 'Kế toán' }],
+    jobs: [
+      { id: 'j1', title: 'Kế toán' },
+      { id: 'j2', title: 'Kinh doanh' },
+    ],
   };
 }
 
@@ -104,7 +108,9 @@ const heading = (name: string) => screen.findByRole('heading', { name, level: 2 
 const counter = () => within(screen.getByRole('navigation', { name: 'Chuyển hồ sơ' })).getByRole('status');
 const openRow = () => screen.getByRole('button', { current: true });
 const statusTab = (name: string) =>
-  within(screen.getByRole('group', { name: 'Lọc theo trạng thái' })).getByRole('button', { name: new RegExp(`^${name}`) });
+  within(screen.getByRole('group', { name: 'Lọc theo trạng thái' })).getByRole('button', {
+    name: new RegExp(`^${name}`),
+  });
 const rowOf = (name: string) => screen.getByRole('button', { name: new RegExp(`^${name}`) });
 const statusButton = (name: string) => screen.getByRole('button', { name, pressed: false });
 
@@ -373,6 +379,46 @@ describe('Going through candidates one after another', () => {
     expect(screen.queryByText('Hồ sơ đang mở không có trong danh sách đang lọc.')).toBeNull();
   });
 
+  it.each([
+    ['the job filter', async () => userEvent.selectOptions(screen.getByLabelText('Lọc theo vị trí'), 'j2')],
+    ['the search box', async () => userEvent.type(screen.getByRole('searchbox'), 'B')],
+  ])('should close the open profile when %s changes the list', async (_what, act) => {
+    // Arrange
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await act();
+
+    // Assert
+    await waitFor(() => expect(screen.queryByRole('heading', { name: 'An Nguyễn', level: 2 })).toBeNull());
+  });
+
+  it('should keep the profile open when the list is only sorted differently', async () => {
+    // Arrange
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await userEvent.click(screen.getByRole('checkbox', { name: /Xếp theo %/ }));
+
+    // Assert
+    expect(await heading('An Nguyễn')).toBeTruthy();
+  });
+
+  it('should say on the row how many bonuses the CV shows', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen', { matchBonus: 2 }), row('a2', 'Bình Trần', 'seen', { matchBonus: 0 })];
+
+    // Act
+    show('?trang-thai=all');
+    await screen.findByText('An Nguyễn');
+
+    // Assert
+    expect(within(rowOf('An Nguyễn')).getByText('+2 điểm cộng')).toBeTruthy();
+    expect(within(rowOf('Bình Trần')).queryByText(/điểm cộng/)).toBeNull();
+  });
+
   it('should keep a profile open and say so when the filters leave it out of the list', async () => {
     // Arrange
     details = { a9: { fullName: 'Người Ngoài Danh Sách' } };
@@ -431,7 +477,6 @@ describe('Keyboard shortcuts', () => {
 
   it.each([
     ['the note', () => screen.getByLabelText(/Ghi chú nội bộ/)],
-    ['the search box', () => screen.getByRole('searchbox')],
     ['a select', () => screen.getByLabelText('Lọc theo vị trí')],
   ])('should do nothing while typing in %s', async (_name, field) => {
     // Arrange
@@ -444,6 +489,19 @@ describe('Keyboard shortcuts', () => {
 
     // Assert
     expect(counter().textContent).toBe('2/4');
+  });
+
+  it('should not open another profile while typing in the search box', async () => {
+    // Arrange
+    await start();
+    screen.getByRole('searchbox').focus();
+
+    // Act
+    await userEvent.keyboard('j');
+    await userEvent.keyboard('k');
+
+    // Assert
+    await waitFor(() => expect(screen.queryByRole('heading', { level: 2 })).toBeNull());
   });
 
   it('should do nothing while the mail dialog is open', async () => {

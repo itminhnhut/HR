@@ -200,6 +200,7 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     createdAt: a.createdAt,
     hasCv: !!(a.cvFileName || a.cvLink),
     matchPercent: null,
+    matchBonus: 0,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt,
     review: null,

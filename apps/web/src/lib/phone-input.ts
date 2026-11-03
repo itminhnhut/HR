@@ -4,7 +4,10 @@
  */
 export function formatPhoneInput(raw: string): string {
   let digits = raw.replace(/\D/g, '');
-  if (raw.trim().startsWith('+84') || (digits.startsWith('84') && digits.length > 9)) digits = `0${digits.slice(2)}`;
+  // The 0 kept in "+84 (0) 912 345 678" is optional.
+  if (raw.trim().startsWith('+84') || (digits.startsWith('84') && digits.length > 9)) {
+    digits = `0${digits.slice(2).replace(/^0/, '')}`;
+  }
   digits = digits.slice(0, 10);
   return [digits.slice(0, 4), digits.slice(4, 7), digits.slice(7, 10)].filter(Boolean).join(' ');
 }

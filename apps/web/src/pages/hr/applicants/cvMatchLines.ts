@@ -30,10 +30,6 @@ export function bySection(lines: readonly MatchLine[]): { title: string; lines: 
   ].filter((part) => part.lines.length > 0);
 }
 
-/** How many of the job's bonuses the CV shows. */
-export const bonusCount = (lines: readonly MatchLine[]): number =>
-  lines.filter((l) => l.section === 'preferred' && l.verdict === 'met').length;
-
 export function groupLines(lines: readonly MatchLine[]): Record<MatchTab, MatchLine[]> {
   return {
     met: lines.filter((l) => tabOf(l) === 'met'),

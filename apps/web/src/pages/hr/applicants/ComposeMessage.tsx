@@ -1,4 +1,5 @@
 import {
+  MAIL_COMPANY,
   CONTACT_CHANNEL_LABEL,
   formatTimestamp,
   googleCalendarUrl,
@@ -10,7 +11,6 @@ import {
 } from '@careers/shared';
 import { useState } from 'react';
 import { useHrMe, useMessageTemplates } from '../../../api/queries';
-import { SITE } from '../../../lib/site';
 import { buttonClass } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
 import { FieldError, SelectField } from '../../../ui/Field';
@@ -24,7 +24,7 @@ import { SendActions } from './SendActions';
 import { suggestedTemplate, useMailDraft, type MailDraft } from './useMailDraft';
 
 const interviewPlace = (app: ApplicationDetailDto) =>
-  app.interviewMode === 'online' ? 'Online (Google Meet)' : SITE.officeAddress;
+  app.interviewMode === 'online' ? 'Online (Google Meet)' : MAIL_COMPANY.officeAddress;
 
 const interviewModeOf = (key: TemplateKey) =>
   key === 'interview_online' ? 'online' : key === 'interview_onsite' ? 'onsite' : undefined;

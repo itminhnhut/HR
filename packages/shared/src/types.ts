@@ -153,6 +153,8 @@ export interface ApplicationRowDto {
   hasCv: boolean;
   /** Automatic CV match against the job's requirements, when scored; null otherwise. */
   matchPercent: number | null;
+  /** How many of the job's bonuses ("Ưu tiên") the CV shows; never part of the percent. */
+  matchBonus: number;
   /** First line of the HR note, for the list. */
   noteLine: string | null;
   interviewAt: string | null;

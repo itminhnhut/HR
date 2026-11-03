@@ -40,11 +40,16 @@ const optionalText = (max: number, message: string) =>
 
 const email = optionalEmailSchema.transform((v) => (v ? v.toLowerCase() : null));
 
-/** "Ai giới thiệu" is needed only for a referral. */
+/**
+ * "Ai giới thiệu" counts only for a referral: under another source its box is hidden, so whatever was left in it can
+ * neither be seen nor corrected, and the server does not keep it.
+ */
 const withReferrer = <T extends { source: string; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
-  if (v.source === REFERRAL_SOURCE && !v.referrer) {
-    ctx.addIssue({ code: 'custom', path: ['referrer'], message: 'Ghi tên người giới thiệu.' });
-  }
+  if (v.source !== REFERRAL_SOURCE) return;
+  const issue = (message: string) => ctx.addIssue({ code: 'custom', path: ['referrer'], message });
+  if (!v.referrer) issue('Ghi tên người giới thiệu.');
+  else if (v.referrer.length > REFERRER_MAX) issue(`Tối đa ${REFERRER_MAX} ký tự.`);
+  else if (!hasNoNul(v.referrer)) issue(NUL_MESSAGE);
 };
 
 const contactFields = {
@@ -57,7 +62,11 @@ const contactFields = {
     .min(1, 'Chọn nguồn hồ sơ.')
     .max(SOURCE_KEY_MAX, 'Nguồn không hợp lệ.')
     .refine(hasNoNul, 'Nguồn không hợp lệ.'),
-  referrer: optionalText(REFERRER_MAX, `Tối đa ${REFERRER_MAX} ký tự.`),
+  referrer: z
+    .string()
+    .trim()
+    .nullish()
+    .transform((v) => (v ? v : null)),
 };
 
 /** "Thêm hồ sơ": text fields (the CV file comes separately, like the public form). */

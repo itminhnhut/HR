@@ -22,11 +22,14 @@ function StatusPill({ status }: { status: ApplicationStatus }) {
 function RowTags({ row, showStatus }: { row: ApplicationRowDto; showStatus: boolean }) {
   const isAddedByHr = row.source !== WEBSITE_SOURCE;
   const hasInterview = row.status === 'interview' && !!row.interviewAt;
-  const hasAny = showStatus || !row.hasCv || isAddedByHr || !!row.review || row.cvUpdatedByCandidate || hasInterview;
+  const hasBonus = row.matchBonus > 0;
+  const hasAny =
+    showStatus || !row.hasCv || isAddedByHr || !!row.review || row.cvUpdatedByCandidate || hasInterview || hasBonus;
   if (!hasAny) return null;
   return (
     <span className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
       {showStatus && <StatusPill status={row.status} />}
+      {hasBonus && <span className={`${chip} border-ok/30 bg-ok-soft text-ok`}>+{row.matchBonus} điểm cộng</span>}
       {!row.hasCv && <span className={`${chip} border-error/30 bg-error-soft text-error`}>Không CV</span>}
       {isAddedByHr && <span className={`${chip} border-line bg-white text-slate`}>HR thêm</span>}
       {row.review && <ReviewMark review={row.review} />}
