@@ -6,7 +6,7 @@ import type { MailDetails } from './types.js';
 const CONTACT_LINK = 'color:#2b2b2b;text-decoration:none;';
 
 const contactLine = (letter: string, href: string, label: string) =>
-  `<b style="color:#C8102E;display:inline-block;width:16px;">${letter}</b> <a href="${escapeHtml(href)}" style="${CONTACT_LINK}">${escapeHtml(label)}</a>`;
+  `<b style="color:#C8102E;">${letter}</b>&nbsp;&nbsp;<a href="${escapeHtml(href)}" style="${CONTACT_LINK}">${escapeHtml(label)}</a>`;
 
 /** The mailbox only: the address is encoded so a value cannot add its own mailto fields. */
 export const mailtoHref = (email: string) => `mailto:${encodeURIComponent(email).replace(/%40/g, '@')}`;
@@ -25,13 +25,11 @@ function contactLines(details: MailDetails): string {
 function nameLines(details: MailDetails): string {
   const alias = details.hrAlias.trim();
   const title = details.hrTitle.trim();
-  const aliasHtml = alias
-    ? ` <span style="font-weight:normal;color:#666;font-size:14px;">(${escapeHtml(alias)})</span>`
-    : '';
+  const aliasHtml = alias ? ` <span style="color:#666;font-size:14px;">(${escapeHtml(alias)})</span>` : '';
   const titleHtml = title
     ? `<div style="font-size:13px;font-weight:bold;color:#C8102E;letter-spacing:1px;">${escapeHtml(title.toUpperCase())}</div>`
     : '';
-  return `<div style="font-size:17px;font-weight:bold;color:#1f1f1f;">${escapeHtml(hrNameOf(details))}${aliasHtml}</div>
+  return `<div style="font-size:17px;color:#1f1f1f;"><b style="color:#1f1f1f;">${escapeHtml(hrNameOf(details))}</b>${aliasHtml}</div>
         ${titleHtml}`;
 }
 
