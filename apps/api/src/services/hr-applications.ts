@@ -1,5 +1,6 @@
 import {
   applicationUpdateSchema,
+  bonusCount,
   contactLogSchema,
   fieldErrors,
   matchesQuery,
@@ -9,6 +10,7 @@ import {
   type ApplicationSource,
   type ApplicationStatus,
   type HrMe,
+  type MatchItem,
   type SubscriberDto,
 } from '@careers/shared';
 import { and, desc, eq, getTableColumns, inArray, ne } from 'drizzle-orm';
@@ -23,11 +25,20 @@ import { dueApplicationsWhere } from './hr-jobs.js';
 
 const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'rejected'];
 
-type ApplicationWithJob = Application & { jobTitle: string; matchPercent: number | null };
+type ApplicationWithJob = Application & {
+  jobTitle: string;
+  matchPercent: number | null;
+  matchItems: MatchItem[] | null;
+};
 
 const withJobTitle = (db: Db) =>
   db
-    .select({ ...getTableColumns(applications), jobTitle: jobs.title, matchPercent: cvScores.percent })
+    .select({
+      ...getTableColumns(applications),
+      jobTitle: jobs.title,
+      matchPercent: cvScores.percent,
+      matchItems: cvScores.items,
+    })
     .from(applications)
     .innerJoin(jobs, eq(jobs.id, applications.jobId))
     .leftJoin(cvScores, eq(cvScores.applicationId, applications.id));
@@ -49,6 +60,7 @@ function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): Appl
     createdAt: a.createdAt.toISOString(),
     hasCv: !!(a.cvPathname || a.cvLink),
     matchPercent: a.matchPercent,
+    matchBonus: bonusCount(a.matchItems ?? []),
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
     review,
@@ -210,7 +222,12 @@ export async function updateApplication(
   };
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
-  return toDetail(db, { ...updated, jobTitle: row.jobTitle, matchPercent: row.matchPercent });
+  return toDetail(db, {
+    ...updated,
+    jobTitle: row.jobTitle,
+    matchPercent: row.matchPercent,
+    matchItems: row.matchItems,
+  });
 }
 
 /**

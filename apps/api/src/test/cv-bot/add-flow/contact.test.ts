@@ -1,6 +1,6 @@
 import { NAME_MAX, REFERRER_MAX } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
-import { add, addedId, addWithout, detail, errorsOf, list, PHONE, rows, useFlow } from './helpers.js';
+import { add, addedId, addWithout, detail, errorsOf, hrSend, list, PHONE, rows, useFlow } from './helpers.js';
 
 const flow = useFlow();
 
@@ -302,6 +302,30 @@ describe('Referrer', () => {
 
     // Assert
     expect(res.status).toBe(422);
-    expect((await errorsOf(res)).referrer).toBeTruthy();
+    expect((await errorsOf(res)).referrer).toBe(`Tối đa ${REFERRER_MAX} ký tự.`);
+  });
+
+  it('should save when a long referrer was left behind in a box another source hides', async () => {
+    // Act
+    const res = await add(flow, { source: 'zalo', referrer: 'A'.repeat(REFERRER_MAX + 1) });
+
+    // Assert
+    expect((await detail(flow, await addedId(res))).referrer).toBeNull();
+  });
+});
+
+describe('Changing contact details at the same moment', () => {
+  it('should let only one of two applications of a job take the same new phone', async () => {
+    // Arrange
+    const first = await addedId(await add(flow, { phone: '0912000001' }));
+    const second = await addedId(await add(flow, { phone: '0912000002' }));
+    const edit = (id: string) =>
+      hrSend(flow, 'PATCH', `/applications/${id}/contact`, { phone: '0912000003', email: null, source: 'zalo' });
+
+    // Act
+    const answers = await Promise.all([edit(first), edit(second)]);
+
+    // Assert
+    expect(answers.map((res) => res.status).sort()).toEqual([200, 409]);
   });
 });

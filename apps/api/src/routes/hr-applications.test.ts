@@ -62,6 +62,7 @@ describe('GET /api/hr/applications', () => {
       source: 'website',
       cvUpdatedByCandidate: false,
       matchPercent: null,
+      matchBonus: 0,
     });
     expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, interview: 1, rejected: 0 });
     expect(body.jobs).toEqual([

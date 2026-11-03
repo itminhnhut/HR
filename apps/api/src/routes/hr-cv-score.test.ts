@@ -127,6 +127,19 @@ describe('POST /api/hr/applications/:id/score', () => {
     expect(cvScore?.percent).toBe(100);
   });
 
+  it('should count on the list row only the bonuses the CV shows', async () => {
+    // Arrange
+    const job = await insertJob(t, { ...SALES_JOB, preferred: 'Thành thạo Excel\nBiết sử dụng SAP' });
+    const app = await applyWith(job, { file: 'cv-simple-vi.pdf' });
+    await score(app.id);
+
+    // Act
+    const list = await json<ApplicationsResponse>(await hr('GET', '/applications'));
+
+    // Assert
+    expect(list.applications.find((row) => row.id === app.id)?.matchBonus).toBe(1);
+  });
+
   it('should score again when the job description changes', async () => {
     // Arrange
     const job = await insertJob(t, { ...SALES_JOB, responsibilities: 'Việc cũ cần làm' });

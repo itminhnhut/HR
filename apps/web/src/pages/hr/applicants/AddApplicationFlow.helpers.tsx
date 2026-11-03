@@ -70,6 +70,7 @@ export const application = (over: Partial<ApplicationDetailDto> = {}): Applicati
   createdAt: '2026-10-20T03:00:00.000Z',
   hasCv: true,
   matchPercent: null,
+  matchBonus: 0,
   noteLine: null,
   interviewAt: null,
   review: null,

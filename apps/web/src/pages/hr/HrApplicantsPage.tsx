@@ -65,12 +65,17 @@ function useListParams() {
     next.set('trang-thai', tab);
     setParams(next);
   };
-  /** The open application belongs to the tab it was opened from, so moving to another tab closes it. */
-  const chooseTab = (tab: TabKey) => {
+  /** What changes who is listed closes the open application, which may not be among them any more. */
+  const setListed = (key: string, value: string | null) => {
     const next = new URLSearchParams(params);
-    next.set('trang-thai', tab);
+    if (value) next.set(key, value);
+    else next.delete(key);
     next.delete('id');
     setParams(next, { replace: !params.has('id') });
+  };
+  const typeSearch = (text: string) => {
+    setDraft(text);
+    if (params.has('id')) setListed('id', null);
   };
   return {
     selectedId: params.get('id'),
@@ -79,10 +84,10 @@ function useListParams() {
     source: params.get('nguon') || undefined,
     byMatch: params.get('sap-xep') === 'phu-hop',
     draft,
-    setDraft,
+    typeSearch,
     setParam,
+    setListed,
     open,
-    chooseTab,
   };
 }
 
@@ -243,13 +248,13 @@ function PageToolbar({ model, actions }: { model: Model; actions: Omit<ToolbarAc
     <ApplicantsToolbar
       filters={{
         search: model.draft,
-        onSearch: model.setDraft,
+        onSearch: model.typeSearch,
         onSearchCommit: () => model.setParam('q', model.draft.trim() || null),
         jobId: model.jobId,
         jobs: apps.data?.jobs ?? [],
-        onJob: (id) => model.setParam('tin', id),
+        onJob: (id) => model.setListed('tin', id),
         source: model.source,
-        onSource: (key) => model.setParam('nguon', key),
+        onSource: (key) => model.setListed('nguon', key),
         byMatch: model.byMatch,
         onByMatch: (checked) => model.setParam('sap-xep', checked ? 'phu-hop' : null),
       }}
@@ -302,7 +307,7 @@ export function HrApplicantsPage() {
       <FilterTabs
         items={tabs}
         value={tab}
-        onChange={model.chooseTab}
+        onChange={(key) => model.setListed('trang-thai', key)}
         label="Lọc theo trạng thái"
         navyOnPhone
         className="flex-none border-b border-field max-lg:order-first max-lg:-mx-4 max-lg:-mt-6 max-lg:border-b-0 max-lg:bg-navy max-lg:px-4 max-sm:gap-x-[18px] sm:max-lg:-mx-6 sm:max-lg:px-6"

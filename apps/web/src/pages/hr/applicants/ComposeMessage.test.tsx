@@ -1,11 +1,11 @@
-import { DEFAULT_MESSAGE_TEMPLATES, type ApplicationDetailDto, type HrMe } from '@careers/shared';
+import { DEFAULT_MESSAGE_TEMPLATES, MAIL_COMPANY, type ApplicationDetailDto, type HrMe } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.hoisted(() => vi.stubEnv('VITE_API_URL', '/api'));
-import { ComposeMessage, ContactHistory } from './ComposeMessage';
+import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
 
 const INTERVIEW_AT = '2026-11-06T02:00:00.000Z';
 
@@ -22,6 +22,7 @@ const application = (over: Partial<ApplicationDetailDto> = {}): ApplicationDetai
   createdAt: '2026-10-20T03:00:00.000Z',
   hasCv: true,
   matchPercent: null,
+  matchBonus: 0,
   noteLine: null,
   interviewAt: null,
   review: null,
@@ -563,5 +564,15 @@ describe('ContactHistory', () => {
     // Assert
     expect(screen.getByText(/Từ chối sau phỏng vấn/)).toBeTruthy();
     expect(screen.getByText(/sao chép thư đẹp/)).toBeTruthy();
+  });
+});
+
+describe('hrCalendarUrl', () => {
+  it('should give the same office address as the letter to the candidate', () => {
+    // Act
+    const url = new URL(hrCalendarUrl(application({ interviewAt: INTERVIEW_AT, interviewMode: 'onsite' })) ?? '');
+
+    // Assert
+    expect(url.searchParams.get('location')).toBe(MAIL_COMPANY.officeAddress);
   });
 });

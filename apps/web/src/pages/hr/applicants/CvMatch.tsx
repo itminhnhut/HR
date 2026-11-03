@@ -1,11 +1,11 @@
-import { CV_LINK_NOTE, type ApplicationDetailDto, type CvScoreDto } from '@careers/shared';
+import { bonusCount, CV_LINK_NOTE, type ApplicationDetailDto, type CvScoreDto } from '@careers/shared';
 import { useEffect, useRef, useState } from 'react';
 import { useScoreCv } from '../../../api/queries';
 import { buttonClass } from '../../../ui/Button';
 import { FieldError } from '../../../ui/Field';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
-import { bonusCount, coverageOf, groupLines, MATCH_TABS, type MatchTab } from './cvMatchLines';
+import { coverageOf, groupLines, MATCH_TABS, type MatchTab } from './cvMatchLines';
 import { CvMatchDrawer } from './CvMatchDrawer';
 import { VerdictCount, VerdictIcon } from './VerdictMark';
 

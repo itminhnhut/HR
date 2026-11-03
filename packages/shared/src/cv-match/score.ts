@@ -192,6 +192,10 @@ function countEducationOnce(items: readonly MatchItem[]): MatchItem[] {
   });
 }
 
+/** How many of the job's bonuses ("Ưu tiên") the CV shows. */
+export const bonusCount = (items: readonly MatchItem[]): number =>
+  items.filter((item) => item.section === 'preferred' && item.verdict === 'met').length;
+
 /** Scores a CV against requirement lines. */
 export function scoreCv(input: ScoreInput): CvMatchResult {
   const doc = buildCvDoc(input.cvText);

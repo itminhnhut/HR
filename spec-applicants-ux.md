@@ -27,8 +27,8 @@ sang hồ sơ tiếp theo. Xem trên dữ liệu mẫu ở 1440, 1280 và 390 px
 - Chi tiết cuộn riêng, phần đầu dính cố định: tên, trạng thái, Gọi, Zalo, Soạn thư, Hồ sơ trước, Hồ sơ tiếp và vị trí
   dạng "2/8".
 - Phím tắt J (hồ sơ tiếp) và K (hồ sơ trước): không chạy khi đang gõ trong ô nhập, không chạy khi đang mở hộp thoại hoặc
-  menu. Dòng đang mở luôn được đánh dấu; thao tác ở chi tiết hiện ngay ở danh sách; bộ lọc làm ẩn hồ sơ đang mở thì giữ
-  chi tiết và báo rõ.
+  menu. Dòng đang mở luôn được đánh dấu; thao tác ở chi tiết hiện ngay ở danh sách; đổi tab trạng thái, vị trí, nguồn hoặc gõ tìm
+  kiếm thì đóng hồ sơ đang mở; mở link tới hồ sơ không có trong danh sách thì giữ chi tiết và báo rõ.
 - Máy tính rộng: các khối trong chi tiết xếp 2 cột cho hết bề ngang (chỉ là cách xếp, vẫn chung một thanh cuộn): trái giờ
   phỏng vấn, Chấm CV, dòng CV; phải SĐT, email, ghi chú, lịch sử. Màn hình hẹp hơn thì xếp một cột.
 - Không xem CV trong trang (chủ sản phẩm chốt): nút "Xem CV" ở đầu chi tiết cạnh Gọi, Zalo, Soạn thư mở tab mới, CV là
@@ -54,7 +54,6 @@ sang hồ sơ tiếp theo. Xem trên dữ liệu mẫu ở 1440, 1280 và 390 px
 - Lịch sử liên hệ và vị trí khác đã nộp là một dòng tóm tắt, mở drawer để xem đủ. SĐT, email, ghi chú vẫn hiện thẳng; Xoá
   hồ sơ ở cuối.
 
-- Bấm tab trạng thái đóng hồ sơ đang mở (xoá `id` khỏi địa chỉ).
 
 **Out of scope:**
 

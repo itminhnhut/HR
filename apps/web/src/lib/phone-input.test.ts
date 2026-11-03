@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { formatPhoneInput } from './phone-input';
 
 describe('formatPhoneInput', () => {
+  it.each(['+84 (0) 912 345 678', '+840912345678', '84 (0) 912 345 678'])(
+    'should drop the optional 0 after the country code in %s',
+    (pasted) => {
+      expect(formatPhoneInput(pasted)).toBe('0912 345 678');
+    },
+  );
+
   it('groups digits 4-3-3 as they are typed', () => {
     expect(formatPhoneInput('0')).toBe('0');
     expect(formatPhoneInput('09123')).toBe('0912 3');
