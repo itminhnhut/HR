@@ -106,7 +106,7 @@ describe('The match percent of a link', () => {
     expect(app.cvScore?.note).toBe('CV là link, không đọc được tự động: HR mở link để xem.');
   });
 
-  it('should mark every requirement "unknown", none as not met', async () => {
+  it('should mark every line "unknown", none as not met', async () => {
     // Arrange
     const id = await addedId(await add(flow, { cvLink: LINK }));
 
@@ -114,8 +114,9 @@ describe('The match percent of a link', () => {
     const app = await score(flow, id);
 
     // Assert
-    const verdicts = (app.cvScore?.items ?? []).map((item) => item.verdict);
-    expect(verdicts).toEqual(['unknown', 'unknown', 'unknown']);
+    const items = app.cvScore?.items ?? [];
+    expect(items.filter((item) => !item.section)).toHaveLength(3);
+    expect(items.filter((item) => item.verdict !== 'unknown')).toEqual([]);
   });
 
   it('should keep the list percent empty rather than 0 after scoring', async () => {

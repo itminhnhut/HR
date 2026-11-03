@@ -120,6 +120,17 @@ describe('Lines split by the part of the job', () => {
     expect(within(section).queryByText(/điểm cộng/)).toBeNull();
   });
 
+  it('should say how many measurable requirements could be judged', async () => {
+    // Arrange
+    const items = [line('Biết Word', 'met', { counted: true }), line('Từ 2 năm', 'unknown', { counted: true })];
+
+    // Act
+    const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf(items) }));
+
+    // Assert
+    expect(within(dialog).getByText(/Chấm được 1\/2 yêu cầu đo được/)).toBeTruthy();
+  });
+
   it('should keep a soft requirement left out of the percent under "Không chấm"', async () => {
     // Act
     const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([line('Biết Word', 'met', { counted: false })]) }));
