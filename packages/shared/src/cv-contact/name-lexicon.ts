@@ -4,7 +4,7 @@ import { fold, hasDiacritics, wordList as list } from './text.js';
 /** Splits a comma-separated phrase list. */
 function phrases(text: string): string[] {
   return text
-    .split(',')
+    .split(/[,\n]/)
     .map((p) => p.trim())
     .filter((p) => p.length > 0);
 }
@@ -19,6 +19,20 @@ export const SURNAMES = new Set(
 `),
 );
 
+/**
+ * Family names (ethnic minorities included) that are common words or given names once their tones are gone,
+ * so they only count with tones: "Quàng" is a family name, "Quang" a given name.
+ */
+const SURNAMES_TONED = new Set(
+  list('bế nông quàng ôn mã mùa thào giàng sùng tào cấn lù lữ nhữ doãn hứa cù ksor niê rcom siu danh'),
+);
+
+const COMPOUND_SURNAMES = ['am duong', 'au duong', 'cong tang ton nu', 'cong ton', 'ton nu', 'ton that', 'tu ma'];
+
+/** A middle initial ("Trần V. Hùng") is no syllable, but no job title has one either. */
+const INITIAL_LETTER = /^\p{Lu}\.?$/u;
+const SYLLABLE = /^(?:ngh|ng|nh|kh|gh|gi|ph|qu|th|tr|ch|[bcdghklmnprstvx])?[aeiouy]{1,3}(?:ng|nh|ch|[cmnpt])?$/;
+
 /** Middle names that end the first half of a name broken over two lines ("NGUYỄN THỊ" / "MAI ANH"). */
 export const MIDDLE_NAMES = new Set(
   list(`
@@ -32,11 +46,11 @@ export const HONORIFICS = new Set(list('ông bà mr mrs ms miss dr thầy cô ch
 
 /**
  * Multi-word phrases that never form a person's name (headings, job titles, schools, companies, places).
- * Written with tones: matched with tones when the line has them, folded otherwise.
+ * Written with tones: matched with tones when the line has them, folded otherwise. One line per group of phrases.
  */
 const STOP_PHRASES = phrases(`
-  kế toán, nhân viên, kinh doanh, công ty, đại học, cao đẳng, trung cấp, trung học, học viện, hồ sơ, sơ yếu
-  lý lịch, xin việc, thông tin, cá nhân, mục tiêu, nghề nghiệp, kinh nghiệm, làm việc, học vấn, kỹ năng
+  kế toán, nhân viên, kinh doanh, công ty, đại học, cao đẳng, trung cấp, trung học, học viện, hồ sơ, sơ yếu, lý lịch
+  xin việc, thông tin, cá nhân, mục tiêu, nghề nghiệp, kinh nghiệm, làm việc, học vấn, kỹ năng
   kĩ năng, chuyên viên, trưởng phòng, phó phòng, giám đốc, quản lý, tổng hợp, hành chính, nhân sự, lập trình
   thực tập, trợ lý, thư ký, lễ tân, kỹ sư, giáo viên, điều dưỡng, bác sĩ, dược sĩ, chăm sóc, khách hàng
   bán hàng, thiết kế, đồ họa, xuất nhập, nhập khẩu, xuất khẩu, thu mua, sản xuất, chất lượng, kiểm toán
@@ -46,7 +60,8 @@ const STOP_PHRASES = phrases(`
   hồ chí minh, việt nam, đà nẵng, bảo vệ, tài xế, phục vụ, công nhân, kỹ thuật, vận hành, kho vận, ứng tuyển
   vị trí, chức danh, mong muốn, bản thân, tóm tắt, người tham, xác nhận, thông tin cá nhân, trường thpt
   cộng hòa, độc lập, hạnh phúc, xã hội, chủ nghĩa, cổ phần, trách nhiệm, hữu hạn, tập đoàn, chi nhánh
-  trung tâm, quận, phường, huyện, tỉnh, thị xã
+  trung tâm, thị xã, năng lực, khai sinh, y tế, y tá, y sĩ, y khoa, y học, y dược, nông nghiệp, nông lâm, mùa hè
+  danh sách, danh hiệu, cán bộ, lái xe
 `);
 
 /** Single words that never appear in a name. Vietnamese ones are compared with tones (so "toán" ≠ "Toàn"). */
@@ -59,8 +74,8 @@ const STOP_WORDS_TONED = list(`
   hiện nay lớp ngành tiếng bằng cấp tên họ
 `);
 
-/** Words (folded, so also without tones) that are never part of a name: English headings and job titles, org words. */
-const STOP_WORDS_FOLDED = list(`
+/** Words without tones that are never part of a name: English headings and job titles, org words. */
+const STOP_WORDS_PLAIN = list(`
   cv curriculum vitae resume profile objective experience education skills skill information personal contact
   summary references reference hobbies interests projects project certificates certifications awards languages
   about career details developer engineer manager executive sales marketing frontend backend fullstack
@@ -90,7 +105,16 @@ export function isPlaceLine(text: string): boolean {
 const PHRASES_TONED = STOP_PHRASES.map((p) => p.toLowerCase());
 const PHRASES_FOLDED = STOP_PHRASES.map((p) => fold(p));
 const WORDS_TONED = new Set(STOP_WORDS_TONED);
-const WORDS_FOLDED = new Set(STOP_WORDS_FOLDED);
+const WORDS_PLAIN = new Set(STOP_WORDS_PLAIN);
+
+/**
+ * "The" is an English word but also the toneless spelling of the given name Thế ("Nguyen The Anh"),
+ * so it only stops a name that does not start with a family name.
+ */
+function isPlainStop(word: string, i: number, first: string): boolean {
+  if (word === 'the' && i > 0 && isSurname(first)) return false;
+  return WORDS_PLAIN.has(word);
+}
 
 /** Index of the first word that starts a stop phrase or is a stop word; -1 when the words look clean. */
 export function firstStopIndex(words: readonly string[], isToned: boolean): number {
@@ -98,8 +122,7 @@ export function firstStopIndex(words: readonly string[], isToned: boolean): numb
   const folded = words.map((w) => fold(w));
   for (let i = 0; i < words.length; i += 1) {
     const w = lower[i] ?? '';
-    const f = folded[i] ?? '';
-    if (WORDS_FOLDED.has(f) || (isToned && WORDS_TONED.has(w))) return i;
+    if (isPlainStop(w, i, lower[0] ?? '') || (isToned && WORDS_TONED.has(w))) return i;
     const tail = (isToned ? lower : folded).slice(i).join(' ');
     const stops = isToned ? PHRASES_TONED : PHRASES_FOLDED;
     if (stops.some((p) => `${tail} `.startsWith(`${p} `))) return i;
@@ -108,5 +131,24 @@ export function firstStopIndex(words: readonly string[], isToned: boolean): numb
 }
 
 export function isSurname(word: string): boolean {
-  return SURNAMES.has(fold(word));
+  return SURNAMES.has(fold(word)) || SURNAMES_TONED.has(word.toLowerCase());
+}
+
+/** Starts with a family name of more than one word: "Âu Dương …", "Công Tằng Tôn Nữ …". */
+export function startsWithCompoundSurname(words: readonly string[]): boolean {
+  const folded = words.map((w) => fold(w)).join(' ');
+  return COMPOUND_SURNAMES.some((s) => `${folded} `.startsWith(`${s} `));
+}
+
+/**
+ * Can this folded word be one Vietnamese syllable? Ethnic-minority and foreign names can fail it ("Bhim"),
+ * English words nearly always do ("Fashion", "Supply", "Planner"), which is what tells a name from a job title.
+ */
+export function isVietnameseSyllable(word: string): boolean {
+  return (
+    INITIAL_LETTER.test(word) ||
+    fold(word)
+      .split('-')
+      .every((part) => SYLLABLE.test(part))
+  );
 }

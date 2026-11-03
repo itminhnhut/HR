@@ -112,4 +112,6 @@ export interface ParsedCvDto {
   phone: string | null;
   email: string | null;
   readable: boolean;
+  /** Why a file that is not a scan could not be read (locked, broken): a sentence for HR, in Vietnamese. */
+  problem?: string;
 }

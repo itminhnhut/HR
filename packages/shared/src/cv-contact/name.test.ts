@@ -88,3 +88,117 @@ describe('parseCvContact – full name from the header', () => {
     expect(nameOf(text)).toBe('Lý Thu Hà');
   });
 });
+
+describe('parseCvContact – words that are both a name and something else', () => {
+  it.each([
+    ['Thế, which is "the" without tones', 'Đoàn Thế Vinh', 'Đoàn Thế Vinh'],
+    ['"The" in a CV without tones', 'Nguyen The Vinh', 'Nguyen The Vinh'],
+    ['Quan, which is "quận" without tones', 'Hoang Quan Tu', 'Hoang Quan Tu'],
+    ['Phuong, which is "phường" without tones', 'Tran Thi Phuong', 'Tran Thi Phuong'],
+    ['Huyen, which is "huyện" without tones', 'Le Thi Huyen', 'Le Thi Huyen'],
+    ['Tinh, which is "tỉnh" without tones', 'Vo Thanh Tinh', 'Vo Thanh Tinh'],
+    ['a given name that is a heading word, after a firm middle name', 'Lê Hữu Bằng', 'Lê Hữu Bằng'],
+    ['a family name with an apostrophe', "H'Nhi Bkrong Lan\nh.nhi.lan@gmail.com", null],
+  ])('should treat %s correctly', (_case, text, expected) => {
+    expect(nameOf(text)).toBe(expected);
+  });
+
+  it.each([
+    ['Phan Kế Toán', 'ketoan.phan91@gmail.com', 'Phan Kế Toán'],
+    ['Lâm Thiết Kế', 'lamthietke@gmail.com', 'Lâm Thiết Kế'],
+    ['Đinh Nhân Sự', 'nhansu.dinh@yahoo.com', 'Đinh Nhân Sự'],
+  ])('should read %s when the email spells it out', (line, email, expected) => {
+    expect(nameOf(`${line}\nChuyên viên\n${email}`)).toBe(expected);
+  });
+
+  it('should not take a placeholder initial for a name because the address spells it', () => {
+    expect(nameOf('Trần Thị B\nNhân viên\ntranb@gmail.com')).toBeNull();
+  });
+
+  it('should leave such a name empty when nothing confirms it', () => {
+    expect(nameOf('Phan Kế Toán\nChuyên viên')).toBeNull();
+  });
+
+  it('should not make a job title a name because the address spells it', () => {
+    expect(nameOf('Giám Sát Kho Vận\ngiamsat.khovan.hn@gmail.com')).toBeNull();
+  });
+
+  it('should not take an address for a name when those letters sit inside other words', () => {
+    expect(nameOf('Đặng Bá Thanh\nLê An\nthanhle.an@gmail.com')).toBe('Đặng Bá Thanh');
+  });
+
+  it('should not take the last word of a job title for a given name when the name ends in a middle name', () => {
+    expect(nameOf('Lê Văn Kế Toán')).toBeNull();
+  });
+});
+
+describe('parseCvContact – lines that only look like a name', () => {
+  it.each([
+    ['a heading in capitals', 'NĂNG LỰC\nTin học văn phòng'],
+    ['a label with no value above another label', 'HỌ VÀ TÊN\nVỊ TRÍ ỨNG TUYỂN'],
+    ['an English job title', 'Supply Chain Planner\nMobile: 0937 582 610'],
+    ['a company after a job title', 'Assistant – Hung Thinh Trading Co., Ltd'],
+    ['a two-word English heading', 'Key Achievements\nGrew sales by 20%'],
+    ['a referee named in a sidebar', 'NGƯỜI THAM KHẢO\nPhạm Thị Mai'],
+    ['text in an old VNI font', 'Nguyeãn Vaên Tuù\nÑieän thoaïi: 0912 406 735\nKinh nghieäm laøm vieäc'],
+    ['text in an old TCVN3 font', 'NguyÔn ThÞ Thu\n§iÖn tho¹i: 0347 180 526\nKinh nghiÖm lµm viÖc'],
+  ])('should leave the box empty with only %s', (_case, text) => {
+    expect(nameOf(text)).toBeNull();
+  });
+
+  it('should read the phone and email of an old-font CV though the name is garbled', () => {
+    const text = 'Nguyeãn Vaên Tuù\nÑieän thoaïi: 0912 406 735\nEmail: tu.nguyen.vni@gmail.com\nlaøm vieäc';
+
+    expect(parseCvContact(text)).toEqual({ fullName: null, phone: '0912406735', email: 'tu.nguyen.vni@gmail.com' });
+  });
+});
+
+describe('parseCvContact – where the name sits and how it is written', () => {
+  it.each([
+    [
+      'a date-of-birth label after the value',
+      '1. Họ tên khai sinh: LÒ VĂN PHÚC\n2. Ngày sinh: 01/02/1990',
+      'Lò Văn Phúc',
+    ],
+    ['dot leaders after the labelled value', 'Họ và tên: Thân Quốc Việt ........ Nam/Nữ: Nam', 'Thân Quốc Việt'],
+    ['a family name, comma, given names', 'PHAM, Quoc Dung\nEngineer', 'Pham Quoc Dung'],
+    ['a degree before the name', 'ThS. Bùi Minh Châu\nGiảng viên', 'Bùi Minh Châu'],
+    ['a CV title at the bottom of the page', 'Kế toán\nKinh nghiệm\nCV - Trịnh Thu Hà\nTrang 1', 'Trịnh Thu Hà'],
+    ['a CV title in underscores', 'CV_Vo_Thanh_Long', 'Vo Thanh Long'],
+    ['"Curriculum Vitae of"', 'Sales Manager\nCurriculum Vitae of Dang Ngoc Linh', 'Dang Ngoc Linh'],
+    ['a phone after a column gap', 'Đỗ Quốc Khánh   0912 406 735', 'Đỗ Quốc Khánh'],
+    ['a label after the name without separators', 'Hà Quốc Việt SĐT 0912 406 735 Email hqv@gmail.com', 'Hà Quốc Việt'],
+    ['a label in the next column', 'Lý Ngọc Mai   Di động: 0912 406 735', 'Lý Ngọc Mai'],
+    ['a name in three lines', 'Chung\nGia\nKhánh\nĐầu bếp', 'Chung Gia Khánh'],
+    ['a name over two lines, one word below', 'Tô Ngọc\nBích\nNhân viên', 'Tô Ngọc Bích'],
+    ['an ethnic-minority family name', 'Bế Thị Lan\nGiáo viên', 'Bế Thị Lan'],
+    ['an Ê-đê name', 'Y Moan Ênuôl\nymoanenuol@gmail.com', 'Y Moan Ênuôl'],
+    ['an icon-font glyph before the name', '\uE001 Phan Đức Long', 'Phan Đức Long'],
+  ])('reads %s', (_case, text, expected) => {
+    expect(nameOf(text)).toBe(expected);
+  });
+
+  it('should choose the line the email confirms over a person named earlier', () => {
+    const text = 'Trương Thị Lành – Trưởng phòng\nCông ty Hưng Thịnh\nKhúc Hải Đăng\nhaidang.khuc@gmail.com';
+
+    expect(nameOf(text)).toBe('Khúc Hải Đăng');
+  });
+
+  it('should not read a name only in the closing signature, even with an address that spells it', () => {
+    const text = 'Nhân viên\nvinh.dao@gmail.com\nTrân trọng,\nĐào Vinh';
+
+    expect(nameOf(text)).toBeNull();
+  });
+
+  it('should read the signature of a cover letter when the CV details follow it', () => {
+    const text = 'THƯ XIN VIỆC\nTrân trọng,\nĐào Vinh An\nĐiện thoại: 0912 406 735\nEmail: vinhan.dao@gmail.com';
+
+    expect(nameOf(text)).toBe('Đào Vinh An');
+  });
+
+  it('should read the name after a referee block, below the referee details', () => {
+    const text = 'THAM CHIẾU\nAnh Long – Trưởng nhóm\n0912 406 735\nlong@hanoiwood.vn\nThạch Bảo Ngọc\nNhân viên';
+
+    expect(nameOf(text)).toBe('Thạch Bảo Ngọc');
+  });
+});

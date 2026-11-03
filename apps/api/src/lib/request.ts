@@ -20,6 +20,8 @@ export async function readJson(c: Context): Promise<unknown> {
 export interface MultipartBody {
   fields: Record<string, string>;
   file: File | null;
+  /** A named file with no bytes was sent. A browser sends an unnamed one when no file was chosen. */
+  isEmptyFile: boolean;
 }
 
 /** Multipart form with one optional file field. Everything else arrives as text. */
@@ -32,9 +34,11 @@ export async function readMultipart(c: Context, fileField: string): Promise<Mult
   }
   const fields: Record<string, string> = {};
   let file: File | null = null;
+  let isEmptyFile = false;
   for (const [key, value] of Object.entries(body)) {
     if (typeof value === 'string') fields[key] = value;
     else if (key === fileField && value.size > 0) file = value;
+    else if (key === fileField && value.name !== '') isEmptyFile = true;
   }
-  return { fields, file };
+  return { fields, file, isEmptyFile };
 }
