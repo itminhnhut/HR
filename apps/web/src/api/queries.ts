@@ -6,6 +6,7 @@ import type {
   HrNewsPostDto,
   JobInput,
   JobTemplate,
+  MessageTemplate,
   NewsPostInput,
   ReviewCreateInput,
   ReviewDecisionInput,
@@ -304,8 +305,7 @@ export function useMessageTemplateActions() {
     qc.setQueryData(keys.hrMessageTemplates, data);
   return {
     save: useMutation({
-      mutationFn: ({ key, subject, body }: { key: TemplateKey; subject: string; body: string }) =>
-        api.hrSaveMessageTemplate(key, { subject, body }),
+      mutationFn: ({ key, ...texts }: MessageTemplate) => api.hrSaveMessageTemplate(key, texts),
       onSuccess: done,
     }),
     reset: useMutation({ mutationFn: (key: TemplateKey) => api.hrResetMessageTemplate(key), onSuccess: done }),

@@ -21,6 +21,7 @@ import { FieldError } from '../../../ui/Field';
 import { Icon, type IconName } from '../../../ui/icons';
 import { apiMessage, Avatar, errorMessage } from '../parts';
 import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
+import { suggestedTemplate } from './useMailDraft';
 import { CvMatch } from './CvMatch';
 import { CvPanel } from './CvPanel';
 import { InterviewField } from './InterviewField';
@@ -204,13 +205,7 @@ function StatusButtons({
               type="button"
               onClick={() => {
                 setUndo(null);
-                onCompose(
-                  app.status === 'rejected'
-                    ? 'rejection'
-                    : app.interviewMode === 'online'
-                      ? 'interview_online'
-                      : 'interview_onsite',
-                );
+                onCompose(suggestedTemplate(app));
               }}
               className="min-h-9 rounded-control border-0 bg-white px-3 font-semibold text-navy"
             >

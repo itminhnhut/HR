@@ -1,23 +1,35 @@
 /**
  * Message templates HR fills for one candidate and sends from their own mailbox (Gmail link, mailto)
- * or pastes into Zalo. Nothing is sent by the site itself.
+ * or pastes into Outlook or Zalo. The texts go into a fixed design, see ./mail.
  */
 
-export type TemplateKey = 'interview_onsite' | 'interview_online' | 'rejection' | 'call';
-export type InterviewMode = 'onsite' | 'online';
-export type ContactChannel = 'gmail' | 'mailto' | 'copy';
+import type { MailContent } from './mail/types.js';
 
-export const TEMPLATE_KEYS: TemplateKey[] = ['interview_onsite', 'interview_online', 'rejection', 'call'];
+export { DEFAULT_MESSAGE_TEMPLATES } from './mail/default-templates.js';
+
+export type TemplateKey = 'interview_onsite' | 'interview_online' | 'rejection' | 'rejection_interview' | 'call';
+export type InterviewMode = 'onsite' | 'online';
+export type ContactChannel = 'gmail' | 'mailto' | 'copy' | 'copy_html';
+
+export const TEMPLATE_KEYS: TemplateKey[] = [
+  'interview_onsite',
+  'interview_online',
+  'rejection',
+  'rejection_interview',
+  'call',
+];
 export const TEMPLATE_LABEL: Record<TemplateKey, string> = {
   interview_onsite: 'Mời phỏng vấn trực tiếp',
   interview_online: 'Mời phỏng vấn online',
-  rejection: 'Cảm ơn / chưa phù hợp',
+  rejection: 'Từ chối hồ sơ',
+  rejection_interview: 'Từ chối sau phỏng vấn',
   call: 'Hẹn gọi điện',
 };
 export const CONTACT_CHANNEL_LABEL: Record<ContactChannel, string> = {
   gmail: 'Mở Gmail',
   mailto: 'Mở ứng dụng mail',
   copy: 'Sao chép',
+  copy_html: 'Sao chép thư đẹp',
 };
 
 export const SUBJECT_MAX = 200;
@@ -27,6 +39,9 @@ export const SUBJECT_MAX = 200;
  * (see MAILTO_SAFE_LENGTH).
  */
 export const TEMPLATE_BODY_MAX = 1500;
+/** Note, callout text and closing of a template. */
+export const TEMPLATE_SECTION_MAX = 1000;
+export const CALLOUT_TITLE_MAX = 80;
 /** Above this, some mail apps (Outlook on Windows) cut or refuse mailto links. */
 export const MAILTO_SAFE_LENGTH = 1900;
 
@@ -39,6 +54,12 @@ export interface TemplateValues {
   hrName: string;
   hrPhone: string;
   company: string;
+  /** "06/11/2026" */
+  interviewDate: string;
+  interviewer: string;
+  duration: string;
+  hrTitle: string;
+  hrAlias: string;
 }
 
 /** The fields HR can insert, written as the Vietnamese label in braces so templates stay readable. */
@@ -51,66 +72,26 @@ export const PLACEHOLDERS: { token: string; key: keyof TemplateValues }[] = [
   { token: '{Tên HR}', key: 'hrName' },
   { token: '{SĐT HR}', key: 'hrPhone' },
   { token: '{Công ty}', key: 'company' },
+  { token: '{Ngày phỏng vấn}', key: 'interviewDate' },
+  { token: '{Người trao đổi}', key: 'interviewer' },
+  { token: '{Thời lượng}', key: 'duration' },
+  { token: '{Chức danh HR}', key: 'hrTitle' },
+  { token: '{Tên gọi khác}', key: 'hrAlias' },
 ];
 
+/** The texts HR can edit. Paragraphs are separated by a blank line. */
 export interface MessageTemplate {
   key: TemplateKey;
   subject: string;
+  /** Before the details card; starts with the greeting. */
   body: string;
+  /** After the details card (interview mails only, otherwise empty). */
+  note: string;
+  calloutTitle: string;
+  callout: string;
+  /** Before "Thân mến,". */
+  closing: string;
 }
-
-const SIGNATURE = 'Trân trọng,\n{Tên HR}\n{Công ty} · {SĐT HR}';
-
-export const DEFAULT_MESSAGE_TEMPLATES: Record<TemplateKey, MessageTemplate> = {
-  interview_onsite: {
-    key: 'interview_onsite',
-    subject: '[{Công ty}] Mời phỏng vấn vị trí {Vị trí}',
-    body: `Chào {Tên ứng viên},
-
-Cảm ơn bạn đã ứng tuyển vị trí {Vị trí} tại {Công ty}. Chúng tôi mời bạn đến phỏng vấn:
-
-- Thời gian: {Giờ phỏng vấn}
-- Địa điểm: {Địa chỉ}
-
-Bạn trả lời thư này để xác nhận giúp mình, hoặc báo nếu cần đổi giờ.
-
-${SIGNATURE}`,
-  },
-  interview_online: {
-    key: 'interview_online',
-    subject: '[{Công ty}] Mời phỏng vấn online vị trí {Vị trí}',
-    body: `Chào {Tên ứng viên},
-
-Cảm ơn bạn đã ứng tuyển vị trí {Vị trí} tại {Công ty}. Chúng tôi mời bạn phỏng vấn online qua Google Meet:
-
-- Thời gian: {Giờ phỏng vấn}
-- Link tham gia: {Link Meet}
-
-Bạn vào trước vài phút để kiểm tra micro và camera. Trả lời thư này để xác nhận giúp mình, hoặc báo nếu cần đổi giờ.
-
-${SIGNATURE}`,
-  },
-  rejection: {
-    key: 'rejection',
-    subject: '[{Công ty}] Kết quả ứng tuyển vị trí {Vị trí}',
-    body: `Chào {Tên ứng viên},
-
-Cảm ơn bạn đã dành thời gian ứng tuyển vị trí {Vị trí} tại {Công ty}. Sau khi xem xét, lần này chúng tôi đã chọn ứng viên phù hợp hơn với yêu cầu hiện tại.
-
-Chúng tôi rất trân trọng sự quan tâm của bạn và chúc bạn sớm tìm được công việc ưng ý.
-
-${SIGNATURE}`,
-  },
-  call: {
-    key: 'call',
-    subject: '[{Công ty}] Trao đổi về vị trí {Vị trí}',
-    body: `Chào {Tên ứng viên},
-
-Cảm ơn bạn đã ứng tuyển vị trí {Vị trí} tại {Công ty}. Mình muốn gọi điện trao đổi thêm khoảng 10–15 phút. Bạn cho mình biết khung giờ nào tiện nghe máy nhé.
-
-${SIGNATURE}`,
-  },
-};
 
 /** Inserts the values; fields with no value stay as their token and are listed in `missing`. */
 export function fillTemplate(text: string, values: TemplateValues): { text: string; missing: string[] } {
@@ -123,6 +104,32 @@ export function fillTemplate(text: string, values: TemplateValues): { text: stri
     else missing.push(token);
   }
   return { text: out, missing };
+}
+
+/** Fills every text of a template. `missing` lists each empty field once, however many texts use it. */
+export function fillTemplateSections(
+  t: MessageTemplate,
+  values: TemplateValues,
+): { content: MailContent; missing: string[] } {
+  const subject = fillTemplate(t.subject, values);
+  const body = fillTemplate(t.body, values);
+  const note = fillTemplate(t.note, values);
+  const calloutTitle = fillTemplate(t.calloutTitle, values);
+  const callout = fillTemplate(t.callout, values);
+  const closing = fillTemplate(t.closing, values);
+  const sections = [subject, body, note, calloutTitle, callout, closing];
+  return {
+    content: {
+      key: t.key,
+      subject: subject.text,
+      body: body.text,
+      note: note.text,
+      calloutTitle: calloutTitle.text,
+      callout: callout.text,
+      closing: closing.text,
+    },
+    missing: [...new Set(sections.flatMap((s) => s.missing))],
+  };
 }
 
 /**
@@ -138,6 +145,15 @@ export function gmailComposeUrl(to: string, subject: string, body: string, from?
 /** For phones and desktop mail apps. Spaces must be %20 here, not "+". */
 export function mailtoUrl(to: string, subject: string, body: string): string {
   return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/**
+ * A new mail in Outlook on the web, with recipient and subject filled in. The body stays out: this link only takes
+ * plain text, and HR pastes the designed mail instead. Spaces must be %20, Outlook shows "+" as it is.
+ */
+export function outlookComposeUrl(to: string | null, subject: string): string {
+  const recipient = to ? `to=${encodeURIComponent(to)}&` : '';
+  return `https://outlook.office.com/mail/deeplink/compose?${recipient}subject=${encodeURIComponent(subject)}`;
 }
 
 const INTERVIEW_MINUTES = 60;
@@ -159,9 +175,10 @@ export function googleCalendarUrl(input: {
   details: string;
   location: string;
   guest?: string | null;
+  minutes?: number;
 }): string {
   const start = new Date(input.startIso);
-  const end = new Date(start.getTime() + INTERVIEW_MINUTES * 60_000);
+  const end = new Date(start.getTime() + (input.minutes ?? INTERVIEW_MINUTES) * 60_000);
   const q = new URLSearchParams({
     action: 'TEMPLATE',
     text: input.title,

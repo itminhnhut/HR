@@ -304,3 +304,81 @@ describe('migration 0017: level, openings and work mode on jobs', SLOW, () => {
     });
   });
 });
+
+describe('migration 0018: mail templates', SLOW, () => {
+  /** Everything an earlier version could have saved, on the schema before this migration. */
+  async function databaseBefore0018() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(18) });
+    await pg.exec(`
+      insert into jobs (slug, title, department, employment_type, deadline)
+        values ('ke-toan', 'Kế toán', 'Tài chính', 'full_time', '2099-01-01');
+      insert into applications (job_id, full_name, phone, consent_at, policy_version)
+        select id, 'Phạm Quốc Huy', '0912000001', now(), 'v' from jobs;
+      insert into contact_log (application_id, template_key, channel, hr_name)
+        select id, 'rejection', 'gmail', 'Phòng Nhân sự' from applications;
+      insert into message_templates (key, subject, body) values ('rejection', 'Cũ', 'Một khối chữ cũ');
+      insert into hr_users (email, name, password_hash, phone) values ('hr@congty.vn', 'Lan', 'h', '0909000111');
+    `);
+    return { pg, db };
+  }
+
+  it('should keep applications and their contact history', async () => {
+    // Arrange
+    const { db } = await databaseBefore0018();
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [application] = await db.select().from(schema.applications);
+    expect(application.fullName).toBe('Phạm Quốc Huy');
+    const contacts = await db.select().from(schema.contactLog);
+    expect(contacts.map((c) => [c.applicationId, c.templateKey, c.channel, c.hrName])).toEqual([
+      [application.id, 'rejection', 'gmail', 'Phòng Nhân sự'],
+    ]);
+  });
+
+  it('should drop saved templates so the new built-in texts apply', async () => {
+    // Arrange
+    const { db } = await databaseBefore0018();
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    expect(await db.select().from(schema.messageTemplates)).toEqual([]);
+  });
+
+  it('should keep HR accounts, with job title and alias empty', async () => {
+    // Arrange
+    const { db } = await databaseBefore0018();
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [user] = await db.select().from(schema.hrUsers);
+    expect(user).toMatchObject({ email: 'hr@congty.vn', phone: '0909000111', jobTitle: 'HR Generalist', alias: null });
+  });
+
+  it('should accept the new template and channels once applied', async () => {
+    // Arrange
+    const { db } = await databaseBefore0018();
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    const [application] = await db.select().from(schema.applications);
+
+    // Act
+    await db.insert(schema.contactLog).values([
+      { applicationId: application.id, templateKey: 'rejection_interview', channel: 'copy_html', hrName: 'Lan' },
+      { applicationId: application.id, templateKey: 'call', channel: 'copy_html', hrName: 'Lan' },
+    ]);
+    await db.insert(schema.messageTemplates).values({ key: 'rejection_interview', subject: 's', body: 'b' });
+
+    // Assert
+    expect(await db.select().from(schema.contactLog)).toHaveLength(3);
+    const [template] = await db.select().from(schema.messageTemplates);
+    expect(template).toMatchObject({ note: '', calloutTitle: '', callout: '', closing: '' });
+  });
+});

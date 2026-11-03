@@ -99,6 +99,8 @@ export interface MockHrUser {
   lastLoginAt: string | null;
   phone: string | null;
   contactEmail: string | null;
+  jobTitle: string | null;
+  alias: string | null;
 }
 
 export interface MockDb {
@@ -118,7 +120,7 @@ export interface MockDb {
   session: { hr: string | null; candidateEmail: string | null };
 }
 
-export const DB_VERSION = 12;
+export const DB_VERSION = 13;
 
 const STANDARD_BENEFITS = standardBenefits(DEFAULT_JOB_TEMPLATE);
 const HOURS = composeWorkingHours(
@@ -437,6 +439,8 @@ export function buildSeed(now: Date = new Date()): MockDb {
         lastLoginAt: null,
         phone: null,
         contactEmail: null,
+        jobTitle: 'HR Generalist',
+        alias: null,
       },
     ],
     template: null,

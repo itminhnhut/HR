@@ -170,6 +170,17 @@ export async function openApplication(db: Db, id: string): Promise<ApplicationDe
   return toDetail(db, { ...row, ...patch });
 }
 
+/**
+ * Leaving "Hẹn phỏng vấn" drops the interview details, so a later invitation never reuses an old time or Meet link.
+ * The exception is rejecting after the interview took place: its date stays for the thank-you letter.
+ */
+function interviewDetailsOnStatusChange(row: Application, status: Application['status'] | undefined, now: Date) {
+  if (!status || status === row.status) return {};
+  if (status === 'interview') return { interviewAt: null };
+  const interviewed = status === 'rejected' && row.status === 'interview' && row.interviewAt && row.interviewAt <= now;
+  return { interviewAt: interviewed ? row.interviewAt : null, interviewMode: null, meetingUrl: null };
+}
+
 export async function updateApplication(
   db: Db,
   id: string,
@@ -191,8 +202,7 @@ export async function updateApplication(
   const noteChanged = note !== undefined && (note?.trim() || null) !== row.note;
   const patch = {
     ...(status ? { status } : {}),
-    // Leaving "Hẹn phỏng vấn" drops the interview details, so a later invitation never reuses an old Meet link.
-    ...(status && status !== 'interview' ? { interviewAt: null, interviewMode: null, meetingUrl: null } : {}),
+    ...interviewDetailsOnStatusChange(row, status, now),
     ...(interviewAt !== undefined ? { interviewAt: interviewAt ? new Date(interviewAt) : null } : {}),
     ...(interviewing && interviewMode !== undefined ? { interviewMode } : {}),
     ...(interviewing && meetingUrl !== undefined ? { meetingUrl } : {}),

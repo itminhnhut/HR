@@ -3,6 +3,7 @@ import {
   fieldErrors,
   messageTemplateSchema,
   TEMPLATE_KEYS,
+  type MessageTemplate,
   type MessageTemplatesResponse,
   type TemplateKey,
 } from '@careers/shared';
@@ -11,6 +12,8 @@ import type { Db } from '../db/index.js';
 import { messageTemplates } from '../db/schema.js';
 import { invalid, notFound } from '../lib/http-error.js';
 
+type MessageTemplateRow = typeof messageTemplates.$inferSelect;
+
 const isKey = (v: string): v is TemplateKey => (TEMPLATE_KEYS as string[]).includes(v);
 
 function keyOrFail(raw: string): TemplateKey {
@@ -18,16 +21,27 @@ function keyOrFail(raw: string): TemplateKey {
   return raw;
 }
 
+const TEXT_FIELDS = ['subject', 'body', 'note', 'calloutTitle', 'callout', 'closing'] as const;
+
+const toTemplate = (row: MessageTemplateRow): MessageTemplate => ({
+  key: row.key,
+  subject: row.subject,
+  body: row.body,
+  note: row.note,
+  calloutTitle: row.calloutTitle,
+  callout: row.callout,
+  closing: row.closing,
+});
+
+const differsFromBuiltIn = (t: MessageTemplate) =>
+  TEXT_FIELDS.some((field) => t[field] !== DEFAULT_MESSAGE_TEMPLATES[t.key][field]);
+
 /** Every template: HR's wording where saved, the built-in text otherwise. */
 export async function listMessageTemplates(db: Db): Promise<MessageTemplatesResponse> {
-  const saved = new Map((await db.select().from(messageTemplates)).map((row) => [row.key, row]));
-  return {
-    templates: TEMPLATE_KEYS.map((key) => {
-      const row = saved.get(key);
-      return row ? { key, subject: row.subject, body: row.body } : DEFAULT_MESSAGE_TEMPLATES[key];
-    }),
-    customized: TEMPLATE_KEYS.filter((key) => saved.has(key)),
-  };
+  const rows = await db.select().from(messageTemplates);
+  const saved = new Map(rows.map((row) => [row.key, toTemplate(row)]));
+  const templates = TEMPLATE_KEYS.map((key) => saved.get(key) ?? DEFAULT_MESSAGE_TEMPLATES[key]);
+  return { templates, customized: templates.filter(differsFromBuiltIn).map((t) => t.key) };
 }
 
 export async function saveMessageTemplate(db: Db, rawKey: string, raw: unknown): Promise<MessageTemplatesResponse> {

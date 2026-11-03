@@ -247,16 +247,61 @@ describe('PATCH /api/hr/applications/:id', () => {
     expect(body).toMatchObject({ status: 'interview', interviewAt: '2026-10-22T02:30:00.000Z' });
   });
 
-  it('clears the interview time when the application leaves "interview"', async () => {
-    const app = await insertApplication(await insertJob(t), {
-      status: 'interview',
-      interviewAt: new Date('2026-10-22T02:30:00.000Z'),
-    });
+  const hoursFromNow = (hours: number) => new Date(t.clock.now.getTime() + hours * 3_600_000);
 
+  it('should clear an upcoming interview when the application is rejected before it happens', async () => {
+    // Arrange
+    const app = await insertApplication(await insertJob(t), { status: 'interview', interviewAt: hoursFromNow(24) });
+
+    // Act
     const body = await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { status: 'rejected' }));
 
+    // Assert
     expect(body).toMatchObject({ status: 'rejected', interviewAt: null });
     expect((await t.db.select().from(applications))[0].interviewAt).toBeNull();
+  });
+
+  it('should keep the date of a past interview when rejecting, for the thank-you letter, but drop the Meet link', async () => {
+    // Arrange
+    const interviewAt = hoursFromNow(-24);
+    const app = await insertApplication(await insertJob(t), {
+      status: 'interview',
+      interviewAt,
+      interviewMode: 'online',
+      meetingUrl: 'https://meet.google.com/abc-defg-hij',
+    });
+
+    // Act
+    const body = await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { status: 'rejected' }));
+
+    // Assert
+    expect(body).toMatchObject({
+      status: 'rejected',
+      interviewAt: interviewAt.toISOString(),
+      interviewMode: null,
+      meetingUrl: null,
+    });
+  });
+
+  it('should clear a past interview when the application goes back to "seen"', async () => {
+    const app = await insertApplication(await insertJob(t), { status: 'interview', interviewAt: hoursFromNow(-24) });
+
+    const body = await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { status: 'seen' }));
+
+    expect(body).toMatchObject({ status: 'seen', interviewAt: null });
+  });
+
+  it('should not reuse the old date when a rejected application is invited again', async () => {
+    // Arrange
+    const app = await insertApplication(await insertJob(t), { status: 'rejected', interviewAt: hoursFromNow(-24) });
+
+    // Act
+    const body = await json<ApplicationDetailDto>(
+      await hr('PATCH', `/applications/${app.id}`, { status: 'interview', reviewBypassReason: 'Mời lại ứng viên' }),
+    );
+
+    // Assert
+    expect(body).toMatchObject({ status: 'interview', interviewAt: null });
   });
 
   it('clears the interview time with null and refuses a time that is not ISO', async () => {
