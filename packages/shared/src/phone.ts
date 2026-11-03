@@ -1,8 +1,10 @@
 /**
  * Normalize a Vietnamese mobile number to 0xxxxxxxxx (10 digits).
- * Accepts spaces, dots, dashes and +84 / 84 prefixes. Returns null if invalid.
+ * Accepts spaces, dots, dashes, brackets and +84 / 84 prefixes. Returns null if invalid: anything else in the
+ * input, such as a letter, means it is not a number we can trust, and the digits are not guessed.
  */
 export function normalizeVietnamPhone(input: string): string | null {
+  if (/[^\d+\s().-]/.test(input)) return null;
   let digits = input.replace(/[^\d+]/g, '');
   if (digits.startsWith('+84')) digits = `0${digits.slice(3)}`;
   else if (digits.startsWith('84') && digits.length === 11) digits = `0${digits.slice(2)}`;

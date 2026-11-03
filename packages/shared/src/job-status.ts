@@ -89,6 +89,6 @@ export function hasEnded(status: EffectiveStatus): boolean {
 /** Day the job stopped taking applications, or null while it still does (or never did). */
 export function endedOn(job: JobLike & { closedOn: string | null }, now: Date = new Date()): string | null {
   const status = effectiveStatus(job, now);
-  if (status === 'closed') return job.closedOn;
+  if (status === 'closed') return job.closedOn ?? job.deadline;
   return status === 'expired' ? job.deadline : null;
 }

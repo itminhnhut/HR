@@ -7,12 +7,14 @@ import {
   type DuplicateApplicationDto,
   type HrMe,
 } from '@careers/shared';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import type { Deps } from '../deps.js';
-import { applications, jobs } from '../db/schema.js';
+import type { Db } from '../db/index.js';
+import { applications, jobs, type NewApplication } from '../db/schema.js';
 import { CV_PROBLEM_MESSAGE, checkCvFile, cvFileName, deleteFilesQuietly } from '../lib/cv-store.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
+import { lockJobAndPhone } from './apply.js';
 import { newCvFrom, replaceCv } from './cv-replace.js';
 import { checkUsableSource } from './sources.js';
 
@@ -34,9 +36,9 @@ async function parseNewApplication(body: MultipartBody) {
   return parsed.data;
 }
 
-/** The application of this phone for this job, if HR or the candidate already added one. */
-async function existingFor(deps: Deps, jobId: string, phone: string): Promise<DuplicateApplicationDto | null> {
-  const [row] = await deps.db
+/** The newest application of this phone for this job, if HR or the candidate already added one. */
+async function existingFor(db: Db, jobId: string, phone: string): Promise<DuplicateApplicationDto | null> {
+  const [row] = await db
     .select({
       id: applications.id,
       fullName: applications.fullName,
@@ -45,13 +47,44 @@ async function existingFor(deps: Deps, jobId: string, phone: string): Promise<Du
     })
     .from(applications)
     .where(and(eq(applications.jobId, jobId), eq(applications.phone, phone)))
+    .orderBy(desc(applications.createdAt))
     .limit(1);
   return row ? { ...row, createdAt: row.createdAt.toISOString() } : null;
+}
+
+function newApplication(
+  input: Awaited<ReturnType<typeof parseNewApplication>>,
+  file: { pathname: string | null; name: string | null },
+  hr: HrMe,
+  at: Date,
+): NewApplication {
+  return {
+    jobId: input.jobId,
+    fullName: input.fullName,
+    phone: input.phone,
+    email: input.email,
+    cvPathname: file.pathname,
+    cvFileName: file.name,
+    cvLink: file.pathname ? null : input.cvLink,
+    note: input.note,
+    noteUpdatedAt: input.note ? at : null,
+    noteUpdatedBy: input.note ? hrName(hr) : null,
+    status: 'seen',
+    source: input.source,
+    referrer: input.source === REFERRAL_SOURCE ? input.referrer : null,
+    addedBy: hrName(hr),
+    consentBy: hrName(hr),
+    consentAt: at,
+    policyVersion: POLICY_VERSION,
+    createdAt: at,
+  };
 }
 
 /**
  * "Thêm hồ sơ": an application HR received outside the site. Starts as "Đã xem"; nothing is sent to the candidate.
  * 409 { code: "duplicate" } when this phone already applied for this job (HR updates that one instead).
+ * The first check spares an upload; the one that counts runs under the lock, so a slow upload never holds it and two
+ * forms sent together cannot both pass. A refused form leaves no file behind.
  */
 export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe): Promise<{ id: string }> {
   const input = await parseNewApplication(body);
@@ -60,35 +93,22 @@ export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe):
   if (job.state === 'draft')
     throw invalid('Tin còn là nháp, đăng tin trước rồi thêm hồ sơ.', { jobId: 'Tin còn là nháp.' });
   await checkUsableSource(deps.db, input.source);
-  const duplicate = await existingFor(deps, job.id, input.phone);
-  if (duplicate) throw duplicateError(duplicate);
+  const earlier = await existingFor(deps.db, job.id, input.phone);
+  if (earlier) throw duplicateError(earlier);
   const at = deps.now();
   const pathname = body.file ? await deps.cvStore.put(job.id, body.file) : null;
+  const file = { pathname, name: body.file ? cvFileName(body.file) : null };
   try {
-    const [row] = await deps.db
-      .insert(applications)
-      .values({
-        jobId: job.id,
-        fullName: input.fullName,
-        phone: input.phone,
-        email: input.email,
-        cvPathname: pathname,
-        cvFileName: body.file ? cvFileName(body.file) : null,
-        cvLink: pathname ? null : input.cvLink,
-        note: input.note,
-        noteUpdatedAt: input.note ? at : null,
-        noteUpdatedBy: input.note ? hrName(hr) : null,
-        status: 'seen',
-        source: input.source,
-        referrer: input.source === REFERRAL_SOURCE ? input.referrer : null,
-        addedBy: hrName(hr),
-        consentBy: hrName(hr),
-        consentAt: at,
-        policyVersion: POLICY_VERSION,
-        createdAt: at,
-      })
-      .returning({ id: applications.id });
-    return { id: row.id };
+    return await deps.db.transaction(async (tx) => {
+      await lockJobAndPhone(tx, job.id, input.phone);
+      const duplicate = await existingFor(tx, job.id, input.phone);
+      if (duplicate) throw duplicateError(duplicate);
+      const [row] = await tx
+        .insert(applications)
+        .values(newApplication(input, file, hr, at))
+        .returning({ id: applications.id });
+      return { id: row.id };
+    });
   } catch (error) {
     await deleteFilesQuietly(deps.cvStore, [pathname]);
     throw error;
@@ -121,7 +141,7 @@ export async function updateContact(deps: Deps, id: string, raw: unknown): Promi
   const { phone, email, source, referrer } = parsed.data;
   await checkUsableSource(deps.db, source, app.source);
   if (phone !== app.phone) {
-    const duplicate = await existingFor(deps, app.jobId, phone);
+    const duplicate = await existingFor(deps.db, app.jobId, phone);
     if (duplicate) throw duplicateError(duplicate);
   }
   await deps.db

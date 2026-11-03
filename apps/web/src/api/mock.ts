@@ -169,15 +169,18 @@ const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
 });
 
 /** Like the BE's generatePassword: three groups of five letters and digits. */
-/** Jobs that ended more than 30 days ago: their applications are due for deletion (same rule as the BE). */
-function dueJobIds(db: MockDb, now = new Date()): string[] {
+/** Due for deletion: the job ended and the consent was given more than 30 days ago (same rule as the BE). */
+function dueApplications(db: MockDb, now = new Date()): MockDb['applications'] {
   const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
-  return db.jobs
+  const endedLongAgo = db.jobs
     .filter((j) => {
       const ended = endedOn(j, now);
       return ended !== null && ended < cutoff;
     })
     .map((j) => j.id);
+  return db.applications.filter(
+    (a) => endedLongAgo.includes(a.jobId) && todayInVietnam(new Date(a.consentAt)) < cutoff,
+  );
 }
 
 const firstLine = (text: string | null) =>
@@ -501,7 +504,6 @@ export const mockApi: Api = {
     const title = (id: string) => db.jobs.find((j) => j.id === id)?.title ?? '—';
     const fresh = db.applications.filter((a) => a.status === 'new');
     const waitSince = `${addDays(today, -3)}T00:00:00.000+07:00`;
-    const due = dueJobIds(db, now);
     return delay({
       bySource: [{ source: 'website' as const, count: perDay.reduce((n, d) => n + d.count, 0) }],
       newApplications: fresh.length,
@@ -524,7 +526,7 @@ export const mockApi: Api = {
         .filter(({ j, status }) => status === 'expiring' || (status === 'expired' && j.deadline >= addDays(today, -14)))
         .sort((a, b) => a.j.deadline.localeCompare(b.j.deadline))
         .map(({ j, status }) => ({ id: j.id, title: j.title, deadline: j.deadline, status })),
-      dueForDeletion: db.applications.filter((a) => due.includes(a.jobId)).length,
+      dueForDeletion: dueApplications(db, now).length,
     });
   },
 
@@ -551,11 +553,10 @@ export const mockApi: Api = {
         };
       })
       .sort((a, b) => order[a.status] - order[b.status]);
-    const due = dueJobIds(db, now);
     return delay({
       jobs,
       newApplications: db.applications.filter((a) => a.status === 'new').length,
-      dueForDeletion: db.applications.filter((a) => due.includes(a.jobId)).length,
+      dueForDeletion: dueApplications(db, now).length,
     });
   },
 
@@ -782,9 +783,9 @@ export const mockApi: Api = {
   async hrDeleteDueApplications() {
     const db = load();
     requireHr(db);
-    const due = dueJobIds(db);
+    const due = dueApplications(db);
     const before = db.applications.length;
-    db.applications = db.applications.filter((a) => !due.includes(a.jobId));
+    db.applications = db.applications.filter((a) => !due.includes(a));
     save();
     return delay({ deleted: before - db.applications.length });
   },

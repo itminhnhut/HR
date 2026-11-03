@@ -37,8 +37,11 @@ export async function readMultipart(c: Context, fileField: string): Promise<Mult
   let isEmptyFile = false;
   for (const [key, value] of Object.entries(body)) {
     if (typeof value === 'string') fields[key] = value;
-    else if (key === fileField && value.size > 0) file = value;
-    else if (key === fileField && value.name !== '') isEmptyFile = true;
+    else if (key === fileField) {
+      // A named file with no bytes reaches the file check; a browser sends no name for a box left empty.
+      if (value.size > 0 || value.name) file = value;
+      if (value.size === 0 && value.name !== '') isEmptyFile = true;
+    }
   }
   return { fields, file, isEmptyFile };
 }

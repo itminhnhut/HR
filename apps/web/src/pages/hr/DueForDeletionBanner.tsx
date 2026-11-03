@@ -4,7 +4,7 @@ import { FieldError } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { errorMessage } from './parts';
 
-/** Applications of jobs that ended more than 30 days ago: the privacy policy promises they are deleted. */
+/** Applications whose job ended and whose consent was given over 30 days ago: the privacy policy promises they go. */
 export function DueForDeletionBanner({ count }: { count: number }) {
   const remove = useDeleteDueApplications();
   const [confirm, setConfirm] = useState(false);
@@ -19,8 +19,8 @@ export function DueForDeletionBanner({ count }: { count: number }) {
         <Icon name="trash" size={18} stroke={1.5} />
       </span>
       <span className="min-w-0 flex-[1_1_300px] leading-relaxed">
-        <strong className="font-semibold">{count} hồ sơ đến hạn xoá</strong>: thuộc các tin đã đóng hoặc hết hạn quá 30
-        ngày. Chính sách dữ liệu hứa xoá các hồ sơ này, kể cả file CV.
+        <strong className="font-semibold">{count} hồ sơ đến hạn xoá</strong>: tin đã đóng hoặc hết hạn quá 30 ngày và hồ
+        sơ đã nhận quá 30 ngày. Chính sách dữ liệu hứa xoá các hồ sơ này, kể cả file CV.
         {error && (
           <span className="mt-1 block">
             <FieldError>{error}</FieldError>

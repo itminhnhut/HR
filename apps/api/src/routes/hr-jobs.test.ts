@@ -88,7 +88,8 @@ describe('HR job list', () => {
           jobId: job.id,
           fullName: 'A',
           phone: `09120000${i}${k}`,
-          consentAt: t.clock.now,
+          // Applied while the job was open: the 30 days then run from the job's end.
+          consentAt: new Date('2026-09-01T00:00:00.000Z'),
           policyVersion: 'v',
         })),
       ),

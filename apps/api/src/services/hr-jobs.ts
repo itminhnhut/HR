@@ -1,9 +1,9 @@
 import {
   addDays,
   effectiveStatus,
+  endedOn,
   fieldErrors,
   foldVietnamese,
-  hasEnded,
   jobInputSchema,
   todayInVietnam,
   validateDeadline,
@@ -11,7 +11,7 @@ import {
   type HrJobDto,
   type HrJobsResponse,
 } from '@careers/shared';
-import { and, count, eq, like, ne, sql } from 'drizzle-orm';
+import { and, count, eq, inArray, like, lt, ne, sql, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, jobs, type Job, type NewJob } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
@@ -75,7 +75,7 @@ export async function listHrJobs(db: Db, now: Date): Promise<HrJobsResponse> {
   return {
     jobs: list,
     newApplications: counts.reduce((sum, c) => sum + c.fresh, 0),
-    dueForDeletion: dueJobIds(rows, now).reduce((sum, id) => sum + (byJob.get(id)?.total ?? 0), 0),
+    dueForDeletion: await countDueApplications(db, rows, now),
   };
 }
 
@@ -189,17 +189,28 @@ export async function setDeadline(db: Db, id: string, raw: unknown, now: Date): 
 
 const DELETE_AFTER_DAYS = 30;
 
-/** Jobs whose applications are due for deletion: ended (closed or expired) more than 30 days ago. */
-export function dueJobIds(rows: Job[], now: Date): string[] {
+/**
+ * Which applications are due for deletion, or undefined when none can be. The 30 days run from the later of two days:
+ * the job's end and the application's consent, so one HR adds to a long-closed job still gets its full 30 days.
+ * Every count and the deletion itself use this, so they always agree.
+ */
+export function dueApplicationsWhere(rows: Job[], now: Date): SQL | undefined {
   const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
-  return rows
+  const ids = rows
     .filter((job) => {
-      const status = effectiveStatus(job, now);
-      if (!hasEnded(status)) return false;
-      const ended = status === 'closed' ? (job.closedOn ?? job.deadline) : job.deadline;
-      return ended < cutoff;
+      const ended = endedOn(job, now);
+      return ended !== null && ended < cutoff;
     })
     .map((job) => job.id);
+  if (ids.length === 0) return undefined;
+  return and(inArray(applications.jobId, ids), lt(applications.consentAt, new Date(`${cutoff}T00:00:00.000+07:00`)));
+}
+
+export async function countDueApplications(db: Db, rows: Job[], now: Date): Promise<number> {
+  const where = dueApplicationsWhere(rows, now);
+  if (!where) return 0;
+  const [{ due }] = await db.select({ due: count() }).from(applications).where(where);
+  return due;
 }
 
 /** Only drafts can be deleted; anything that was public keeps its link and applications. */

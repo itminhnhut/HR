@@ -10,6 +10,7 @@ type Mode = 'file' | 'link' | 'saved';
 export function cvFileProblem(file: File): string | null {
   const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
   if (!isPdf) return 'CV cần là file PDF.';
+  if (file.size === 0) return 'File CV trống (0 byte). Chọn lại file hoặc dán link CV.';
   if (file.size > CV_MAX_BYTES) return 'File lớn hơn 4 MB. Nén lại hoặc dán link CV.';
   return null;
 }
@@ -22,11 +23,14 @@ export function CvPicker({
   onChange,
   error,
   savedFileName,
+  linkHint,
 }: {
   onChange: (cv: CvInput | null) => void;
   error?: string;
   /** The account's saved CV; offers "Dùng CV đã lưu" when set. */
   savedFileName?: string | null;
+  /** Under the link box: what happens to a link on this page. */
+  linkHint?: string;
 }) {
   const id = useId();
   const [mode, setMode] = useState<Mode>('file');
@@ -103,6 +107,7 @@ export function CvPicker({
           className={`field-focus min-h-[46px] rounded-control border px-3.5 text-sm text-navy ${error ? 'border-error' : 'border-field'}`}
         />
       )}
+      {mode === 'link' && linkHint && <p className="m-0 text-[13px] leading-relaxed text-muted">{linkHint}</p>}
       {mode === 'saved' && (
         <p className="m-0 flex items-center gap-2 rounded-control bg-mist px-3.5 py-3 text-sm text-navy">
           <Icon name="file" size={16} className="text-accent" /> {savedFileName}

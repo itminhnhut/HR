@@ -28,7 +28,7 @@ async function insertApplication(job: Job, overrides: Partial<typeof application
       fullName: `Ứng viên ${n}`,
       phone: `09120000${String(n).padStart(2, '0')}`,
       consentAt: t.clock.now,
-      policyVersion: '2026-10',
+      policyVersion: '2026-11',
       createdAt: new Date(t.clock.now.getTime() - n * 60_000),
       ...overrides,
     })
@@ -417,10 +417,13 @@ describe('DELETE /api/hr/applications/:id', () => {
 });
 
 describe('DELETE /api/hr/applications/due', () => {
+  /** Applied while the jobs were open: the 30 days then run from each job's end. */
+  const consentAt = new Date('2026-09-01T00:00:00.000Z');
+
   /** One application with a CV file for the job; returns its pathname. */
   async function applicationWithCv(job: Job): Promise<string> {
     const pathname = await t.cvStore.put(job.id, pdfFile());
-    await insertApplication(job, { cvPathname: pathname });
+    await insertApplication(job, { cvPathname: pathname, consentAt });
     return pathname;
   }
 
@@ -431,7 +434,7 @@ describe('DELETE /api/hr/applications/due', () => {
     const expiredRecently = await insertJob(t, { deadline: '2026-10-10', publishedOn: '2026-09-01' });
     const open = await insertJob(t);
     await applicationWithCv(closedLongAgo);
-    await insertApplication(closedLongAgo, { cvLink: 'https://drive.google.com/x' });
+    await insertApplication(closedLongAgo, { cvLink: 'https://drive.google.com/x', consentAt });
     await applicationWithCv(expiredLongAgo);
     const kept = await Promise.all([closedThirtyDays, expiredRecently, open].map(applicationWithCv));
 

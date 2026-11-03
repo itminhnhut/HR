@@ -127,10 +127,12 @@ describe('GET /api/hr/dashboard', () => {
     const closed = await insertJob(t, { state: 'closed', closedOn: '2026-09-19', deadline: '2026-10-30' });
     const expired = await insertJob(t, { deadline: '2026-09-15', publishedOn: '2026-09-01' });
     const recent = await insertJob(t, { state: 'closed', closedOn: '2026-09-20', deadline: '2026-10-30' });
-    await insertApplication(closed);
-    await insertApplication(closed);
-    await insertApplication(expired);
-    await insertApplication(recent);
+    // Applied while the jobs were open: the 30 days then run from each job's end.
+    const applied = { consentAt: new Date('2026-09-01T00:00:00.000Z') };
+    await insertApplication(closed, applied);
+    await insertApplication(closed, applied);
+    await insertApplication(expired, applied);
+    await insertApplication(recent, applied);
 
     expect((await dashboard()).dueForDeletion).toBe(3);
   });

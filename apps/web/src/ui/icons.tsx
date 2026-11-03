@@ -348,6 +348,9 @@ const PATHS = {
     <path d="m9 11-5 5v3h3l5-5M9 11l4.5-6.5a2 2 0 0 1 2.8-.4l2.6 1.9a2 2 0 0 1 .4 2.8L14 14M9 11l5 3M3 21h18" />
   ),
   minus: <path d="M5 12h14" />,
+  list: <path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01" />,
+  xCircle: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9 9l6 6M15 9l-6 6" />,
+  minusCircle: <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8 12h8" />,
   grip: (
     <>
       <circle cx="9" cy="6" r="1.1" />

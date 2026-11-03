@@ -1,25 +1,14 @@
-import { addDays, formatDate, todayInVietnam } from '@careers/shared';
-import { useState, type CSSProperties } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { vi } from 'react-day-picker/locale';
-import 'react-day-picker/style.css';
-import { SelectField } from '../../../ui/Field';
+import { todayInVietnam } from '@careers/shared';
+import { useRef, useState, type CSSProperties, type RefObject } from 'react';
+import { Dialog } from '../../../ui/Dialog';
 import { Icon } from '../../../ui/icons';
+import { InterviewPicker } from './InterviewPicker';
 
-const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-navy)',
-  '--rdp-accent-background-color': 'var(--color-tint)',
-  '--rdp-day-height': '38px',
-  '--rdp-day-width': '38px',
-  '--rdp-day_button-height': '36px',
-  '--rdp-day_button-width': '36px',
-} as CSSProperties;
-
-/** 07:00 … 20:00 every half hour. */
-const TIMES = Array.from({ length: 27 }, (_, i) => {
-  const minutes = 7 * 60 + i * 30;
-  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${minutes % 60 === 0 ? '00' : '30'}`;
-});
+/** 07 … 20, each with the quarters: 20:00 is the last slot. */
+const HOURS = Array.from({ length: 14 }, (_, i) => String(7 + i).padStart(2, '0'));
+const MINUTES = ['00', '15', '30', '45'];
+const DEFAULT_TIME = '09:00';
+const LAST_TIME = '20:00';
 
 const VN = 'Asia/Ho_Chi_Minh';
 const dayOf = (iso: string) => new Intl.DateTimeFormat('en-CA', { timeZone: VN }).format(new Date(iso));
@@ -36,14 +25,150 @@ export function interviewLabel(iso: string): string {
   return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${day} lúc ${timeOf(iso).replace(/^0/, '')}`;
 }
 
-const toLocal = (iso: string) => {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d);
-};
-const toIsoDay = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+/** "Thứ Năm, 05/11/2026 · 09:00", on the closed field and above "Áp dụng". */
+function fieldLabel(iso: string): string {
+  const weekday = new Intl.DateTimeFormat('vi-VN', { timeZone: VN, weekday: 'long' }).format(new Date(iso));
+  const [y, m, d] = dayOf(iso).split('-');
+  return `${weekday.charAt(0).toUpperCase()}${weekday.slice(1)}, ${d}/${m}/${y} · ${timeOf(iso)}`;
+}
 
-/** Interview day (calendar) and time (half-hour list), Vietnam time. Optional. */
+const PICKER_WIDTH = 330;
+const PICKER_HEIGHT = 510;
+
+/** Beside the field from 640px, on whichever side has room; below that the dialog is a bottom sheet. */
+function pickerPlace(field: HTMLElement | null): CSSProperties | undefined {
+  if (!field || window.innerWidth < 640) return undefined;
+  const r = field.getBoundingClientRect();
+  // Right under the field, moved up only as far as the window needs.
+  const top = Math.max(8, Math.min(r.bottom + 4, window.innerHeight - PICKER_HEIGHT - 8));
+  const left = Math.max(8, Math.min(r.left, window.innerWidth - PICKER_WIDTH - 8));
+  return { margin: 0, top, left, width: PICKER_WIDTH };
+}
+
+function FieldButton({
+  ref,
+  text,
+  hasValue,
+  disabled,
+  isOpen,
+  onClick,
+}: {
+  ref: RefObject<HTMLButtonElement | null>;
+  text: string;
+  hasValue: boolean;
+  disabled?: boolean;
+  isOpen: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      disabled={disabled}
+      aria-haspopup="dialog"
+      aria-expanded={isOpen}
+      aria-label={`Giờ phỏng vấn: ${text}`}
+      onClick={onClick}
+      className={`field-focus flex min-h-11 w-full items-center gap-2.5 rounded-control border border-field bg-white px-3.5 text-left text-sm disabled:opacity-60 ${hasValue ? 'font-medium text-navy' : 'text-placeholder'}`}
+    >
+      <Icon name="calendar" size={16} className="shrink-0 text-slate" />
+      <span className="min-w-0 flex-1 truncate">{text}</span>
+      <Icon name="chevronDown" size={16} className="shrink-0 text-slate" />
+    </button>
+  );
+}
+
+const isOnBoard = (time: string) => time <= LAST_TIME;
+
+/** The picker's choices, kept apart from the saved value until "Áp dụng". */
+function useDraft(value: string | null) {
+  const [day, setDay] = useState(value ? dayOf(value) : null);
+  const [time, setTime] = useState(value ? timeOf(value) : DEFAULT_TIME);
+  const today = todayInVietnam();
+  // Times already past today cannot be picked.
+  const nowTime = timeOf(new Date().toISOString());
+  const isTimeOpen = (hour: string, minute: string) => {
+    const t = `${hour}:${minute}`;
+    return isOnBoard(t) && (day !== today || t > nowTime);
+  };
+  const nextOpen = () => HOURS.flatMap((h) => MINUTES.map((m) => `${h}:${m}`)).find((t) => isOnBoard(t) && t > nowTime);
+  const reset = () => {
+    setDay(value ? dayOf(value) : null);
+    setTime(value ? timeOf(value) : DEFAULT_TIME);
+  };
+  const chooseDay = (next: string) => {
+    setDay(next);
+    // "Hôm nay" late in the day: moves to the next free slot instead of a time already past.
+    if (next === today && time <= nowTime) setTime(nextOpen() ?? time);
+  };
+  const [hour = '09', minute = '00'] = time.split(':');
+  const chooseHour = (h: string) => {
+    // A minute that is past or off the board in the new hour moves to its first open one.
+    const m =
+      isOnBoard(`${h}:${minute}`) && (day !== today || `${h}:${minute}` > nowTime)
+        ? minute
+        : MINUTES.find((x) => isOnBoard(`${h}:${x}`) && (day !== today || `${h}:${x}` > nowTime));
+    setTime(`${h}:${m ?? '00'}`);
+  };
+  const canApply = !!day && isTimeOpen(hour, minute);
+  const iso = day ? `${day}T${time}:00+07:00` : null;
+  return {
+    day,
+    hour,
+    minute,
+    iso,
+    canApply,
+    isTimeOpen,
+    reset,
+    chooseDay,
+    chooseHour,
+    chooseMinute: (m: string) => setTime(`${hour}:${m}`),
+  };
+}
+
+/** The picker, placed beside the field; every choice stays a draft until "Áp dụng". */
+function PickerDialog({
+  isOpen,
+  place,
+  draft,
+  canClear,
+  finish,
+}: {
+  isOpen: boolean;
+  place: CSSProperties | undefined;
+  draft: ReturnType<typeof useDraft>;
+  canClear: boolean;
+  finish: (next?: string | null) => void;
+}) {
+  return (
+    <Dialog
+      open={isOpen}
+      onClose={() => finish()}
+      label="Chọn ngày giờ phỏng vấn"
+      style={place}
+      className="sm:backdrop:bg-transparent"
+    >
+      <InterviewPicker
+        day={draft.day}
+        hour={draft.hour}
+        minute={draft.minute}
+        hours={HOURS}
+        minutes={MINUTES}
+        isTimeOpen={draft.isTimeOpen}
+        summary={draft.iso ? fieldLabel(draft.iso) : ''}
+        canApply={draft.canApply}
+        onDay={draft.chooseDay}
+        onHour={draft.chooseHour}
+        onMinute={draft.chooseMinute}
+        onClear={canClear ? () => finish(null) : undefined}
+        onCancel={() => finish()}
+        onApply={() => draft.iso && finish(draft.iso)}
+      />
+    </Dialog>
+  );
+}
+
+/** One field for the interview's day and time, Vietnam time; it opens the picker. Optional. */
 export function InterviewField({
   value,
   disabled,
@@ -56,106 +181,31 @@ export function InterviewField({
   showTitle?: boolean;
   onChange: (iso: string | null) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const today = todayInVietnam();
-  // Times already past today cannot be picked.
-  const nowTime = timeOf(new Date().toISOString());
-  const day = value ? dayOf(value) : null;
-  // A time picked before the day is kept until a day is chosen.
-  const [pendingTime, setPendingTime] = useState('09:00');
-  const time = value ? timeOf(value) : pendingTime;
-  const set = (nextDay: string, nextTime: string) => {
-    // "Hôm nay" late in the day: move to the next free half hour instead of a time already past.
-    const t = nextDay === today && nextTime <= nowTime ? (TIMES.find((x) => x > nowTime) ?? nextTime) : nextTime;
-    onChange(`${nextDay}T${t}:00+07:00`);
+  const field = useRef<HTMLButtonElement>(null);
+  const [place, setPlace] = useState<CSSProperties | undefined>();
+  const [isOpen, setIsOpen] = useState(false);
+  const draft = useDraft(value);
+  const finish = (next?: string | null) => {
+    setIsOpen(false);
+    if (next !== undefined) onChange(next);
   };
-  const quick: [string, string][] = [
-    ['Hôm nay', today],
-    ['Ngày mai', addDays(today, 1)],
-    ['Ngày kia', addDays(today, 2)],
-  ];
-  const chip = (on: boolean) =>
-    `min-h-10 rounded-full border px-3.5 text-sm transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`;
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-control border border-line px-4 py-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        {showTitle && <span className="text-sm font-medium text-navy">Giờ phỏng vấn</span>}
-        {value && (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => onChange(null)}
-            className="min-h-9 border-0 bg-transparent px-1 text-xs text-slate underline hover:text-navy"
-          >
-            Bỏ giờ hẹn
-          </button>
-        )}
-      </div>
-      <div className="flex flex-wrap items-end gap-x-4 gap-y-2.5">
-        <div role="group" aria-label="Ngày phỏng vấn" className="flex flex-wrap gap-1.5">
-          {quick.map(([label, iso]) => (
-            <button
-              key={label}
-              type="button"
-              // Late in the day there is no half hour left to book today.
-              disabled={disabled || (iso === today && !TIMES.some((x) => x > nowTime))}
-              aria-pressed={day === iso}
-              onClick={() => set(iso, time)}
-              className={chip(day === iso)}
-            >
-              {label}
-            </button>
-          ))}
-          <button
-            type="button"
-            disabled={disabled}
-            aria-expanded={open}
-            onClick={() => setOpen((o) => !o)}
-            className={`inline-flex items-center gap-1.5 ${chip(!!day && !quick.some(([, iso]) => iso === day))}`}
-          >
-            <Icon name="calendar" size={15} />
-            {day && !quick.some(([, iso]) => iso === day) ? formatDate(day).slice(0, 5) : 'Chọn ngày khác'}
-          </button>
-        </div>
-        <SelectField
-          label="Giờ"
-          hideLabel
-          value={time}
-          disabled={disabled}
-          onChange={(e) => (day ? set(day, e.target.value) : setPendingTime(e.target.value))}
-          className="w-[110px]"
-        >
-          {TIMES.map((t) => (
-            <option key={t} value={t} disabled={day === today && t <= nowTime}>
-              {t.replace(/^0/, '')}
-            </option>
-          ))}
-        </SelectField>
-      </div>
-      {open && (
-        <div className="w-fit max-w-full overflow-x-auto">
-          <DayPicker
-            mode="single"
-            locale={vi}
-            weekStartsOn={1}
-            style={CALENDAR_STYLE}
-            startMonth={toLocal(today)}
-            endMonth={toLocal(addDays(today, 90))}
-            disabled={[{ before: toLocal(today) }, { after: toLocal(addDays(today, 90)) }]}
-            selected={day ? toLocal(day) : undefined}
-            defaultMonth={toLocal(day ?? today)}
-            onSelect={(date) => {
-              if (!date) return;
-              set(toIsoDay(date), time);
-              setOpen(false);
-            }}
-          />
-        </div>
-      )}
-      <span role="status" className={`text-sm ${value ? 'font-medium text-accent' : 'text-muted'}`}>
-        {value ? interviewLabel(value) : 'Chưa chọn ngày phỏng vấn.'}
-      </span>
+    <div className="flex flex-col gap-1.5">
+      {showTitle && <span className="text-xs text-muted">Giờ phỏng vấn</span>}
+      <FieldButton
+        ref={field}
+        text={value ? fieldLabel(value) : 'Chọn ngày giờ phỏng vấn'}
+        hasValue={!!value}
+        disabled={disabled}
+        isOpen={isOpen}
+        onClick={() => {
+          draft.reset();
+          setPlace(pickerPlace(field.current));
+          setIsOpen(true);
+        }}
+      />
+      <PickerDialog isOpen={isOpen} place={place} draft={draft} canClear={!!value} finish={finish} />
     </div>
   );
 }
