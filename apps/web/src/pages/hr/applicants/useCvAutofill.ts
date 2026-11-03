@@ -54,6 +54,12 @@ function applyParsed(state: State, parsed: ParsedCvDto): State {
   return { values, fromCv: filled, reading: { step: 'done', readable: parsed.readable, filled, missing } };
 }
 
+/** Empties the boxes still holding what a CV said, so one candidate's details never sit beside another's CV. */
+function withoutCvDetails(state: State): State {
+  const values = state.fromCv.reduce<ContactValues>((v, f) => ({ ...v, [f]: '' }), state.values);
+  return { ...state, values, fromCv: [] };
+}
+
 function reduce(state: State, action: Action): State {
   switch (action.type) {
     case 'edit':
@@ -63,11 +69,11 @@ function reduce(state: State, action: Action): State {
         fromCv: state.fromCv.filter((f) => f !== action.field),
       };
     case 'start':
-      return { ...state, reading: { step: 'reading' } };
+      return { ...withoutCvDetails(state), reading: { step: 'reading' } };
     case 'stop':
-      return { ...state, reading: { step: 'idle' } };
+      return { ...withoutCvDetails(state), reading: { step: 'idle' } };
     case 'fail':
-      return { ...state, reading: { step: 'failed' } };
+      return { ...withoutCvDetails(state), reading: { step: 'failed' } };
     case 'read':
       return applyParsed(state, action.parsed);
   }
@@ -90,7 +96,8 @@ export function autofillNote(reading: Reading): string | null {
 
 /**
  * Họ và tên / Số điện thoại / Email of "Thêm hồ sơ", pre-filled from the picked PDF (POST parse-cv).
- * A failed read only shows a note: HR types the details and saves as usual.
+ * What a CV filled is emptied as soon as that CV is no longer the one picked; what HR typed always stays.
+ * A failed read also shows a note: HR types the details and saves as usual.
  */
 export function useCvAutofill() {
   const [state, dispatch] = useReducer(reduce, INITIAL);
@@ -110,7 +117,7 @@ export function useCvAutofill() {
     }
   }, []);
 
-  /** No PDF picked any more (a link, or a wrong file): drop the reading and its note, keep the boxes. */
+  /** No PDF picked any more (a link, or a wrong file): drop the reading, its note and what it filled in. */
   const forgetCv = useCallback(() => {
     if (current.current === null) return;
     current.current = null;

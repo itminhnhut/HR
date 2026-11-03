@@ -103,6 +103,24 @@
   --color-cat-emerald-line: #a6e3c8;
   --color-cat-emerald-bright: #74dbb0;
 
+  /*
+   * Application status, one look everywhere in HR (pages/hr/applicants/statusStyle.ts). Per status: solid = filled,
+   * white text on it (sky 4.8:1, slate 7.5:1, orange 4.7:1, rose 4.7:1); soft = tint; text = text on the tint (5:1 and
+   * above) and on white. statusStyle.test.ts recomputes these.
+   */
+  --color-status-new: #0277bd;
+  --color-status-new-soft: #e0f2fe;
+  --color-status-new-text: #0369a1;
+  --color-status-seen: #475569;
+  --color-status-seen-soft: #e8eef6;
+  --color-status-seen-text: #475569;
+  --color-status-interview: #c84a0a;
+  --color-status-interview-soft: #ffedd5;
+  --color-status-interview-text: #b13f06;
+  --color-status-rejected: #e11d48;
+  --color-status-rejected-soft: #ffe4e6;
+  --color-status-rejected-text: #be123c;
+
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
 
@@ -312,6 +330,35 @@
   transition: filter 0.2s ease;
   &:hover:not(:disabled) {
     filter: brightness(1.15);
+  }
+}
+
+/*
+ * A pane of a screen that fills the window (Hồ sơ ứng viên): it scrolls by itself, reaching its end moves nothing else,
+ * and its bar is always there. Giving ::-webkit-scrollbar a width turns off macOS overlay bars in Chrome, Edge and
+ * Safari; scrollbar-width would cancel that there, so it is only for browsers without it (Firefox).
+ */
+@utility pane-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--color-line-soft);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-silver-soft);
+    border: 2px solid var(--color-line-soft);
+    border-radius: 5px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-slate);
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-silver-soft) var(--color-line-soft);
   }
 }
 

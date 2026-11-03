@@ -1,5 +1,6 @@
 import {
   CV_MATCH_VERSION,
+  CV_LINK_NOTE,
   NO_REQUIREMENT,
   scoreCv,
   toItems,
@@ -39,7 +40,7 @@ async function readCv(deps: Deps, app: Application): Promise<{ text: string; not
   if (!app.cvPathname) {
     return {
       text: '',
-      note: app.cvLink ? 'CV là link, không đọc được tự động: HR mở link để xem.' : 'Hồ sơ không có CV.',
+      note: app.cvLink ? CV_LINK_NOTE : 'Hồ sơ không có CV.',
     };
   }
   const stream = await deps.cvStore.get(app.cvPathname);

@@ -13,16 +13,22 @@ import {
 import { CALLOUT_TITLE_MAX, SUBJECT_MAX, TEMPLATE_BODY_MAX, TEMPLATE_SECTION_MAX } from './message-templates.js';
 import { normalizeVietnamPhone } from './phone.js';
 
+/** Postgres cannot store a NUL character: refused here, it would answer a server error instead. */
+export const hasNoNul = (value: string) => !value.includes('\0');
+export const NUL_MESSAGE = 'Có ký tự không hợp lệ, gõ lại giúp.';
+
 const optionalText = (max: number) =>
   z
     .string()
     .trim()
     .max(max)
+    .refine(hasNoNul, NUL_MESSAGE)
     .nullish()
     .transform((v) => (v ? v : null));
 
+// The form sends no field for an empty box: "message" also answers a missing value.
 export const phoneSchema = z
-  .string()
+  .string({ message: 'Nhập số điện thoại (Zalo).' })
   .trim()
   .transform((value, ctx) => {
     const phone = normalizeVietnamPhone(value);
@@ -39,22 +45,54 @@ export const DEPARTMENT_MAX = 60;
 export const NOTE_MAX = 2000;
 export const CV_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body limit is 4.5 MB.
 export const MESSAGE_MAX = 500;
-export const POLICY_VERSION = '2026-10';
+export const POLICY_VERSION = '2026-11';
+export const NAME_MAX = 100;
+export const CV_LINK_MAX = 2048;
+
+/** Length is counted once composed: an NFD name is longer in characters, not in letters. */
+export const fullNameSchema = z
+  .string({ message: 'Nhập họ và tên.' })
+  .trim()
+  .normalize('NFC')
+  .min(2, 'Nhập họ và tên.')
+  .max(NAME_MAX, 'Họ tên quá dài.')
+  .refine(hasNoNul, NUL_MESSAGE);
+
+/** Empty means none. The spaces of a pasted address go first, so they never make it "wrong". */
+export const optionalEmailSchema = z
+  .string({ message: 'Email chưa đúng.' })
+  .trim()
+  .pipe(z.union([z.literal(''), z.email('Email chưa đúng.')]))
+  .nullish();
+
+/** A login in a link leaks to everyone who sees the profile, and "https://drive.google.com@x.example" hides its host. */
+function hasLogin(link: string): boolean {
+  if (!URL.canParse(link)) return false;
+  const { username, password } = new URL(link);
+  return username !== '' || password !== '';
+}
+
+/** A web link to a CV. The server only stores it and never fetches it (internal addresses are therefore allowed). */
+export const cvLinkSchema = z
+  .union([
+    z.literal(''),
+    z
+      .url({ protocol: /^https?$/, message: 'Link CV phải bắt đầu bằng http:// hoặc https://' })
+      .max(CV_LINK_MAX, `Link CV tối đa ${CV_LINK_MAX} ký tự.`)
+      .refine(hasNoNul, NUL_MESSAGE)
+      .refine((link) => !hasLogin(link), 'Link CV không được chứa tên đăng nhập hoặc mật khẩu.'),
+  ])
+  .nullish()
+  .transform((v) => (v ? v : null));
 
 /** Text fields of the application form. The CV file is checked separately. */
 export const applicationFieldsSchema = z.object({
   jobId: z.string().min(1),
-  fullName: z.string().trim().min(2, 'Nhập họ và tên.').max(100, 'Họ tên quá dài.'),
+  fullName: fullNameSchema,
   phone: phoneSchema,
-  email: z
-    .union([z.literal(''), z.email('Email chưa đúng.')])
-    .nullish()
-    .transform((v) => (v ? v : null)),
+  email: optionalEmailSchema.transform((v) => (v ? v : null)),
   message: optionalText(MESSAGE_MAX),
-  cvLink: z
-    .union([z.literal(''), z.url({ protocol: /^https?$/, message: 'Link CV phải bắt đầu bằng http:// hoặc https://' })])
-    .nullish()
-    .transform((v) => (v ? v : null)),
+  cvLink: cvLinkSchema,
   /** BR-11: must be ticked by the candidate, never pre-ticked. */
   consent: z.literal(true, { message: 'Hãy tích ô đồng ý để gửi hồ sơ.' }),
   formOpenedAt: z.number().int().positive(),

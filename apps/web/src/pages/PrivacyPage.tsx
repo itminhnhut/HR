@@ -27,7 +27,7 @@ const SECTIONS: [string, string[]][] = [
   [
     'Lưu trong bao lâu',
     [
-      'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng.',
+      'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng, hoặc kể từ ngày hồ sơ được thêm nếu ngày này muộn hơn.',
       'CV được lưu riêng tư, không có đường link công khai.',
     ],
   ],
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
         intro="Ngắn gọn: chúng tôi chỉ dùng thông tin bạn gửi để tuyển dụng, không bán, không chia sẻ cho bên khác."
       >
         <span className="order-last text-[13px] text-silver-soft">
-          Phiên bản 2026-10 · theo Luật Bảo vệ dữ liệu cá nhân 2025
+          Phiên bản 2026-11 · theo Luật Bảo vệ dữ liệu cá nhân 2025
         </span>
       </PageHero>
       <main className={`${PAGE_WIDTH} py-12 sm:py-14`}>

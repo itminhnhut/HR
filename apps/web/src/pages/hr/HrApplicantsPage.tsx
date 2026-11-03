@@ -1,397 +1,227 @@
-import {
-  sourceName,
-  WEBSITE_SOURCE,
-  formatTimestamp,
-  type ApplicationRowDto,
-  type ApplicationStatus,
-} from '@careers/shared';
-import { useDeferredValue, useMemo, useState } from 'react';
+import type { ApplicationRowDto } from '@careers/shared';
+import { useDeferredValue, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { useApplications, useScorePending, useSources } from '../../api/queries';
+import { useApplications, useScorePending } from '../../api/queries';
 import { useMediaQuery, usePageMeta } from '../../lib/hooks';
-import { Dialog, SheetHandle } from '../../ui/Dialog';
-import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
+import { CloseButton, Dialog, SheetHandle } from '../../ui/Dialog';
+import { ErrorState, LoadingStatus, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
 import { AddApplicationDialog } from './applicants/AddApplicationDialog';
 import { ApplicantDetail } from './applicants/ApplicantDetail';
-import { percentTone } from './applicants/CvMatch';
-import { interviewLabel } from './applicants/InterviewField';
-import { apiMessage, Avatar, FilterTabs, PageHeading, type TabItem } from './parts';
-import { canSendForReview, PickBar, ReviewMark, usePicking } from './reviews/PickForReview';
+import { ApplicantList, ListSkeleton, type RowPick } from './applicants/ApplicantList';
+import { ApplicantsToolbar, type ToolbarActions } from './applicants/ApplicantsToolbar';
+import { DetailNav } from './applicants/DetailNav';
+import { StatusMark } from './applicants/StatusMark';
+import { ALL_LOOK, STATUS_STYLE } from './applicants/statusStyle';
+import { useApplicantQueue, type TabKey } from './applicants/useApplicantQueue';
+import { useQueueShortcuts } from './applicants/useQueueShortcuts';
+import { apiMessage, FilterTabs, type TabItem } from './parts';
+import { canSendForReview, PickBar, usePicking } from './reviews/PickForReview';
 import { SendReviewDialog } from './reviews/SendReviewDialog';
-import { SourceFilter } from './sources/SourceFilter';
+import { ManageSourcesDialog } from './sources/ManageSourcesDialog';
 
-type TabKey = ApplicationStatus | 'all';
+const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'interview', 'rejected'];
 
-const TABS: [TabKey, string][] = [
-  ['all', 'Tất cả'],
-  ['new', 'Mới'],
-  ['seen', 'Đã xem'],
-  ['interview', 'Hẹn phỏng vấn'],
-  ['rejected', 'Chưa phù hợp'],
-];
+const isTab = (v: string | null): v is TabKey => TAB_KEYS.some((k) => k === v);
 
-const isTab = (v: string | null): v is TabKey => TABS.some(([k]) => k === v);
-
-// ── List ────────────────────────────────────────────────────────────────
-
-function StatusText({ status }: { status: ApplicationStatus }) {
-  switch (status) {
-    case 'new':
-      return (
-        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent">
-          <span aria-hidden="true" className="size-1.5 rounded-full bg-accent" />
-          Mới
+/** Each tab shows its status's icon and word; while active, its colour on the icon, the count and the underline. */
+function tabItems(counts: Record<TabKey, number> | undefined): TabItem<TabKey>[] {
+  return TAB_KEYS.map((key) => {
+    const look = key === 'all' ? ALL_LOOK : STATUS_STYLE[key];
+    const count = counts?.[key];
+    return {
+      key,
+      label: look.label,
+      count,
+      activeBorder: look.underline,
+      render: (isActive) => (
+        <span className="inline-flex items-center gap-1.5">
+          <StatusMark
+            look={look}
+            count={count}
+            iconClass={isActive ? look.activeText : ''}
+            countClass={isActive ? `font-bold ${look.activeText}` : 'font-normal text-muted max-lg:text-silver-soft'}
+          />
         </span>
-      );
-    case 'seen':
-      return <span className="text-xs text-muted">Đã xem</span>;
-    case 'interview':
-      return <span className="text-xs font-medium text-navy">Hẹn phỏng vấn</span>;
-    case 'rejected':
-      return <span className="text-xs text-muted">Chưa phù hợp</span>;
-  }
+      ),
+    };
+  });
 }
 
-/** While picking for "Gửi sếp duyệt" a row is a checkbox; see canSendForReview for who cannot be picked. */
-interface RowPick {
-  on: boolean;
-  /** Already waiting for a reviewer, already invited, or already declined. */
-  blocked: boolean;
-  toggle: () => void;
-}
-
-function ApplicantRow({
-  row,
-  current,
-  onPick,
-  pick,
-}: {
-  row: ApplicationRowDto;
-  current: boolean;
-  onPick: () => void;
-  pick?: RowPick;
-}) {
-  return (
-    <li className="border-b border-line-soft last:border-b-0">
-      <button
-        type="button"
-        onClick={pick ? pick.toggle : onPick}
-        disabled={pick?.blocked}
-        role={pick ? 'checkbox' : undefined}
-        aria-checked={pick ? pick.on : undefined}
-        aria-current={!pick && current ? 'true' : undefined}
-        className={`flex w-full items-center gap-3.5 border-0 border-l-2 px-4 py-3.5 text-left text-navy transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:py-4 ${
-          pick?.on ? 'border-ok bg-ok-soft' : !pick && current ? 'border-navy bg-mist' : 'border-transparent bg-white'
-        }`}
-      >
-        {pick && (
-          <span
-            aria-hidden="true"
-            className={`flex size-[22px] shrink-0 items-center justify-center rounded-[5px] border-2 ${pick.on ? 'border-ok bg-ok text-white' : 'border-silver bg-white'}`}
-          >
-            {pick.on && <Icon name="check" size={14} stroke={2.4} />}
-          </span>
-        )}
-        <Avatar name={row.fullName} />
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-[15px] font-semibold">{row.fullName}</span>
-          <span className="truncate text-xs text-slate sm:text-[13px]">{row.jobTitle}</span>
-          {row.status === 'interview' && row.interviewAt && (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-navy">
-              <Icon name="calendar" size={12} />
-              {interviewLabel(row.interviewAt)}
-            </span>
-          )}
-          {row.noteLine && <span className="truncate text-xs italic text-muted">“{row.noteLine}”</span>}
-          <RowMarks row={row} />
-        </span>
-        <span className="flex shrink-0 flex-col items-end gap-1">
-          <StatusText status={row.status} />
-          <span className="text-xs text-muted">{formatTimestamp(row.createdAt)}</span>
-          {row.matchPercent != null && (
-            <span
-              title="Phù hợp với yêu cầu (chấm CV tự động)"
-              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${percentTone(row.matchPercent)}`}
-            >
-              {row.matchPercent}%
-            </span>
-          )}
-          <span
-            title={row.hasCv ? 'Có CV' : 'Chưa có CV'}
-            className={`inline-flex items-center gap-1 text-[11px] ${row.hasCv ? 'text-accent' : 'text-error'}`}
-          >
-            <Icon name="file" size={12} />
-            {row.hasCv ? 'CV' : 'Không CV'}
-          </span>
-        </span>
-      </button>
-    </li>
-  );
-}
-
-/** Review state, where it came from (when not the site) and "CV mới" from the candidate. */
-function RowMarks({ row }: { row: ApplicationRowDto }) {
-  const sources = useSources().data ?? [];
-  if (!row.review && row.source === WEBSITE_SOURCE && !row.cvUpdatedByCandidate) return null;
-  return (
-    <span className="flex flex-wrap gap-1">
-      {row.review && <ReviewMark review={row.review} />}
-      {row.cvUpdatedByCandidate && (
-        <span className="w-fit rounded-full border border-cat-violet-line bg-cat-violet-soft px-2 py-0.5 text-[11px] font-semibold text-cat-violet">
-          Ứng viên vừa cập nhật CV
-        </span>
-      )}
-      {row.source !== WEBSITE_SOURCE && (
-        <span className="w-fit rounded-full border border-line bg-white px-2 py-0.5 text-[11px] text-slate">
-          HR thêm · {sourceName(sources, row.source)}
-        </span>
-      )}
-    </span>
-  );
-}
-
-function ListSkeleton() {
-  return (
-    <div
-      aria-hidden="true"
-      className="grid items-start gap-5 lg:grid-cols-[380px_minmax(0,1fr)] xl:grid-cols-[420px_minmax(0,1fr)]"
-    >
-      <div className="rounded-card border border-line bg-white">
-        {['62%', '48%', '70%', '54%', '66%', '44%'].map((w) => (
-          <div key={w} className="flex items-center gap-3 border-b border-line-soft px-[18px] py-4 last:border-b-0">
-            <Sk w={40} h={40} round className="shrink-0" />
-            <span className="flex flex-1 flex-col gap-[7px]">
-              <Sk w="55%" h={14} />
-              <Sk w={w} h={11} />
-            </span>
-            <Sk w={44} h={11} />
-          </div>
-        ))}
-      </div>
-      <div className="hidden flex-col gap-[18px] rounded-card border border-line bg-white p-7 lg:flex">
-        <div className="flex items-center gap-4">
-          <Sk w={56} h={56} round />
-          <span className="flex flex-col gap-2">
-            <Sk w={220} h={22} />
-            <Sk w={160} h={13} />
-          </span>
-        </div>
-        <div className="flex gap-2.5">
-          <Sk w={110} h={46} />
-          <Sk w={120} h={46} />
-          <Sk w={110} h={46} />
-        </div>
-        <Sk w="100%" h={13} />
-        <Sk w="85%" h={13} />
-        <Sk w="100%" h={80} />
-      </div>
-    </div>
-  );
-}
-
-// ── Page ────────────────────────────────────────────────────────────────
-
-export function HrApplicantsPage() {
-  usePageMeta('Hồ sơ ứng viên');
+/** Everything the list shows is kept in the address, so a link or a reload lands on the same view. */
+function useListParams() {
   const [params, setParams] = useSearchParams();
-  const selectedId = params.get('id');
-  const jobId = params.get('tin') ?? undefined;
-  const tabParam = params.get('trang-thai');
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const q = params.get('q') ?? '';
-  const [draft, setDraft] = useState(q);
-  const search = useDeferredValue(draft.trim());
-  const source = params.get('nguon') || undefined;
-  const apps = useApplications(jobId, search, source);
-  const [adding, setAdding] = useState(false);
-  // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
-  const tab: TabKey = isTab(tabParam) ? tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
-  const showSkeleton = useDelayedFlag(apps.isPending);
-
+  const [draft, setDraft] = useState(params.get('q') ?? '');
   const setParam = (key: string, value: string | null) => {
     const next = new URLSearchParams(params);
     if (value) next.set(key, value);
     else next.delete(key);
     setParams(next, { replace: key !== 'id' });
   };
+  /** Also writes down the tab, so the list does not change under HR when the last "Mới" has been opened. */
+  const open = (id: string, tab: TabKey) => {
+    const next = new URLSearchParams(params);
+    next.set('id', id);
+    next.set('trang-thai', tab);
+    setParams(next);
+  };
+  /** The open application belongs to the tab it was opened from, so moving to another tab closes it. */
+  const chooseTab = (tab: TabKey) => {
+    const next = new URLSearchParams(params);
+    next.set('trang-thai', tab);
+    next.delete('id');
+    setParams(next, { replace: !params.has('id') });
+  };
+  return {
+    selectedId: params.get('id'),
+    jobId: params.get('tin') ?? undefined,
+    tabParam: params.get('trang-thai'),
+    source: params.get('nguon') || undefined,
+    byMatch: params.get('sap-xep') === 'phu-hop',
+    draft,
+    setDraft,
+    setParam,
+    open,
+    chooseTab,
+  };
+}
 
-  const byMatch = params.get('sap-xep') === 'phu-hop';
-  const rows = useMemo(() => {
-    // The open application stays in the list after its status changes, so HR still sees where they are.
-    const list = (apps.data?.applications ?? []).filter(
-      (a) => tab === 'all' || a.status === tab || a.id === selectedId,
-    );
-    // Best match first; applications not scored yet go last, newest first among them.
-    return byMatch ? [...list].sort((a, b) => (b.matchPercent ?? -1) - (a.matchPercent ?? -1)) : list;
-  }, [apps.data, tab, byMatch, selectedId]);
-  const counts = apps.data?.counts;
-  const at = rows.findIndex((r) => r.id === selectedId);
-  const nextId = at >= 0 ? rows[at + 1]?.id : rows[0]?.id;
+function useApplicantsModel() {
+  const list = useListParams();
+  const search = useDeferredValue(list.draft.trim());
+  const apps = useApplications(list.jobId, search, list.source);
+  const all = apps.data?.applications;
+  // With unseen applications waiting, the list opens on "Mới"; any tab HR picks is kept in the URL.
+  const tab: TabKey = isTab(list.tabParam) ? list.tabParam : (apps.data?.counts.new ?? 0) > 0 ? 'new' : 'all';
+  const queue = useApplicantQueue(all, tab, list.selectedId, list.byMatch);
   // CV files without a percent yet are scored in the background so the list can be sorted by match.
-  const scoring = useScorePending((apps.data?.applications ?? []).some((a) => a.hasCv && a.matchPercent == null));
-  const tabs: TabItem<TabKey>[] = TABS.map(([key, label]) => ({ key, label, count: counts?.[key] }));
-  const navigate = useNavigate();
-  const picking = usePicking(apps.data?.applications ?? []);
+  const scoring = useScorePending((all ?? []).some((a) => a.hasCv && a.matchPercent == null));
+  const picking = usePicking(all ?? []);
+  const openRow = (id: string | undefined) => (id ? () => list.open(id, tab) : undefined);
+  return {
+    ...list,
+    search,
+    apps,
+    tab,
+    queue,
+    scoring,
+    picking,
+    goPrev: openRow(queue.prevId),
+    goNext: openRow(queue.nextId),
+    closeDetail: () => list.setParam('id', null),
+  };
+}
 
+type Model = ReturnType<typeof useApplicantsModel>;
+
+function pickOf(picking: Model['picking'], row: ApplicationRowDto): RowPick | undefined {
+  if (!picking.active) return undefined;
+  return { on: picking.ids.has(row.id), blocked: !canSendForReview(row), toggle: () => picking.toggle(row.id) };
+}
+
+/** "Đang chấm CV" and the note for an open application that the filters left out of the list. */
+function ListNotes({ model, isDesktop }: { model: Model; isDesktop: boolean }) {
+  const isHidden = isDesktop && !!model.selectedId && model.queue.position === null && !model.apps.isPlaceholderData;
   return (
-    <div className="flex flex-col gap-[22px]">
-      <PageHeading
-        title="Hồ sơ ứng viên"
-        titleHiddenOnPhone
-        subtitle="Mở một hồ sơ để xem CV, gọi hoặc nhắn Zalo cho ứng viên."
-        action={
-          <label className="relative flex min-h-[46px] items-center gap-2.5 rounded-control border border-field bg-white pl-3.5 pr-9 max-sm:w-full">
-            <Icon name="filter" size={16} className="shrink-0 text-slate" />
-            <span className="sr-only">Lọc theo vị trí</span>
-            <select
-              value={jobId ?? ''}
-              onChange={(e) => setParam('tin', e.target.value || null)}
-              className="min-w-0 flex-1 appearance-none self-stretch border-0 bg-transparent text-sm text-navy outline-none sm:min-w-[240px]"
-            >
-              <option value="">Tất cả vị trí</option>
-              {(apps.data?.jobs ?? []).map((j) => (
-                <option key={j.id} value={j.id}>
-                  {j.title}
-                </option>
-              ))}
-            </select>
-            <Icon name="chevronDown" size={16} className="pointer-events-none absolute right-3 text-slate" />
-          </label>
-        }
-      />
-
-      <label className="relative flex min-h-[46px] items-center gap-2.5 rounded-control border border-field bg-white px-3.5 lg:max-w-[420px]">
-        <Icon name="search" size={17} className="shrink-0 text-slate" />
-        <span className="sr-only">Tìm hồ sơ</span>
-        <input
-          type="search"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={() => setParam('q', draft.trim() || null)}
-          placeholder="Tìm theo tên hoặc số điện thoại"
-          className="min-w-0 flex-1 border-0 bg-transparent text-sm text-navy outline-none placeholder:text-placeholder"
-        />
-      </label>
-
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-        <label className="flex items-center gap-2 text-sm text-body">
-          <input
-            type="checkbox"
-            checked={byMatch}
-            onChange={(e) => setParam('sap-xep', e.target.checked ? 'phu-hop' : null)}
-            className="size-[18px] accent-accent"
-          />
-          Xếp theo % phù hợp với yêu cầu
-        </label>
-        {scoring != null && (
-          <span role="status" className="text-xs text-muted">
-            Đang chấm CV, còn {scoring} hồ sơ…
-          </span>
-        )}
-        <SourceFilter value={source} onChange={(key) => setParam('nguon', key)} />
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="inline-flex min-h-11 items-center gap-2 rounded-control border-0 bg-navy px-3.5 text-sm font-semibold text-white hover:bg-accent"
-        >
-          <Icon name="plus" size={16} />
-          Thêm hồ sơ
-        </button>
-        {!picking.active && (apps.data?.applications.length ?? 0) > 0 && (
+    <>
+      {model.scoring != null && (
+        <span role="status" className="flex-none border-b border-line-soft px-3.5 py-1.5 text-xs text-muted">
+          Đang chấm CV, còn {model.scoring} hồ sơ…
+        </span>
+      )}
+      {isHidden && (
+        <div className="flex flex-none items-center justify-between gap-2 border-b border-line bg-mist px-3.5 py-1.5 text-xs text-body">
+          <span role="status">Hồ sơ đang mở không có trong danh sách đang lọc.</span>
           <button
             type="button"
-            onClick={picking.start}
-            className="inline-flex min-h-11 items-center gap-2 rounded-control border border-navy bg-white px-3.5 text-sm font-semibold text-navy hover:bg-mist"
+            onClick={model.closeDetail}
+            className="min-h-9 shrink-0 border-0 bg-transparent px-1 font-semibold text-link underline"
           >
-            <Icon name="checkSquare" size={16} />
-            Gửi sếp duyệt
+            Đóng hồ sơ
           </button>
-        )}
-      </div>
-
-      <FilterTabs
-        items={tabs}
-        value={tab}
-        onChange={(key) => setParam('trang-thai', key)}
-        label="Lọc theo trạng thái"
-        navyOnPhone
-        className="border-b border-field max-lg:order-first max-lg:-mx-4 max-lg:-mt-6 max-lg:border-b-0 max-lg:bg-navy max-lg:px-4 max-sm:gap-x-[18px] sm:max-lg:-mx-6 sm:max-lg:px-6"
-      />
-
-      {apps.isPending && (
-        <>
-          <LoadingStatus />
-          {showSkeleton && <ListSkeleton />}
-        </>
-      )}
-      {apps.isError && <ErrorState onRetry={() => apps.refetch()} message={apiMessage(apps.error)} />}
-
-      {apps.data && (
-        <div className="flex items-start gap-[22px]">
-          <ul className="m-0 min-w-0 flex-1 list-none overflow-hidden rounded-card border border-line bg-white p-0 lg:w-[380px] lg:flex-none xl:w-[420px]">
-            {rows.map((row) => (
-              <ApplicantRow
-                key={row.id}
-                row={row}
-                current={row.id === selectedId}
-                onPick={() => setParam('id', row.id)}
-                pick={
-                  picking.active
-                    ? {
-                        on: picking.ids.has(row.id),
-                        blocked: !canSendForReview(row),
-                        toggle: () => picking.toggle(row.id),
-                      }
-                    : undefined
-                }
-              />
-            ))}
-            {rows.length === 0 && (
-              <li className="px-5 py-10 text-center text-[15px] text-slate">
-                {search ? `Không tìm thấy hồ sơ nào cho "${search}".` : 'Chưa có hồ sơ ở trạng thái này.'}
-              </li>
-            )}
-          </ul>
-
-          {isDesktop && (
-            <section
-              aria-label="Chi tiết ứng viên"
-              className="sticky top-6 min-w-0 flex-1 rounded-card border border-line bg-white p-7 xl:p-9"
-            >
-              {selectedId ? (
-                <div className="max-w-[820px]">
-                  <ApplicantDetail
-                    key={selectedId}
-                    id={selectedId}
-                    onDeleted={() => setParam('id', null)}
-                    onNext={nextId ? () => setParam('id', nextId) : undefined}
-                  />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 py-16 text-center text-sm text-slate">
-                  <span className="flex rounded-full border border-ring p-3 text-accent">
-                    <Icon name="user" size={22} stroke={1.4} />
-                  </span>
-                  Chọn một hồ sơ bên trái để xem chi tiết.
-                </div>
-              )}
-            </section>
-          )}
         </div>
       )}
+    </>
+  );
+}
 
-      {picking.active && (
-        <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />
-      )}
-      <AddApplicationDialog
-        open={adding}
-        onClose={() => setAdding(false)}
-        onAdded={(id) => {
-          setAdding(false);
-          setParam('id', id);
-        }}
+function ListPanel({ model, isDesktop }: { model: Model; isDesktop: boolean }) {
+  const { search, picking } = model;
+  return (
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-card border border-line bg-white lg:w-[340px] lg:flex-none xl:w-[400px] 2xl:w-[440px]">
+      <ListNotes model={model} isDesktop={isDesktop} />
+      <ApplicantList
+        rows={model.queue.rows}
+        selectedId={model.selectedId}
+        tab={model.tab}
+        emptyMessage={search ? `Không tìm thấy hồ sơ nào cho "${search}".` : 'Chưa có hồ sơ ở trạng thái này.'}
+        onOpen={(id) => model.open(id, model.tab)}
+        pickFor={(row) => pickOf(picking, row)}
       />
+    </div>
+  );
+}
+
+function Nav({ model }: { model: Model }) {
+  return (
+    <DetailNav
+      position={model.queue.position}
+      total={model.queue.rows.length}
+      onPrev={model.goPrev}
+      onNext={model.goNext}
+    />
+  );
+}
+
+function DetailPanel({ model }: { model: Model }) {
+  const { selectedId } = model;
+  return (
+    <section
+      aria-label="Chi tiết ứng viên"
+      className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-card border border-line bg-white"
+    >
+      {selectedId ? (
+        <>
+          <div className="absolute right-2 top-1.5 z-20">
+            <Nav model={model} />
+          </div>
+          <ApplicantDetail key={selectedId} id={selectedId} layout="wide" onDeleted={model.closeDetail} />
+        </>
+      ) : (
+        <div className="flex flex-col items-center gap-3 py-16 text-center text-sm text-slate">
+          <span className="flex rounded-full border border-ring p-3 text-accent">
+            <Icon name="user" size={22} stroke={1.4} />
+          </span>
+          Chọn một hồ sơ bên trái để xem chi tiết.
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** The bottom sheet of phones and tablets. */
+function DetailSheet({ model }: { model: Model }) {
+  const { selectedId } = model;
+  return (
+    <Dialog open={!!selectedId && !model.picking.active} onClose={model.closeDetail} label="Chi tiết ứng viên">
+      <div className="relative flex h-[92dvh] flex-col pt-2.5 sm:pt-4">
+        <SheetHandle />
+        <div className="absolute right-2 top-3.5 z-20 flex items-center sm:top-4">
+          <Nav model={model} />
+          <CloseButton onClick={model.closeDetail} className="border-0 bg-tint" />
+        </div>
+        {selectedId && <ApplicantDetail key={selectedId} id={selectedId} onDeleted={model.closeDetail} />}
+      </div>
+    </Dialog>
+  );
+}
+
+function Dialogs({ model, managing, onManaged }: { model: Model; managing: boolean; onManaged: () => void }) {
+  const navigate = useNavigate();
+  const { picking } = model;
+  return (
+    <>
+      <ManageSourcesDialog open={managing} onClose={onManaged} />
       <SendReviewDialog
         rows={picking.rows}
         open={picking.sending}
@@ -401,23 +231,95 @@ export function HrApplicantsPage() {
           navigate(`/hr/duyet/${batchId}`);
         }}
       />
+    </>
+  );
+}
 
-      {!isDesktop && (
-        <Dialog open={!!selectedId && !picking.active} onClose={() => setParam('id', null)} label="Chi tiết ứng viên">
-          <div className="max-h-[92dvh] overflow-y-auto px-[18px] pb-[26px] pt-2.5 sm:px-6 sm:pt-6">
-            <SheetHandle />
-            {selectedId && (
-              <ApplicantDetail
-                key={selectedId}
-                id={selectedId}
-                onClose={() => setParam('id', null)}
-                onDeleted={() => setParam('id', null)}
-                onNext={nextId ? () => setParam('id', nextId) : undefined}
-              />
-            )}
-          </div>
-        </Dialog>
+function PageToolbar({ model, actions }: { model: Model; actions: Omit<ToolbarActions, 'onPickForReview'> }) {
+  const { apps, picking } = model;
+  const canPick = !picking.active && (apps.data?.applications.length ?? 0) > 0;
+  return (
+    <ApplicantsToolbar
+      filters={{
+        search: model.draft,
+        onSearch: model.setDraft,
+        onSearchCommit: () => model.setParam('q', model.draft.trim() || null),
+        jobId: model.jobId,
+        jobs: apps.data?.jobs ?? [],
+        onJob: (id) => model.setParam('tin', id),
+        source: model.source,
+        onSource: (key) => model.setParam('nguon', key),
+        byMatch: model.byMatch,
+        onByMatch: (checked) => model.setParam('sap-xep', checked ? 'phu-hop' : null),
+      }}
+      actions={{ ...actions, onPickForReview: canPick ? picking.start : undefined }}
+    />
+  );
+}
+
+function PageContent({ model, isDesktop }: { model: Model; isDesktop: boolean }) {
+  const { apps } = model;
+  const showSkeleton = useDelayedFlag(apps.isPending);
+  return (
+    <>
+      {apps.isPending && (
+        <>
+          <LoadingStatus />
+          {showSkeleton && <ListSkeleton />}
+        </>
       )}
+      {apps.isError && <ErrorState onRetry={() => apps.refetch()} message={apiMessage(apps.error)} />}
+      {apps.data && (
+        <div className="flex min-h-0 flex-1 items-stretch gap-3 lg:overflow-hidden lg:pt-2">
+          <ListPanel model={model} isDesktop={isDesktop} />
+          {isDesktop && <DetailPanel model={model} />}
+        </div>
+      )}
+    </>
+  );
+}
+
+export function HrApplicantsPage() {
+  usePageMeta('Hồ sơ ứng viên');
+  const model = useApplicantsModel();
+  const { apps, picking, tab } = model;
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const [isAdding, setIsAdding] = useState(false);
+  const [isManaging, setIsManaging] = useState(false);
+  useQueueShortcuts({ isEnabled: isDesktop && !picking.active, onPrev: model.goPrev, onNext: model.goNext });
+  const tabs = tabItems(apps.data?.counts);
+
+  return (
+    // From 1024px the layout makes `main` exactly the window; this takes what is left in it (a notice above the page
+    // included) and only the panes inside scroll.
+    <div className="flex flex-col gap-3 lg:min-h-0 lg:flex-1 lg:gap-1 lg:overflow-hidden">
+      <h1 className="sr-only">Hồ sơ ứng viên</h1>
+      <PageToolbar
+        model={model}
+        actions={{ onAdd: () => setIsAdding(true), onManageSources: () => setIsManaging(true) }}
+      />
+      <FilterTabs
+        items={tabs}
+        value={tab}
+        onChange={model.chooseTab}
+        label="Lọc theo trạng thái"
+        navyOnPhone
+        className="flex-none border-b border-field max-lg:order-first max-lg:-mx-4 max-lg:-mt-6 max-lg:border-b-0 max-lg:bg-navy max-lg:px-4 max-sm:gap-x-[18px] sm:max-lg:-mx-6 sm:max-lg:px-6"
+      />
+      <PageContent model={model} isDesktop={isDesktop} />
+      {picking.active && (
+        <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />
+      )}
+      <AddApplicationDialog
+        open={isAdding}
+        onClose={() => setIsAdding(false)}
+        onAdded={(id) => {
+          setIsAdding(false);
+          model.open(id, tab);
+        }}
+      />
+      <Dialogs model={model} managing={isManaging} onManaged={() => setIsManaging(false)} />
+      {!isDesktop && <DetailSheet model={model} />}
     </div>
   );
 }

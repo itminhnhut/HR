@@ -62,11 +62,15 @@ async function openJobOrFail(db: Db, jobId: string, at: Date): Promise<Job> {
 
 type ApplicationRecord = Omit<NewApplication, 'id' | 'jobId' | 'status' | 'createdAt'>;
 
+/** Serializes whatever adds an application for this job and phone, until the transaction ends. */
+export const lockJobAndPhone = (tx: Db, jobId: string, phone: string) =>
+  tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`${jobId}:${phone}`}))`);
+
 /** Inserts the application, unless the very same one was just sent (double click). Returns whether it was new. */
 async function insertApplication(db: Db, jobId: string, record: ApplicationRecord, at: Date): Promise<boolean> {
   return db.transaction(async (tx) => {
     // Serialize submissions for the same job and phone, so a double click cannot create two applications.
-    await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`${jobId}:${record.phone}`}))`);
+    await lockJobAndPhone(tx, jobId, record.phone);
     const [repeat] = await tx
       .select({ id: applications.id })
       .from(applications)
@@ -77,6 +81,8 @@ async function insertApplication(db: Db, jobId: string, record: ApplicationRecor
           eq(applications.fullName, record.fullName),
           record.email ? eq(applications.email, record.email) : isNull(applications.email),
           gte(applications.createdAt, new Date(at.getTime() - REPEAT_WINDOW_MINUTES * 60_000)),
+          // A profile HR added is not a double click: the candidate's own form must keep its CV.
+          isNull(applications.addedBy),
         ),
       )
       .limit(1);

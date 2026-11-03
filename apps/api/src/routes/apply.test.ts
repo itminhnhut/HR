@@ -53,7 +53,7 @@ describe('POST /api/applications', () => {
       status: 'new',
       email: null,
       cvLink: 'https://drive.google.com/cv',
-      policyVersion: '2026-10',
+      policyVersion: '2026-11',
     });
     expect(row.consentAt).toEqual(t.clock.now);
   });
@@ -256,7 +256,7 @@ describe('POST /api/subscribers', () => {
       phone: '0912000111',
       department: 'Kỹ thuật',
       fromJobId: job.id,
-      policyVersion: '2026-10',
+      policyVersion: '2026-11',
     });
     expect(row.consentAt).toEqual(t.clock.now);
   });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { Icon } from './icons';
 
 /**
@@ -18,6 +18,8 @@ export function Dialog({
   className = '',
   keepMounted = false,
   closeOnBackdrop = true,
+  sideWidth = 'wide',
+  style,
 }: {
   open: boolean;
   onClose: () => void;
@@ -29,6 +31,10 @@ export function Dialog({
   keepMounted?: boolean;
   /** Off where a stray click outside would throw away typed text. */
   closeOnBackdrop?: boolean;
+  /** `variant="side"` only. wide: a work area (90vw). narrow: about 640px with a lighter backdrop, the page stays readable. */
+  sideWidth?: 'wide' | 'narrow';
+  /** Places the dialog by hand, e.g. next to the button that opened it. */
+  style?: CSSProperties;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
@@ -64,7 +70,7 @@ export function Dialog({
     sheet:
       'mb-0 mt-auto w-full max-w-none rounded-t-[14px] sm:m-auto sm:w-[min(480px,calc(100vw-32px))] sm:rounded-[10px]',
     drawer: 'm-0 h-dvh max-h-none w-full max-w-none rounded-none',
-    side: 'my-0 ml-auto mr-0 h-dvh max-h-none w-full max-w-none rounded-none sm:w-[90vw]',
+    side: `my-0 ml-auto mr-0 h-dvh max-h-none w-full max-w-none rounded-none ${sideWidth === 'narrow' ? 'backdrop:bg-navy/25 sm:w-[min(640px,100vw)]' : 'sm:w-[90vw]'}`,
   }[variant];
   const motion = { panel: 'animate-pop', sheet: 'animate-sheet', drawer: 'animate-drawer', side: 'animate-side' }[
     variant
@@ -75,7 +81,10 @@ export function Dialog({
       ref={ref}
       tabIndex={-1}
       aria-label={label}
+      style={style}
       onCancel={(e) => {
+        // React passes the event up from a dialog inside this one: Esc closes only the top one.
+        if (e.target !== ref.current) return;
         e.preventDefault();
         onClose();
       }}

@@ -34,7 +34,8 @@ export async function readMultipart(c: Context, fileField: string): Promise<Mult
   let file: File | null = null;
   for (const [key, value] of Object.entries(body)) {
     if (typeof value === 'string') fields[key] = value;
-    else if (key === fileField && value.size > 0) file = value;
+    // A named file with no bytes reaches the file check; a browser sends no name for a box left empty.
+    else if (key === fileField && (value.size > 0 || value.name)) file = value;
   }
   return { fields, file };
 }

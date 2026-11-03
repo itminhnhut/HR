@@ -27,9 +27,10 @@ export const vercelBlobCvStore: CvStore = {
   },
 };
 
-export type CvProblem = 'too_large' | 'not_pdf' | 'broken_pdf';
+export type CvProblem = 'empty' | 'too_large' | 'not_pdf' | 'broken_pdf';
 
 export const CV_PROBLEM_MESSAGE: Record<CvProblem, string> = {
+  empty: 'File CV trống (0 byte). Chọn lại file hoặc dán link CV.',
   too_large: 'File lớn hơn 4 MB. Nén lại hoặc dán link CV.',
   not_pdf: 'CV cần là file PDF.',
   broken_pdf: 'File PDF bị lỗi hoặc chưa tải hết. Lưu lại file rồi thử lại, hoặc dán link CV.',
@@ -43,6 +44,7 @@ const EOF_WINDOW = 1024;
  * A file cut off mid-upload, or a renamed non-PDF, would only show HR "Failed to load PDF document".
  */
 export async function checkCvFile(file: File): Promise<CvProblem | null> {
+  if (file.size === 0) return 'empty';
   if (file.size > CV_MAX_BYTES) return 'too_large';
   const head = new Uint8Array(await file.slice(0, 5).arrayBuffer());
   if (String.fromCharCode(...head) !== '%PDF-') return 'not_pdf';

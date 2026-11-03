@@ -1,4 +1,5 @@
 import {
+  NOTE_MAX,
   REFERRAL_SOURCE,
   APPLICATION_STATUS_LABEL,
   formatTimestamp,
@@ -104,7 +105,11 @@ function CvSection({
       <span className="text-sm font-medium text-navy">
         CV <span className="font-normal text-muted">(không bắt buộc, thêm sau được)</span>
       </span>
-      <CvPicker onChange={onChange} error={error} />
+      <CvPicker
+        onChange={onChange}
+        error={error}
+        linkHint="Link chỉ được lưu lại, hệ thống không đọc nội dung. Muốn tự điền thông tin và chấm % khớp, hãy tải file PDF."
+      />
       {autofill.note && (
         <p role="status" className="m-0 text-[13px] leading-relaxed text-muted">
           {autofill.note}
@@ -230,6 +235,8 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
           rows={2}
           value={form.note}
           onChange={(e) => set('note')(e.target.value)}
+          error={errors.note}
+          counter={{ value: form.note.length, max: NOTE_MAX }}
           className="sm:col-span-2"
         />
         <div className="rounded-control bg-mist px-3.5 py-3 sm:col-span-2">

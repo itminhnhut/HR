@@ -3,7 +3,7 @@ import { Link, type LinkProps } from 'react-router';
 import { Icon, type IconName } from './icons';
 
 type Variant = 'primary' | 'brand' | 'dark' | 'outline' | 'ghost' | 'light' | 'outlineLight' | 'danger' | 'success';
-type Size = 'sm' | 'md' | 'lg';
+type Size = 'sm' | 'compact' | 'md' | 'lg';
 
 /**
  * One primary look for the main action of a view (apply, send, look up, publish): brand red with a white
@@ -26,9 +26,13 @@ const VARIANT: Record<Variant, string> = {
   success: 'border border-ok-line bg-white text-ok font-medium hover:bg-ok-soft transition-colors',
 };
 
-/** Two touch heights on public pages: 44px (md) and 52px (lg). sm (40px) is for dense HR tables only. */
+/**
+ * Two touch heights on public pages: 44px (md) and 52px (lg). sm (40px) is for dense HR tables only; compact is the
+ * touch height with less width, for HR toolbars that must fit one row.
+ */
 const SIZE: Record<Size, string> = {
   sm: 'min-h-10 px-3 text-sm gap-1.5',
+  compact: 'min-h-11 px-3 text-sm gap-1.5',
   md: 'min-h-11 px-5 text-[15px] gap-2',
   lg: 'min-h-[52px] px-7 text-base gap-2.5',
 };

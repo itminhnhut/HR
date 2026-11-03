@@ -1,7 +1,15 @@
 import { z } from 'zod';
 import type { ApplicationStatus } from './types.js';
 import { REFERRAL_SOURCE, SOURCE_KEY_MAX } from './sources.js';
-import { phoneSchema } from './validation.js';
+import {
+  cvLinkSchema,
+  fullNameSchema,
+  hasNoNul,
+  NOTE_MAX,
+  NUL_MESSAGE,
+  optionalEmailSchema,
+  phoneSchema,
+} from './validation.js';
 
 /**
  * "Thêm và cập nhật CV" (spec-cv-intake.md): HR adds applications received outside the site, HR adds or replaces a
@@ -17,25 +25,20 @@ export type ApplicationSource = string;
 /** How many times a candidate may replace the CV of one application. */
 export const CANDIDATE_CV_CHANGES_MAX = 3;
 export const REFERRER_MAX = 100;
-export const NAME_MAX = 100;
+
+/** Why a link has no score: the server stores a link and never opens it. */
+export const CV_LINK_NOTE = 'CV là link, không đọc được tự động: HR mở link để xem.';
 
 const optionalText = (max: number, message: string) =>
   z
     .string()
     .trim()
     .max(max, message)
+    .refine(hasNoNul, NUL_MESSAGE)
     .nullish()
     .transform((v) => (v ? v : null));
 
-const email = z
-  .union([z.literal(''), z.email('Email chưa đúng.')])
-  .nullish()
-  .transform((v) => (v ? v.trim().toLowerCase() : null));
-
-export const cvLinkSchema = z
-  .union([z.literal(''), z.url({ protocol: /^https?$/, message: 'Link CV phải bắt đầu bằng http:// hoặc https://' })])
-  .nullish()
-  .transform((v) => (v ? v : null));
+const email = optionalEmailSchema.transform((v) => (v ? v.toLowerCase() : null));
 
 /** "Ai giới thiệu" is needed only for a referral. */
 const withReferrer = <T extends { source: string; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
@@ -48,7 +51,12 @@ const contactFields = {
   phone: phoneSchema,
   email,
   /** A key of the source list; the server checks it exists, is not "website" and is not hidden. */
-  source: z.string().trim().min(1, 'Chọn nguồn hồ sơ.').max(SOURCE_KEY_MAX, 'Nguồn không hợp lệ.'),
+  source: z
+    .string({ message: 'Chọn nguồn hồ sơ.' })
+    .trim()
+    .min(1, 'Chọn nguồn hồ sơ.')
+    .max(SOURCE_KEY_MAX, 'Nguồn không hợp lệ.')
+    .refine(hasNoNul, 'Nguồn không hợp lệ.'),
   referrer: optionalText(REFERRER_MAX, `Tối đa ${REFERRER_MAX} ký tự.`),
 };
 
@@ -56,9 +64,9 @@ const contactFields = {
 export const hrApplicationSchema = z
   .object({
     jobId: z.uuid('Chọn vị trí ứng tuyển.'),
-    fullName: z.string().trim().min(2, 'Nhập họ và tên.').max(NAME_MAX, 'Họ tên quá dài.'),
+    fullName: fullNameSchema,
     ...contactFields,
-    note: optionalText(2000, 'Ghi chú tối đa 2000 ký tự.'),
+    note: optionalText(NOTE_MAX, `Ghi chú tối đa ${NOTE_MAX} ký tự.`),
     cvLink: cvLinkSchema,
     /** HR confirms the candidate sent the CV to apply and agreed (Nghị định 13); the HR's name is stored. */
     consent: z.literal(true, { message: 'Xác nhận ứng viên đã đồng ý trước khi lưu.' }),

@@ -57,7 +57,7 @@ function toRows(seed: Seed, jobId: (mockId: string) => string) {
       ...sub,
       fromJobId: fromJobId ? jobId(fromJobId) : null,
       consentAt: new Date(consentAt),
-      policyVersion: policyVersion ?? '2026-10',
+      policyVersion: policyVersion ?? '2026-11',
       createdAt: new Date(createdAt),
     })),
     // Accounts are Google-only now: demo people without an email cannot have one.

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router';
+import { Link, Navigate, Outlet, ScrollRestoration, useLocation, useMatch, useNavigate } from 'react-router';
 import { useHrJobs, useHrMe, useHrSignOut } from '../../api/queries';
 import { useNoIndex } from '../../lib/hooks';
 import { SITE } from '../../lib/site';
@@ -198,13 +198,21 @@ function TopBar({ email, newCount }: { email: string; newCount: number }) {
 function Shell({ email }: { email: string }) {
   const jobs = useHrJobs();
   const newCount = jobs.data?.newApplications ?? 0;
+  // Master-detail: from 1024px this page is exactly the window and nothing outside its panes can scroll.
+  const isWindowSized = !!useMatch('/hr/ho-so');
   return (
     // Masked in Clarity too, in case a recording ever reaches an HR screen.
-    <div data-clarity-mask="true" className="flex min-h-dvh flex-col bg-mist text-navy lg:flex-row">
+    <div
+      data-clarity-mask="true"
+      className={`flex min-h-dvh flex-col bg-mist text-navy lg:flex-row ${isWindowSized ? 'relative lg:h-dvh lg:overflow-hidden' : ''}`}
+    >
       <SkipLink />
       <Sidebar email={email} newCount={newCount} />
       <TopBar email={email} newCount={newCount} />
-      <main id="hr-noi-dung" className="flex min-w-0 flex-1 flex-col gap-6 px-4 pb-10 pt-6 sm:px-6 lg:p-10">
+      <main
+        id="hr-noi-dung"
+        className={`flex min-w-0 flex-1 flex-col px-4 pb-10 pt-6 sm:px-6 ${isWindowSized ? 'relative gap-2 lg:h-dvh lg:overflow-hidden lg:p-4' : 'gap-6 lg:p-10'}`}
+      >
         <Outlet />
       </main>
       <ScrollRestoration />

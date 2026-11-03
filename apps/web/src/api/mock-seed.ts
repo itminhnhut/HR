@@ -392,7 +392,7 @@ export function buildSeed(now: Date = new Date()): MockDb {
     meetingUrl: null,
     contacts: [],
     consentAt: daysAgoIso(today, ago),
-    policyVersion: '2026-10',
+    policyVersion: '2026-11',
     createdAt: daysAgoIso(today, ago),
     ...extra,
   });

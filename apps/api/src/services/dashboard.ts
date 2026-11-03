@@ -1,8 +1,8 @@
 import { addDays, effectiveStatus, todayInVietnam, type ApplicationSource, type DashboardDto } from '@careers/shared';
-import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
+import { asc, eq, gte, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, jobs } from '../db/schema.js';
-import { dueJobIds } from './hr-jobs.js';
+import { countDueApplications } from './hr-jobs.js';
 
 const DAYS = 30;
 const WAITING_DAYS = 3;
@@ -80,14 +80,6 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
     .sort((a, b) => a.job.deadline.localeCompare(b.job.deadline))
     .map(({ job, status }) => ({ id: job.id, title: job.title, deadline: job.deadline, status }));
 
-  const dueIds = dueJobIds(allJobs, now);
-  const [{ due }] =
-    dueIds.length === 0
-      ? [{ due: 0 }]
-      : await db
-          .select({ due: sql<number>`count(*)`.mapWith(Number) })
-          .from(applications)
-          .where(and(inArray(applications.jobId, dueIds)));
   const waitSince = new Date(`${addDays(today, -WAITING_DAYS)}T00:00:00.000+07:00`);
 
   return {
@@ -108,6 +100,6 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
       noteLine: firstLine(i.note),
     })),
     endingJobs,
-    dueForDeletion: due,
+    dueForDeletion: await countDueApplications(db, allJobs, now),
   };
 }

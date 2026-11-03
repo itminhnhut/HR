@@ -43,6 +43,30 @@ export interface TabItem<K extends string> {
   key: K;
   label: string;
   count?: number;
+  /** The underline of this tab while active; navy without it. */
+  activeBorder?: string;
+  /** What the tab shows, in place of the label and count. */
+  render?: (isActive: boolean) => ReactNode;
+}
+
+function TabText<K extends string>({ item, navyOnPhone }: { item: TabItem<K>; navyOnPhone: boolean }) {
+  return (
+    <>
+      {item.label}
+      {item.count != null && (
+        <span className={`ml-1 font-normal ${navyOnPhone ? 'text-muted max-lg:text-silver-soft' : 'text-muted'}`}>
+          {item.count}
+        </span>
+      )}
+    </>
+  );
+}
+
+function tabTone(isOn: boolean, activeBorder: string | undefined, navyOnPhone: boolean): string {
+  if (isOn) {
+    return `${activeBorder ?? 'border-navy'} font-semibold text-navy ${navyOnPhone ? 'max-lg:border-white max-lg:text-white' : ''}`;
+  }
+  return `border-transparent text-slate hover:text-navy ${navyOnPhone ? 'max-lg:text-silver-soft max-lg:hover:text-white' : ''}`;
 }
 
 /**
@@ -74,9 +98,7 @@ export function FilterTabs<K extends string>({
     >
       {items.map((item) => {
         const on = item.key === value;
-        const tone = on
-          ? `border-navy font-semibold text-navy ${navyOnPhone ? 'max-lg:border-white max-lg:text-white' : ''}`
-          : `border-transparent text-slate hover:text-navy ${navyOnPhone ? 'max-lg:text-silver-soft max-lg:hover:text-white' : ''}`;
+        const tone = tabTone(on, item.activeBorder, navyOnPhone);
         return (
           <button
             key={item.key}
@@ -85,12 +107,7 @@ export function FilterTabs<K extends string>({
             onClick={() => onChange(item.key)}
             className={`-mb-px min-h-12 shrink-0 border-0 border-b-2 bg-transparent px-0.5 text-sm ${tone}`}
           >
-            {item.label}
-            {item.count != null && (
-              <span className={`ml-1 font-normal ${navyOnPhone ? 'text-muted max-lg:text-silver-soft' : 'text-muted'}`}>
-                {item.count}
-              </span>
-            )}
+            {item.render ? item.render(on) : <TabText item={item} navyOnPhone={navyOnPhone} />}
           </button>
         );
       })}

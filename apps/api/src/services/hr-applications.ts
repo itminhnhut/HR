@@ -19,7 +19,7 @@ import { scoreApplication, storedScore } from './cv-score.js';
 import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './review-model.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
-import { dueJobIds } from './hr-jobs.js';
+import { dueApplicationsWhere } from './hr-jobs.js';
 
 const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'rejected'];
 
@@ -287,14 +287,14 @@ export async function deleteApplication(deps: Deps, id: string): Promise<{ ok: t
   return { ok: true };
 }
 
-/** "Xoá hồ sơ đến hạn": every application of a job that ended more than 30 days ago. */
+/** "Xoá hồ sơ đến hạn": every application whose job ended and whose consent was given more than 30 days ago. */
 export async function deleteDueApplications(deps: Deps): Promise<{ deleted: number }> {
-  const ids = dueJobIds(await deps.db.select().from(jobs), deps.now());
-  if (ids.length === 0) return { deleted: 0 };
+  const where = dueApplicationsWhere(await deps.db.select().from(jobs), deps.now());
+  if (!where) return { deleted: 0 };
   const rows = await deps.db
     .select({ id: applications.id, cvPathname: applications.cvPathname })
     .from(applications)
-    .where(inArray(applications.jobId, ids));
+    .where(where);
   await deleteWithFiles(deps, rows);
   return { deleted: rows.length };
 }

@@ -19,6 +19,16 @@ describe('normalizeVietnamPhone', () => {
   });
 });
 
+describe('normalizeVietnamPhone with something other than a number in it', () => {
+  it.each(['09x12345678', '0912345678x', 'Tel 0912345678', '0912\u0000345678'])('should refuse %s', (input) => {
+    expect(normalizeVietnamPhone(input)).toBeNull();
+  });
+
+  it.each(['(+84) 912 345 678', '0912-345-678', '0912\u00a0345\u00a0678'])('should still read %s', (input) => {
+    expect(normalizeVietnamPhone(input)).toBe('0912345678');
+  });
+});
+
 describe('formatPhone', () => {
   it('groups digits', () => {
     expect(formatPhone('0912345678')).toBe('0912 345 678');

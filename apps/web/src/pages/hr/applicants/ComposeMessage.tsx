@@ -11,10 +11,11 @@ import {
 import { useState } from 'react';
 import { useHrMe, useMessageTemplates } from '../../../api/queries';
 import { SITE } from '../../../lib/site';
-import { Button } from '../../../ui/Button';
+import { buttonClass } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
 import { FieldError, SelectField } from '../../../ui/Field';
 import { ErrorState, LoadingStatus, Notice } from '../../../ui/feedback';
+import { Icon } from '../../../ui/icons';
 import { designedMailHtml } from '../mail/mailLogos';
 import { MailPreview } from '../mail/MailPreview';
 import { DraftEditor, DraftNotices } from './DraftEditor';
@@ -142,10 +143,12 @@ export function ComposeMessage({
   app,
   request,
   onRequestDone,
+  triggerClassName = buttonClass('outline', 'md', 'self-start'),
 }: {
   app: ApplicationDetailDto;
   request?: TemplateKey | null;
   onRequestDone?: () => void;
+  triggerClassName?: string;
 }) {
   const [opened, setOpen] = useState(false);
   const open = opened || !!request;
@@ -155,9 +158,10 @@ export function ComposeMessage({
   };
   return (
     <>
-      <Button variant="outline" icon="mail" onClick={() => setOpen(true)} className="self-start">
+      <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
+        <Icon name="mail" size={16} />
         Soạn thư
-      </Button>
+      </button>
       <Dialog open={open} onClose={close} label="Soạn thư" variant="side" closeOnBackdrop={false}>
         <div className="flex h-full min-h-0 flex-col">
           <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-3 max-sm:px-4">
@@ -177,12 +181,12 @@ export function ComposeMessage({
 }
 
 /** "Đã soạn thư …": what HR prepared for this person. The site cannot see whether it was really sent. */
-export function ContactHistory({ app }: { app: ApplicationDetailDto }) {
+export function ContactHistory({ app, limit = 5 }: { app: ApplicationDetailDto; limit?: number }) {
   if (app.contacts.length === 0) return null;
   return (
     <Notice tone="mist" icon="mail">
       <span className="flex flex-col gap-1">
-        {app.contacts.slice(0, 5).map((c) => (
+        {app.contacts.slice(0, limit).map((c) => (
           <span key={c.createdAt + c.templateKey} className="text-[13px]">
             Đã soạn thư <strong className="font-semibold">{TEMPLATE_LABEL[c.templateKey]}</strong> (
             {CONTACT_CHANNEL_LABEL[c.channel].toLowerCase()}) · {formatTimestamp(c.createdAt)} · {c.hrName}

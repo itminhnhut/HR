@@ -1,22 +1,13 @@
-import { formatTimestamp, type ApplicationDetailDto, type MatchItem, type MatchVerdict } from '@careers/shared';
-import { useEffect, useRef } from 'react';
+import { CV_LINK_NOTE, type ApplicationDetailDto, type CvScoreDto } from '@careers/shared';
+import { useEffect, useRef, useState } from 'react';
 import { useScoreCv } from '../../../api/queries';
-import { Button } from '../../../ui/Button';
+import { buttonClass } from '../../../ui/Button';
 import { FieldError } from '../../../ui/Field';
-import { Icon, type IconName } from '../../../ui/icons';
+import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
-
-const GROUPS: { verdict: MatchVerdict; title: string; short: string; icon: IconName; tone: string }[] = [
-  { verdict: 'unmet', title: 'Không thoả', short: 'không thoả', icon: 'x', tone: 'text-error' },
-  { verdict: 'met', title: 'Thoả', short: 'thoả', icon: 'check', tone: 'text-ok' },
-  {
-    verdict: 'unknown',
-    title: 'Không chấm được từ CV (HR tự đánh giá)',
-    short: 'HR tự đánh giá',
-    icon: 'info',
-    tone: 'text-slate',
-  },
-];
+import { bonusCount, coverageOf, groupLines, MATCH_TABS, type MatchTab } from './cvMatchLines';
+import { CvMatchDrawer } from './CvMatchDrawer';
+import { VerdictCount, VerdictIcon } from './VerdictMark';
 
 /** Colour of a percentage, the same in the list and here. */
 export function percentTone(percent: number): string {
@@ -25,27 +16,106 @@ export function percentTone(percent: number): string {
   return 'bg-error-soft text-error';
 }
 
-function Item({ item }: { item: MatchItem }) {
-  // For a met line the CV quote says it all ("CV có Excel" adds nothing); otherwise the reason explains it.
-  const reason = item.verdict === 'met' && item.evidence ? null : item.reason;
+/** Lines were judged, but too few of them to give a percent. */
+function isTooLittle(result: CvScoreDto | null): boolean {
+  if (!result || result.percent != null || result.note) return false;
+  const coverage = coverageOf(result.items);
+  return coverage != null && coverage.total > 0;
+}
+
+/** The percent, or plainly why there is none. Shown in the detail and at the top of the drawer. */
+export function MatchBadge({ result, isScoring }: { result: CvScoreDto | null; isScoring: boolean }) {
+  const pill = 'rounded-full px-2.5 py-0.5 text-sm font-semibold';
+  if (isScoring) return <span className={`${pill} bg-tint text-slate`}>Đang chấm…</span>;
+  if (result?.percent != null)
+    return <span className={`${pill} ${percentTone(result.percent)}`}>{result.percent}%</span>;
+  if (isTooLittle(result)) return <span className={`${pill} bg-tint text-slate`}>Chưa đủ dữ liệu</span>;
+  if (!result) return <span className={`${pill} bg-tint text-slate`}>Chưa chấm</span>;
+  return null;
+}
+
+/** Beside the percent, never in it: what settles a tie between two CVs. */
+export function BonusBadge({ result }: { result: CvScoreDto | null }) {
+  const count = bonusCount(result?.items ?? []);
+  if (count === 0) return null;
+  return <span className="rounded-full bg-ok-soft px-2.5 py-0.5 text-sm font-semibold text-ok">+{count} điểm cộng</span>;
+}
+
+/** One stat per verdict: its icon, a big number and the word. Pressing one opens the drawer on that tab. */
+function Stats({ result, onOpen }: { result: CvScoreDto; onOpen: (tab: MatchTab) => void }) {
+  const groups = groupLines(result.items);
   return (
-    <li className="flex flex-col gap-0.5 border-b border-line-soft py-2 text-sm last:border-b-0">
-      <span className="font-medium text-navy">{item.requirement}</span>
-      {reason && <span className="text-[13px] text-body">{reason}</span>}
-      {item.evidence && <span className="text-[13px] italic text-muted">Trong CV: “{item.evidence}”</span>}
-    </li>
+    <div className="grid grid-cols-3 gap-2">
+      {MATCH_TABS.map(({ key, label }) => (
+        <button
+          key={key}
+          type="button"
+          aria-label={`${label}: ${groups[key].length}`}
+          onClick={() => onOpen(key)}
+          className="flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-control border border-line bg-white px-1 py-1.5 text-xs text-body transition-colors hover:bg-mist"
+        >
+          <span className="flex items-center gap-1.5">
+            <VerdictIcon tab={key} isMuted={groups[key].length === 0} />
+            <VerdictCount tab={key} count={groups[key].length} />
+          </span>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** The row in the detail. */
+function Summary({
+  result,
+  isScoring,
+  note,
+  error,
+  onOpen,
+}: {
+  result: CvScoreDto | null;
+  isScoring: boolean;
+  note: string | null;
+  error: string | null;
+  onOpen: (tab?: MatchTab | null) => void;
+}) {
+  return (
+    <section aria-label="Chấm CV theo yêu cầu" className="flex flex-col gap-2 rounded-card border border-line p-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="flex items-center gap-2">
+          <strong className="text-sm font-semibold text-navy">Chấm CV</strong>
+          <MatchBadge result={result} isScoring={isScoring} />
+          <BonusBadge result={result} />
+        </span>
+        <button
+          type="button"
+          onClick={() => onOpen()}
+          className={buttonClass('outline', 'compact', 'whitespace-nowrap')}
+        >
+          Xem chấm CV
+          <Icon name="chevronRight" size={16} />
+        </button>
+      </div>
+      {result && result.items.length > 0 && <Stats result={result} onOpen={onOpen} />}
+      {note && <span className="text-[13px] text-slate">{note}</span>}
+      <FieldError>{error}</FieldError>
+    </section>
   );
 }
 
 /**
- * Automatic CV check against the job's requirements: met / not met (with the CV quote as evidence) and what a
- * CV cannot show. A hint for HR, never a decision: it does not change the status.
+ * Automatic CV check against the job's requirements, as one row in the detail: the percent and the counts, with
+ * every line in a drawer of its own. A hint for HR, never a decision: it does not change the status.
  */
 export function CvMatch({ app }: { app: ApplicationDetailDto }) {
   const score = useScoreCv();
+  const [isOpen, setIsOpen] = useState(false);
+  const [startTab, setStartTab] = useState<MatchTab | null>(null);
   const result = app.cvScore;
   const asked = useRef(false);
   const canRead = !!app.cvFileName && !app.cvLink;
+  // A link is never scored by itself, so say why there is no result before HR asks for one.
+  const note = result ? result.note : app.cvLink ? CV_LINK_NOTE : null;
 
   // Score once when a CV file is opened and has no result yet; the server reuses stored results.
   useEffect(() => {
@@ -54,72 +124,31 @@ export function CvMatch({ app }: { app: ApplicationDetailDto }) {
     score.mutate(app.id);
   }, [app.id, canRead, score, result]);
 
+  const openDrawer = (tab: MatchTab | null = null) => {
+    setStartTab(tab);
+    setIsOpen(true);
+    if (!result && !score.isPending) score.mutate(app.id);
+  };
+
   return (
-    <section
-      aria-label="Chấm CV theo yêu cầu"
-      className="flex flex-col gap-3 rounded-card border border-line px-4 py-4"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="flex items-center gap-2">
-          <strong className="text-sm font-semibold text-navy">Chấm CV theo yêu cầu</strong>
-          {result?.percent != null && (
-            <span className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${percentTone(result.percent)}`}>
-              {result.percent}%
-            </span>
-          )}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          icon="search"
-          disabled={score.isPending}
-          onClick={() => score.mutate(app.id)}
-        >
-          {score.isPending ? 'Đang chấm…' : result ? 'Chấm lại' : 'Chấm CV'}
-        </Button>
-      </div>
-      {score.isError && <FieldError>{errorMessage(score.error)}</FieldError>}
-      {result?.note && <span className="text-sm text-slate">{result.note}</span>}
-      {result && result.items.length > 0 && (
-        <span className="flex flex-wrap gap-x-3 gap-y-1 text-[13px]">
-          {GROUPS.map((g) => {
-            const n = result.items.filter((i) => i.verdict === g.verdict).length;
-            return n > 0 ? (
-              <span key={g.verdict} className={`inline-flex items-center gap-1 font-medium ${g.tone}`}>
-                <Icon name={g.icon} size={13} stroke={2} />
-                {n} {g.short}
-              </span>
-            ) : null;
-          })}
-        </span>
-      )}
-      {result &&
-        GROUPS.map((g) => {
-          const items = result.items.filter((i) => i.verdict === g.verdict);
-          if (items.length === 0) return null;
-          // Open by default so HR sees which lines are met or not; a click folds a group away.
-          return (
-            <details key={g.verdict} open className="group">
-              <summary
-                className={`flex min-h-9 cursor-pointer list-none items-center gap-1.5 text-[13px] font-semibold ${g.tone}`}
-              >
-                <Icon name="chevronDown" size={14} className="-rotate-90 transition-transform group-open:rotate-0" />
-                {g.title} ({items.length})
-              </summary>
-              <ul className="m-0 list-none p-0 pl-5">
-                {items.map((item) => (
-                  <Item key={item.requirement} item={item} />
-                ))}
-              </ul>
-            </details>
-          );
-        })}
-      {result && (
-        <span className="text-xs text-muted">
-          Gợi ý tự động, chấm lúc {formatTimestamp(result.scoredAt)}. % = số yêu cầu thoả / số yêu cầu chấm được; không
-          tự đổi trạng thái hồ sơ.
-        </span>
-      )}
-    </section>
+    <>
+      <Summary
+        result={result}
+        isScoring={score.isPending}
+        note={note}
+        error={score.isError ? errorMessage(score.error) : null}
+        onOpen={openDrawer}
+      />
+      <CvMatchDrawer
+        app={app}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        startTab={startTab}
+        isScoring={score.isPending}
+        error={score.isError ? errorMessage(score.error) : null}
+        onScore={() => score.mutate(app.id)}
+        note={note}
+      />
+    </>
   );
 }

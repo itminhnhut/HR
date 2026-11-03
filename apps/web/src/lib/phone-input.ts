@@ -15,7 +15,8 @@ export const phoneInputProps = {
   inputMode: 'tel',
   // "tel" (not "tel-national"): iOS only offers the saved number with it; +84 is turned into 0 anyway.
   autoComplete: 'tel',
-  maxLength: 12,
+  // Room for a pasted "(+84) 912 345 678": formatPhoneInput keeps the first 10 digits, however long the paste.
+  maxLength: 24,
   // A pattern, not a real-looking number: an example that looks typed in reads as filled (the hint has one).
   placeholder: 'VD: 09xx xxx xxx',
 } as const;

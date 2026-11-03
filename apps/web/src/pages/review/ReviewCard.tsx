@@ -7,6 +7,7 @@ import {
 } from '@careers/shared';
 import { useState } from 'react';
 import { useReviewDecide } from '../../api/queries';
+import { isWebLink } from '../../lib/web-link';
 import { Icon } from '../../ui/icons';
 import { errorMessage } from '../hr/parts';
 
@@ -96,10 +97,12 @@ function CvButton({ item, onOpen }: { item: ReviewItemPublicDto; onOpen: () => v
       </button>
     );
   if (item.cv === 'link' && item.cvLink)
-    return (
+    return isWebLink(item.cvLink) ? (
       <a href={item.cvLink} target="_blank" rel="noreferrer" className={cls}>
         {inner}
       </a>
+    ) : (
+      <p className="mx-4 my-0 text-[13px] text-muted">Link CV không mở được, hỏi lại HR.</p>
     );
   return <p className="mx-4 my-0 text-[13px] text-muted">Ứng viên không gửi CV.</p>;
 }
