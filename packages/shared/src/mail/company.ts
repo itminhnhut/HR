@@ -19,6 +19,9 @@ export const MAIL_COMPANY = {
   hrHonorific: 'Ms.',
 } as const;
 
+/** On every text element: a browser drops `<body>` when it copies a mail, and its font with it. */
+export const MAIL_FONT = "font-family:'Times New Roman',Times,serif;";
+
 /** Images hosted on the site; sending through Outlook passes `cid:` urls instead. */
 export const MAIL_LOGO_URLS = {
   logo: 'https://www.lee-hr.com/images/mail/top-flow-logo.png',

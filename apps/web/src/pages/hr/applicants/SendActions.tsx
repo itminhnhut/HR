@@ -93,6 +93,9 @@ function SendHints({
   return (
     <div className="flex flex-col gap-0.5 text-xs text-muted">
       {!email && <span className="text-sm">Không có email: sao chép rồi gửi qua Zalo.</span>}
+      <span className="font-medium text-navy">
+        Dán xong trong Outlook: bấm biểu tượng dán cạnh nội dung, chọn Paste as is (phím P) để giữ màu và font.
+      </span>
       {isLong && (
         <span className="max-sm:hidden">Thư dài, ứng dụng mail có thể cắt bớt: dùng Gmail hoặc Sao chép.</span>
       )}

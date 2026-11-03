@@ -6,8 +6,19 @@ import {
   type TemplateKey,
   type TemplateValues,
 } from '../message-templates.js';
-import { MAIL_COMPANY, MAIL_LOGO_URLS, renderMailHtml, renderMailText, vietnamInterviewParts } from './index.js';
+import {
+  MAIL_COMPANY,
+  MAIL_FONT,
+  MAIL_LOGO_URLS,
+  renderMailHtml as renderWithFont,
+  renderMailText,
+  vietnamInterviewParts,
+} from './index.js';
 import type { MailContent, MailDetails } from './types.js';
+
+/** The font is on every tag (tested below): the other tests read better without it. */
+const renderMailHtml = (...args: Parameters<typeof renderWithFont>) =>
+  renderWithFont(...args).replaceAll(MAIL_FONT, '');
 
 /** 09:30 on Thursday 5 Nov 2026 in Vietnam. */
 const INTERVIEW_ISO = '2026-11-05T02:30:00.000Z';
@@ -101,7 +112,7 @@ describe('renderMailHtml', () => {
     expect(html).toContain('Thân mến,');
     expect(html).not.toContain('BEST REGARDS');
     expect(html).toContain('Top Solution, Top Choice');
-    expect(html).toContain('Hotline: 0937 705 533');
+    expect(html).toMatch(/Hotline: <a [^>]*>0937 705 533<\/a>/);
     expect(html).toContain('#C8102E');
     expect(html).toContain('mso-hide:all');
     expect(html).toContain('@media only screen');
@@ -356,7 +367,7 @@ describe('renderMailHtml', () => {
   it('should show the signature with alias, uppercase title and a +84 phone link', () => {
     const html = renderMailHtml(filled('rejection'), details);
 
-    expect(html).toContain('>Thuận Lê <span');
+    expect(html).toContain('>Thuận Lê</b> <span');
     expect(html).toContain('(Ms. Lee)</span>');
     expect(html).toContain('>HR GENERALIST</div>');
     expect(html).toContain('href="tel:+84986605214"');
@@ -369,7 +380,7 @@ describe('renderMailHtml', () => {
     const html = renderMailHtml(filled('rejection'), { ...details, hrAlias: '', hrTitle: '', hrPhone: '' });
 
     expect(html).not.toContain('font-size:14px;">(');
-    expect(html).not.toContain('tel:');
+    expect(html).not.toContain('tel:+84986605214');
     expect(html).not.toContain('>M</b>');
   });
 
@@ -530,7 +541,7 @@ describe('footer of every letter', () => {
       expect(html).toContain(`<a href="${MAIL_COMPANY.careersUrl}"`);
       expect(html).toContain(`<a href="${MAIL_COMPANY.privacyUrl}"`);
       expect(html).toContain('Bạn nhận thư này vì đã ứng tuyển tại Top Flow.');
-      expect(html).toContain('Website: topflow.vn &nbsp;|&nbsp; Tuyển dụng Top Flow: <a');
+      expect(html).toMatch(/Website: <a [^>]*>topflow\.vn<\/a> &nbsp;\|&nbsp; Tuyển dụng Top Flow: <a/);
       expect(text).toContain(`Tuyển dụng Top Flow: ${MAIL_COMPANY.careersSite}`);
       expect(text).toContain(MAIL_COMPANY.privacyPage);
     }
@@ -636,4 +647,55 @@ describe('a candidate name that is also a property of every object', () => {
       expect(html).toContain(`Thân gửi bạn <b>${name}</b>,`);
     },
   );
+});
+
+describe('a mail that survives being copied and pasted', () => {
+  const textTags = (html: string) => [...html.matchAll(/<(?:td|div|p|a|span)\b[^>]*>|<b\s[^>]*>/g)].map((m) => m[0]);
+
+  it.each(TEMPLATE_KEYS)(
+    'should carry the font on every text element of %s, as the clipboard drops the body',
+    (key) => {
+      // Act
+      const tags = textTags(renderWithFont(filled(key), details));
+
+      // Assert
+      expect(tags.length).toBeGreaterThan(10);
+      for (const tag of tags) expect(tag).toContain('Times New Roman');
+    },
+  );
+
+  it.each(TEMPLATE_KEYS)('should keep each contact letter on the line of its value in %s', (key) => {
+    // Act
+    const html = renderMailHtml(filled(key), details);
+
+    // Assert
+    expect(html).not.toContain('inline-block;width:16px');
+    expect(html).toMatch(/>M<\/b>&nbsp;&nbsp;<a /);
+  });
+
+  it('should leave the alias out of the bold of the name', () => {
+    const html = renderMailHtml(filled('rejection'), details);
+
+    expect(html).toMatch(/<b[^>]*>Thuận Lê<\/b> <span[^>]*>\(Ms\. Lee\)<\/span>/);
+  });
+
+  it('should centre the position box by attribute, which a paste keeps', () => {
+    expect(renderMailHtml(filled('rejection'), details)).toMatch(
+      /<table role="presentation" align="center"[^>]*margin:16px auto 0;/,
+    );
+  });
+
+  it('should give the callout and footer backgrounds as attributes too', () => {
+    const html = renderMailHtml(filled('rejection'), details);
+
+    expect(html).toContain('bgcolor="#fdf3f4"');
+    expect(html).toMatch(/<td[^>]*bgcolor="#C8102E"[^>]*>\s*<b/);
+  });
+
+  it('should make the footer email and website real links, so a mail app does not paint them blue', () => {
+    const html = renderMailHtml(filled('rejection'), details);
+
+    expect(html).toMatch(/Email: <a href="mailto:hr@topflow\.vn"/);
+    expect(html).toMatch(/Website: <a href="https:\/\/topflow\.vn"/);
+  });
 });

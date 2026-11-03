@@ -2,8 +2,8 @@ import type { TemplateKey } from '../message-templates.js';
 import { escapeHtml } from '../news/render.js';
 import { callCardRow, callExampleBox } from './call.js';
 import { detailsCardRow } from './card.js';
-import { MAIL_COMPANY, MAIL_LOGO_URLS } from './company.js';
-import { hrEmailOf, interviewPartsOf, isInterviewMail } from './details.js';
+import { MAIL_COMPANY, MAIL_FONT, MAIL_LOGO_URLS } from './company.js';
+import { hrEmailOf, interviewPartsOf, isInterviewMail, telHref } from './details.js';
 import { blocksHtml, paragraphsHtml, type TextStyle } from './inline.js';
 import { mailtoHref, signatureRow } from './signature.js';
 import type { MailContent, MailDetails } from './types.js';
@@ -68,7 +68,7 @@ function titleRow(key: TemplateKey, jobTitle: string): string {
   const { title, subtitle } = HEADINGS[key];
   const job = jobTitle.trim();
   const pill = job
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px auto 0;"><tr>
+    ? `<table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:16px auto 0;"><tr>
     <td style="background:#fbeaec;border:1px solid #f0c9ce;border-radius:20px;padding:7px 18px;font-size:14px;color:#2b2b2b;">Vị trí: <b style="color:#C8102E;">${escapeHtml(job)}</b></td>
   </tr></table>`
     : '';
@@ -80,7 +80,7 @@ function titleRow(key: TemplateKey, jobTitle: string): string {
 }
 
 const textRow = (top: number, lineHeight: number, inner: string) =>
-  `<tr><td class="px" style="padding:${top}px 40px 0;font-size:15px;line-height:${lineHeight};">
+  `<tr><td class="px" style="padding:${top}px 40px 0;font-size:15px;line-height:${lineHeight};color:#2b2b2b;">
   ${inner}
 </td></tr>`;
 
@@ -94,8 +94,8 @@ function calloutRow(content: MailContent, details: MailDetails): string {
       ? `${first}\n      ${callExampleBox()}${rest.map((p) => `<div style="margin-top:10px;">${p}</div>`).join('')}`
       : [first, ...rest].filter(Boolean).join('<br><br>');
   return `<tr><td class="px" style="padding:20px 40px 0;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fdf3f4;border-left:4px solid #C8102E;">
-    <tr><td style="padding:14px 18px;font-size:15px;line-height:1.7;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#fdf3f4" style="background:#fdf3f4;border-left:4px solid #C8102E;">
+    <tr><td bgcolor="#fdf3f4" style="padding:14px 18px;font-size:15px;line-height:1.7;color:#2b2b2b;">
       ${heading}${text}
     </td></tr>
   </table>
@@ -122,9 +122,10 @@ const FOOTER_LINK = 'color:#ffffff;text-decoration:underline;';
 
 function footerRow(): string {
   const { name, tagline, hrEmail, hotline, website, careersSite, careersUrl, privacyPage, privacyUrl } = MAIL_COMPANY;
-  return `<tr><td class="px" style="background:#C8102E;padding:14px 40px;font-size:12px;color:#ffe3e6;line-height:1.7;">
+  const quiet = 'color:#ffe3e6;text-decoration:none;';
+  return `<tr><td class="px" bgcolor="#C8102E" style="background:#C8102E;padding:14px 40px;font-size:12px;color:#ffe3e6;line-height:1.7;">
   <b style="color:#ffffff;">${escapeHtml(name.toUpperCase())}</b> &nbsp;·&nbsp; ${escapeHtml(tagline)}<br>
-  Email: ${escapeHtml(hrEmail)} &nbsp;|&nbsp; Hotline: ${escapeHtml(hotline)} &nbsp;|&nbsp; Website: ${escapeHtml(website)} &nbsp;|&nbsp; Tuyển dụng ${escapeHtml(name)}: <a href="${escapeHtml(careersUrl)}" style="${FOOTER_LINK}">${escapeHtml(careersSite)}</a>
+  Email: <a href="${escapeHtml(mailtoHref(hrEmail))}" style="${quiet}">${escapeHtml(hrEmail)}</a> &nbsp;|&nbsp; Hotline: <a href="${escapeHtml(telHref(hotline))}" style="${quiet}">${escapeHtml(hotline)}</a> &nbsp;|&nbsp; Website: <a href="https://${escapeHtml(website)}" style="${quiet}">${escapeHtml(website)}</a> &nbsp;|&nbsp; Tuyển dụng ${escapeHtml(name)}: <a href="${escapeHtml(careersUrl)}" style="${FOOTER_LINK}">${escapeHtml(careersSite)}</a>
   <div style="font-size:11px;line-height:1.5;margin-top:6px;">Bạn nhận thư này vì đã ứng tuyển tại ${escapeHtml(name)}. Xem chính sách dữ liệu tại <a href="${escapeHtml(privacyUrl)}" style="${FOOTER_LINK}">${escapeHtml(privacyPage)}</a></div>
 </td></tr>`;
 }
@@ -147,6 +148,15 @@ function contentRows(content: MailContent, details: MailDetails): string[] {
   ];
 }
 
+/** Values are escaped, so `>` only ever closes a tag here. A bare `<b>` inherits the font from its paragraph. */
+const withMailFont = (html: string) =>
+  html.replace(/<(td|div|p|a|span|b(?=\s))\b([^>]*)>/g, (tag: string, name: string, attrs: string) => {
+    if (attrs.includes('font-family')) return tag;
+    return attrs.includes('style="')
+      ? `<${name}${attrs.replace('style="', `style="${MAIL_FONT}`)}>`
+      : `<${name}${attrs} style="${MAIL_FONT}">`;
+  });
+
 /**
  * The whole mail as a table-based document with inline styles, as HR's designs. Every value and text is escaped;
  * `opts.logos` is for `cid:` images when the server sends the mail itself.
@@ -167,7 +177,7 @@ export function renderMailHtml(
     signatureRow(details, logos.mark),
     footerRow(),
   ];
-  return `<!DOCTYPE html>
+  return withMailFont(`<!DOCTYPE html>
 <html lang="vi"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -190,5 +200,5 @@ ${rows.filter(Boolean).join('\n\n')}
 </td></tr>
 </table>
 </body></html>
-`;
+`);
 }
