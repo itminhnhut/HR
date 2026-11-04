@@ -37,7 +37,7 @@ function DeadlineForm({ job, onClose }: { job: HrJobRowDto; onClose: () => void 
     <div className="flex max-h-[92dvh] flex-col gap-5 overflow-y-auto p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="m-0 font-serif text-[24px] font-medium">Sửa hạn nộp</h2>
+          <h2 className="m-0 text-lg font-semibold">Sửa hạn nộp</h2>
           <span className="text-sm text-slate">{job.title}</span>
         </div>
         <CloseButton onClick={onClose} />

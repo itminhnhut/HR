@@ -14,3 +14,17 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
       dispatchEvent: () => false,
     }) as MediaQueryList;
 }
+
+// jsdom lacks what the shadcn (Radix) Select and Tooltip call.
+if (typeof window !== 'undefined') {
+  const proto = window.Element.prototype;
+  proto.hasPointerCapture ??= () => false;
+  proto.setPointerCapture ??= () => undefined;
+  proto.releasePointerCapture ??= () => undefined;
+  proto.scrollIntoView ??= () => undefined;
+  window.ResizeObserver ??= class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}

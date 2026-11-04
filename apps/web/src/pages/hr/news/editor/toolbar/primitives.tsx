@@ -188,7 +188,7 @@ function MenuPanel({
         e.preventDefault();
         onEscape();
       }}
-      className="fixed z-40 flex max-h-[min(440px,60dvh)] w-max min-w-[220px] max-w-[min(320px,calc(100vw-16px))] animate-fade flex-col overflow-y-auto overscroll-contain rounded-card border border-line bg-white p-1.5 shadow-[0_10px_30px_rgba(11,31,58,0.14)]"
+      className="fixed z-40 flex max-h-[min(440px,60dvh)] w-max min-w-[220px] max-w-[min(320px,calc(100vw-16px))] animate-fade flex-col overflow-y-auto overscroll-contain rounded-control border border-line bg-white p-1.5 shadow-[0_10px_30px_rgba(11,31,58,0.14)]"
     >
       {children}
     </div>,

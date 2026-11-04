@@ -68,7 +68,7 @@ function LinkForm({ state, onSubmit, onRemove, onClose }: LinkDialogProps & { st
       }}
     >
       <div className="flex items-start justify-between gap-3">
-        <h2 className="m-0 font-serif text-[24px] font-medium">{state.url ? 'Sửa link' : 'Chèn link'}</h2>
+        <h2 className="m-0 text-lg font-semibold">{state.url ? 'Sửa link' : 'Chèn link'}</h2>
         <CloseButton onClick={onClose} />
       </div>
       <TextField

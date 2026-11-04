@@ -701,6 +701,9 @@ export const mockApi: Api = {
   hrCvUrl() {
     return null;
   },
+  async hrCvLink() {
+    return null;
+  },
 
   async hrApplications(jobId, q = '') {
     const db = load();

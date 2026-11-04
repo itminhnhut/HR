@@ -28,7 +28,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex flex-col gap-4 rounded-card border border-line bg-white px-4 py-5 sm:px-[26px] sm:py-6">
+    <section className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6">
       <div className="flex flex-col gap-1">
         <h2 className="m-0">
           <SectionTitle icon={icon} tone={tone}>
@@ -75,7 +75,7 @@ function ChoiceList({
               type="button"
               aria-label={`Bỏ ${item}`}
               onClick={() => onChange(items.filter((x) => x !== item))}
-              className="flex size-7 items-center justify-center rounded-full border-0 bg-transparent text-slate hover:bg-white hover:text-error"
+              className="relative flex size-7 items-center justify-center rounded-full border-0 bg-transparent text-slate after:absolute after:-inset-2 after:content-[''] hover:bg-white hover:text-error sm:after:hidden"
             >
               <Icon name="x" size={13} stroke={1.8} />
             </button>
@@ -213,7 +213,7 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
                         benefits: template.benefits.map((x, j) => (j === i ? { ...x, standard: e.target.checked } : x)),
                       })
                     }
-                    className="min-h-11 flex-1 items-center text-[15px] text-navy"
+                    className="min-h-11 flex-1 items-center! text-[15px] text-navy"
                   >
                     {b.label}
                   </Checkbox>
@@ -243,13 +243,7 @@ function TemplateForm({ initial }: { initial: JobTemplate }) {
                   }
                 }}
               />
-              <Button
-                variant="outline"
-                icon="plus"
-                disabled={!draft.trim()}
-                onClick={addBenefit}
-                className="min-h-[52px]"
-              >
+              <Button variant="outline" icon="plus" disabled={!draft.trim()} onClick={addBenefit} className="min-h-11">
                 Thêm
               </Button>
             </div>

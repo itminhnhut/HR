@@ -114,7 +114,7 @@ function AddUser({ onCreated }: { onCreated: (r: TempPasswordResponse) => void }
     <form
       noValidate
       onSubmit={submit}
-      className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
+      className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6"
     >
       <h2 className="m-0">
         <SectionTitle icon="plus" tone="blue">
@@ -176,7 +176,7 @@ function SenderProfile() {
     <form
       noValidate
       onSubmit={submit}
-      className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
+      className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6"
     >
       <div className="flex flex-col gap-1">
         <h2 className="m-0">
@@ -188,7 +188,7 @@ function SenderProfile() {
           Điền vào chữ ký mẫu thư: {'{Tên HR}'}, {'{SĐT HR}'}, {'{Chức danh HR}'}, {'{Tên gọi khác}'}.
         </p>
       </div>
-      <div className="grid gap-3.5 sm:grid-cols-3">
+      <div className="grid items-start gap-3.5 sm:grid-cols-2">
         <TextField label="Tên hiển thị" value={name} error={errors.name} onChange={(e) => setName(e.target.value)} />
         <TextField
           label="Số điện thoại / Zalo"
@@ -265,7 +265,7 @@ function ChangeOwnPassword() {
     <form
       noValidate
       onSubmit={submit}
-      className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
+      className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6"
     >
       <h2 className="m-0">
         <SectionTitle icon="lock" tone="slate">

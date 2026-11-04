@@ -147,7 +147,7 @@ export const NEWS_PAGE_SIZE = 20;
 function Pager({ page, pageCount, onPage }: { page: number; pageCount: number; onPage: (page: number) => void }) {
   if (pageCount <= 1) return null;
   const step =
-    'inline-flex size-11 items-center justify-center rounded-control border border-silver bg-white text-navy hover:border-navy disabled:opacity-40';
+    'inline-flex size-11 items-center justify-center rounded-control border border-field bg-white text-navy shadow-[0_1px_2px_rgb(15_23_42/0.05)] hover:bg-tint lg:size-9 disabled:opacity-40';
   return (
     <nav aria-label="Trang danh sách bài" className="flex items-center justify-center gap-3 px-4 py-4">
       <button

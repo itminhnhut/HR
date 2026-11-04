@@ -1,3 +1,5 @@
+import { InterviewField } from '../applicants/InterviewField';
+import { useConfirm } from '../shadcn/Confirm';
 import { REVIEW_DECISION_LABEL, type ReviewBatchDto, type ReviewEventDto } from '@careers/shared';
 import { useState } from 'react';
 import { useReviewAction } from '../../../api/queries';
@@ -5,7 +7,7 @@ import { copyText, useFlash } from '../../../lib/hooks';
 import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
-import { defaultRespondBy, fromLocalInput, reviewLink, shortTime, zaloMessage } from './reviewModel';
+import { defaultRespondBy, fromLocalInput, reviewLink, shortTime, zaloMessage, toLocalInput } from './reviewModel';
 
 function CopyAction({ text, label, done }: { text: string; label: string; done: string }) {
   const [copied, flash] = useFlash();
@@ -33,15 +35,13 @@ function Extend({ batch, onDone }: { batch: ReviewBatchDto; onDone: () => void }
       }}
       className="flex flex-col gap-2 rounded-control bg-mist p-3"
     >
-      <label className="flex flex-col gap-1 text-xs text-slate">
-        Hạn phản hồi mới
-        <input
-          type="datetime-local"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="field-focus min-h-11 rounded-control border border-field bg-white px-3 text-sm text-navy"
-        />
-      </label>
+      <InterviewField
+        fieldName="Hạn phản hồi mới"
+        placeholder="Chọn hạn phản hồi"
+        isRequired
+        value={fromLocalInput(value) || null}
+        onChange={(iso) => iso && setValue(toLocalInput(new Date(iso)))}
+      />
       {action.error && (
         <span role="alert" className="text-xs text-error">
           {errorMessage(action.error)}
@@ -61,6 +61,7 @@ function Extend({ batch, onDone }: { batch: ReviewBatchDto; onDone: () => void }
 
 /** The private link: copy it (or a ready Zalo message), its dates, extend, revoke, add people. */
 export function LinkPanel({ batch, onAdd }: { batch: ReviewBatchDto; onAdd: () => void }) {
+  const [confirm, dialog] = useConfirm();
   const action = useReviewAction(batch.id);
   const [extending, setExtending] = useState(false);
   const link = reviewLink(batch.token);
@@ -74,8 +75,9 @@ export function LinkPanel({ batch, onAdd }: { batch: ReviewBatchDto; onAdd: () =
     ['Xem xong', batch.doneAt ? shortTime(batch.doneAt) : 'Chưa'],
   ];
   return (
-    <section className="flex flex-col gap-3 rounded-card border border-line bg-white p-4">
-      <h2 className="m-0 text-xs font-semibold uppercase tracking-[0.06em] text-muted">Link gửi sếp</h2>
+    <section className="flex flex-col gap-3 rounded-card border border-line bg-white p-4 sm:p-6">
+      {dialog}
+      <h2 className="m-0 text-lg font-semibold text-navy">Link gửi sếp</h2>
       {revoked ? (
         <p className="m-0 text-sm text-slate">Link đã khoá: sếp không mở được nữa.</p>
       ) : (
@@ -85,7 +87,7 @@ export function LinkPanel({ batch, onAdd }: { batch: ReviewBatchDto; onAdd: () =
             value={link}
             aria-label="Link duyệt"
             onFocus={(e) => e.target.select()}
-            className="min-h-11 w-full rounded-control border border-field bg-mist px-3 text-[13px] text-slate"
+            className="field-focus min-h-11 w-full rounded-control border border-field bg-mist px-3 text-sm text-slate"
           />
           <span className="flex flex-wrap gap-2">
             <CopyAction text={link} label="Copy link" done="Đã copy link" />
@@ -115,7 +117,14 @@ export function LinkPanel({ batch, onAdd }: { batch: ReviewBatchDto; onAdd: () =
             variant="danger"
             icon="lock"
             disabled={action.isPending}
-            onClick={() => window.confirm('Khoá link? Sếp sẽ không mở được nữa.') && action.mutate({ type: 'revoke' })}
+            onClick={() =>
+              void confirm({
+                title: 'Khoá link?',
+                description: 'Sếp sẽ không mở được nữa.',
+                action: 'Khoá link',
+                isDanger: true,
+              }).then((agreed) => agreed && action.mutate({ type: 'revoke' }))
+            }
           >
             Khoá link
           </Button>
@@ -161,8 +170,8 @@ const decisionDot = (e: ReviewEventDto) =>
 /** "Nhật ký": who did what, newest first. Quotes the reason when there is one. */
 export function ReviewLog({ events }: { events: ReviewEventDto[] }) {
   return (
-    <section className="flex flex-col gap-3 rounded-card border border-line bg-white p-4">
-      <h2 className="m-0 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.06em] text-muted">
+    <section className="flex flex-col gap-3 rounded-card border border-line bg-white p-4 sm:p-6">
+      <h2 className="m-0 flex items-center gap-2 text-lg font-semibold text-navy">
         <Icon name="clock" size={14} /> Nhật ký
       </h2>
       <ol className="m-0 flex list-none flex-col gap-3 p-0 text-[13px]">

@@ -1,4 +1,5 @@
 import { Button } from '../../../ui/Button';
+import { SelectField } from '../shadcn/Select';
 import { Icon } from '../../../ui/icons';
 import { MenuButton } from '../MenuButton';
 import { MenuItem } from '../parts';
@@ -39,22 +40,20 @@ function JobSelect({
   onChange: (id: string | null) => void;
 }) {
   return (
-    <label className="field-focus relative flex min-h-11 min-w-[128px] flex-[1_1_0] items-center rounded-control border border-field bg-white pl-3 pr-9 lg:max-w-[240px]">
-      <span className="sr-only">Lọc theo vị trí</span>
-      <select
-        value={value ?? ''}
-        onChange={(e) => onChange(e.target.value || null)}
-        className="w-full min-w-0 appearance-none self-stretch truncate border-0 bg-transparent text-sm text-navy outline-none"
-      >
-        <option value="">Tất cả vị trí</option>
-        {jobs.map((j) => (
-          <option key={j.id} value={j.id}>
-            {j.title}
-          </option>
-        ))}
-      </select>
-      <Icon name="chevronDown" size={16} className="pointer-events-none absolute right-3 text-slate" />
-    </label>
+    <SelectField
+      label="Lọc theo vị trí"
+      hideLabel
+      className="min-w-[128px] flex-[1_1_0]"
+      value={value ?? ''}
+      onChange={(e) => onChange(e.target.value || null)}
+    >
+      <option value="">Tất cả vị trí</option>
+      {jobs.map((j) => (
+        <option key={j.id} value={j.id}>
+          {j.title}
+        </option>
+      ))}
+    </SelectField>
   );
 }
 

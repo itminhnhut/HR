@@ -234,6 +234,7 @@ export const httpApi: Api = {
   hrScoreCv: (id) => request(`/hr/applications/${encodeURIComponent(id)}/score`, { method: 'POST' }),
   hrDeleteApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrCvUrl: (id) => `${BASE}/hr/applications/${encodeURIComponent(id)}/cv`,
+  hrCvLink: (id) => request(`/hr/applications/${encodeURIComponent(id)}/cv-link`),
   hrUsers: () => request('/hr/users'),
   hrCreateUser: (input) => request('/hr/users', json('POST', input)),
   hrResetPassword: (id) => request(`/hr/users/${encodeURIComponent(id)}/reset-password`, { method: 'POST' }),

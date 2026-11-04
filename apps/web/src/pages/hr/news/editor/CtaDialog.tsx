@@ -1,7 +1,8 @@
 import { ARTICLE_CTA_MAX } from '@careers/shared';
 import { useState } from 'react';
 import { useJobs } from '../../../../api/queries';
-import { FieldError, SelectField, TextField } from '../../../../ui/Field';
+import { FieldError, TextField } from '../../../../ui/Field';
+import { SelectField } from '../../shadcn/Select';
 import type { CtaPayload } from './CtaNode';
 import { DialogButtons, DialogHead } from './EmbedDialogs';
 import { ctaUrl, jobSlugFromUrl } from './embeds';

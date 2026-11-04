@@ -12,7 +12,8 @@ import { ApiError } from '../../api';
 import { useAddTemplateChoice, useHrJob, useJobTemplate, useSaveJob } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { Button } from '../../ui/Button';
-import { Checkbox, SelectField, TextArea, TextField } from '../../ui/Field';
+import { Checkbox, TextArea, TextField } from '../../ui/Field';
+import { SelectField } from './shadcn/Select';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, IconRing, type IconName } from '../../ui/icons';
 import { DeadlineField } from './job-form/DeadlineField';
@@ -59,8 +60,8 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <fieldset className="m-0 flex min-w-0 flex-col gap-[18px] rounded-card border border-line bg-white px-4 pb-6 pt-3 sm:px-[26px] sm:pb-[26px]">
-      <legend className="px-2">
+    <fieldset className="m-0 flex min-w-0 flex-col gap-[18px] rounded-card border border-line bg-white p-4 sm:p-6">
+      <legend className="float-left w-full p-0">
         <SectionTitle icon={icon} tone={tone}>
           {legend}
         </SectionTitle>
@@ -92,7 +93,7 @@ function Preview({ form }: { form: FormState }) {
         <Icon name="eye" size={16} />
         Ứng viên sẽ thấy như sau
       </span>
-      <div className="flex flex-col gap-4 rounded-card border border-line bg-white px-[26px] pb-[22px] pt-[26px]">
+      <div className="flex flex-col gap-4 rounded-card border border-line bg-white p-6">
         <span className="inline-flex items-center gap-2 text-[13px] text-slate">
           <IconRing name="briefcase" size={14} className="p-[7px]" />
           {form.department.trim() || 'Phòng ban'}
@@ -149,7 +150,9 @@ function JobForm({
   const formRef = useRef<HTMLFormElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [savedForm, setSavedForm] = useState(initial);
-  const allowLeave = useUnsavedGuard(form !== savedForm && JSON.stringify(form) !== JSON.stringify(savedForm));
+  const { allowLeave, guardDialog } = useUnsavedGuard(
+    form !== savedForm && JSON.stringify(form) !== JSON.stringify(savedForm),
+  );
   /** A live or paused job: one button, state stays as it is. */
   const editsLiveJob = mode === 'edit' && !!job && job.status !== 'draft';
   const addToList = useAddTemplateChoice();
@@ -211,6 +214,7 @@ function JobForm({
 
   return (
     <div className="flex items-start gap-7">
+      {guardDialog}
       <form
         ref={formRef}
         noValidate
@@ -426,7 +430,7 @@ function JobForm({
 
 function FormSkeleton() {
   return (
-    <div aria-hidden="true" className="flex flex-col gap-5 rounded-card border border-line bg-white p-[26px]">
+    <div aria-hidden="true" className="flex flex-col gap-5 rounded-card border border-line bg-white p-6">
       <Sk w={160} h={20} />
       <Sk w="100%" h={46} />
       <div className="grid gap-3.5 sm:grid-cols-3">

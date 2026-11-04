@@ -27,7 +27,7 @@ export function DetailDrawer({
         <header className="flex flex-none flex-wrap items-center gap-3 border-b border-line px-5 py-3 max-sm:px-4">
           <div className="flex min-w-0 flex-1 flex-col">
             <span className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
-              <h2 className="m-0 font-serif text-[22px] font-medium">{title}</h2>
+              <h2 className="m-0 text-lg font-semibold">{title}</h2>
               {badge}
             </span>
             <span title={subtitle} className="truncate text-sm text-slate">

@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { ApiError } from '../../../api';
 import { useSourceActions, useSources } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
-import { FieldError, SelectField } from '../../../ui/Field';
+import { FieldError } from '../../../ui/Field';
+import { SelectField } from '../shadcn/Select';
 
 const NEW = '__new__';
 

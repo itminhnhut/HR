@@ -19,6 +19,8 @@ import { JobDeadlineDialog } from './JobDeadlineDialog';
 import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
 import { Pill } from './design/Pill';
+import { useConfirm } from './shadcn/Confirm';
+import { Tip } from './shadcn/Tip';
 import { TABLE_HEAD_CELL } from './design/table';
 import { TONE, type Tone } from './design/tone';
 import { apiMessage, errorMessage, FilterTabs, MenuItem, PageHeading, PopupMenu, type TabItem } from './parts';
@@ -99,144 +101,165 @@ function ApplicationsCell({ row }: { row: HrJobRowDto }) {
 }
 
 const actClass =
-  'inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-control border-0 bg-transparent px-3 text-sm no-underline transition-colors hover:bg-tint disabled:opacity-60 lg:min-h-10';
+  'inline-flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-control border-0 bg-transparent px-3 text-sm no-underline transition-colors hover:bg-tint disabled:opacity-60 lg:min-h-10 xl:w-11 xl:justify-center xl:px-0';
 
 function ActButton({
   icon,
+  tip,
+  tone,
   children,
   onClick,
   disabled,
 }: {
   icon: IconName;
+  /** The word for the desktop table, where only the icon shows. */
+  tip: string;
+  tone: Tone;
   children: ReactNode;
   onClick: () => void;
   disabled?: boolean;
 }) {
   return (
-    <button type="button" onClick={onClick} disabled={disabled} className={`${actClass} font-medium text-accent`}>
-      <Icon name={icon} size={16} />
-      {children}
-    </button>
+    <Tip label={tip}>
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={`${actClass} text-body hover:text-navy ${TONE[tone].hover}`}
+      >
+        <Icon name={icon} size={16} className={TONE[tone].text} />
+        <span className="xl:sr-only">{children}</span>
+      </button>
+    </Tip>
   );
 }
+
+/** Keeps a row's icons under the same column when it has no such action; a phone just leaves it out. */
+const EmptySlot = () => <span aria-hidden="true" className="hidden size-11 xl:inline-block" />;
 
 function ActLink({
   icon,
   to,
   children,
-  title,
+  tip,
   tone,
-  strong = false,
 }: {
   icon: IconName;
   to: string;
   children: ReactNode;
-  /** Tooltip, for the desktop table where only the icon shows. */
-  title?: string;
+  /** The word for the desktop table, where only the icon shows. */
+  tip?: string;
   /** The icon's colour, and the row's hover. */
   tone?: Tone;
-  strong?: boolean;
 }) {
-  return (
-    <Link
-      to={to}
-      title={title}
-      className={`${actClass} ${strong ? 'font-medium text-link' : 'text-body hover:text-navy'} ${tone ? TONE[tone].hover : ''}`}
-    >
+  const link = (
+    <Link to={to} className={`${actClass} text-body hover:text-navy ${tone ? TONE[tone].hover : ''}`}>
       <Icon name={icon} size={16} className={tone ? TONE[tone].text : ''} />
       {children}
     </Link>
   );
+  return tip ? <Tip label={tip}>{link}</Tip> : link;
 }
 
 function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto } & RowHandlers) {
   const [copied, flashCopied] = useFlash();
-  const [confirmClose, setConfirmClose] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirm, dialog] = useConfirm();
   const { status } = row;
+  const askDelete = async () => {
+    const agreed = await confirm({
+      title: `Xoá tin nháp "${row.title}"?`,
+      description: 'Không khôi phục được.',
+      action: 'Xoá tin',
+      isDanger: true,
+    });
+    if (agreed) onDelete();
+  };
+  const askClose = async () => {
+    const agreed = await confirm({
+      title: `Đóng tin "${row.title}"?`,
+      description: 'Ứng viên sẽ không nộp được nữa.',
+      action: 'Đóng tin',
+      isDanger: true,
+    });
+    if (agreed) run('close');
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-1 xl:justify-end">
+      {dialog}
       {status === 'draft' && (
-        <ActLink icon="send" to={`/hr/tin/${row.id}`}>
-          Đăng
+        <ActLink icon="send" tone="green" to={`/hr/tin/${row.id}`} tip="Đăng tin">
+          <span className="xl:sr-only">Đăng</span>
         </ActLink>
       )}
-      {status === 'draft' && (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => {
-            // Deleting cannot be undone, so it takes a second tap.
-            if (!confirmDelete) return setConfirmDelete(true);
-            setConfirmDelete(false);
-            onDelete();
-          }}
-          className={`${actClass} ${confirmDelete ? 'font-medium text-error' : 'text-body hover:text-navy'}`}
-        >
-          <Icon name="trash" size={16} />
-          {confirmDelete ? 'Bấm lần nữa để xóa' : 'Xóa'}
-        </button>
-      )}
       {isEnded(status) && (
-        <ActButton icon="calendar" onClick={onDeadline} disabled={busy}>
+        <ActButton icon="calendar" tone="orange" tip="Sửa hạn nộp" onClick={onDeadline} disabled={busy}>
           Sửa hạn nộp
         </ActButton>
       )}
-      {row.totalApplications > 0 && (
-        <ActLink icon="inbox" tone="sky" to={`/hr/ho-so?tin=${row.id}`} title="Xem hồ sơ của tin này">
+      {isLive(status) && <EmptySlot />}
+      {row.totalApplications > 0 ? (
+        <ActLink icon="inbox" tone="sky" to={`/hr/ho-so?tin=${row.id}`} tip="Xem hồ sơ của tin này">
           {/* Desktop table: icon only to keep each row on one line; the label stays for screen readers. */}
           <span className="xl:sr-only">Hồ sơ</span>
         </ActLink>
+      ) : (
+        <EmptySlot />
       )}
-      {status !== 'draft' && (
-        <ActLink icon="copy" tone="teal" to={`/hr/tin/moi?tu=${row.id}`} title="Đăng tin mới giống tin này">
+      {status !== 'draft' ? (
+        <ActLink icon="copy" tone="teal" to={`/hr/tin/moi?tu=${row.id}`} tip="Đăng tin mới giống tin này">
           <span className="xl:sr-only">Nhân bản</span>
         </ActLink>
+      ) : (
+        <EmptySlot />
       )}
-      {
+      <Tip label="Sửa tin">
         <Link
           to={`/hr/tin/${row.id}`}
           aria-label={`Sửa tin ${row.title}`}
-          title="Sửa tin"
           className={`inline-flex size-11 items-center justify-center rounded-control ${TONE.blue.text} ${TONE.blue.hover}`}
         >
           <Icon name="pencil" size={17} />
         </Link>
-      }
-      {isLive(status) && (
-        <PopupMenu label={`Thao tác khác cho ${row.title}`}>
-          {(close) => (
-            <>
-              <MenuItem onClick={() => copyText(jobUrl(row.slug)).then((ok) => ok && flashCopied())}>
-                <Icon name={copied ? 'check' : 'link'} size={16} className={TONE.blue.text} />
-                {copied ? 'Đã chép' : 'Sao chép link'}
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  close();
-                  onDeadline();
-                }}
-              >
-                <Icon name="calendar" size={16} className={TONE.orange.text} />
-                Sửa hạn nộp
-              </MenuItem>
-              <MenuItem
-                divided
-                onClick={() => {
-                  // Candidates can no longer apply once closed, so it takes a second tap.
-                  if (!confirmClose) return setConfirmClose(true);
-                  setConfirmClose(false);
-                  close();
-                  run('close');
-                }}
-              >
-                <Icon name="x" size={16} className="text-error" />
-                {confirmClose ? <span className="font-medium text-error">Bấm lần nữa để đóng tin</span> : 'Đóng tin'}
-              </MenuItem>
-            </>
-          )}
-        </PopupMenu>
+      </Tip>
+      {isLive(status) ? (
+        <span className="inline-flex xl:w-11 xl:justify-center">
+          <PopupMenu label={`Thao tác khác cho ${row.title}`}>
+            {(close) => (
+              <>
+                <MenuItem onClick={() => copyText(jobUrl(row.slug)).then((ok) => ok && flashCopied())}>
+                  <Icon name={copied ? 'check' : 'link'} size={16} className={TONE.blue.text} />
+                  {copied ? 'Đã chép' : 'Sao chép link'}
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    close();
+                    onDeadline();
+                  }}
+                >
+                  <Icon name="calendar" size={16} className={TONE.orange.text} />
+                  Sửa hạn nộp
+                </MenuItem>
+                <MenuItem
+                  divided
+                  onClick={() => {
+                    close();
+                    void askClose();
+                  }}
+                >
+                  <Icon name="x" size={16} className="text-error" />
+                  Đóng tin
+                </MenuItem>
+              </>
+            )}
+          </PopupMenu>
+        </span>
+      ) : status === 'draft' ? (
+        <ActButton icon="trash" tone="rose" tip="Xoá tin nháp" onClick={() => void askDelete()} disabled={busy}>
+          Xóa
+        </ActButton>
+      ) : (
+        <EmptySlot />
       )}
     </div>
   );

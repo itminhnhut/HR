@@ -40,10 +40,10 @@ function RenameForm({
         autoFocus
         onChange={(e) => setName(e.target.value)}
       />
-      <Button type="submit" variant="primary" size="sm" className="min-h-[52px]" disabled={rename.isPending}>
+      <Button type="submit" variant="primary" size="sm" className="min-h-11" disabled={rename.isPending}>
         Lưu
       </Button>
-      <Button variant="ghost" size="sm" className="min-h-[52px]" onClick={onDone}>
+      <Button variant="ghost" size="sm" className="min-h-11" onClick={onDone}>
         Huỷ
       </Button>
     </form>
@@ -139,7 +139,7 @@ function AddCategory({ onError }: { onError: OnError }) {
         type="submit"
         variant="primary"
         icon="plus"
-        className="min-h-[52px]"
+        className="min-h-11"
         disabled={create.isPending || !name.trim()}
       >
         Thêm
@@ -164,7 +164,7 @@ export function CategoryManager({
       <div className="flex max-h-[88dvh] flex-col gap-4 overflow-y-auto p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-1">
-            <h2 className="m-0 font-serif text-[26px] font-medium">Chuyên mục</h2>
+            <h2 className="m-0 text-lg font-semibold">Chuyên mục</h2>
             <p className="m-0 text-sm text-slate">Đường dẫn tự sinh từ tên và giữ nguyên khi đổi tên.</p>
           </div>
           <CloseButton onClick={onClose} />

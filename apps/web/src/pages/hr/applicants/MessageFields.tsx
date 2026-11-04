@@ -1,3 +1,4 @@
+import { useConfirm } from '../shadcn/Confirm';
 import {
   PLACEHOLDERS,
   type ApplicationDetailDto,
@@ -30,9 +31,6 @@ const ACCOUNT_BOXES: Partial<
   hrTitle: { save: 'jobTitle', maxLength: 100, placeholder: 'HR Generalist' },
   hrAlias: { save: 'alias', maxLength: 100, placeholder: 'Ms. Lee' },
 };
-
-const MOVE_TO_INTERVIEW =
-  'Đặt giờ phỏng vấn sẽ chuyển hồ sơ sang "Hẹn phỏng vấn": ứng viên tra cứu sẽ thấy "Mời phỏng vấn" ngay. Tiếp tục?';
 
 const LABEL: Record<Key, string> = {
   candidateName: 'Tên ứng viên (cách gọi)',
@@ -79,9 +77,9 @@ function Row({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="flex flex-wrap items-baseline gap-x-2 text-xs">
-        <span className={missing ? 'font-semibold text-[#8a6d00]' : 'text-muted'}>{label}</span>
-        {hint && <span className="text-muted">({hint})</span>}
+      <span className="flex flex-wrap items-baseline gap-x-2 text-sm font-medium">
+        <span className={missing ? 'text-[#8a6d00]' : 'text-navy'}>{label}</span>
+        {hint && <span className="text-xs font-normal text-muted">({hint})</span>}
       </span>
       {children}
     </div>
@@ -180,18 +178,26 @@ type Saving = ReturnType<typeof useFieldSaving>;
 
 /** An interview time belongs to "Hẹn phỏng vấn": moving there shows "Mời phỏng vấn" to the candidate, so it is confirmed first. */
 function InterviewBox({ app, mode, saving }: Pick<MessageFieldsProps, 'app' | 'mode'> & { saving: Saving }) {
+  const [confirm, dialog] = useConfirm();
   return (
-    <InterviewField
-      showTitle={false}
-      value={app.interviewAt}
-      disabled={saving.isSavingApp}
-      onChange={(interviewAt) => {
-        // The online template makes it an online interview, so the detail view and calendar agree.
-        const details = { interviewAt, ...(mode ? { interviewMode: mode } : {}) };
-        if (app.status === 'interview') return saving.saveApp(details);
-        if (window.confirm(MOVE_TO_INTERVIEW)) saving.saveApp({ status: 'interview', ...details });
-      }}
-    />
+    <>
+      {dialog}
+      <InterviewField
+        showTitle={false}
+        value={app.interviewAt}
+        disabled={saving.isSavingApp}
+        onChange={(interviewAt) => {
+          // The online template makes it an online interview, so the detail view and calendar agree.
+          const details = { interviewAt, ...(mode ? { interviewMode: mode } : {}) };
+          if (app.status === 'interview') return saving.saveApp(details);
+          void confirm({
+            title: 'Chuyển sang "Hẹn phỏng vấn"?',
+            description: 'Ứng viên tra cứu sẽ thấy "Mời phỏng vấn" ngay.',
+            action: 'Chuyển',
+          }).then((agreed) => agreed && saving.saveApp({ status: 'interview', ...details }));
+        }}
+      />
+    </>
   );
 }
 
@@ -286,7 +292,7 @@ function SignatureGroup({
         className="flex min-h-10 items-center justify-between gap-2 border-0 bg-transparent p-0 text-left text-navy"
       >
         <span className="flex min-w-0 flex-col">
-          <span className="text-xs text-muted">Người gửi</span>
+          <span className="text-sm font-medium text-navy">Người gửi</span>
           <span className="truncate text-sm">{summary.join(' · ') || 'Chưa điền'}</span>
         </span>
         <span className="shrink-0 text-xs font-medium text-slate">{isShown ? 'Thu gọn' : 'Sửa'}</span>
@@ -323,7 +329,7 @@ export function MessageFields(props: MessageFieldsProps) {
   );
   return (
     <fieldset className="m-0 flex min-w-0 flex-col gap-3 rounded-card border border-line p-4">
-      <legend className="px-1.5 text-sm font-medium text-navy">Thông tin trong thư</legend>
+      <legend className="float-left mb-1 w-full p-0 text-sm font-semibold text-navy">Thông tin trong thư</legend>
       <div className="grid gap-3 sm:grid-cols-2">{fields.filter((k) => !SIGNATURE_KEYS.includes(k)).map(box)}</div>
       <SignatureGroup values={values} isIncomplete={SIGNATURE_KEYS.some(isMissing)}>
         {fields.filter((k) => SIGNATURE_KEYS.includes(k)).map(box)}

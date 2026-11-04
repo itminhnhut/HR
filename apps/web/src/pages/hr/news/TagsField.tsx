@@ -57,7 +57,7 @@ function SuggestionList({
       id={id}
       role="listbox"
       aria-label="Hashtag gợi ý"
-      className="absolute top-full z-20 m-0 mt-1 w-full list-none rounded-card border border-line bg-white p-1 shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
+      className="absolute top-full z-20 m-0 mt-1 w-full list-none rounded-control border border-line bg-white p-1 shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
     >
       {items.map((t, i) => (
         <li

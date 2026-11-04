@@ -36,7 +36,7 @@ export function LeaveDialog({ blocker }: { blocker: Blocker }) {
   return (
     <Dialog open={open} onClose={stay} label="Rời trang khi chưa lưu?">
       <div className="flex flex-col gap-4 p-5 sm:p-6">
-        <h2 className="m-0 font-serif text-[24px] font-medium">Rời trang khi chưa lưu?</h2>
+        <h2 className="m-0 text-lg font-semibold">Rời trang khi chưa lưu?</h2>
         <p className="m-0 text-[15px] leading-relaxed text-body">
           Bài có thay đổi chưa lưu. Rời trang thì mất phần vừa sửa.
         </p>

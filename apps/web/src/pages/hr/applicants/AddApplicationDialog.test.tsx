@@ -1,6 +1,7 @@
+import { chooseOption, optionNames } from '../../../test/choose';
 import type { SourceDto } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -98,10 +99,7 @@ const cvPdf = () => new File(['%PDF-1.7\n%%EOF\n'], 'CV Mai Anh.pdf', { type: 'a
 const pickCv = async () => userEvent.upload(screen.getByLabelText(/Chọn file CV/), cvPdf());
 
 async function fillBasics() {
-  await userEvent.selectOptions(
-    await screen.findByLabelText('Vị trí ứng tuyển'),
-    await screen.findByRole('option', { name: 'Kế toán' }),
-  );
+  await chooseOption(await screen.findByLabelText('Vị trí ứng tuyển'), 'Kế toán');
   await userEvent.type(screen.getByLabelText('Họ và tên'), 'Trần Khoa');
   await userEvent.type(screen.getByLabelText('Số điện thoại'), '0912345678');
 }
@@ -124,7 +122,7 @@ describe('HR adds an application', () => {
     // Arrange
     const onAdded = show();
     await fillBasics();
-    await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), 'zalo');
+    await chooseOption(screen.getByLabelText('Nguồn hồ sơ'), 'zalo');
 
     // Act
     await userEvent.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
@@ -234,7 +232,7 @@ describe('HR adds an application from a CV file', () => {
     await pickCv();
     await screen.findByText(/Không đọc được CV lúc này/);
     await fillBasics();
-    await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), 'email');
+    await chooseOption(screen.getByLabelText('Nguồn hồ sơ'), 'email');
 
     // Act
     await userEvent.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
@@ -261,9 +259,7 @@ describe('HR adds an application from a CV file', () => {
 describe('HR picks the source', () => {
   it('should offer visible sources only, never "Website" nor a hidden one', async () => {
     show();
-    const select = await screen.findByLabelText('Nguồn hồ sơ');
-    await screen.findByRole('option', { name: 'Zalo' });
-    const names = [...select.querySelectorAll('option')].map((o) => o.textContent);
+    const names = await optionNames(await screen.findByLabelText('Nguồn hồ sơ'), 'Zalo');
     expect(names).toEqual(['Chọn nguồn…', 'Email', 'Zalo', 'Khác', '+ Thêm nguồn mới…']);
   });
 
@@ -271,15 +267,13 @@ describe('HR picks the source', () => {
     // Arrange
     show();
     const select = await screen.findByLabelText('Nguồn hồ sơ');
-    await screen.findByRole('option', { name: 'Zalo' });
 
     // Act
-    await userEvent.selectOptions(select, '+ Thêm nguồn mới…');
+    await chooseOption(select, '+ Thêm nguồn mới…');
     await userEvent.type(screen.getByLabelText('Tên nguồn mới'), 'LinkedIn');
     await userEvent.click(screen.getByRole('button', { name: 'Thêm nguồn' }));
 
     // Assert
-    await screen.findByRole('option', { name: 'LinkedIn' });
-    expect((screen.getByLabelText('Nguồn hồ sơ') as HTMLSelectElement).value).toBe('linkedin');
+    await waitFor(() => expect(screen.getByLabelText<HTMLButtonElement>('Nguồn hồ sơ').value).toBe('linkedin'));
   });
 });

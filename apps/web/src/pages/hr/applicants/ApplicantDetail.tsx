@@ -20,7 +20,7 @@ export type DetailLayout = 'wide' | 'sheet';
 
 const CONTACT_BASE = 'inline-flex items-center justify-center rounded-control font-medium no-underline';
 const CONTACT_SIZE: Record<DetailLayout, string> = {
-  wide: 'min-h-11 gap-1.5 whitespace-nowrap px-3 text-[13px]',
+  wide: 'min-h-11 gap-1.5 whitespace-nowrap px-3 text-sm',
   sheet: 'min-h-12 flex-col gap-0.5 px-1 text-center text-[12px] leading-tight',
 };
 

@@ -7,6 +7,7 @@ import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
 import { shortTime } from '../reviews/reviewModel';
+import { linkSite } from './cvLabel';
 
 export function ReplaceCv({ app, onDone }: { app: ApplicationDetailDto; onDone: () => void }) {
   const { replaceCv } = useApplicationEdit(app.id);
@@ -44,6 +45,22 @@ export function ReplaceCv({ app, onDone }: { app: ApplicationDetailDto; onDone: 
   );
 }
 
+/** What was on file before: the site of a link, a press away, or the file's name. */
+function PreviousCv({ previous }: { previous: string | null }) {
+  if (!previous) return <>(trước đó chưa có CV)</>;
+  const site = linkSite(previous);
+  if (!site) return <>(trước đó: {previous})</>;
+  return (
+    <>
+      (trước đó: link{' '}
+      <a href={previous} target="_blank" rel="noopener noreferrer">
+        {site}
+      </a>
+      )
+    </>
+  );
+}
+
 function History({ app }: { app: ApplicationDetailDto }) {
   if (app.cvHistory.length === 0) return null;
   return (
@@ -53,8 +70,8 @@ function History({ app }: { app: ApplicationDetailDto }) {
       </summary>
       <ul className="m-0 mt-1.5 flex list-none flex-col gap-1 p-0">
         {app.cvHistory.map((h) => (
-          <li key={h.at}>
-            {shortTime(h.at)} · {h.by} đổi CV{h.previous ? ` (trước đó: ${h.previous})` : ' (trước đó chưa có CV)'}
+          <li key={h.at} className="[overflow-wrap:anywhere]">
+            {shortTime(h.at)} · {h.by} đổi CV <PreviousCv previous={h.previous} />
           </li>
         ))}
       </ul>

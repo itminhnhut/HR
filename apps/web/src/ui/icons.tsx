@@ -112,6 +112,7 @@ const PATHS = {
     </>
   ),
   chevronDown: <path d="M6 9l6 6 6-6" />,
+  chevronLeft: <path d="M15 6l-6 6 6 6" />,
   chevronRight: <path d="M9 6l6 6-6 6" />,
   clock: (
     <>
@@ -167,6 +168,13 @@ const PATHS = {
     <>
       <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
       <path d="M14 3v5h5" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11" />
+      <path d="M7 11l5 5 5-5" />
+      <path d="M5 20h14" />
     </>
   ),
   upload: (

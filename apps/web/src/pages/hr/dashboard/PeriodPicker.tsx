@@ -1,30 +1,16 @@
 import { addDays, DEFAULT_REPORT_DAYS, formatDate, todayInVietnam, type ReportPeriod } from '@careers/shared';
-import { useState, type CSSProperties } from 'react';
-import { DayPicker, type DateRange } from 'react-day-picker';
-import { vi } from 'react-day-picker/locale';
-import 'react-day-picker/style.css';
-import './PeriodPicker.css';
+import { useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+import { Calendar } from '../shadcn/Calendar';
 import { useDismiss } from './useDismiss';
 import { Button } from '../../../ui/Button';
+import { SelectField } from '../shadcn/Select';
 import { Icon } from '../../../ui/icons';
 
 /** How far back the calendar's year list goes. */
 const YEARS_BACK = 5;
 /** The first year on the list of years. */
 const FIRST_YEAR = 2020;
-
-const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-primary)',
-  '--rdp-accent-background-color': 'var(--color-tint)',
-  '--rdp-months-gap': '20px',
-  '--rdp-nav_button-height': '32px',
-  '--rdp-nav_button-width': '32px',
-  '--rdp-nav-height': '36px',
-  '--rdp-day-height': '36px',
-  '--rdp-day-width': '36px',
-  '--rdp-day_button-height': '34px',
-  '--rdp-day_button-width': '34px',
-} as CSSProperties;
 
 const toDate = (iso: string) => {
   const [y = 2000, m = 1, d = 1] = iso.split('-').map(Number);
@@ -89,7 +75,7 @@ function QuickList({
             type="button"
             aria-pressed={isOn}
             onClick={() => onPick(period)}
-            className={`min-h-9 rounded-control border-0 px-3 text-left text-[13px] font-medium transition-colors ${isOn ? 'bg-primary text-white' : 'bg-transparent text-navy hover:bg-hover'}`}
+            className={`min-h-9 rounded-control border-0 px-3 text-left text-sm font-medium transition-colors ${isOn ? 'bg-primary text-white' : 'bg-transparent text-navy hover:bg-hover'}`}
           >
             {label}
           </button>
@@ -118,20 +104,22 @@ function YearSelect({
   onChange: (year: number) => void;
 }) {
   return (
-    <label className="inline-flex items-center gap-1.5 text-[13px] text-slate">
+    <span className="inline-flex items-center gap-1.5 text-[13px] text-slate">
       {label}
-      <select
+      <SelectField
+        label={label}
+        hideLabel
+        className="w-24"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="field-focus min-h-9 rounded-control border border-field bg-white px-2 text-[13px] font-medium text-navy"
       >
         {years.map((year) => (
           <option key={year} value={year}>
             {year}
           </option>
         ))}
-      </select>
-    </label>
+      </SelectField>
+    </span>
   );
 }
 
@@ -195,15 +183,11 @@ function RangeCalendar({
   return (
     <div className="flex min-w-0 flex-col">
       <div className="overflow-x-auto p-3">
-        <DayPicker
+        <Calendar
           mode="range"
-          className="period-calendar"
-          navLayout="around"
           captionLayout="dropdown"
           startMonth={toDate(`${Number(today.slice(0, 4)) - YEARS_BACK}-01-01`)}
           endMonth={toDate(today)}
-          style={CALENDAR_STYLE}
-          locale={vi}
           numberOfMonths={isNarrow ? 1 : 2}
           defaultMonth={toDate(`${(isNarrow ? value.to : addDays(value.to, -31)).slice(0, 8)}01`)}
           selected={selected}

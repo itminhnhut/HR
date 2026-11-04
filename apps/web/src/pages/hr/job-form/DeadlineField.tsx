@@ -1,21 +1,11 @@
 import { addDays, daysBetween, formatDate, MAX_OPEN_DAYS, todayInVietnam } from '@careers/shared';
-import { useState, type CSSProperties } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { vi } from 'react-day-picker/locale';
-import 'react-day-picker/style.css';
+import { useState } from 'react';
+import { Calendar } from '../shadcn/Calendar';
+import { toggleClass } from '../shadcn/toggle';
 import { FieldError } from '../../../ui/Field';
 import { Icon } from '../../../ui/icons';
 
 const QUICK_DAYS = [7, 14, 30, 60];
-
-const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-primary)',
-  '--rdp-accent-background-color': 'var(--color-tint)',
-  '--rdp-day-height': '40px',
-  '--rdp-day-width': '40px',
-  '--rdp-day_button-height': '38px',
-  '--rdp-day_button-width': '38px',
-} as CSSProperties;
 
 /** YYYY-MM-DD <-> a local Date at midnight, which is what the calendar works with. */
 const toDate = (iso: string) => {
@@ -68,7 +58,7 @@ export function DeadlineField({
                 onChange(iso);
                 setCalendarOpen(false);
               }}
-              className={`min-h-11 rounded-full border px-4 text-sm transition-colors ${on ? 'border-primary bg-primary font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+              className={toggleClass(on)}
             >
               {days} ngày
             </button>
@@ -78,20 +68,16 @@ export function DeadlineField({
           type="button"
           aria-expanded={calendarOpen}
           onClick={() => setCalendarOpen((o) => !o)}
-          className="inline-flex min-h-11 items-center gap-2 rounded-full border border-dashed border-silver bg-white px-4 text-sm text-navy hover:bg-mist"
+          className={toggleClass(false)}
         >
           <Icon name="calendar" size={16} />
           Chọn ngày khác
         </button>
       </div>
       {calendarOpen && (
-        <div className="w-fit max-w-full overflow-x-auto rounded-card border border-line bg-white p-3">
-          <DayPicker
+        <div className="w-fit max-w-full overflow-x-auto rounded-control border border-line bg-white p-3 shadow-sm">
+          <Calendar
             mode="single"
-            // On the root: the library sets its own defaults there.
-            style={CALENDAR_STYLE}
-            locale={vi}
-            weekStartsOn={1}
             startMonth={toDate(first)}
             endMonth={toDate(last)}
             defaultMonth={toDate(value || first)}

@@ -54,11 +54,11 @@ export function DraftEditor({
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <span className="text-xs text-muted">Gửi tới</span>
+        <span className="text-sm font-medium text-navy">Gửi tới</span>
         <span className="text-sm font-medium text-navy">{app.email ?? 'Ứng viên không để lại email'}</span>
       </div>
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs text-muted">Tiêu đề</span>
+        <span className="text-sm font-medium text-navy">Tiêu đề</span>
         <input
           value={draft.content.subject}
           onChange={(e) => draft.edit({ subject: e.target.value })}
@@ -77,7 +77,7 @@ export function DraftEditor({
       <div className={`flex flex-col gap-4 ${isShown ? '' : 'hidden'}`}>
         {sections.map(({ field, label, rows }) => (
           <label key={field} className="flex flex-col gap-1.5">
-            <span className="text-xs text-muted">{label}</span>
+            <span className="text-sm font-medium text-navy">{label}</span>
             {rows === 1 ? (
               <input
                 value={draft.content[field]}

@@ -1,3 +1,4 @@
+import { toggleClass } from '../shadcn/toggle';
 import type { ApplicationDetailDto } from '@careers/shared';
 import { useState } from 'react';
 import type { ApplicationPatch } from '../../../api';
@@ -44,7 +45,7 @@ function ModeButtons({
             aria-pressed={on}
             disabled={disabled}
             onClick={() => !on && onChange(item)}
-            className={`min-h-11 rounded-full border px-4 text-sm ${on ? 'border-primary bg-primary text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+            className={toggleClass(on)}
           >
             {item === 'onsite' ? 'Trực tiếp' : 'Online (Meet)'}
           </button>

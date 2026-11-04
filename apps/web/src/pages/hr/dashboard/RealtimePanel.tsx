@@ -5,7 +5,7 @@ import { IconTile } from '../design/IconTile';
 import { SectionTitle } from '../design/SectionTitle';
 import { TONE, type Tone } from '../design/tone';
 
-const PANEL = 'flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-5 sm:p-6';
+const PANEL = 'flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6';
 
 const CLOCK = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' });
 

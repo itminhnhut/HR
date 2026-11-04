@@ -1,3 +1,4 @@
+import { Tip } from '../shadcn/Tip';
 import { newsPath, type HrNewsRowDto } from '@careers/shared';
 import { Link } from 'react-router';
 import { Icon } from '../../../ui/icons';
@@ -52,30 +53,36 @@ function RowActionsPhone({ row, onDelete }: { row: HrNewsRowDto; onDelete: () =>
 function RowActions({ row, onDelete }: { row: HrNewsRowDto; onDelete: () => void }) {
   return (
     <div className="flex items-center gap-0.5 lg:justify-end">
-      <Link to={`/hr/tin-tuc/${row.id}`} aria-label={`Sửa bài ${untitled(row)}`} title="Sửa bài" className={iconLink}>
-        <Icon name="pencil" size={17} className={TONE.blue.text} />
-      </Link>
-      {row.status === 'published' && (
-        <a
-          href={newsPath(row.slug)}
-          target="_blank"
-          rel="noopener"
-          aria-label={`Xem bài ${row.title} trên trang (mở thẻ mới)`}
-          title="Xem trên trang"
-          className={iconLink}
-        >
-          <Icon name="external" size={17} className={TONE.teal.text} />
-        </a>
+      <Tip label="Sửa bài">
+        <Link to={`/hr/tin-tuc/${row.id}`} aria-label={`Sửa bài ${untitled(row)}`} className={iconLink}>
+          <Icon name="pencil" size={17} className={TONE.blue.text} />
+        </Link>
+      </Tip>
+      {row.status === 'published' ? (
+        <Tip label="Xem trên trang">
+          <a
+            href={newsPath(row.slug)}
+            target="_blank"
+            rel="noopener"
+            aria-label={`Xem bài ${row.title} trên trang (mở thẻ mới)`}
+            className={iconLink}
+          >
+            <Icon name="external" size={17} className={TONE.teal.text} />
+          </a>
+        </Tip>
+      ) : (
+        <span aria-hidden="true" className="inline-block size-11" />
       )}
-      <button
-        type="button"
-        onClick={onDelete}
-        aria-label={`Xoá bài ${untitled(row)}`}
-        title="Xoá bài"
-        className={`${iconLink} hover:bg-error-soft hover:text-error`}
-      >
-        <Icon name="trash" size={17} className="text-error" />
-      </button>
+      <Tip label="Xoá bài">
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label={`Xoá bài ${untitled(row)}`}
+          className={`${iconLink} hover:bg-error-soft hover:text-error`}
+        >
+          <Icon name="trash" size={17} className="text-error" />
+        </button>
+      </Tip>
     </div>
   );
 }
@@ -122,11 +129,11 @@ const td = 'border-b border-line-soft px-4 py-3 align-middle';
 
 const HEADERS: [label: string, width: string, extra?: string][] = [
   ['Chọn', 'w-[60px]', 'pl-[14px] pr-0'],
-  ['Tiêu đề', 'w-[32%]'],
-  ['Trạng thái', 'w-[14%]'],
-  ['Chuyên mục', 'w-[18%]'],
+  ['Tiêu đề', 'w-[28%]'],
+  ['Trạng thái', 'w-[13%]'],
+  ['Chuyên mục', 'w-[17%]'],
   ['Ngày sửa', 'w-[14%]'],
-  ['Người sửa', 'w-[12%]'],
+  ['Người sửa', 'w-[16%]'],
   ['Thao tác', 'w-[132px]', 'pr-[22px] text-right'],
 ];
 

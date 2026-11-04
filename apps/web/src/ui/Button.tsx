@@ -41,7 +41,8 @@ const SIZE: Record<Size, string> = {
 const iconSize = (size: Size | undefined) => (size === 'lg' ? 20 : 16);
 
 export function buttonClass(variant: Variant = 'primary', size: Size = 'md', extra = '') {
-  return `inline-flex items-center justify-center rounded-control no-underline disabled:opacity-60 ${VARIANT[variant]} ${SIZE[size]} ${extra}`;
+  // The ui-btn marks let the admin's look (admin.css) restyle every button without touching the public site.
+  return `ui-btn ui-btn-${variant} ui-btn-${size} inline-flex items-center justify-center rounded-control no-underline disabled:opacity-60 ${VARIANT[variant]} ${SIZE[size]} ${extra}`;
 }
 
 interface Common {

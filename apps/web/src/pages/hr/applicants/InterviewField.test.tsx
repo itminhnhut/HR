@@ -1,3 +1,4 @@
+import { chooseOption } from '../../../test/choose';
 import { addDays, todayInVietnam } from '@careers/shared';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -79,8 +80,8 @@ describe('The interview time field', () => {
     // Arrange
     const onChange = await openWith();
     await userEvent.click(within(picker()).getByRole('button', { name: 'Ngày kia' }));
-    await userEvent.selectOptions(within(picker()).getByRole('combobox', { name: 'Giờ' }), '14');
-    await userEvent.selectOptions(within(picker()).getByRole('combobox', { name: 'Phút' }), '15');
+    await chooseOption(within(picker()).getByRole('combobox', { name: 'Giờ' }), '14');
+    await chooseOption(within(picker()).getByRole('combobox', { name: 'Phút' }), '15');
     expect(onChange).not.toHaveBeenCalled();
 
     // Act
@@ -96,7 +97,7 @@ describe('The interview time field', () => {
     await openWith(SAVED);
 
     // Act
-    await userEvent.selectOptions(within(picker()).getByRole('combobox', { name: 'Phút' }), '45');
+    await chooseOption(within(picker()).getByRole('combobox', { name: 'Phút' }), '45');
 
     // Assert
     expect(picker().textContent).toContain('· 10:45');
@@ -131,7 +132,7 @@ describe('The interview time field', () => {
   it('should drop the choice on "Huỷ" and start from the saved value next time', async () => {
     // Arrange
     const onChange = await openWith(SAVED);
-    await userEvent.selectOptions(within(picker()).getByRole('combobox', { name: 'Giờ' }), '15');
+    await chooseOption(within(picker()).getByRole('combobox', { name: 'Giờ' }), '15');
 
     // Act
     await userEvent.click(within(picker()).getByRole('button', { name: 'Huỷ' }));
@@ -139,7 +140,7 @@ describe('The interview time field', () => {
 
     // Assert
     expect(onChange).not.toHaveBeenCalled();
-    expect(within(picker()).getByRole<HTMLSelectElement>('combobox', { name: 'Giờ' }).value).toBe('10');
+    expect(within(picker()).getByRole<HTMLButtonElement>('combobox', { name: 'Giờ' }).value).toBe('10');
   });
 
   it('should offer no minutes past 20:00', async () => {
@@ -147,12 +148,13 @@ describe('The interview time field', () => {
     await openWith(SAVED);
 
     // Act
-    await userEvent.selectOptions(within(picker()).getByRole('combobox', { name: 'Giờ' }), '20');
+    await chooseOption(within(picker()).getByRole('combobox', { name: 'Giờ' }), '20');
 
     // Assert
-    const minute = within(picker()).getByRole<HTMLSelectElement>('combobox', { name: 'Phút' });
+    const minute = within(picker()).getByRole<HTMLButtonElement>('combobox', { name: 'Phút' });
     expect(minute.value).toBe('00');
-    expect(within(minute).getByRole<HTMLOptionElement>('option', { name: '30' }).disabled).toBe(true);
+    await userEvent.click(minute);
+    expect((await screen.findByRole('option', { name: '30' })).getAttribute('aria-disabled')).toBe('true');
   });
 
   it('should not let HR pick a day in the past', async () => {

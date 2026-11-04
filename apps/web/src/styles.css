@@ -151,10 +151,10 @@
   --type-card-lg-lg: 24px;
 
   --animate-rise: rise 0.4s ease-out both;
-  --animate-pop: pop 0.35s ease-out both;
-  --animate-sheet: sheet 0.3s ease-out both;
-  --animate-drawer: drawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-side: side 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 0.35s ease-out backwards;
+  --animate-sheet: sheet 0.3s ease-out backwards;
+  --animate-drawer: drawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-side: side 0.28s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   --animate-fade: fade 0.25s ease both;
   --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
   --animate-page: page-in 0.2s ease-out backwards;

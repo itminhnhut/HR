@@ -32,7 +32,7 @@ export default function HrReviewPage() {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
         <section className="overflow-hidden rounded-card border border-line bg-white">
           <header className="flex flex-wrap items-center gap-3 border-b border-line-soft px-5 py-4">
-            <h1 className="m-0 min-w-[200px] flex-1 font-serif text-[24px] font-medium">{batch.title}</h1>
+            <h1 className="m-0 min-w-[200px] flex-1 font-serif text-2xl sm:text-[28px]">{batch.title}</h1>
             <span className="inline-flex items-center gap-1.5 text-xs text-ok" title="Tự cập nhật mỗi 15 giây">
               <span aria-hidden="true" className="size-2 rounded-full bg-ok shadow-[0_0_0_3px_var(--color-ok-soft)]" />
               Cập nhật trực tiếp

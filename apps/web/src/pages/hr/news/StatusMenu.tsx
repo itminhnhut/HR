@@ -110,7 +110,7 @@ function StatusPanel({
           anchor.current?.focus();
         }
       }}
-      className="fixed z-50 flex w-[min(300px,calc(100vw-16px))] animate-fade flex-col gap-0.5 rounded-card border border-line bg-white p-1.5 shadow-[0_10px_30px_rgba(11,31,58,0.14)]"
+      className="fixed z-50 flex w-[min(300px,calc(100vw-16px))] animate-fade flex-col gap-0.5 rounded-control border border-line bg-white p-1.5 shadow-[0_10px_30px_rgba(11,31,58,0.14)]"
     >
       {options.map((option) => (
         <OptionRow key={option.status} option={option} current={status} onPick={() => onPick(option.status)} />

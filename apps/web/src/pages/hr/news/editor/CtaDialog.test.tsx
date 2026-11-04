@@ -1,3 +1,4 @@
+import { chooseOption, optionNames } from '../../../../test/choose';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -26,7 +27,7 @@ describe('call-to-action button form', () => {
   it('should point a new button at all open jobs, labelled "Xem vị trí đang tuyển"', async () => {
     // Arrange
     const onSubmit = show();
-    await screen.findByRole('option', { name: 'Tất cả vị trí đang tuyển' });
+    await optionNames(screen.getByRole('combobox', { name: 'Vị trí' }), 'Tất cả vị trí đang tuyển');
 
     // Act
     await userEvent.click(screen.getByRole('button', { name: 'Chèn nút' }));
@@ -40,10 +41,10 @@ describe('call-to-action button form', () => {
     const [job] = (await mockApi.listJobs()).jobs;
     if (!job) throw new Error('no demo job');
     const onSubmit = show();
-    await screen.findByRole('option', { name: job.title });
+    await optionNames(screen.getByRole('combobox', { name: 'Vị trí' }), job.title);
 
     // Act
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Vị trí' }), job.slug);
+    await chooseOption(screen.getByRole('combobox', { name: 'Vị trí' }), job.slug);
     await userEvent.click(screen.getByRole('button', { name: 'Chèn nút' }));
 
     // Assert
@@ -55,13 +56,13 @@ describe('call-to-action button form', () => {
     const [job] = (await mockApi.listJobs()).jobs;
     if (!job) throw new Error('no demo job');
     const onSubmit = show();
-    await screen.findByRole('option', { name: job.title });
+    await optionNames(screen.getByRole('combobox', { name: 'Vị trí' }), job.title);
     const text = screen.getByLabelText('Chữ trên nút');
     await userEvent.clear(text);
     await userEvent.type(text, 'Nộp CV ngay');
 
     // Act
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Vị trí' }), job.slug);
+    await chooseOption(screen.getByRole('combobox', { name: 'Vị trí' }), job.slug);
     await userEvent.click(screen.getByRole('button', { name: 'Chèn nút' }));
 
     // Assert
@@ -73,8 +74,8 @@ describe('call-to-action button form', () => {
     show({ text: 'Xem vị trí đang tuyển', url: '/' });
 
     // Assert
-    await screen.findByRole('option', { name: 'Tất cả vị trí đang tuyển' });
-    expect((screen.getByRole('combobox', { name: 'Vị trí' }) as HTMLSelectElement).value).toBe('');
+    await optionNames(screen.getByRole('combobox', { name: 'Vị trí' }), 'Tất cả vị trí đang tuyển');
+    expect(screen.getByRole<HTMLButtonElement>('combobox', { name: 'Vị trí' }).value).toBe('');
     expect((screen.getByRole('radio', { name: 'Vị trí đang tuyển' }) as HTMLInputElement).checked).toBe(true);
   });
 });
