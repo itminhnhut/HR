@@ -1,18 +1,18 @@
 Nguyen Hoang Long
 Backend Developer
-Phone: +84 912 384 765   |   Email: hoanglong.nguyen@gmail.com   |   Address: 203 Hung Vuong, Hai Chau, Da Nang   |
-LinkedIn: linkedin.com/in/nguyen-hoang-long   |   GitHub: github.com/hoanglong-ng   |   Website: https://hoanglong-
+Phone: +84 912 384 765 | Email: hoanglong.nguyen@gmail.com | Address: 203 Hung Vuong, Hai Chau, Da Nang |
+LinkedIn: linkedin.com/in/nguyen-hoang-long | GitHub: github.com/hoanglong-ng | Website: https://hoanglong-
 portfolio.example
 CAREER OBJECTIVE
 To grow in a professional environment, apply my experience to deliver measurable results and take on more
 responsibility within two years.
 WORK EXPERIENCE
-Backend Developer   – Lam Son Xanh Realty JSC
+Backend Developer – Lam Son Xanh Realty JSC
 05/2023 – Present
 Set up CI/CD with GitHub Actions and Docker
 Designed PostgreSQL schemas and cut response time by 40%
 Wrote unit and integration tests with 85% coverage
-Software Engineer   – Phu Gia Trading Co., Ltd.
+Software Engineer – Phu Gia Trading Co., Ltd.
 05/2021 – 12/2023
 Integrated a payment gateway and transactional email
 Reviewed code and mentored 2 interns

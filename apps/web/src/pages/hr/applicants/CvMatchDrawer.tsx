@@ -12,6 +12,7 @@ import {
   groupLines,
   MATCH_TABS,
   reasonOf,
+  shortNoteOf,
   tabOf,
   type MatchLine,
   type MatchTab,
@@ -26,12 +27,20 @@ const DRAWER_CV_ACTION =
 
 function Line({ line }: { line: MatchLine }) {
   const reason = reasonOf(line);
+  const note = shortNoteOf(line);
   return (
     <li className="flex gap-2.5 border-b border-line-soft py-2.5 text-sm last:border-b-0">
       <VerdictIcon tab={tabOf(line)} className="mt-0.5" />
       <span className="flex min-w-0 flex-col gap-0.5">
         <span className="font-medium text-navy">{line.requirement}</span>
-        {reason && <span className="text-[13px] text-body">{reason}</span>}
+        {note ? (
+          <span title={line.reason ?? undefined} className="inline-flex items-center gap-1.5 text-[13px] text-body">
+            <Icon name={note.icon} size={14} className="shrink-0 text-slate" />
+            {note.text}
+          </span>
+        ) : (
+          reason && <span className="text-[13px] text-body">{reason}</span>
+        )}
         {line.evidence && <span className="text-[13px] italic text-muted">Trong CV: “{line.evidence}”</span>}
       </span>
     </li>
