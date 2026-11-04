@@ -1,22 +1,21 @@
-import { formatDate, STATUS_LABEL, type DashboardDto } from '@careers/shared';
-import { useState, type ReactNode } from 'react';
+import { formatDate, STATUS_LABEL, type DashboardDto, type ReportPeriod } from '@careers/shared';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { useDashboard } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { ButtonLink } from '../../ui/Button';
-import { SelectField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
-import { DueForDeletionBanner } from './DueForDeletionBanner';
 import { InterviewCalendar } from './dashboard/InterviewCalendar';
 import { RealtimePanel } from './dashboard/RealtimePanel';
+import { Panel } from './dashboard/Panel';
+import { PerDayChart } from './dashboard/PerDayChart';
+import { defaultReportPeriod, PeriodPicker, periodLabel } from './dashboard/PeriodPicker';
+import { SourceFunnel } from './dashboard/SourceFunnel';
 import { SourceTrendChart } from './dashboard/SourceTrendChart';
 import { IconTile } from './design/IconTile';
-import { SectionTitle } from './design/SectionTitle';
 import { TONE, type Tone } from './design/tone';
 import { apiMessage, PageHeading } from './parts';
-
-const dayLabel = (iso: string) => formatDate(iso).slice(0, 5);
 
 function StatCard({
   icon,
@@ -45,122 +44,6 @@ function StatCard({
         {hint && <span className="text-xs text-muted">{hint}</span>}
       </span>
     </Link>
-  );
-}
-
-function Panel({
-  title,
-  icon,
-  tone,
-  action,
-  children,
-}: {
-  title: string;
-  icon: IconName;
-  tone: Tone;
-  action?: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <section className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-5 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0">
-          <SectionTitle icon={icon} tone={tone}>
-            {title}
-          </SectionTitle>
-        </h2>
-        {action}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-/** Bar chart of applications per day. Tap or hover a bar to read its number. */
-function PerDayChart({ data }: { data: DashboardDto }) {
-  const [jobId, setJobId] = useState('');
-  const [picked, setPicked] = useState<number | null>(null);
-  const counts = jobId
-    ? (data.perJobPerDay.find((j) => j.jobId === jobId)?.counts ?? data.perDay.map(() => 0))
-    : data.perDay.map((d) => d.count);
-  const max = Math.max(1, ...counts);
-  const total = counts.reduce((a, b) => a + b, 0);
-  const shown = picked ?? counts.length - 1;
-
-  return (
-    <Panel
-      title="Hồ sơ nhận theo ngày"
-      icon="bars"
-      tone="blue"
-      action={
-        <SelectField
-          label="Lọc theo tin"
-          hideLabel
-          value={jobId}
-          onChange={(e) => {
-            setJobId(e.target.value);
-            setPicked(null);
-          }}
-          className="min-w-[220px] max-sm:w-full"
-        >
-          <option value="">Tất cả tin</option>
-          {data.perJobPerDay.map((j) => (
-            <option key={j.jobId} value={j.jobId}>
-              {j.jobTitle}
-            </option>
-          ))}
-        </SelectField>
-      }
-    >
-      <p role="status" className="m-0 text-sm text-body">
-        <strong className="font-semibold text-navy">{total}</strong> hồ sơ trong 30 ngày qua ·{' '}
-        <span className="text-accent">
-          ngày {dayLabel(data.perDay[shown].day)}: <strong className="font-semibold">{counts[shown]}</strong> hồ sơ
-        </span>
-      </p>
-      <div
-        role="group"
-        aria-label="Hồ sơ theo ngày, dùng phím mũi tên để xem từng ngày"
-        className="flex h-[180px] items-end gap-[3px] border-b border-line sm:gap-1"
-        onMouseLeave={() => setPicked(null)}
-        onKeyDown={(e) => {
-          // One Tab stop for the whole chart; arrows move between days.
-          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-          if (!step) return;
-          e.preventDefault();
-          const next = Math.min(counts.length - 1, Math.max(0, shown + step));
-          setPicked(next);
-          (e.currentTarget.children[next] as HTMLElement | undefined)?.focus();
-        }}
-      >
-        {counts.map((count, i) => {
-          const on = i === shown;
-          return (
-            <button
-              key={data.perDay[i].day}
-              type="button"
-              aria-label={`Ngày ${dayLabel(data.perDay[i].day)}: ${count} hồ sơ`}
-              aria-pressed={on}
-              tabIndex={on ? 0 : -1}
-              onMouseEnter={() => setPicked(i)}
-              onFocus={() => setPicked(i)}
-              onClick={() => setPicked(i)}
-              className="group flex h-full min-w-0 flex-1 items-end border-0 bg-transparent p-0"
-            >
-              <span
-                className={`w-full rounded-t-[3px] transition-colors ${on ? 'bg-primary-deep' : count ? 'bg-blue-400 group-hover:bg-primary' : 'bg-line group-hover:bg-silver'}`}
-                style={{ height: `${count ? Math.max(6, (count / max) * 100) : 3}%` }}
-              />
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex justify-between text-xs text-muted">
-        <span>{dayLabel(data.perDay[0].day)}</span>
-        <span>{dayLabel(data.perDay[14].day)}</span>
-        <span>Hôm nay</span>
-      </div>
-    </Panel>
   );
 }
 
@@ -214,12 +97,46 @@ function EndingJobs({ data }: { data: DashboardDto }) {
   );
 }
 
-/** Where the last 30 days' applications came from (spec-cv-intake.md): a bar per source, each opens the list. */
+/** Where the period's applications came from (spec-cv-intake.md): a line per source, each opens the list. */
 function SourceTrend({ data }: { data: DashboardDto }) {
   return (
-    <Panel title="Hồ sơ 30 ngày qua theo nguồn" icon="globe" tone="teal">
+    <Panel title="Hồ sơ theo nguồn" icon="globe" tone="teal">
       <SourceTrendChart data={data} />
     </Panel>
+  );
+}
+
+function FunnelPanel({ data }: { data: DashboardDto }) {
+  return (
+    <Panel title="Hiệu quả theo nguồn" icon="trend" tone="green">
+      <SourceFunnel rows={data.sourceFunnel} />
+    </Panel>
+  );
+}
+
+/** One choice of days for every report under it. */
+function Reports({
+  data,
+  period,
+  onPeriod,
+}: {
+  data: DashboardDto;
+  period: ReportPeriod;
+  onPeriod: (p: ReportPeriod) => void;
+}) {
+  return (
+    <section aria-label="Báo cáo" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 flex-col">
+          <h2 className="m-0 text-lg font-semibold text-navy">Báo cáo hồ sơ</h2>
+          <span className="text-[13px] text-slate">{periodLabel(period)}</span>
+        </div>
+        <PeriodPicker value={period} onChange={onPeriod} />
+      </div>
+      <PerDayChart data={data} />
+      <SourceTrend data={data} />
+      <FunnelPanel data={data} />
+    </section>
   );
 }
 
@@ -238,10 +155,10 @@ function DashboardSkeleton() {
 
 export function HrDashboardPage() {
   usePageMeta('Tổng quan');
-  const dashboard = useDashboard();
+  const [period, setPeriod] = useState(defaultReportPeriod);
+  const dashboard = useDashboard(period);
   const showSkeleton = useDelayedFlag(dashboard.isPending);
   const data = dashboard.data;
-  const last7 = data ? data.perDay.slice(-7).reduce((sum, d) => sum + d.count, 0) : 0;
 
   return (
     <>
@@ -264,7 +181,6 @@ export function HrDashboardPage() {
       {dashboard.isError && <ErrorState onRetry={() => dashboard.refetch()} message={apiMessage(dashboard.error)} />}
       {data && (
         <div className="flex flex-col gap-5">
-          <DueForDeletionBanner count={data.dueForDeletion} />
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCard
               icon="inbox"
@@ -279,17 +195,15 @@ export function HrDashboardPage() {
               tone="orange"
               label="Đang hẹn phỏng vấn"
               value={data.interviewCounts.total}
-              to="/hr/ho-so?trang-thai=interview"
+              hint={data.awaitingResults > 0 ? `${data.awaitingResults} người chờ ghi kết quả` : undefined}
+              to={`/hr/ho-so?trang-thai=${data.awaitingResults > 0 ? 'awaiting' : 'interview'}`}
             />
-            <StatCard icon="trend" tone="green" label="Hồ sơ 7 ngày qua" value={last7} to="/hr/ho-so" />
+            <StatCard icon="trend" tone="green" label="Hồ sơ 7 ngày qua" value={data.last7Days} to="/hr/ho-so" />
           </div>
           <RealtimePanel />
           <Interviews data={data} />
-          <PerDayChart data={data} />
-          <div className="grid items-start gap-5 xl:grid-cols-2">
-            <EndingJobs data={data} />
-            <SourceTrend data={data} />
-          </div>
+          <EndingJobs data={data} />
+          <Reports data={data} period={period} onPeriod={setPeriod} />
         </div>
       )}
     </>

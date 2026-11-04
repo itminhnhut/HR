@@ -1,7 +1,12 @@
-import type { ApplicationRowDto, ApplicationStatus } from '@careers/shared';
+import { isAwaitingResult, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
 import { useEffect, useMemo, useState } from 'react';
 
-export type TabKey = ApplicationStatus | 'all';
+export type TabKey = ApplicationStatus | 'all' | 'awaiting';
+
+export function isInTab(row: ApplicationRowDto, tab: TabKey, now: Date): boolean {
+  if (tab === 'all') return true;
+  return tab === 'awaiting' ? isAwaitingResult(row, now) : row.status === tab;
+}
 
 const NOTHING_VISITED: ReadonlySet<string> = new Set();
 
@@ -31,7 +36,7 @@ export function useApplicantQueue(
   const visited = useVisited(selectedId, tab);
   const rows = useMemo(() => {
     const list = (applications ?? []).filter(
-      (a) => tab === 'all' || a.status === tab || a.id === selectedId || visited.has(a.id),
+      (a) => isInTab(a, tab, new Date()) || a.id === selectedId || visited.has(a.id),
     );
     // Best match first; applications without a percent (not scored, not enough data) go last, newest first among them.
     return byMatch ? [...list].sort((a, b) => (b.matchPercent ?? -1) - (a.matchPercent ?? -1)) : list;

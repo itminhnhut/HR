@@ -1,7 +1,7 @@
 // The demo data the FE mock uses, so local BE and mock show the same jobs and people.
 import { buildSeed } from '../../../web/src/api/mock-seed.js';
 import type { Db } from './index.js';
-import { applications, candidates, jobs, subscribers } from './schema.js';
+import { applications, applicationStatusLog, candidates, jobs, subscribers } from './schema.js';
 
 /** Fills an EMPTY database with demo data. Refuses when jobs already exist. */
 export async function seedDemoData(db: Db, now: Date): Promise<{ jobs: number; applications: number }> {
@@ -19,7 +19,16 @@ export async function seedDemoData(db: Db, now: Date): Promise<{ jobs: number; a
   const rows = toRows(seed, jobId);
   await db.transaction(async (tx) => {
     await tx.insert(jobs).values(rows.jobs);
-    await tx.insert(applications).values(rows.applications);
+    const added = await tx.insert(applications).values(rows.applications).returning();
+    await tx.insert(applicationStatusLog).values(
+      added.map((app) => ({
+        applicationId: app.id,
+        jobId: app.jobId,
+        source: app.source,
+        toStatus: 'new' as const,
+        createdAt: app.createdAt,
+      })),
+    );
     const people = await tx.insert(candidates).values(rows.candidates).returning();
     const accountId = (email: string | null | undefined) => people.find((p) => p.email === email)?.id ?? null;
     await tx

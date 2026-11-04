@@ -11,22 +11,22 @@ import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { ApplicantList, ListSkeleton, type RowPick } from './applicants/ApplicantList';
 import { ApplicantsToolbar, type ToolbarActions } from './applicants/ApplicantsToolbar';
 import { DetailNav } from './applicants/DetailNav';
-import { ALL_LOOK, STATUS_STYLE } from './applicants/statusStyle';
-import { useApplicantQueue, type TabKey } from './applicants/useApplicantQueue';
+import { ALL_LOOK, AWAITING_LOOK, STATUS_STYLE } from './applicants/statusStyle';
+import { isInTab, useApplicantQueue, type TabKey } from './applicants/useApplicantQueue';
 import { useQueueShortcuts } from './applicants/useQueueShortcuts';
 import { apiMessage, FilterTabs, type TabItem } from './parts';
 import { canSendForReview, PickBar, usePicking } from './reviews/PickForReview';
 import { SendReviewDialog } from './reviews/SendReviewDialog';
 import { ManageSourcesDialog } from './sources/ManageSourcesDialog';
 
-const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'interview', 'rejected'];
+const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
 
 const isTab = (v: string | null): v is TabKey => TAB_KEYS.some((k) => k === v);
 
 /** Each tab shows its status's icon, word and colour. */
-function tabItems(counts: Record<TabKey, number> | undefined): TabItem<TabKey>[] {
+function tabItems(counts: Partial<Record<TabKey, number>> | undefined): TabItem<TabKey>[] {
   return TAB_KEYS.map((key) => {
-    const look = key === 'all' ? ALL_LOOK : STATUS_STYLE[key];
+    const look = key === 'all' ? ALL_LOOK : key === 'awaiting' ? AWAITING_LOOK : STATUS_STYLE[key];
     return { key, label: look.label, count: counts?.[key], icon: look.icon, tone: look.tone };
   });
 }
@@ -276,7 +276,8 @@ export function HrApplicantsPage() {
   const [isAdding, setIsAdding] = useState(false);
   const [isManaging, setIsManaging] = useState(false);
   useQueueShortcuts({ isEnabled: isDesktop && !picking.active, onPrev: model.goPrev, onNext: model.goNext });
-  const tabs = tabItems(apps.data?.counts);
+  const awaiting = apps.data?.applications.filter((a) => isInTab(a, 'awaiting', new Date())).length;
+  const tabs = tabItems(apps.data && { ...apps.data.counts, awaiting });
 
   return (
     // From 1024px the layout makes `main` exactly the window; this takes what is left in it (a notice above the page

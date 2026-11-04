@@ -22,10 +22,10 @@ export interface JobExtraFields {
   openings: number | null;
   workMode: WorkMode | null;
 }
-export type ApplicationStatus = 'new' | 'seen' | 'interview' | 'rejected';
+export type ApplicationStatus = 'new' | 'seen' | 'interview' | 'passed' | 'hired' | 'rejected';
 
 /** What the candidate sees about their own application (BA board: "HR thấy / ứng viên thấy"). */
-export type CandidateStage = 'sent' | 'seen' | 'interview' | 'closed';
+export type CandidateStage = 'sent' | 'seen' | 'interview' | 'hired' | 'closed';
 
 export interface SalaryFields {
   /** VND per month. Both null means "Thỏa thuận". */
@@ -138,8 +138,6 @@ export interface HrJobRowDto extends SalaryFields {
 export interface HrJobsResponse {
   jobs: HrJobRowDto[];
   newApplications: number;
-  /** Applications of jobs that ended more than 30 days ago: HR deletes them. */
-  dueForDeletion: number;
 }
 
 export interface ApplicationRowDto {
@@ -155,6 +153,10 @@ export interface ApplicationRowDto {
   matchPercent: number | null;
   /** How many of the job's bonuses ("Ưu tiên") the CV shows; never part of the percent. */
   matchBonus: number;
+  /** As written in the CV, never guessed; null when it does not say. */
+  cvGender: import('./cv-match/personal.js').CvGender | null;
+  /** "2002-12-14", or "2002" when the CV gives only the year. */
+  cvBirth: string | null;
   /** First line of the HR note, for the list. */
   noteLine: string | null;
   interviewAt: string | null;
@@ -165,6 +167,8 @@ export interface ApplicationRowDto {
   review: import('./reviews.js').ReviewDecision | 'waiting' | null;
   /** Where it came from (spec-cv-intake.md); "website" = sent through the form. */
   source: import('./cv-intake.js').ApplicationSource;
+  /** The job ended over 30 days ago: shown as "Hết hạn", nothing is deleted. Only in the list. */
+  isExpired?: boolean;
   /** The candidate replaced the CV and no HR has opened the application since. */
   cvUpdatedByCandidate: boolean;
 }
@@ -181,6 +185,9 @@ export interface ApplicationReviewDto {
 }
 
 export interface ApplicationDetailDto extends ApplicationRowDto {
+  /** Why it is "Chưa phù hợp"; null for one closed before reasons existed. Internal only. */
+  rejectReason: import('./hiring.js').RejectReason | null;
+  rejectNote: string | null;
   reviewInfo: ApplicationReviewDto | null;
   /** "Ai giới thiệu", for a referral. */
   referrer: string | null;
@@ -275,12 +282,20 @@ export interface DashboardDto {
     appliedAt: string;
     interviewAt: string | null;
     noteLine: string | null;
+    phone: string;
+    matchPercent: number | null;
+    cvGender: import('./cv-match/personal.js').CvGender | null;
+    cvBirth: string | null;
   }[];
   /** Live jobs ending within 3 days and jobs that expired in the last 14 days. */
   endingJobs: { id: string; title: string; deadline: string; status: EffectiveStatus }[];
-  dueForDeletion: number;
   /** Applications of the last 30 days per source, biggest first. */
   bySource: { source: import('./cv-intake.js').ApplicationSource; count: number }[];
+  /** Interviews whose time has passed with no result written down yet. */
+  awaitingResults: number;
+  /** Applications of the last 7 days, whatever the period the reports show. */
+  last7Days: number;
+  sourceFunnel: import('./hiring.js').SourceFunnelRow[];
   /** The same applications per source and Vietnam day: the 30 entries of `perDay`, in its order. */
   bySourcePerDay: { source: import('./cv-intake.js').ApplicationSource; counts: number[] }[];
   /** Everyone at "Hẹn phỏng vấn", and how many of them have no time. */

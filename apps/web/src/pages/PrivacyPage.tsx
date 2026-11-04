@@ -27,7 +27,7 @@ const SECTIONS: [string, string[]][] = [
   [
     'Lưu trong bao lâu',
     [
-      'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng, hoặc kể từ ngày hồ sơ được thêm nếu ngày này muộn hơn.',
+      'Hồ sơ được lưu cho đến khi bạn yêu cầu xóa.',
       'CV được lưu riêng tư, không có đường link công khai.',
     ],
   ],

@@ -1,3 +1,4 @@
+import { POLICY_VERSION } from '@careers/shared';
 import type { ApplyResponse } from '@careers/shared';
 import { sql } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -53,7 +54,7 @@ describe('POST /api/applications', () => {
       status: 'new',
       email: null,
       cvLink: 'https://drive.google.com/cv',
-      policyVersion: '2026-11',
+      policyVersion: POLICY_VERSION,
     });
     expect(row.consentAt).toEqual(t.clock.now);
   });
@@ -256,7 +257,7 @@ describe('POST /api/subscribers', () => {
       phone: '0912000111',
       department: 'Kỹ thuật',
       fromJobId: job.id,
-      policyVersion: '2026-11',
+      policyVersion: POLICY_VERSION,
     });
     expect(row.consentAt).toEqual(t.clock.now);
   });

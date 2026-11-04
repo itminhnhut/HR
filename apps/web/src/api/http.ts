@@ -29,7 +29,6 @@ import { ApiError, type Api, type CvInput } from './types';
  *   PATCH  /hr/applications/:id         { status?, note?, interviewAt? } → ApplicationDetailDto
  *   POST   /hr/applications/:id/score   → ApplicationDetailDto (cvScore filled)
  *   DELETE /hr/applications/:id         → { ok }   CV file included
- *   DELETE /hr/applications/due         → { deleted }   jobs ended more than 30 days ago
  *   GET    /hr/applications/:id/cv      → the uploaded PDF (inline)
  *   GET    /hr/users  |  POST { email, name } → TempPasswordResponse
  *   POST   /hr/users/:id/reset-password → TempPasswordResponse
@@ -192,7 +191,7 @@ export const httpApi: Api = {
   hrSignIn: (email, password) => request('/hr/auth/login', json('POST', { email, password })),
   hrLogout: () => request('/hr/logout', { method: 'POST' }),
   hrJobs: () => request('/hr/jobs'),
-  hrDashboard: () => request('/hr/dashboard'),
+  hrDashboard: (period) => request(`/hr/dashboard${period ? `?from=${period.from}&to=${period.to}` : ''}`),
   hrRealtime: () => request('/hr/analytics/realtime'),
   hrJobTemplate: () => request('/hr/jobs/template'),
   hrSaveJobTemplate: (template) => request('/hr/jobs/template', json('PUT', template)),
@@ -212,10 +211,9 @@ export const httpApi: Api = {
     return request(`/hr/applications${query ? `?${query}` : ''}`);
   },
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
-  hrAddApplication: ({ cvFile, consent, ...fields }) => {
+  hrAddApplication: ({ cvFile, ...fields }) => {
     const form = new FormData();
     for (const [key, value] of Object.entries(fields)) if (value) form.append(key, String(value));
-    form.append('consent', String(consent));
     if (cvFile) form.append('cv', cvFile);
     return request('/hr/applications', { method: 'POST', body: form });
   },
@@ -235,7 +233,6 @@ export const httpApi: Api = {
   hrScorePending: () => request('/hr/applications/score-pending', { method: 'POST' }),
   hrScoreCv: (id) => request(`/hr/applications/${encodeURIComponent(id)}/score`, { method: 'POST' }),
   hrDeleteApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`, { method: 'DELETE' }),
-  hrDeleteDueApplications: () => request('/hr/applications/due', { method: 'DELETE' }),
   hrCvUrl: (id) => `${BASE}/hr/applications/${encodeURIComponent(id)}/cv`,
   hrUsers: () => request('/hr/users'),
   hrCreateUser: (input) => request('/hr/users', json('POST', input)),

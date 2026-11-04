@@ -11,6 +11,7 @@ export * from './home-seo.js';
 export * from './job-location.js';
 export * from './job-seo.js';
 export * from './job-related-posts.js';
+export * from './hiring.js';
 export * from './cv-match/types.js';
 export * from './cv-match/index.js';
 export * from './news/index.js';

@@ -165,7 +165,7 @@ async function checkApplications(db: Db, items: ItemInput[], batchId?: string) {
     .where(inArray(applications.id, ids));
   if (found.length !== ids.length) throw invalid('Có hồ sơ không còn tồn tại. Tải lại danh sách rồi chọn lại.');
   // Already invited or already told "chưa phù hợp": nothing left for the reviewer to decide.
-  const settled = found.filter((a) => a.status === 'interview' || a.status === 'rejected');
+  const settled = found.filter((a) => a.status !== 'new' && a.status !== 'seen');
   if (settled.length > 0) {
     const names = settled.map((a) => a.fullName).join(', ');
     throw invalid(`Đã hẹn phỏng vấn hoặc đã báo chưa phù hợp, không cần sếp duyệt: ${names}.`);

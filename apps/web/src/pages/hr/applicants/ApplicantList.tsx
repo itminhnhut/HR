@@ -6,7 +6,8 @@ import { ReviewMark } from '../reviews/PickForReview';
 import { percentTone } from './CvMatch';
 import { StatusMark } from './StatusMark';
 import { STATUS_STYLE } from './statusStyle';
-import { interviewLabel } from './InterviewField';
+import { PersonalMarks } from './PersonalMarks';
+import type { TabKey } from './useApplicantQueue';
 
 const chip = 'shrink-0 rounded-full border px-1.5 text-[11px] font-medium leading-4';
 
@@ -18,13 +19,33 @@ function StatusPill({ status }: { status: ApplicationStatus }) {
   );
 }
 
+const inVietnam = (iso: string, options: Intl.DateTimeFormatOptions) =>
+  new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', ...options }).format(new Date(iso));
+
+/** "30/10": the list is about now; the whole date is in the detail. */
+const shortDay = (iso: string) => formatTimestamp(iso).slice(0, 5);
+
+/** "20/11, 09:00": fits next to the tags, where the long form was cut off. */
+const shortInterview = (iso: string) =>
+  `${shortDay(iso)}, ${inVietnam(iso, { hour: '2-digit', minute: '2-digit', hour12: false })}`;
+
+/** "Kế toán ( Yêu Cầu Kinh Nghiệm 1 Năm )" reads "Kế toán" in the list; the whole title stays on hover. */
+export const shortJobTitle = (title: string) => title.replace(/\s*[([][^)\]]*[)\]]\s*$/, '').trim() || title;
+
 /** The third line of a row: only what is worth noticing, on one line. */
 function RowTags({ row, showStatus }: { row: ApplicationRowDto; showStatus: boolean }) {
   const isAddedByHr = row.source !== WEBSITE_SOURCE;
   const hasInterview = row.status === 'interview' && !!row.interviewAt;
   const hasBonus = row.matchBonus > 0;
   const hasAny =
-    showStatus || !row.hasCv || isAddedByHr || !!row.review || row.cvUpdatedByCandidate || hasInterview || hasBonus;
+    !!row.isExpired ||
+    showStatus ||
+    !row.hasCv ||
+    isAddedByHr ||
+    !!row.review ||
+    row.cvUpdatedByCandidate ||
+    hasInterview ||
+    hasBonus;
   if (!hasAny) return null;
   return (
     <span className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
@@ -32,6 +53,11 @@ function RowTags({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
       {hasBonus && <span className={`${chip} border-ok/30 bg-ok-soft text-ok`}>+{row.matchBonus} điểm cộng</span>}
       {!row.hasCv && <span className={`${chip} border-error/30 bg-error-soft text-error`}>Không CV</span>}
       {isAddedByHr && <span className={`${chip} border-line bg-white text-slate`}>HR thêm</span>}
+      {row.isExpired && (
+        <span title="Tin đã kết thúc hơn 30 ngày" className={`${chip} border-amber-300 bg-amber-50 text-amber-800`}>
+          Hết hạn
+        </span>
+      )}
       {row.review && <ReviewMark review={row.review} />}
       {row.cvUpdatedByCandidate && (
         <span title="Ứng viên vừa cập nhật CV" className={`${chip} ${STATUS_STYLE.new.soft}`}>
@@ -41,7 +67,7 @@ function RowTags({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
       {hasInterview && row.interviewAt && (
         <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-navy">
           <Icon name="calendar" size={12} />
-          {interviewLabel(row.interviewAt)}
+          {shortInterview(row.interviewAt)}
         </span>
       )}
     </span>
@@ -66,7 +92,10 @@ function RowText({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
   return (
     <span className="flex min-w-0 flex-1 flex-col gap-0.5">
       <span className="flex min-w-0 items-center justify-between gap-2">
-        <span className="min-w-0 truncate text-sm font-semibold leading-5">{row.fullName}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="min-w-0 truncate text-sm font-semibold leading-5">{row.fullName}</span>
+          <PersonalMarks gender={row.cvGender} birth={row.cvBirth} />
+        </span>
         {row.matchPercent != null && (
           <span
             title="Phù hợp với yêu cầu (chấm CV tự động)"
@@ -77,8 +106,10 @@ function RowText({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
         )}
       </span>
       <span className="flex min-w-0 items-baseline justify-between gap-2 text-xs leading-4 text-slate">
-        <span className="min-w-0 truncate">{row.jobTitle}</span>
-        <span className="shrink-0 text-muted">Nộp {formatTimestamp(row.createdAt)}</span>
+        <span title={row.jobTitle} className="min-w-0 truncate">
+          {shortJobTitle(row.jobTitle)}
+        </span>
+        <span className="shrink-0 text-muted">Nộp {shortDay(row.createdAt)}</span>
       </span>
       <RowTags row={row} showStatus={showStatus} />
       {row.noteLine && (
@@ -155,7 +186,7 @@ export function ApplicantList({
 }: {
   rows: ApplicationRowDto[];
   selectedId: string | null;
-  tab: ApplicationStatus | 'all';
+  tab: TabKey;
   emptyMessage: string;
   onOpen: (id: string) => void;
   pickFor: (row: ApplicationRowDto) => RowPick | undefined;

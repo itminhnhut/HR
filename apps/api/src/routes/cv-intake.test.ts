@@ -67,13 +67,11 @@ describe('HR adds an application received outside the site', () => {
       note: 'Gửi qua Zalo tối qua',
     });
     expect(app.addedBy).toBeTruthy();
-    expect(app.consentBy).toBe(app.addedBy);
+    expect(app.consentBy).toBeNull();
     expect(await t.db.select().from(subscribers)).toEqual([]);
   });
 
-  it('should refuse it without the consent tick or a referrer for a referral', async () => {
-    const noConsent = await addApplication({ consent: 'false' });
-    expect(noConsent.status).toBe(422);
+  it('should refuse a referral without a referrer', async () => {
     const noReferrer = await addApplication({ source: 'referral' });
     expect((await json<{ fieldErrors: Record<string, string> }>(noReferrer)).fieldErrors.referrer).toBeTruthy();
   });
@@ -224,7 +222,7 @@ describe('the candidate updates the CV of an application already sent', () => {
     expect((await update(id, cookie)).status).toBe(409);
     const other = await insertJob(t, { title: 'Kế toán' });
     const { id: second } = await json<{ id: string }>(await addApplication({ jobId: other.id }));
-    await hr('PATCH', `/applications/${second}`, { status: 'rejected' });
+    await hr('PATCH', `/applications/${second}`, { status: 'rejected', rejectReason: 'wrong_field' });
     expect((await update(second, cookie)).status).toBe(409);
   });
 

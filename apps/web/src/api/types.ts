@@ -10,6 +10,8 @@ import type {
   HrJobsResponse,
   HrMe,
   HrUserDto,
+  RejectReason,
+  ReportPeriod,
   InterviewMode,
   MessageTemplate,
   MessageTemplatesResponse,
@@ -86,6 +88,10 @@ export interface ApplicationPatch {
   meetingUrl?: string | null;
   /** "Vẫn hẹn": invite before the reviewer approved; the reason is logged for the reviewer. */
   reviewBypassReason?: string;
+  rejectReason?: RejectReason;
+  rejectNote?: string | null;
+  /** "Hoàn tác": the change never happened. */
+  isUndo?: boolean;
 }
 
 /** A new CV: a PDF, a link, or (candidate only) the CV saved in the account. */
@@ -162,7 +168,7 @@ export interface Api {
   hrSignIn(email: string, password: string): Promise<HrMe>;
   hrLogout(): Promise<{ ok: true }>;
   hrJobs(): Promise<HrJobsResponse>;
-  hrDashboard(): Promise<DashboardDto>;
+  hrDashboard(period?: ReportPeriod): Promise<DashboardDto>;
   hrRealtime(): Promise<RealtimeDto>;
   hrJobTemplate(): Promise<JobTemplateResponse>;
   hrSaveJobTemplate(template: JobTemplate): Promise<JobTemplateResponse>;
@@ -198,7 +204,6 @@ export interface Api {
   hrScoreCv(id: string): Promise<ApplicationDetailDto>;
   /** Scores a batch of CV files that have no up-to-date result. */
   hrScorePending(): Promise<{ scored: number; remaining: number }>;
-  hrDeleteDueApplications(): Promise<{ deleted: number }>;
   /** Link that opens an uploaded CV for HR, or null where files are not stored (demo). */
   hrCvUrl(applicationId: string): string | null;
   hrUsers(): Promise<HrUserDto[]>;

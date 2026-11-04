@@ -26,6 +26,8 @@ const row = (id: string, fullName: string, status: ApplicationStatus, over: Part
   hasCv: true,
   matchPercent: 80,
   matchBonus: 0,
+  cvGender: null,
+  cvBirth: null,
   noteLine: null,
   interviewAt: null,
   review: null,
@@ -151,6 +153,12 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
+
+/** "Chưa phù hợp" asks why before it does anything. */
+async function chooseRejectReason() {
+  await userEvent.click(await screen.findByRole('radio', { name: 'Thiếu kinh nghiệm' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Xác nhận chưa phù hợp' }));
+}
 
 describe('The "Thêm" menu', () => {
   const openMenu = async () => {
@@ -415,7 +423,7 @@ describe('Going through candidates one after another', () => {
     await screen.findByText('An Nguyễn');
 
     // Assert
-    expect(within(rowOf('An Nguyễn')).getByText('Nộp 30/10/2026')).toBeTruthy();
+    expect(within(rowOf('An Nguyễn')).getByText('Nộp 30/10')).toBeTruthy();
   });
 
   it('should say on the row how many bonuses the CV shows', async () => {
@@ -615,6 +623,7 @@ describe('The list', () => {
 
     // Act
     await userEvent.click(statusButton('Chưa phù hợp'));
+    await chooseRejectReason();
 
     // Assert
     await waitFor(() => expect(within(openRow()).getByText('Chưa phù hợp')).toBeTruthy());
@@ -645,7 +654,7 @@ describe('The list', () => {
     // Assert
     expect(text).toContain('80%');
     expect(text).toContain('Kế toán');
-    expect(text).toContain('20/10/2026');
+    expect(text).toContain('20/10');
   });
 
   it('should keep the reviewer state and the note on a row', async () => {
@@ -750,6 +759,7 @@ describe('The status control in the header', () => {
 
     // Act
     await userEvent.click(statusButton('Chưa phù hợp'));
+    await chooseRejectReason();
     await userEvent.click(await screen.findByRole('button', { name: 'Hoàn tác' }));
 
     // Assert
@@ -763,6 +773,7 @@ describe('The status control in the header', () => {
 
     // Act
     await userEvent.click(statusButton('Chưa phù hợp'));
+    await chooseRejectReason();
     await userEvent.click(await screen.findByRole('button', { name: 'Soạn thư cảm ơn' }));
 
     // Assert
@@ -810,6 +821,7 @@ describe('The status control in the header', () => {
 
     // Act
     await userEvent.click(segment('Chưa phù hợp'));
+    await chooseRejectReason();
 
     // Assert
     await waitFor(() => expect(pressedOnes()).toEqual(['Chưa phù hợp']));

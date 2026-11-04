@@ -63,8 +63,11 @@ describe('GET /api/hr/applications', () => {
       cvUpdatedByCandidate: false,
       matchPercent: null,
       matchBonus: 0,
+      cvGender: null,
+      cvBirth: null,
+      isExpired: false,
     });
-    expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, interview: 1, rejected: 0 });
+    expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, interview: 1, passed: 0, hired: 0, rejected: 0 });
     expect(body.jobs).toEqual([
       { id: a.id, title: 'A' },
       { id: b.id, title: 'B' },
@@ -122,7 +125,7 @@ describe('GET /api/hr/applications', () => {
 
     const body = await json<ApplicationsResponse>(await hr('GET', '/applications?q=hoa'));
 
-    expect(body.counts).toEqual({ all: 1, new: 0, seen: 1, interview: 0, rejected: 0 });
+    expect(body.counts).toEqual({ all: 1, new: 0, seen: 1, interview: 0, passed: 0, hired: 0, rejected: 0 });
   });
 
   it('returns an empty list for a malformed job filter', async () => {
@@ -201,7 +204,11 @@ describe('PATCH /api/hr/applications/:id', () => {
     const app = await insertApplication(await insertJob(t));
 
     const body = await json<ApplicationDetailDto>(
-      await hr('PATCH', `/applications/${app.id}`, { status: 'rejected', note: '  Thiếu kinh nghiệm  ' }),
+      await hr('PATCH', `/applications/${app.id}`, {
+        status: 'rejected',
+        rejectReason: 'wrong_field',
+        note: '  Thiếu kinh nghiệm  ',
+      }),
     );
 
     expect(body).toMatchObject({
@@ -255,7 +262,9 @@ describe('PATCH /api/hr/applications/:id', () => {
     const app = await insertApplication(await insertJob(t), { status: 'interview', interviewAt: hoursFromNow(24) });
 
     // Act
-    const body = await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { status: 'rejected' }));
+    const body = await json<ApplicationDetailDto>(
+      await hr('PATCH', `/applications/${app.id}`, { status: 'rejected', rejectReason: 'wrong_field' }),
+    );
 
     // Assert
     expect(body).toMatchObject({ status: 'rejected', interviewAt: null });
@@ -273,7 +282,9 @@ describe('PATCH /api/hr/applications/:id', () => {
     });
 
     // Act
-    const body = await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { status: 'rejected' }));
+    const body = await json<ApplicationDetailDto>(
+      await hr('PATCH', `/applications/${app.id}`, { status: 'rejected', rejectReason: 'wrong_field' }),
+    );
 
     // Assert
     expect(body).toMatchObject({
@@ -414,55 +425,6 @@ describe('DELETE /api/hr/applications/:id', () => {
   it('answers 404 for unknown or malformed ids', async () => {
     expect((await hr('DELETE', '/applications/00000000-0000-0000-0000-000000000000')).status).toBe(404);
     expect((await hr('DELETE', '/applications/abc')).status).toBe(404);
-  });
-});
-
-describe('DELETE /api/hr/applications/due', () => {
-  /** Applied while the jobs were open: the 30 days then run from each job's end. */
-  const consentAt = new Date('2026-09-01T00:00:00.000Z');
-
-  /** One application with a CV file for the job; returns its pathname. */
-  async function applicationWithCv(job: Job): Promise<string> {
-    const pathname = await t.cvStore.put(job.id, pdfFile());
-    await insertApplication(job, { cvPathname: pathname, consentAt });
-    return pathname;
-  }
-
-  it('deletes applications and files of jobs that ended more than 30 days ago, and nothing else', async () => {
-    const closedLongAgo = await insertJob(t, { state: 'closed', closedOn: '2026-09-19', deadline: '2026-10-30' });
-    const expiredLongAgo = await insertJob(t, { deadline: '2026-09-19', publishedOn: '2026-09-01' });
-    const closedThirtyDays = await insertJob(t, { state: 'closed', closedOn: '2026-09-20', deadline: '2026-09-25' });
-    const expiredRecently = await insertJob(t, { deadline: '2026-10-10', publishedOn: '2026-09-01' });
-    const open = await insertJob(t);
-    await applicationWithCv(closedLongAgo);
-    await insertApplication(closedLongAgo, { cvLink: 'https://drive.google.com/x', consentAt });
-    await applicationWithCv(expiredLongAgo);
-    const kept = await Promise.all([closedThirtyDays, expiredRecently, open].map(applicationWithCv));
-
-    const before = await json<HrJobsResponse>(await hr('GET', '/jobs'));
-    const res = await hr('DELETE', '/applications/due');
-
-    expect(before.dueForDeletion).toBe(3);
-    expect(await res.json()).toEqual({ deleted: 3 });
-    const left = await t.db.select().from(applications);
-    expect(left.map((a) => a.jobId).sort()).toEqual([closedThirtyDays.id, expiredRecently.id, open.id].sort());
-    expect([...t.cvStore.files.keys()].sort()).toEqual([...kept].sort());
-    expect((await json<HrJobsResponse>(await hr('GET', '/jobs'))).dueForDeletion).toBe(0);
-    expect(await t.db.select().from(jobs)).toHaveLength(5);
-  });
-
-  it('counts a closed job from the day it closed, not from its deadline', async () => {
-    const job = await insertJob(t, { state: 'closed', closedOn: '2026-10-01', deadline: '2026-09-01' });
-    await applicationWithCv(job);
-
-    expect(await (await hr('DELETE', '/applications/due')).json()).toEqual({ deleted: 0 });
-    expect(await t.db.select().from(applications)).toHaveLength(1);
-  });
-
-  it('answers zero when nothing is due', async () => {
-    await insertApplication(await insertJob(t));
-    expect(await (await hr('DELETE', '/applications/due')).json()).toEqual({ deleted: 0 });
-    expect(await t.db.select().from(applications)).toHaveLength(1);
   });
 });
 

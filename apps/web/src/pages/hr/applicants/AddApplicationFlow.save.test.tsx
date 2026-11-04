@@ -23,7 +23,6 @@ import {
   pickSource,
   reply,
   show,
-  tickConsent,
   useFlowServer,
 } from './AddApplicationFlow.helpers';
 
@@ -279,7 +278,6 @@ describe('Saving', () => {
     expect(box('Link CV').value).toBe(DRIVE_LINK);
     expect(box('Vị trí ứng tuyển').value).toBe(JOB_ID);
     expect(box('Nguồn hồ sơ').value).toBe('zalo');
-    expect(screen.getByRole<HTMLInputElement>('checkbox').checked).toBe(true);
     mocks.addReply = byRealRules;
     await clickSave();
     await waitFor(() => expect(onAdded).toHaveBeenCalledWith('new-id'));
@@ -362,13 +360,12 @@ describe('Saving', () => {
     await userEvent.type(screen.getByLabelText('Ai giới thiệu'), 'Anh Tuấn');
     await userEvent.type(box('Họ và tên'), 'Trần Khoa');
     await userEvent.type(box('Số điện thoại'), '0912345678');
-    await tickConsent();
 
     // Act
     await clickSave();
 
     // Assert
     await waitFor(() => expect(onAdded).toHaveBeenCalledWith('new-id'));
-    expect(asText(onlyAdd())).toMatchObject({ consent: 'true', source: 'referral', referrer: 'Anh Tuấn' });
+    expect(asText(onlyAdd())).toMatchObject({ source: 'referral', referrer: 'Anh Tuấn' });
   });
 });

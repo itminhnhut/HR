@@ -1,0 +1,46 @@
+/*
+ * The calendar library makes picked days bold and larger, so a range looked bigger than the days around it, and its
+ * month title took room the arrows sit in. Not a Tailwind layer: the library's own rules, outside any layer, would win.
+ */
+.period-calendar {
+  font-size: 13px;
+}
+
+.period-calendar .rdp-selected {
+  font-size: inherit;
+  font-weight: 500;
+}
+
+.period-calendar .rdp-range_start,
+.period-calendar .rdp-range_end {
+  font-weight: 600;
+}
+
+.period-calendar .rdp-month_caption {
+  font-size: 14px;
+  font-weight: 600;
+  justify-content: center;
+}
+
+.period-calendar .rdp-caption_label {
+  font-size: inherit;
+}
+
+.period-calendar .rdp-weekday {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.period-calendar .rdp-dropdowns {
+  gap: 6px;
+}
+
+.period-calendar .rdp-dropdown_root {
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+
+.period-calendar .rdp-dropdown_root:hover {
+  background: var(--color-tint);
+}

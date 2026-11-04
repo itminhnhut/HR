@@ -11,7 +11,7 @@ import { useAddApplication, useHrJobs } from '../../../api/queries';
 import { CvPicker } from '../../../site/CvPicker';
 import { Button } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { Checkbox, FieldError, SelectField, TextArea, TextField } from '../../../ui/Field';
+import { FieldError, SelectField, TextArea, TextField } from '../../../ui/Field';
 import { Notice } from '../../../ui/feedback';
 import { PhoneField } from '../../../ui/PhoneField';
 import { errorMessage } from '../parts';
@@ -162,7 +162,6 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
   const autofill = useCvAutofill();
   const [form, setForm] = useState({ jobId: '', source: '', referrer: '', note: '' });
   const [cv, setCv] = useState<CvInput | null>(null);
-  const [consent, setConsent] = useState(false);
   const set = (key: keyof typeof form) => (value: string) => setForm((f) => ({ ...f, [key]: value }));
   const existing = existingOf(add.error);
 
@@ -179,10 +178,9 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
     // The two choices the server needs in a typed form: checked here, the rest by the server.
     const missing = {
       ...(form.source ? {} : { source: 'Chọn nguồn hồ sơ.' }),
-      ...(consent ? {} : { consent: 'Xác nhận ứng viên đã đồng ý trước khi lưu.' }),
     };
     setLocal(missing);
-    if (!form.source || !consent) return;
+    if (!form.source) return;
     add.mutate(
       {
         ...form,
@@ -190,7 +188,6 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
         source: form.source,
         cvLink: cv && 'link' in cv ? cv.link : '',
         cvFile: cv && 'file' in cv ? cv.file : null,
-        consent: true,
       },
       { onSuccess: ({ id }) => onAdded(id) },
     );
@@ -239,12 +236,6 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
           counter={{ value: form.note.length, max: NOTE_MAX }}
           className="sm:col-span-2"
         />
-        <div className="rounded-control bg-mist px-3.5 py-3 sm:col-span-2">
-          <Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} error={errors.consent}>
-            <b className="text-navy">Ứng viên đã chủ động gửi CV và đồng ý cho công ty dùng để tuyển dụng.</b> Chỉ tích
-            khi ứng viên tự gửi CV để ứng tuyển. Hệ thống lưu tên bạn là người xác nhận.
-          </Checkbox>
-        </div>
       </div>
       <footer className="flex flex-col gap-3 border-t border-line bg-white px-5 py-4 sm:px-7">
         {existing && <Duplicate existing={existing} cv={cv} onOpen={onAdded} />}

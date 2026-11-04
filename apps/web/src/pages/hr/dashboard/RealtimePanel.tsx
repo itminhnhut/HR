@@ -1,4 +1,4 @@
-import { formatTimestamp, type RealtimeDto, type RealtimeRow } from '@careers/shared';
+import type { RealtimeDto, RealtimeRow } from '@careers/shared';
 import { useRealtime } from '../../../api/queries';
 import { Icon, type IconName } from '../../../ui/icons';
 import { IconTile } from '../design/IconTile';
@@ -7,24 +7,38 @@ import { TONE, type Tone } from '../design/tone';
 
 const PANEL = 'flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-5 sm:p-6';
 
+const CLOCK = new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' });
+
+/** One person must not fill the chart: a quiet site should look quiet. */
+const MIN_CHART_TOP = 4;
+/** A minute with someone in it stays visible beside a much busier one, in percent of the chart's height. */
+const MIN_BAR = 8;
+
 function MinuteBars({ perMinute }: { perMinute: readonly number[] }) {
-  const max = Math.max(1, ...perMinute);
+  const peak = Math.max(0, ...perMinute);
+  const top = Math.max(MIN_CHART_TOP, peak);
   const last = perMinute.length - 1;
-  const summary = perMinute.reduce((peak, users) => Math.max(peak, users), 0);
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
       <div
         role="img"
-        aria-label={`Người truy cập theo từng phút trong 30 phút gần nhất, cao nhất ${summary} người một phút.`}
-        className="flex h-16 items-end gap-[3px]"
+        aria-label={`Người truy cập theo từng phút trong 30 phút gần nhất, cao nhất ${peak} người một phút.`}
+        className="flex h-14 items-stretch border-b border-line"
       >
         {perMinute.map((users, i) => (
+          // The whole slot answers the mouse, far wider than the thin bar in it.
           <span
             key={i}
             title={`${i === last ? 'Phút này' : `${last - i} phút trước`}: ${users} người`}
-            style={{ height: `${users > 0 ? Math.max(10, (users / max) * 100) : 4}%` }}
-            className={`min-w-0 flex-1 rounded-t-[3px] ${users === 0 ? 'bg-line' : i === last ? 'bg-primary-deep' : 'bg-blue-400'}`}
-          />
+            className="flex min-w-0 flex-1 items-end justify-center rounded-t-[3px] hover:bg-tint"
+          >
+            {users > 0 && (
+              <span
+                style={{ height: `${Math.max(MIN_BAR, (users / top) * 100)}%` }}
+                className={`w-full max-w-2 rounded-t-[3px] ${TONE.blue.bar}`}
+              />
+            )}
+          </span>
         ))}
       </div>
       <div aria-hidden="true" className="flex justify-between text-xs text-muted">
@@ -35,19 +49,24 @@ function MinuteBars({ perMinute }: { perMinute: readonly number[] }) {
   );
 }
 
-/** The names and how many people, with a bar so the biggest stands out. */
+/** The names and how many people, each bar a share of everyone: the server lists only the top few, and one person can see several pages. */
 function TopList({
   title,
   icon,
   tone,
   rows,
+  activeUsers,
 }: {
   title: string;
   icon: IconName;
   tone: Tone;
   rows: readonly RealtimeRow[];
+  activeUsers: number;
 }) {
-  const max = Math.max(1, ...rows.map((r) => r.users));
+  const whole = Math.max(
+    activeUsers,
+    rows.reduce((sum, row) => sum + row.users, 0),
+  );
   return (
     <section aria-label={title} className="flex min-w-0 flex-col gap-2">
       <h3 className="m-0 flex items-center gap-2 text-sm font-semibold text-navy">
@@ -66,10 +85,11 @@ function TopList({
                 </span>
                 <span className="font-semibold tabular-nums text-navy">{row.users}</span>
               </span>
-              <span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-tint">
+              <span aria-hidden="true" className="h-1 overflow-hidden rounded-full bg-tint">
                 <span
+                  data-share
                   className={`block h-full rounded-full ${TONE[tone].bar}`}
-                  style={{ width: `${(row.users / max) * 100}%` }}
+                  style={{ width: `${whole > 0 ? (row.users / whole) * 100 : 0}%` }}
                 />
               </span>
             </li>
@@ -80,11 +100,14 @@ function TopList({
   );
 }
 
-function LiveMark() {
+function LiveMark({ fetchedAt }: { fetchedAt: string }) {
   return (
-    <span className="inline-flex items-center gap-2 text-xs font-semibold text-green-700">
-      <span aria-hidden="true" className="live-dot size-2 rounded-full bg-green-600" />
-      Trực tiếp
+    <span className="inline-flex items-center gap-3 text-xs">
+      <span className="inline-flex items-center gap-2 font-semibold text-green-700">
+        <span aria-hidden="true" className="live-dot size-2 rounded-full bg-green-600" />
+        Trực tiếp
+      </span>
+      <span className="text-muted">Cập nhật {CLOCK.format(new Date(fetchedAt))}</span>
     </span>
   );
 }
@@ -125,7 +148,7 @@ export function RealtimeView({ data }: { data: RealtimeDto }) {
             Đang truy cập
           </SectionTitle>
         </h2>
-        <LiveMark />
+        <LiveMark fetchedAt={data.fetchedAt} />
       </div>
       <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <div className="flex flex-col">
@@ -134,14 +157,17 @@ export function RealtimeView({ data }: { data: RealtimeDto }) {
         </div>
         <MinuteBars perMinute={data.perMinute} />
       </div>
-      <div className="grid gap-5 md:grid-cols-3">
-        <TopList title="Trang đang xem" icon="file" tone="blue" rows={data.pages} />
-        <TopList title="Thành phố" icon="pin" tone="orange" rows={data.cities} />
-        <TopList title="Thiết bị" icon="laptop" tone="teal" rows={data.devices} />
+      <div className="grid gap-5 border-t border-line-soft pt-4 md:grid-cols-3 md:gap-8">
+        <TopList title="Trang đang xem" icon="file" tone="blue" rows={data.pages} activeUsers={data.activeUsers} />
+        <TopList title="Thành phố" icon="pin" tone="orange" rows={data.cities} activeUsers={data.activeUsers} />
+        <TopList title="Thiết bị" icon="laptop" tone="teal" rows={data.devices} activeUsers={data.activeUsers} />
       </div>
-      <p className="m-0 text-xs text-muted">
-        Từ Google Analytics, cập nhật mỗi phút, lần cuối {formatTimestamp(data.fetchedAt)}. Không tính trang admin; số
-        có thể lệch nhẹ so với trang Analytics.
+      <p
+        title="Số có thể lệch nhẹ so với trang Google Analytics."
+        className="m-0 inline-flex items-center gap-1.5 text-xs text-muted"
+      >
+        <Icon name="info" size={13} className="shrink-0" />
+        <span>Từ Google Analytics, cập nhật mỗi phút, không tính trang admin</span>
       </p>
     </section>
   );

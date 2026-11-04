@@ -74,31 +74,6 @@ describe('HR job list', () => {
     expect(body.jobs[1]).toMatchObject({ totalApplications: 2, newApplications: 1, status: 'open' });
     expect(body.newApplications).toBe(1);
   });
-
-  it('counts applications of jobs that ended more than 30 days ago as due for deletion', async () => {
-    const jobsWithApplications = await Promise.all([
-      insertJob(t, { title: 'Đóng 31 ngày', state: 'closed', closedOn: '2026-09-19', deadline: '2026-09-30' }),
-      insertJob(t, { title: 'Hết hạn 31 ngày', deadline: '2026-09-19', publishedOn: '2026-09-01' }),
-      insertJob(t, { title: 'Đóng đúng 30 ngày', state: 'closed', closedOn: '2026-09-20', deadline: '2026-09-30' }),
-      insertJob(t, { title: 'Đang tuyển' }),
-    ]);
-    await t.db.insert(applications).values(
-      jobsWithApplications.flatMap((job, i) =>
-        [1, 2].map((k) => ({
-          jobId: job.id,
-          fullName: 'A',
-          phone: `09120000${i}${k}`,
-          // Applied while the job was open: the 30 days then run from the job's end.
-          consentAt: new Date('2026-09-01T00:00:00.000Z'),
-          policyVersion: 'v',
-        })),
-      ),
-    );
-
-    const body = await json<HrJobsResponse>(await hr('GET', '/jobs'));
-
-    expect(body.dueForDeletion).toBe(4);
-  });
 });
 
 describe('saving jobs', () => {

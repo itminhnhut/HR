@@ -1,5 +1,5 @@
 import type { DashboardDto } from '@careers/shared';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { calendarEvents, InterviewCalendar } from './InterviewCalendar';
@@ -13,6 +13,10 @@ const item = (id: string, interviewAt: string | null) => ({
   appliedAt: '2026-10-30T04:00:00.000Z',
   interviewAt,
   noteLine: null as string | null,
+  phone: '0912345678',
+  matchPercent: 43 as number | null,
+  cvGender: 'female' as 'male' | 'female' | null,
+  cvBirth: '2002-04-01' as string | null,
 });
 
 function show(interviews: DashboardDto['interviews']) {
@@ -105,6 +109,110 @@ describe('InterviewCalendar', () => {
     show([item('a', '2026-11-06T02:00:00.000Z')]);
 
     expect(await screen.findByText('Ứng viên a')).toBeTruthy();
+  });
+
+  it('should show the job, day and time, application date and note when the mouse is on a person', async () => {
+    // Arrange
+    show([{ ...item('a', '2026-11-05T02:00:00.000Z'), noteLine: 'Mang bản gốc bằng cấp' }]);
+    const person = await screen.findByText('Ứng viên a');
+    expect(screen.queryByRole('tooltip')).toBeNull();
+
+    // Act
+    fireEvent.mouseOver(person);
+
+    // Assert
+    const card = within(screen.getByRole('tooltip'));
+    expect(card.getByText('Kế toán')).toBeTruthy();
+    expect(card.getByText(/Thứ Năm, 05\/11\/2026, 09:00/)).toBeTruthy();
+    expect(card.getByText('30/10/2026')).toBeTruthy();
+    expect(card.getByText('Mang bản gốc bằng cấp')).toBeTruthy();
+    expect(card.getByText('Nữ')).toBeTruthy();
+    expect(card.getByText(/\d+ tuổi/)).toBeTruthy();
+    expect(card.getByText('43%')).toBeTruthy();
+    expect(card.getByText('0912 345 678')).toBeTruthy();
+  });
+
+  it('should say so when the CV gives no gender or age, and not guess from the name', async () => {
+    // Arrange
+    show([{ ...item('a', '2026-11-05T02:00:00.000Z'), cvGender: null, cvBirth: null }]);
+
+    // Act
+    fireEvent.mouseOver(await screen.findByText('Ứng viên a'));
+
+    // Assert
+    expect(within(screen.getByRole('tooltip')).getByText('Không ghi giới tính, tuổi')).toBeTruthy();
+  });
+
+  it('should say an interview is over on its card', async () => {
+    // Arrange
+    show([item('a', '2026-11-03T02:00:00.000Z')]);
+
+    // Act
+    fireEvent.mouseOver(await screen.findByText('Ứng viên a'));
+
+    // Assert
+    expect(within(screen.getByRole('tooltip')).getByText(/đã qua/)).toBeTruthy();
+  });
+
+  it('should hide the card when the mouse leaves the person', async () => {
+    // Arrange
+    show([item('a', '2026-11-05T02:00:00.000Z')]);
+    const person = await screen.findByText('Ứng viên a');
+    fireEvent.mouseOver(person);
+
+    // Act
+    fireEvent.mouseOut(person);
+
+    // Assert
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('should keep the card open while the page scrolls, for a person reached with the keyboard', async () => {
+    // Arrange
+    show([item('a', '2026-11-05T02:00:00.000Z')]);
+    fireEvent.mouseOver(await screen.findByText('Ứng viên a'));
+
+    // Act
+    fireEvent.scroll(window);
+
+    // Assert
+    expect(screen.getByRole('tooltip')).toBeTruthy();
+  });
+
+  it('should close the card with Esc', async () => {
+    // Arrange
+    show([item('a', '2026-11-05T02:00:00.000Z')]);
+    fireEvent.mouseOver(await screen.findByText('Ứng viên a'));
+
+    // Act
+    fireEvent.keyDown(window, { key: 'Escape' });
+
+    // Assert
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('should not leave the card behind when the month is changed under a resting mouse', async () => {
+    // Arrange
+    show([item('a', '2026-11-05T02:00:00.000Z')]);
+    fireEvent.mouseOver(await screen.findByText('Ứng viên a'));
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: 'Tiếp' }));
+
+    // Assert
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('should tell a screen reader what the card shows when a person gets the focus', async () => {
+    // Act
+    show([{ ...item('a', '2026-11-05T02:00:00.000Z'), noteLine: 'Mang bản gốc bằng cấp' }]);
+
+    // Assert
+    await screen.findByText('Ứng viên a');
+    const name = document.querySelector('[data-interview="a"]')?.getAttribute('aria-label') ?? '';
+    expect(name).toContain('Kế toán');
+    expect(name).toContain('09:00');
+    expect(name).toContain('Mang bản gốc bằng cấp');
   });
 
   it('should list people with their day and time on a phone, and say how many more there are', () => {

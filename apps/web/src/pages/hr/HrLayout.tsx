@@ -141,8 +141,11 @@ function TopBar({ email, newCount }: { email: string; newCount: number }) {
         {newCount > 0 && <span aria-hidden="true" className="absolute right-2 top-2 size-2 rounded-full bg-red-600" />}
       </button>
 
-      <Dialog open={open} onClose={close} label="Menu quản trị" className="lg:hidden">
-        <nav aria-label="Menu quản trị" className="flex flex-col gap-1 bg-white px-4 pb-8 pt-3">
+      <Dialog open={open} onClose={close} label="Menu quản trị" variant="drawer" className="lg:hidden">
+        <nav
+          aria-label="Menu quản trị"
+          className="flex h-full flex-col gap-1 overflow-y-auto bg-white px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-3"
+        >
           <div className="flex items-center justify-between pb-2">
             <Brand />
             <button
@@ -157,7 +160,7 @@ function TopBar({ email, newCount }: { email: string; newCount: number }) {
           {HR_SECTIONS.map((item) => (
             <NavLink key={item.to} item={item} newCount={newCount} onNavigate={close} />
           ))}
-          <div className="mt-2 flex flex-col gap-1 border-t border-line pt-2">
+          <div className="mt-auto flex flex-col gap-1 border-t border-line pt-2">
             <SiteLink onNavigate={close} />
             <SignOut email={email} />
           </div>

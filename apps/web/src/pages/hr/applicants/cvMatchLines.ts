@@ -1,4 +1,4 @@
-import { UNPARSED_REASON, type MatchItem } from '@careers/shared';
+import { UNPARSED_REASON, UNREADABLE_REASON, type MatchItem } from '@careers/shared';
 import type { IconName } from '../../../ui/icons';
 
 /**
@@ -48,10 +48,12 @@ export const defaultTab = (groups: Record<MatchTab, MatchLine[]>): MatchTab =>
  * hover. A job duty the CV is silent about is no fault of the candidate, only something to ask.
  */
 export function shortNoteOf(line: MatchLine): { icon: IconName; text: string } | null {
-  if (line.section === 'duties' && line.verdict === 'unknown' && !line.evidence) {
-    return { icon: 'chat', text: 'Hỏi khi phỏng vấn' };
+  if (line.evidence) return null;
+  // First: a CV nobody could read says nothing about any line, so there is nothing yet to ask about.
+  if (line.reason === UNPARSED_REASON || line.reason === UNREADABLE_REASON) {
+    return { icon: 'eye', text: 'HR xem trực tiếp' };
   }
-  return line.reason === UNPARSED_REASON && !line.evidence ? { icon: 'eye', text: 'HR xem trực tiếp' } : null;
+  return line.section === 'duties' && line.verdict === 'unknown' ? { icon: 'chat', text: 'Hỏi khi phỏng vấn' } : null;
 }
 
 /** The explanation under a line. Every line left out says why, even if the scorer gave no reason. */

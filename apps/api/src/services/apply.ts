@@ -15,6 +15,7 @@ import { applications, jobs, subscribers, type Candidate, type Job, type NewAppl
 import { checkCvFile, CV_PROBLEM_MESSAGE, cvFileName, deleteFilesQuietly, type CvStore } from '../lib/cv-store.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
+import { logStatus } from './status-log.js';
 
 /**
  * The same person sending the same form again this soon is a double click or a retry, not a new application.
@@ -87,7 +88,11 @@ async function insertApplication(db: Db, jobId: string, record: ApplicationRecor
       )
       .limit(1);
     if (repeat) return false;
-    await tx.insert(applications).values({ ...record, jobId, createdAt: at });
+    const [row] = await tx
+      .insert(applications)
+      .values({ ...record, jobId, createdAt: at })
+      .returning();
+    await logStatus(tx, row, 'new', null, at);
     return true;
   });
 }

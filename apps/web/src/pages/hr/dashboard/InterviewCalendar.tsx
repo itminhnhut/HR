@@ -6,12 +6,22 @@ import '@fullcalendar/react/skeleton.css';
 import formaTheme from '@fullcalendar/react/themes/forma';
 import '@fullcalendar/react/themes/forma/palettes/blue.css';
 import '@fullcalendar/react/themes/forma/theme.css';
-import { formatDate, type DashboardDto } from '@careers/shared';
-import { useId, useState, type ReactNode, type SyntheticEvent } from 'react';
+import type { DashboardDto } from '@careers/shared';
+import { useId, useState, type SyntheticEvent } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Icon } from '../../../ui/icons';
+import {
+  CARD_CLASS,
+  CARD_WIDTH,
+  CardBody,
+  describeInterview,
+  HoverCardArea,
+  inVietnam,
+  VN,
+  type Dated,
+  type Interview,
+} from './InterviewCard';
 
-const VN = 'Asia/Ho_Chi_Minh';
 /** Under this width seven columns have no room for names: a list instead. */
 const LIST_BELOW = 640;
 const PLUGINS = [dayGridPlugin, formaTheme];
@@ -31,17 +41,10 @@ export function calendarEvents(interviews: DashboardDto['interviews'], now: Date
         title: i.fullName,
         start: i.interviewAt,
         color: isOver ? '#64748b' : '#c2410c',
-        extendedProps: { jobTitle: i.jobTitle },
       },
     ];
   });
 }
-
-type Interview = DashboardDto['interviews'][number];
-type Dated = Interview & { interviewAt: string };
-
-const inVietnam = (iso: string, options: Intl.DateTimeFormatOptions) =>
-  new Intl.DateTimeFormat('vi-VN', { timeZone: VN, ...options }).format(new Date(iso));
 
 function PhoneRow({ item, now }: { item: Dated; now: Date }) {
   const isOver = new Date(item.interviewAt) < now;
@@ -90,17 +93,6 @@ function PhoneList({ interviews, now }: { interviews: DashboardDto['interviews']
   );
 }
 
-const CARD_WIDTH = 280;
-
-function CardLine({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="grid grid-cols-[92px_minmax(0,1fr)] gap-2">
-      <dt className="text-muted">{label}</dt>
-      <dd className="m-0 text-navy">{children}</dd>
-    </div>
-  );
-}
-
 /** A name, and on hover or focus what HR needs to set the time; opens the side the window has room on. */
 function NoTimePerson({ person }: { person: Interview }) {
   const id = useId();
@@ -121,17 +113,9 @@ function NoTimePerson({ person }: { person: Interview }) {
         id={id}
         role="tooltip"
         style={{ width: CARD_WIDTH }}
-        className={`pointer-events-none absolute top-full z-30 mt-1.5 hidden rounded-control border border-line bg-white p-3 text-xs shadow-lg group-focus-within:block group-hover:block ${opensLeft ? 'right-0' : 'left-0'}`}
+        className={`${CARD_CLASS} absolute top-full mt-1.5 hidden group-focus-within:block group-hover:block ${opensLeft ? 'right-0' : 'left-0'}`}
       >
-        <div className="mb-2 text-sm font-semibold text-navy">{person.fullName}</div>
-        <dl className="m-0 flex flex-col gap-1">
-          <CardLine label="Vị trí">{person.jobTitle}</CardLine>
-          <CardLine label="Giờ phỏng vấn">
-            <span className="font-semibold text-amber-800">Chưa chọn</span>
-          </CardLine>
-          <CardLine label="Ngày nộp">{formatDate(person.appliedAt)}</CardLine>
-          {person.noteLine && <CardLine label="Ghi chú">{person.noteLine}</CardLine>}
-        </dl>
+        <CardBody person={person} time={<span className="font-semibold text-amber-800">Chưa chọn</span>} />
       </div>
     </li>
   );
@@ -175,11 +159,42 @@ function Summary({ data, now }: { data: DashboardDto; now: Date }) {
   );
 }
 
+/** The month, with a card on the person under the mouse or the keyboard's focus. */
+function MonthCalendar({ interviews, now }: { interviews: DashboardDto['interviews']; now: Date }) {
+  const navigate = useNavigate();
+  return (
+    <HoverCardArea interviews={interviews} now={now}>
+      <FullCalendar
+        plugins={PLUGINS}
+        locale={viLocale}
+        timeZone={VN}
+        initialView="dayGridMonth"
+        now={now}
+        headerToolbar={TOOLBAR}
+        aspectRatio={2.3}
+        dayMaxEvents={3}
+        eventDisplay="block"
+        titleFormat={({ date }) => `Tháng ${date.month + 1}, ${date.year}`}
+        fixedWeekCount={false}
+        eventTimeFormat={TIME_FORMAT}
+        events={calendarEvents(interviews, now)}
+        eventDidMount={({ el, event }) => {
+          el.dataset.interview = event.id;
+          const person = interviews.find((i): i is Dated => i.id === event.id && i.interviewAt !== null);
+          if (person) el.setAttribute('aria-label', describeInterview(person));
+        }}
+        eventClick={({ event, jsEvent }) => {
+          jsEvent.preventDefault();
+          navigate(`/hr/ho-so?id=${event.id}`);
+        }}
+      />
+    </HoverCardArea>
+  );
+}
+
 /** This month's interviews, everyone at "Hẹn phỏng vấn" accounted for; a person opens their profile. */
 export function InterviewCalendar({ data, now }: { data: DashboardDto; now: Date }) {
-  const navigate = useNavigate();
   if (data.interviewCounts.total === 0) return <p className="m-0 text-sm text-slate">Chưa có ai đang hẹn phỏng vấn.</p>;
-  const events = calendarEvents(data.interviews, now);
   const isPhone = window.innerWidth < LIST_BELOW;
   return (
     <div className="flex flex-col gap-3">
@@ -187,25 +202,7 @@ export function InterviewCalendar({ data, now }: { data: DashboardDto; now: Date
       {isPhone ? (
         <PhoneList interviews={data.interviews} now={now} />
       ) : (
-        <FullCalendar
-          plugins={PLUGINS}
-          locale={viLocale}
-          timeZone={VN}
-          initialView="dayGridMonth"
-          now={now}
-          headerToolbar={TOOLBAR}
-          aspectRatio={2.3}
-          dayMaxEvents={3}
-          eventDisplay="block"
-          titleFormat={({ date }) => `Tháng ${date.month + 1}, ${date.year}`}
-          fixedWeekCount={false}
-          eventTimeFormat={TIME_FORMAT}
-          events={events}
-          eventClick={({ event, jsEvent }) => {
-            jsEvent.preventDefault();
-            navigate(`/hr/ho-so?id=${event.id}`);
-          }}
-        />
+        <MonthCalendar interviews={data.interviews} now={now} />
       )}
       <NoTimeList interviews={data.interviews} />
     </div>

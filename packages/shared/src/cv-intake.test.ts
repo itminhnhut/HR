@@ -25,11 +25,6 @@ describe('hrApplicationSchema', () => {
     });
   });
 
-  it('should need HR to confirm the candidate agreed', () => {
-    const result = hrApplicationSchema.safeParse({ ...valid, consent: false });
-    expect(result.error?.issues[0]?.path).toEqual(['consent']);
-  });
-
   it('should need a source', () => {
     expect(hrApplicationSchema.safeParse({ ...valid, source: ' ' }).error?.issues[0]?.path).toEqual(['source']);
   });

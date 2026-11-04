@@ -239,7 +239,7 @@ describe('interview details and contact log', () => {
       meetingUrl: 'https://meet.google.com/abc-defg-hij',
     });
     const after = await json<ApplicationDetailDto>(
-      await hr('PATCH', `/applications/${app.id}`, { status: 'rejected' }),
+      await hr('PATCH', `/applications/${app.id}`, { status: 'rejected', rejectReason: 'wrong_field' }),
     );
     expect(after).toMatchObject({ interviewAt: null, interviewMode: null, meetingUrl: null });
   });

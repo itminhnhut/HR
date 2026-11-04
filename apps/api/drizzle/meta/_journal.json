@@ -134,6 +134,20 @@
       "when": 1793678700000,
       "tag": "0018_mail_templates",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793782058850,
+      "tag": "0019_hiring_outcomes",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1793783411342,
+      "tag": "0020_cv_personal_facts",
+      "breakpoints": true
     }
   ]
 }

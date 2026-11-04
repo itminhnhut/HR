@@ -77,8 +77,6 @@ export const hrApplicationSchema = z
     ...contactFields,
     note: optionalText(NOTE_MAX, `Ghi chú tối đa ${NOTE_MAX} ký tự.`),
     cvLink: cvLinkSchema,
-    /** HR confirms the candidate sent the CV to apply and agreed (Nghị định 13); the HR's name is stored. */
-    consent: z.literal(true, { message: 'Xác nhận ứng viên đã đồng ý trước khi lưu.' }),
   })
   .superRefine(withReferrer);
 export type HrApplicationInput = z.input<typeof hrApplicationSchema>;
@@ -95,7 +93,7 @@ export const cvLinkInputSchema = z.object({ cvLink: cvLinkSchema });
  * still takes applications, and the candidate has changes left.
  */
 export function candidateCvBlock(a: { status: ApplicationStatus; jobOpen: boolean; changes: number }): string | null {
-  if (a.status === 'interview' || a.status === 'rejected') return 'Hồ sơ đã được xử lý, liên hệ HR nếu cần gửi thêm.';
+  if (a.status !== 'new' && a.status !== 'seen') return 'Hồ sơ đã được xử lý, liên hệ HR nếu cần gửi thêm.';
   if (!a.jobOpen) return 'Tin đã đóng, liên hệ HR nếu cần gửi thêm.';
   if (a.changes >= CANDIDATE_CV_CHANGES_MAX) {
     return `Đã cập nhật CV tối đa ${CANDIDATE_CV_CHANGES_MAX} lần, liên hệ HR nếu cần.`;

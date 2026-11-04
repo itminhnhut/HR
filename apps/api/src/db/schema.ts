@@ -1,4 +1,14 @@
-import type { ArticleHeadingRef, ArticleState, JobTemplate, MatchItem, NewsImage, WorkMode } from '@careers/shared';
+import type {
+  ApplicationStatus,
+  ArticleHeadingRef,
+  ArticleState,
+  CvGender,
+  JobTemplate,
+  MatchItem,
+  NewsImage,
+  RejectReason,
+  WorkMode,
+} from '@careers/shared';
 import {
   boolean,
   jsonb,
@@ -32,7 +42,14 @@ export const templateKey = pgEnum('template_key', [
   'call',
 ]);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy', 'copy_html']);
-export const applicationStatus = pgEnum('application_status', ['new', 'seen', 'interview', 'rejected']);
+export const applicationStatus = pgEnum('application_status', [
+  'new',
+  'seen',
+  'interview',
+  'rejected',
+  'passed',
+  'hired',
+]);
 
 /** draft: never published; hidden: was public, taken down by HR (keeps its address and first publish date). */
 export const newsStatus = pgEnum('news_status', ['draft', 'published', 'hidden']);
@@ -134,6 +151,9 @@ export const applications = pgTable(
     cvChangedBy: text('cv_changed_by'),
     /** False after the candidate replaced the CV, until an HR opens the application. */
     cvChangeSeen: boolean('cv_change_seen').notNull().default(true),
+    /** Why it became "Chưa phù hợp": a key of REJECT_REASONS, internal only; null for older ones. */
+    rejectReason: text('reject_reason').$type<RejectReason>(),
+    rejectNote: text('reject_note'),
     /** Time of the latest submission; a re-apply within 30 days moves it (BR-07). */
     createdAt,
     updatedAt,
@@ -257,6 +277,29 @@ export const contactLog = pgTable(
   (t) => [index('contact_log_application_idx').on(t.applicationId)],
 );
 
+/**
+ * Each step an application reached: the source report counts these. No link to `applications` and no personal data, so
+ * the numbers outlive a deleted application: what is left is an id that no longer points anywhere.
+ */
+export const applicationStatusLog = pgTable(
+  'application_status_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id').notNull(),
+    jobId: uuid('job_id')
+      .notNull()
+      .references(() => jobs.id, { onDelete: 'cascade' }),
+    source: text('source').notNull(),
+    toStatus: text('to_status').notNull().$type<ApplicationStatus>(),
+    rejectReason: text('reject_reason').$type<RejectReason>(),
+    createdAt,
+  },
+  (t) => [
+    index('application_status_log_application_idx').on(t.applicationId),
+    index('application_status_log_created_idx').on(t.createdAt),
+  ],
+);
+
 /** Last automatic CV check of an application against its job's requirements (spec-cv-match.md). */
 export const cvScores = pgTable('cv_scores', {
   applicationId: uuid('application_id')
@@ -265,6 +308,9 @@ export const cvScores = pgTable('cv_scores', {
   percent: integer('percent'),
   items: jsonb('items').$type<MatchItem[]>().notNull(),
   note: text('note'),
+  /** What the CV itself says, kept with the score: deleted with the application. */
+  gender: text('gender').$type<CvGender>(),
+  birth: text('birth'),
   /** Scoring rules version, CV file and requirements the result was made from: any change means re-score. */
   version: integer('version').notNull(),
   cvPathname: text('cv_pathname'),

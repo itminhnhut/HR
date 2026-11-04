@@ -1,5 +1,12 @@
-import type { CandidateOverview, DashboardDto, HrJobsResponse, LookupResponse, SourceDto } from '@careers/shared';
-import { addDays, POLICY_VERSION, todayInVietnam } from '@careers/shared';
+import type {
+  ApplicationsResponse,
+  CandidateOverview,
+  DashboardDto,
+  HrJobsResponse,
+  LookupResponse,
+  SourceDto,
+} from '@careers/shared';
+import { addDays, HR_ADDED_NO_CONSENT, todayInVietnam } from '@careers/shared';
 import { eq } from 'drizzle-orm';
 import { describe, expect, it } from 'vitest';
 import { applications, applicationSources, subscribers } from '../../../db/schema.js';
@@ -23,7 +30,6 @@ import {
 const flow = useFlow();
 
 const today = (f: Flow) => todayInVietnam(f.t.clock.now);
-const dueCount = async (f: Flow) => (await json<HrJobsResponse>(await hrSend(f, 'GET', '/jobs'))).dueForDeletion;
 
 /** Moves the clock past the HR session's life and signs in again, as HR would a month later. */
 async function daysLater(f: Flow, days: number): Promise<string> {
@@ -31,36 +37,25 @@ async function daysLater(f: Flow, days: number): Promise<string> {
   return loginHr(f.t);
 }
 
-describe('The mandatory consent', () => {
-  it.each(['false', 'on', '1', 'TRUE', 'yes', ''])('should refuse the value "%s"', async (consent) => {
-    // Act
-    const res = await add(flow, { consent });
-
-    // Assert
-    expect(res.status).toBe(422);
-    expect((await errorsOf(res)).consent).toBe('Xác nhận ứng viên đã đồng ý trước khi lưu.');
-    expect(await rows(flow)).toEqual([]);
-  });
-
-  it('should refuse a form without the tick', async () => {
+describe('An application HR adds', () => {
+  it('should need no consent tick', async () => {
     // Act
     const res = await addWithout(flow, ['consent']);
 
     // Assert
-    expect(res.status).toBe(422);
-    expect(await rows(flow)).toEqual([]);
+    expect(res.status).toBe(201);
+    expect(await rows(flow)).toHaveLength(1);
   });
 
-  it('should store who confirmed it, when, and under which policy', async () => {
+  it('should say who added it and claim no consent', async () => {
     // Act
     const id = await addedId(await add(flow));
 
     // Assert
     expect(await row(flow, id)).toMatchObject({
-      consentBy: 'Phòng Nhân sự',
+      consentBy: null,
       addedBy: 'Phòng Nhân sự',
-      consentAt: flow.t.clock.now,
-      policyVersion: POLICY_VERSION,
+      policyVersion: HR_ADDED_NO_CONSENT,
     });
   });
 });
@@ -287,126 +282,61 @@ describe('What a new profile starts as', () => {
   });
 });
 
-describe('The 30-day deletion date', () => {
-  it('should not touch a profile while its job is open', async () => {
+describe('The "Hết hạn" mark', () => {
+  const isExpired = async (cookie?: string) => {
+    const res = cookie
+      ? await flow.t.send('GET', '/api/hr/applications', undefined, { cookie })
+      : await hrSend(flow, 'GET', '/applications');
+    return (await json<ApplicationsResponse>(res)).applications.map((a) => a.isExpired);
+  };
+
+  it('should not mark a profile while its job is open', async () => {
     // Arrange
     await addedId(await add(flow));
 
-    // Act
-    const res = await hrSend(flow, 'DELETE', '/applications/due');
-
-    // Assert
-    expect(await json(res)).toEqual({ deleted: 0 });
-    expect(await rows(flow)).toHaveLength(1);
+    // Act & Assert
+    expect(await isExpired()).toEqual([false]);
   });
 
-  it('should keep a profile until 30 full days after the job closed', async () => {
-    // Arrange
-    const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -30) });
-    await addedId(await add(flow, { jobId: closed.id }));
-
-    // Act
-    const due = await dueCount(flow);
-
-    // Assert
-    expect(due).toBe(0);
-  });
-
-  it('should count the profile as due on the 31st day and delete its file with it', async () => {
+  it('should wait 30 full days after the job closed, and then delete nothing', async () => {
     // Arrange
     const closed = await insertJob(flow.t, { state: 'closed', closedOn: today(flow) });
     await addedId(await add(flow, { jobId: closed.id }, pdfFile()));
-    const cookie = await daysLater(flow, 31);
 
     // Act
-    const jobsRes = await flow.t.send('GET', '/api/hr/jobs', undefined, { cookie });
-    const res = await flow.t.send('DELETE', '/api/hr/applications/due', undefined, { cookie });
+    const at30 = await isExpired(await daysLater(flow, 30));
+    const at31 = await isExpired(await daysLater(flow, 1));
 
     // Assert
-    expect((await json<HrJobsResponse>(jobsRes)).dueForDeletion).toBe(1);
-    expect(await json(res)).toEqual({ deleted: 1 });
-    expect(flow.t.cvStore.files.size).toBe(0);
-  });
-
-  it('should count a profile with only a link the same way', async () => {
-    // Arrange
-    const closed = await insertJob(flow.t, { state: 'closed', closedOn: today(flow) });
-    await addedId(await add(flow, { jobId: closed.id, cvLink: 'https://example.com/cv.pdf' }));
-    const cookie = await daysLater(flow, 31);
-
-    // Act
-    const res = await flow.t.send('DELETE', '/api/hr/applications/due', undefined, { cookie });
-
-    // Assert
-    expect(await json(res)).toEqual({ deleted: 1 });
-    expect(await rows(flow)).toEqual([]);
-  });
-
-  it('should not show a profile added today as due on the jobs page or the dashboard', async () => {
-    // Arrange
-    const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -60) });
-    await addedId(await add(flow, { jobId: closed.id }));
-
-    // Act
-    const board = await json<DashboardDto>(await hrSend(flow, 'GET', '/dashboard'));
-
-    // Assert
-    expect(await dueCount(flow)).toBe(0);
-    expect(board.dueForDeletion).toBe(0);
-  });
-
-  it('should count 30 full days from the day HR added it to a job that closed long ago', async () => {
-    // Arrange
-    const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -60) });
-    await addedId(await add(flow, { jobId: closed.id }, pdfFile()));
-
-    // Act
-    const cookie30 = await daysLater(flow, 30);
-    const at30 = await json<DashboardDto>(
-      await flow.t.send('GET', '/api/hr/dashboard', undefined, { cookie: cookie30 }),
-    );
-    const cookie31 = await daysLater(flow, 1);
-    const at31 = await json<DashboardDto>(
-      await flow.t.send('GET', '/api/hr/dashboard', undefined, { cookie: cookie31 }),
-    );
-    const res = await flow.t.send('DELETE', '/api/hr/applications/due', undefined, { cookie: cookie31 });
-
-    // Assert
-    expect(at30.dueForDeletion).toBe(0);
-    expect(at31.dueForDeletion).toBe(1);
-    expect(await json(res)).toEqual({ deleted: 1 });
-    expect(flow.t.cvStore.files.size).toBe(0);
-  });
-
-  it('should delete only the older profile of a job when another was added today', async () => {
-    // Arrange
-    const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -60) });
-    const longAgo = new Date(flow.t.clock.now.getTime() - 90 * 24 * 60 * 60_000);
-    const oldId = await addedId(await add(flow, { jobId: closed.id, phone: '0987654321' }, pdfFile('Cu.pdf')));
-    await flow.t.db.update(applications).set({ consentAt: longAgo }).where(eq(applications.id, oldId));
-    const keptId = await addedId(await add(flow, { jobId: closed.id }, pdfFile('Moi.pdf')));
-
-    // Act
-    const due = await dueCount(flow);
-    const res = await hrSend(flow, 'DELETE', '/applications/due');
-
-    // Assert
-    expect(due).toBe(1);
-    expect(await json(res)).toEqual({ deleted: 1 });
-    expect((await rows(flow)).map((r) => r.id)).toEqual([keptId]);
+    expect(at30).toEqual([false]);
+    expect(at31).toEqual([true]);
     expect(flow.t.cvStore.files.size).toBe(1);
   });
 
-  it('should not delete a profile HR added today to a job that closed long ago', async () => {
+  it('should count from the day HR added it to a job that closed long ago', async () => {
+    // Arrange
+    const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -60) });
+    await addedId(await add(flow, { jobId: closed.id }));
+
+    // Act & Assert
+    expect(await isExpired()).toEqual([false]);
+  });
+});
+
+describe('Deleting applications by age', () => {
+  it('should no longer be possible', async () => {
     // Arrange
     const closed = await insertJob(flow.t, { state: 'closed', closedOn: addDays(today(flow), -60) });
     await addedId(await add(flow, { jobId: closed.id }));
 
     // Act
-    const res = await hrSend(flow, 'DELETE', '/applications/due');
+    const cookie = await daysLater(flow, 31);
+    await flow.t.send('DELETE', '/api/hr/applications/due', undefined, { cookie });
 
     // Assert
-    expect(await json(res)).toEqual({ deleted: 0 });
-    expect(await rows(flow)).toHaveLength(1);
+    const { applications: rowsLeft } = await json<ApplicationsResponse>(
+      await flow.t.send('GET', '/api/hr/applications', undefined, { cookie }),
+    );
+    expect(rowsLeft).toHaveLength(1);
   });
 });

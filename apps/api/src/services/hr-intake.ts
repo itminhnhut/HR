@@ -2,7 +2,7 @@ import {
   fieldErrors,
   hrApplicationSchema,
   hrContactSchema,
-  POLICY_VERSION,
+  HR_ADDED_NO_CONSENT,
   REFERRAL_SOURCE,
   type DuplicateApplicationDto,
   type HrMe,
@@ -15,6 +15,7 @@ import { CV_PROBLEM_MESSAGE, checkCvFile, cvFileName, deleteFilesQuietly } from 
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
 import { lockJobAndPhone } from './apply.js';
+import { logStatus } from './status-log.js';
 import { newCvFrom, replaceCv } from './cv-replace.js';
 import { checkUsableSource } from './sources.js';
 
@@ -23,10 +24,9 @@ import { checkUsableSource } from './sources.js';
 const hrName = (hr: HrMe) => hr.name || hr.email;
 
 /** Multipart sends text: turn the tick box back into a boolean for the shared schema. */
-const formToInput = (fields: Record<string, string>) => ({ ...fields, consent: fields.consent === 'true' });
 
 async function parseNewApplication(body: MultipartBody) {
-  const parsed = hrApplicationSchema.safeParse(formToInput(body.fields));
+  const parsed = hrApplicationSchema.safeParse(body.fields);
   const errors = parsed.success ? {} : fieldErrors(parsed.error);
   if (body.file) {
     const problem = await checkCvFile(body.file);
@@ -73,9 +73,10 @@ function newApplication(
     source: input.source,
     referrer: input.source === REFERRAL_SOURCE ? input.referrer : null,
     addedBy: hrName(hr),
-    consentBy: hrName(hr),
+    // HR added it and nobody confirmed a consent: the record says so instead of claiming one.
+    consentBy: null,
     consentAt: at,
-    policyVersion: POLICY_VERSION,
+    policyVersion: HR_ADDED_NO_CONSENT,
     createdAt: at,
   };
 }
@@ -106,7 +107,8 @@ export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe):
       const [row] = await tx
         .insert(applications)
         .values(newApplication(input, file, hr, at))
-        .returning({ id: applications.id });
+        .returning();
+      await logStatus(tx, row, 'new', null, at);
       return { id: row.id };
     });
   } catch (error) {

@@ -52,12 +52,7 @@ const PRIVACY: StaticPage = {
     ['Thông tin chúng tôi lưu', ['Họ tên, số điện thoại, email nếu bạn để lại, lời nhắn và CV bạn gửi.']],
     ['Dùng để làm gì', ['Xem hồ sơ và liên hệ bạn về vị trí đã nộp.']],
     ['Ai được xem', ['Chỉ bộ phận nhân sự và người phỏng vấn của vị trí đó. Không bán, không chia sẻ.']],
-    [
-      'Lưu trong bao lâu',
-      [
-        'Không được tuyển: xóa sau 30 ngày kể từ khi vị trí đóng, hoặc kể từ ngày hồ sơ được thêm nếu ngày này muộn hơn.',
-      ],
-    ],
+    ['Lưu trong bao lâu', ['Hồ sơ được lưu cho đến khi bạn yêu cầu xóa.']],
     ['Quyền của bạn', ['Xem lại, sửa hoặc xóa hồ sơ bất cứ lúc nào, kể cả rút lại sự đồng ý.']],
   ],
 };

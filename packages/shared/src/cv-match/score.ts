@@ -21,7 +21,7 @@ import { joinEvidence } from './text-match.js';
 import type { CvMatchResult, MatchItem, ScoreInput } from './types.js';
 
 /** Bump whenever scoring rules change so stored results get recomputed. */
-export const CV_MATCH_VERSION = 4;
+export const CV_MATCH_VERSION = 5;
 
 /** Fewer letters than this means the PDF has no usable text layer (scan, image, link). */
 export const MIN_CV_LETTERS = 15;

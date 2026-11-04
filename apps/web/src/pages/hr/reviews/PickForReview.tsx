@@ -28,7 +28,7 @@ export function ReviewMark({ review }: { review: NonNullable<ApplicationRowDto['
  * (the API refuses those too).
  */
 export const canSendForReview = (row: Pick<ApplicationRowDto, 'review' | 'status'>) =>
-  row.review !== 'waiting' && row.review !== 'ask' && row.status !== 'interview' && row.status !== 'rejected';
+  row.review !== 'waiting' && row.review !== 'ask' && (row.status === 'new' || row.status === 'seen');
 
 /** "Gửi sếp duyệt" picking: on/off, the picked applications (in list order), and the send dialog. */
 export function usePicking(all: ApplicationRowDto[]) {

@@ -17,25 +17,22 @@ import {
   pickSource,
   reply,
   show,
-  tickConsent,
   useFlowServer,
 } from './AddApplicationFlow.helpers';
 
 useFlowServer();
 
 describe('Contact details', () => {
-  it('should ask for source and consent before sending anything, with nothing pre-ticked', async () => {
+  it('should ask for the source before sending anything', async () => {
     // Arrange
     show();
     await pickJob();
-    expect(screen.getByRole<HTMLInputElement>('checkbox').checked).toBe(false);
 
     // Act
     await clickSave();
 
     // Assert
     expect(screen.getByText('Chọn nguồn hồ sơ.')).toBeTruthy();
-    expect(screen.getByText(/Xác nhận ứng viên đã đồng ý/)).toBeTruthy();
     expect(addPosts()).toEqual([]);
   });
 
@@ -44,7 +41,6 @@ describe('Contact details', () => {
     show();
     await pickJob();
     await pickSource();
-    await tickConsent();
 
     // Act
     await clickSave();
@@ -59,7 +55,6 @@ describe('Contact details', () => {
     show();
     await pickJob();
     await pickSource();
-    await tickConsent();
 
     // Act
     await clickSave();
@@ -74,7 +69,6 @@ describe('Contact details', () => {
     await pickSource();
     await userEvent.type(box('Họ và tên'), 'Trần Khoa');
     await userEvent.type(box('Số điện thoại'), '0912345678');
-    await tickConsent();
 
     // Act
     await clickSave();
