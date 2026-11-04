@@ -9,6 +9,7 @@ import {
   type ApplicationsResponse,
   type ApplicationSource,
   type ApplicationStatus,
+  type CvGender,
   type HrMe,
   type MatchItem,
   type SubscriberDto,
@@ -21,14 +22,17 @@ import { scoreApplication, storedScore } from './cv-score.js';
 import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './review-model.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
-import { dueApplicationsWhere } from './hr-jobs.js';
+import { expiredApplicationsWhere } from './hr-jobs.js';
+import { dropLastStatus, isReportedStep, logStatus } from './status-log.js';
 
-const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'rejected'];
+const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'passed', 'hired', 'rejected'];
 
 type ApplicationWithJob = Application & {
   jobTitle: string;
   matchPercent: number | null;
   matchItems: MatchItem[] | null;
+  cvGender: CvGender | null;
+  cvBirth: string | null;
 };
 
 const withJobTitle = (db: Db) =>
@@ -38,6 +42,8 @@ const withJobTitle = (db: Db) =>
       jobTitle: jobs.title,
       matchPercent: cvScores.percent,
       matchItems: cvScores.items,
+      cvGender: cvScores.gender,
+      cvBirth: cvScores.birth,
     })
     .from(applications)
     .innerJoin(jobs, eq(jobs.id, applications.jobId))
@@ -61,6 +67,8 @@ function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): Appl
     hasCv: !!(a.cvPathname || a.cvLink),
     matchPercent: a.matchPercent,
     matchBonus: bonusCount(a.matchItems ?? []),
+    cvGender: a.cvGender,
+    cvBirth: a.cvBirth,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt?.toISOString() ?? null,
     review,
@@ -95,6 +103,8 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
   return {
     ...toRow(a, reviewMark(reviewInfo)),
     reviewInfo,
+    rejectReason: a.rejectReason,
+    rejectNote: a.rejectNote,
     referrer: a.referrer,
     addedBy: a.addedBy,
     consentBy: a.consentBy,
@@ -127,12 +137,20 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
 const emptyCounts = (): ApplicationsResponse['counts'] =>
   ({ all: 0, ...Object.fromEntries(STATUSES.map((s) => [s, 0])) }) as ApplicationsResponse['counts'];
 
+async function expiredIds(db: Db, now: Date): Promise<ReadonlySet<string>> {
+  const where = expiredApplicationsWhere(await db.select().from(jobs), now);
+  if (!where) return new Set();
+  const rows = await db.select({ id: applications.id }).from(applications).where(where);
+  return new Set(rows.map((row) => row.id));
+}
+
 /** `q`: name or phone, any order, without tones ("huy 0797" finds Phạm Quốc Huy, 0797 586 611). */
 export async function listApplications(
   db: Db,
   jobId: string | undefined,
   q = '',
   source?: ApplicationSource,
+  now = new Date(),
 ): Promise<ApplicationsResponse> {
   if (jobId !== undefined && !isUuid(jobId)) return { applications: [], counts: emptyCounts(), jobs: [] };
   const [rows, jobsWithApplications] = await Promise.all([
@@ -159,8 +177,12 @@ export async function listApplications(
     db,
     found.map((row) => row.id),
   );
+  const expired = await expiredIds(db, now);
   return {
-    applications: found.map((row) => toRow(row, reviewMark(reviews.get(row.id) ?? null))),
+    applications: found.map((row) => ({
+      ...toRow(row, reviewMark(reviews.get(row.id) ?? null)),
+      isExpired: expired.has(row.id),
+    })),
     counts,
     jobs: jobsWithApplications,
   };
@@ -189,8 +211,39 @@ export async function openApplication(db: Db, id: string): Promise<ApplicationDe
 function interviewDetailsOnStatusChange(row: Application, status: Application['status'] | undefined, now: Date) {
   if (!status || status === row.status) return {};
   if (status === 'interview') return { interviewAt: null };
-  const interviewed = status === 'rejected' && row.status === 'interview' && row.interviewAt && row.interviewAt <= now;
-  return { interviewAt: interviewed ? row.interviewAt : null, interviewMode: null, meetingUrl: null };
+  const wasInterviewed = !!row.interviewAt && row.interviewAt <= now;
+  const keepsDate = status === 'passed' || status === 'hired' || (status === 'rejected' && wasInterviewed);
+  return { interviewAt: keepsDate ? row.interviewAt : null, interviewMode: null, meetingUrl: null };
+}
+
+/** Statuses that come with an interview date: the time, or the date kept for the letter and the record. */
+const DATED_STATUSES: readonly ApplicationStatus[] = ['interview', 'passed', 'hired', 'rejected'];
+
+type ApplicationUpdate = ReturnType<typeof applicationUpdateSchema.parse>;
+
+/** What a status change needs. An undo restores what was there, so it is free of these. */
+function checkStatusChange(row: Application, input: ApplicationUpdate): void {
+  const { status, rejectReason, rejectNote, isUndo } = input;
+  if (!status || status === row.status || isUndo) return;
+  if ((status === 'passed' || status === 'hired') && !row.interviewAt) {
+    throw invalid('Chọn giờ phỏng vấn trước khi ghi kết quả.', { status: 'Hồ sơ chưa có giờ phỏng vấn.' });
+  }
+  if (status !== 'rejected') return;
+  if (!rejectReason) throw invalid('Chọn lý do chưa phù hợp.', { rejectReason: 'Chọn một lý do.' });
+  if (rejectReason === 'other' && !rejectNote) {
+    throw invalid('Ghi rõ lý do.', { rejectNote: 'Ghi rõ lý do khi chọn "Khác".' });
+  }
+}
+
+/** The reason belongs to "Chưa phù hợp" only: leaving it clears the reason. */
+function rejectFields(row: Application, input: ApplicationUpdate) {
+  const target = input.status ?? row.status;
+  if (target !== 'rejected') return { rejectReason: null, rejectNote: null };
+  if (input.rejectReason === undefined && input.rejectNote === undefined) return {};
+  return {
+    ...(input.rejectReason !== undefined ? { rejectReason: input.rejectReason } : {}),
+    ...(input.rejectNote !== undefined ? { rejectNote: input.rejectNote || null } : {}),
+  };
 }
 
 export async function updateApplication(
@@ -203,10 +256,13 @@ export async function updateApplication(
   const row = await findApplication(db, id);
   const parsed = applicationUpdateSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
-  const { status, note, interviewAt, interviewMode, meetingUrl, reviewBypassReason } = parsed.data;
-  if (status === 'interview' && row.status !== 'interview') await checkReview(db, row, reviewBypassReason, hr, now);
-  // An interview time only belongs to "Hẹn phỏng vấn".
-  if (interviewAt && (status ?? row.status) !== 'interview') {
+  const { status, note, interviewAt, interviewMode, meetingUrl, reviewBypassReason, isUndo } = parsed.data;
+  checkStatusChange(row, parsed.data);
+  if (status === 'interview' && row.status !== 'interview' && !isUndo) {
+    await checkReview(db, row, reviewBypassReason, hr, now);
+  }
+  // An interview time only belongs to "Hẹn phỏng vấn" and to what comes after it.
+  if (interviewAt && !DATED_STATUSES.includes(status ?? row.status)) {
     throw invalid('Chỉ hồ sơ "Hẹn phỏng vấn" mới có giờ phỏng vấn.', { interviewAt: 'Chọn "Hẹn phỏng vấn" trước.' });
   }
   // Interview details only belong to "Hẹn phỏng vấn"; for any other status they are cleared below.
@@ -214,6 +270,7 @@ export async function updateApplication(
   const noteChanged = note !== undefined && (note?.trim() || null) !== row.note;
   const patch = {
     ...(status ? { status } : {}),
+    ...rejectFields(row, parsed.data),
     ...interviewDetailsOnStatusChange(row, status, now),
     ...(interviewAt !== undefined ? { interviewAt: interviewAt ? new Date(interviewAt) : null } : {}),
     ...(interviewing && interviewMode !== undefined ? { interviewMode } : {}),
@@ -222,11 +279,17 @@ export async function updateApplication(
   };
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
+  if (status && status !== row.status) {
+    if (!isUndo && isReportedStep(status)) await logStatus(db, row, status, parsed.data.rejectReason ?? null);
+    if (isUndo && isReportedStep(row.status)) await dropLastStatus(db, id);
+  }
   return toDetail(db, {
     ...updated,
     jobTitle: row.jobTitle,
     matchPercent: row.matchPercent,
     matchItems: row.matchItems,
+    cvGender: row.cvGender,
+    cvBirth: row.cvBirth,
   });
 }
 
@@ -302,18 +365,6 @@ export async function deleteApplication(deps: Deps, id: string): Promise<{ ok: t
   const row = await findApplication(deps.db, id);
   await deleteWithFiles(deps, [row]);
   return { ok: true };
-}
-
-/** "Xoá hồ sơ đến hạn": every application whose job ended and whose consent was given more than 30 days ago. */
-export async function deleteDueApplications(deps: Deps): Promise<{ deleted: number }> {
-  const where = dueApplicationsWhere(await deps.db.select().from(jobs), deps.now());
-  if (!where) return { deleted: 0 };
-  const rows = await deps.db
-    .select({ id: applications.id, cvPathname: applications.cvPathname })
-    .from(applications)
-    .where(where);
-  await deleteWithFiles(deps, rows);
-  return { deleted: rows.length };
 }
 
 export async function listSubscribers(db: Db): Promise<SubscriberDto[]> {

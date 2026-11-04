@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { MAX_REPORT_DAYS, REJECT_NOTE_MAX, REJECT_REASON_KEYS } from './hiring.js';
+import { daysBetween } from './job-status.js';
 import {
   BENEFIT_MAX,
   CHOICE_MAX,
@@ -45,7 +47,9 @@ export const DEPARTMENT_MAX = 60;
 export const NOTE_MAX = 2000;
 export const CV_MAX_BYTES = 4 * 1024 * 1024; // Vercel function body limit is 4.5 MB.
 export const MESSAGE_MAX = 500;
-export const POLICY_VERSION = '2026-11';
+export const POLICY_VERSION = '2026-11-04';
+/** In place of a policy version on an application HR added: no consent was confirmed. */
+export const HR_ADDED_NO_CONSENT = 'hr-added';
 export const NAME_MAX = 100;
 export const CV_LINK_MAX = 2048;
 
@@ -192,7 +196,12 @@ const httpUrl = z
   .max(500, 'Link tối đa 500 ký tự.');
 
 export const applicationUpdateSchema = z.object({
-  status: z.enum(['new', 'seen', 'interview', 'rejected']).optional(),
+  status: z.enum(['new', 'seen', 'interview', 'passed', 'hired', 'rejected']).optional(),
+  /** Required when an application becomes "Chưa phù hợp" (spec-hiring-outcomes.md). */
+  rejectReason: z.enum(REJECT_REASON_KEYS).optional(),
+  rejectNote: z.string().trim().max(REJECT_NOTE_MAX, `Ghi chú tối đa ${REJECT_NOTE_MAX} ký tự.`).nullable().optional(),
+  /** "Hoàn tác": the change never happened, so it leaves no mark in the numbers. */
+  isUndo: z.boolean().optional(),
   interviewMode: z.enum(['onsite', 'online']).nullable().optional(),
   /** Google Meet (or other) link for an online interview; empty string clears it. */
   meetingUrl: z
@@ -211,6 +220,17 @@ export const applicationUpdateSchema = z.object({
     .max(300, 'Lý do tối đa 300 ký tự.')
     .optional(),
 });
+
+const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Ngày không hợp lệ.');
+
+/** `?from=&to=` of the dashboard reports. */
+export const reportPeriodSchema = z
+  .object({ from: isoDay, to: isoDay })
+  .refine(({ from, to }) => from <= to, { message: 'Ngày bắt đầu phải trước ngày kết thúc.', path: ['from'] })
+  .refine(({ from, to }) => daysBetween(from, to) < MAX_REPORT_DAYS, {
+    message: `Chọn tối đa ${MAX_REPORT_DAYS} ngày.`,
+    path: ['from'],
+  });
 
 export function fieldErrors(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};

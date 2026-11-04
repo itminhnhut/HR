@@ -8,6 +8,7 @@ const TONE: Record<CandidateStage, { pill: string; bar: string }> = {
   sent: { pill: 'bg-tint text-body', bar: 'bg-slate' },
   seen: { pill: 'bg-remind text-accent', bar: 'bg-accent' },
   interview: { pill: 'bg-ok-soft text-ok', bar: 'bg-ok' },
+  hired: { pill: 'bg-ok-soft text-ok', bar: 'bg-ok' },
   closed: { pill: 'bg-mist text-muted', bar: 'bg-silver' },
 };
 
@@ -40,7 +41,7 @@ function StagePill({ stage, label }: { stage: CandidateStage; label: string }) {
 }
 
 function StageBar({ stage }: { stage: CandidateStage }) {
-  const reached = stage === 'closed' ? -1 : STEP_ORDER.indexOf(stage);
+  const reached = stage === 'closed' ? -1 : stage === 'hired' ? STEP_ORDER.length - 1 : STEP_ORDER.indexOf(stage);
   return (
     <div aria-hidden="true" className="hidden grid-cols-3 gap-2 sm:grid">
       {STEP_ORDER.map((s, i) => {

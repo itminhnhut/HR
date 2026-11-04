@@ -75,7 +75,6 @@ export async function listHrJobs(db: Db, now: Date): Promise<HrJobsResponse> {
   return {
     jobs: list,
     newApplications: counts.reduce((sum, c) => sum + c.fresh, 0),
-    dueForDeletion: await countDueApplications(db, rows, now),
   };
 }
 
@@ -187,15 +186,14 @@ export async function setDeadline(db: Db, id: string, raw: unknown, now: Date): 
   return { ok: true };
 }
 
-const DELETE_AFTER_DAYS = 30;
+const EXPIRED_AFTER_DAYS = 30;
 
 /**
- * Which applications are due for deletion, or undefined when none can be. The 30 days run from the later of two days:
- * the job's end and the application's consent, so one HR adds to a long-closed job still gets its full 30 days.
- * Every count and the deletion itself use this, so they always agree.
+ * Applications marked "Hết hạn": no deletion, HR only sees that the job is long over. The 30 days run from the later of
+ * two days: the job's end and the day the application came in, so one added to a long-closed job is still current.
  */
-export function dueApplicationsWhere(rows: Job[], now: Date): SQL | undefined {
-  const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
+export function expiredApplicationsWhere(rows: Job[], now: Date): SQL | undefined {
+  const cutoff = addDays(todayInVietnam(now), -EXPIRED_AFTER_DAYS);
   const ids = rows
     .filter((job) => {
       const ended = endedOn(job, now);
@@ -204,13 +202,6 @@ export function dueApplicationsWhere(rows: Job[], now: Date): SQL | undefined {
     .map((job) => job.id);
   if (ids.length === 0) return undefined;
   return and(inArray(applications.jobId, ids), lt(applications.consentAt, new Date(`${cutoff}T00:00:00.000+07:00`)));
-}
-
-export async function countDueApplications(db: Db, rows: Job[], now: Date): Promise<number> {
-  const where = dueApplicationsWhere(rows, now);
-  if (!where) return 0;
-  const [{ due }] = await db.select({ due: count() }).from(applications).where(where);
-  return due;
 }
 
 /** Only drafts can be deleted; anything that was public keeps its link and applications. */

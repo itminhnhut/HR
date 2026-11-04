@@ -4,7 +4,7 @@ import { sourceName, type ApplicationSource, type DashboardDto, type SourceDto }
  * The fixed order of the line colours: colour-blind separation ΔE 13.5 on neighbours (dataviz validate_palette, light).
  * One colour stays with one source, by its place in the source list, so a new source repaints nothing.
  */
-const LINE_COLORS = ['#2563eb', '#ea580c', '#0d9488', '#a16207', '#0ea5e9', '#db2777'];
+export const LINE_COLORS = ['#2563eb', '#ea580c', '#0d9488', '#a16207', '#0ea5e9', '#db2777'];
 const OTHER_COLOR = '#64748b';
 
 export interface SourceSeries {

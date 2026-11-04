@@ -8,7 +8,6 @@ import { hrOf } from '../lib/hr-auth.js';
 import {
   cvOf,
   deleteApplication,
-  deleteDueApplications,
   deleteSubscriber,
   logContact,
   scoreCvOf,
@@ -30,6 +29,7 @@ hrApplicationRoutes.get('/applications', async (c) => {
       c.req.query('jobId') || undefined,
       c.req.query('q')?.slice(0, 100),
       source?.trim() || undefined,
+      c.get('deps').now(),
     ),
   );
 });
@@ -47,9 +47,6 @@ hrApplicationRoutes.post('/applications', async (c) => {
 hrApplicationRoutes.post('/applications/parse-cv', async (c) => {
   return c.json(await readCvContact(await readMultipart(c, 'cv')));
 });
-
-/** Registered before /applications/:id so "due" is not read as an id. */
-hrApplicationRoutes.delete('/applications/due', async (c) => c.json(await deleteDueApplications(c.get('deps'))));
 
 hrApplicationRoutes.delete('/applications/:id', async (c) =>
   c.json(await deleteApplication(c.get('deps'), c.req.param('id'))),

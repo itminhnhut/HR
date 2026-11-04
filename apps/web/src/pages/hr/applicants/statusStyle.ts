@@ -45,6 +45,22 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
     soft: 'border-status-interview/30 bg-status-interview-soft text-status-interview-text',
     hover: 'hover:border-status-interview/30 hover:bg-status-interview-soft hover:text-status-interview-text',
   },
+  passed: {
+    label: APPLICATION_STATUS_LABEL.passed,
+    icon: 'star',
+    tone: 'green',
+    filled: 'border-green-700 bg-green-700 text-white',
+    soft: 'border-green-300 bg-green-50 text-green-800',
+    hover: 'hover:border-green-300 hover:bg-green-50 hover:text-green-800',
+  },
+  hired: {
+    label: APPLICATION_STATUS_LABEL.hired,
+    icon: 'briefcase',
+    tone: 'teal',
+    filled: 'border-teal-700 bg-teal-700 text-white',
+    soft: 'border-teal-300 bg-teal-50 text-teal-800',
+    hover: 'hover:border-teal-300 hover:bg-teal-50 hover:text-teal-800',
+  },
   rejected: {
     label: APPLICATION_STATUS_LABEL.rejected,
     icon: 'xCircle',
@@ -60,4 +76,11 @@ export const ALL_LOOK: StatusLook = {
   label: 'Tất cả',
   icon: 'list',
   tone: 'blue',
+};
+
+/** "Chờ kết quả": not a status of its own, the interviews whose time has passed. */
+export const AWAITING_LOOK: StatusLook = {
+  label: 'Chờ kết quả',
+  icon: 'clock',
+  tone: 'amber',
 };

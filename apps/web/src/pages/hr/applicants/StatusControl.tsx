@@ -1,7 +1,9 @@
 import {
   APPLICATION_STATUS_LABEL,
+  isCandidateSideReason,
   type ApplicationDetailDto,
   type ApplicationStatus,
+  type RejectReason,
   type TemplateKey,
 } from '@careers/shared';
 import { useEffect, useId, useState } from 'react';
@@ -9,6 +11,8 @@ import type { ApplicationPatch } from '../../../api';
 import { useUpdateApplication } from '../../../api/queries';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
+import { OutcomeActions } from './OutcomeActions';
+import { RejectForm } from './RejectForm';
 import { BypassForm, needsBypass } from './ReviewGate';
 import { MARK_STROKE, StatusMark } from './StatusMark';
 import { STATUS_STYLE } from './statusStyle';
@@ -38,13 +42,16 @@ function segmentTone(status: ApplicationStatus, isActive: boolean, isLocked: boo
 const UNDO_MS = 5000;
 
 function UndoBar({ app, onCompose, onUndo }: { app: ApplicationDetailDto; onCompose: () => void; onUndo: () => void }) {
+  // A candidate who left needs no letter of refusal.
+  const canWrite =
+    app.status === 'interview' || (app.status === 'rejected' && !isCandidateSideReason(app.rejectReason));
   return (
     <div
       role="status"
       className="flex flex-wrap items-center justify-between gap-2 rounded-control bg-navy px-4 py-2.5 text-sm text-white shadow-[0_10px_30px_rgba(11,31,58,0.25)]"
     >
       <span>Đã chuyển sang "{APPLICATION_STATUS_LABEL[app.status]}".</span>
-      {(app.status === 'rejected' || app.status === 'interview') && (
+      {canWrite && (
         <button
           type="button"
           onClick={onCompose}
@@ -69,41 +76,58 @@ function useStatusChange(app: ApplicationDetailDto, onError: (msg: string) => vo
   const update = useUpdateApplication();
   const [undo, setUndo] = useState<ApplicationPatch | null>(null);
   const [isBypassing, setIsBypassing] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   useEffect(() => {
     if (!undo) return;
     const t = setTimeout(() => setUndo(null), UNDO_MS);
     return () => clearTimeout(t);
   }, [undo]);
 
-  const change = (status: ApplicationStatus, reviewBypassReason?: string) => {
-    if (status === 'interview' && needsBypass(app) && !reviewBypassReason) {
-      setIsBypassing(true);
-      return;
-    }
+  const send = (patch: ApplicationPatch) => {
     setIsBypassing(false);
+    setIsRejecting(false);
     const before: ApplicationPatch = {
       status: app.status,
       interviewAt: app.interviewAt,
       interviewMode: app.interviewMode,
       meetingUrl: app.meetingUrl,
+      ...(app.rejectReason ? { rejectReason: app.rejectReason, rejectNote: app.rejectNote } : {}),
+      isUndo: true,
     };
     update.mutate(
-      { id: app.id, patch: { status, ...(reviewBypassReason ? { reviewBypassReason } : {}) } },
+      { id: app.id, patch },
       { onSuccess: () => setUndo(before), onError: (e) => onError(errorMessage(e)) },
     );
   };
+  const change = (status: ApplicationStatus, reviewBypassReason?: string) => {
+    if (status === 'interview' && needsBypass(app) && !reviewBypassReason) {
+      setIsBypassing(true);
+      return;
+    }
+    if (status === 'rejected') {
+      setIsRejecting(true);
+      return;
+    }
+    send({ status, ...(reviewBypassReason ? { reviewBypassReason } : {}) });
+  };
+  const reject = (rejectReason: RejectReason, rejectNote: string | null = null) =>
+    send({ status: 'rejected', rejectReason, rejectNote });
   const revert = () => {
     if (undo) update.mutate({ id: app.id, patch: undo }, { onError: (e) => onError(errorMessage(e)) });
     setUndo(null);
   };
   return {
     change,
+    reject,
     revert,
     isPending: update.isPending,
     hasUndo: !!undo,
     clearUndo: () => setUndo(null),
     isBypassing,
     stopBypass: () => setIsBypassing(false),
+    isRejecting,
+    startReject: () => setIsRejecting(true),
+    stopReject: () => setIsRejecting(false),
   };
 }
 
@@ -117,7 +141,10 @@ function StatusSegments({ app, status }: { app: ApplicationDetailDto; status: Re
         Cập nhật trạng thái
       </span>
       <div className="grid grid-cols-4 lg:inline-flex">
-        {SEGMENTS.map(({ status: value, reason, title }) => {
+        {SEGMENTS.map(({ status: slot, reason, title }) => {
+          // After the interview its result takes the place of "Hẹn phỏng vấn".
+          const isResult = slot === 'interview' && (app.status === 'passed' || app.status === 'hired');
+          const value = isResult ? app.status : slot;
           const isActive = app.status === value;
           const isLocked = !isActive && !!reason;
           return (
@@ -167,8 +194,16 @@ export function StatusControl({
   const status = useStatusChange(app, onError);
   return (
     <>
-      <StatusSegments app={app} status={status} />
-      {(status.isBypassing || status.hasUndo) && (
+      <div className="flex min-w-0 flex-col gap-2 max-lg:w-full">
+        <StatusSegments app={app} status={status} />
+        <OutcomeActions
+          app={app}
+          busy={status.isPending}
+          onStatus={status.change}
+          onReject={(reason) => (reason ? status.reject(reason) : status.startReject())}
+        />
+      </div>
+      {(status.isBypassing || status.isRejecting || status.hasUndo) && (
         <div className="absolute inset-x-3 top-full z-10 mt-1 flex max-h-[60dvh] flex-col gap-2 overflow-y-auto rounded-control">
           {status.isBypassing && (
             <div className="rounded-control bg-white shadow-[0_10px_30px_rgba(11,31,58,0.25)]">
@@ -178,6 +213,11 @@ export function StatusControl({
                 onConfirm={(reason) => status.change('interview', reason)}
                 onCancel={status.stopBypass}
               />
+            </div>
+          )}
+          {status.isRejecting && (
+            <div className="rounded-control bg-white shadow-[0_10px_30px_rgba(11,31,58,0.25)]">
+              <RejectForm busy={status.isPending} onConfirm={status.reject} onCancel={status.stopReject} />
             </div>
           )}
           {status.hasUndo && (

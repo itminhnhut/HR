@@ -38,7 +38,7 @@ export const asText = (form: FormData) =>
 /** What apps/api/src/services/hr-intake.ts answers for this form when the job and phone are fine. */
 export function byRealRules(form: FormData): Response {
   const fields = asText(form);
-  const parsed = hrApplicationSchema.safeParse({ ...fields, consent: fields.consent === 'true' });
+  const parsed = hrApplicationSchema.safeParse(fields);
   if (parsed.success) return reply(201, { id: 'new-id' });
   return reply(422, { error: 'Kiểm tra lại các ô được đánh dấu.', fieldErrors: fieldErrors(parsed.error) });
 }
@@ -67,6 +67,10 @@ export const application = (over: Partial<ApplicationDetailDto> = {}): Applicati
   fullName: 'Trần Minh Khoa',
   phone: '0912345678',
   status: 'seen',
+  rejectReason: null,
+  cvGender: null,
+  cvBirth: null,
+  rejectNote: null,
   createdAt: '2026-10-20T03:00:00.000Z',
   hasCv: true,
   matchPercent: null,
@@ -79,7 +83,7 @@ export const application = (over: Partial<ApplicationDetailDto> = {}): Applicati
   reviewInfo: null,
   referrer: null,
   addedBy: 'Phòng Nhân sự',
-  consentBy: 'Phòng Nhân sự',
+  consentBy: null,
   cvHistory: [],
   email: null,
   message: null,
@@ -127,7 +131,6 @@ function route(url: string, method: string, body: FormData | null): Response | P
         { id: '44444444-4444-4444-8444-444444444444', title: 'Bản nháp', status: 'draft' },
       ],
       newApplications: 0,
-      dueForDeletion: 0,
     });
   }
   if (url.endsWith('/hr/sources')) return reply(200, SOURCES);
@@ -227,7 +230,6 @@ export async function pickSource(key = 'zalo') {
   await screen.findByRole('option', { name: 'Zalo' });
   await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), key);
 }
-export const tickConsent = () => userEvent.click(screen.getByRole('checkbox'));
 
 /** Everything the form needs except the CV. */
 export async function fillForm() {
@@ -235,7 +237,6 @@ export async function fillForm() {
   await pickSource();
   await userEvent.type(box('Họ và tên'), 'Trần Khoa');
   await userEvent.type(box('Số điện thoại'), '0912345678');
-  await tickConsent();
 }
 
 export const deferred = <T,>() => {

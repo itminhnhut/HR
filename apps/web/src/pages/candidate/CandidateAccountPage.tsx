@@ -107,6 +107,8 @@ function stageNote(stage: CandidateStage): string {
       return 'Hồ sơ đang được xem xét.';
     case 'interview':
       return 'HR sẽ gọi hoặc nhắn Zalo để hẹn lịch.';
+    case 'hired':
+      return 'Chúc mừng bạn đã nhận việc.';
     case 'closed':
       return 'Vị trí này đã đóng. Cảm ơn bạn đã quan tâm.';
   }

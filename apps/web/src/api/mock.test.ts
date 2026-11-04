@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { addDays as addDaysIso } from '@careers/shared';
 import { demoHrPassword, mockApi, resetMockDb } from './mock';
 import { DEMO_CANDIDATE_EMAIL, DEMO_HR } from './mock-seed';
-import { load, save } from './mock-store';
 import { ApiError } from './types';
 
 const base = {
@@ -201,34 +200,6 @@ describe('closing and reopening jobs', () => {
 });
 
 describe('deleting applications', () => {
-  it('deletes only applications of jobs that ended more than 30 days ago', async () => {
-    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
-    const before = await run(mockApi.hrJobs());
-    expect(before.dueForDeletion).toBeGreaterThan(0);
-
-    const { deleted } = await run(mockApi.hrDeleteDueApplications());
-
-    expect(deleted).toBe(before.dueForDeletion);
-    expect((await run(mockApi.hrJobs())).dueForDeletion).toBe(0);
-    expect((await run(mockApi.hrApplications())).applications.some((a) => a.id === 'a1')).toBe(true);
-  });
-
-  it('should not count an application consented to recently, however long ago its job ended', async () => {
-    // Arrange
-    await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
-    const before = await run(mockApi.hrJobs());
-    const db = load();
-    db.applications = db.applications.map((a) => ({ ...a, consentAt: new Date().toISOString() }));
-    save();
-
-    // Act
-    const after = await run(mockApi.hrJobs());
-
-    // Assert
-    expect(before.dueForDeletion).toBeGreaterThan(0);
-    expect(after.dueForDeletion).toBe(0);
-  });
-
   it('deletes one application', async () => {
     await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
     await run(mockApi.hrDeleteApplication('a2'));

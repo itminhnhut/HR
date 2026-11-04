@@ -19,6 +19,8 @@ export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   new: 'Mới',
   seen: 'Đã xem',
   interview: 'Hẹn phỏng vấn',
+  passed: 'Đạt, chờ nhận việc',
+  hired: 'Đã nhận việc',
   rejected: 'Chưa phù hợp',
 };
 
@@ -130,6 +132,7 @@ export const CANDIDATE_STAGE_LABEL: Record<import('./types.js').CandidateStage, 
   sent: 'Đã gửi',
   seen: 'HR đã xem',
   interview: 'Mời phỏng vấn',
+  hired: 'Đã nhận việc',
   closed: 'Đã đóng',
 };
 
@@ -139,7 +142,9 @@ export const CANDIDATE_STAGE_LABEL: Record<import('./types.js').CandidateStage, 
  */
 export function candidateStage(status: ApplicationStatus, jobClosed: boolean): import('./types.js').CandidateStage {
   if (status === 'rejected') return 'closed';
-  if (status === 'interview') return 'interview';
+  if (status === 'hired') return 'hired';
+  // "Đạt" stays HR's to say on the phone first.
+  if (status === 'interview' || status === 'passed') return 'interview';
   if (jobClosed) return 'closed';
   return status === 'seen' ? 'seen' : 'sent';
 }

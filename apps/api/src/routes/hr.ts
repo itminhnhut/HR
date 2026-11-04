@@ -1,8 +1,8 @@
-import type { HrMe } from '@careers/shared';
+import { fieldErrors, reportPeriodSchema, type HrMe } from '@careers/shared';
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { currentHr, hrOf, requireHr } from '../lib/hr-auth.js';
-import { HttpError } from '../lib/http-error.js';
+import { HttpError, invalid } from '../lib/http-error.js';
 import { clientIp } from '../lib/rate-limit.js';
 import { readJson } from '../lib/request.js';
 import { passwordFingerprint } from '../lib/password.js';
@@ -54,7 +54,11 @@ signedIn.route('/reviews', hrReviewRoutes);
 signedIn.route('/sources', hrSourceRoutes);
 signedIn.get('/dashboard', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await dashboard(db, now()));
+  const { from, to } = c.req.query();
+  if (!from && !to) return c.json(await dashboard(db, now()));
+  const period = reportPeriodSchema.safeParse({ from, to });
+  if (!period.success) throw invalid('Khoảng thời gian không hợp lệ.', fieldErrors(period.error));
+  return c.json(await dashboard(db, now(), period.data));
 });
 
 signedIn.get('/analytics/realtime', async (c) => c.json(await c.get('deps').readRealtime()));

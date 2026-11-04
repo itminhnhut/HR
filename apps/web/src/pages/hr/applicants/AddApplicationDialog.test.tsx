@@ -63,7 +63,6 @@ beforeEach(() => {
         return reply(200, {
           jobs: [{ id: JOB_ID, title: 'Kế toán', status: 'open' }],
           newApplications: 0,
-          dueForDeletion: 0,
         });
       }
       if (url.endsWith('/hr/applications/parse-cv')) return parseReply();
@@ -108,7 +107,7 @@ async function fillBasics() {
 }
 
 describe('HR adds an application', () => {
-  it('should ask for the source and the consent before sending anything', async () => {
+  it('should ask for the source before sending anything', async () => {
     // Arrange
     show();
     await fillBasics();
@@ -118,7 +117,6 @@ describe('HR adds an application', () => {
 
     // Assert
     expect(screen.getByText('Chọn nguồn hồ sơ.')).toBeTruthy();
-    expect(screen.getByText(/Xác nhận ứng viên đã đồng ý/)).toBeTruthy();
     expect(posts).toBe(0);
   });
 
@@ -127,7 +125,6 @@ describe('HR adds an application', () => {
     const onAdded = show();
     await fillBasics();
     await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), 'zalo');
-    await userEvent.click(screen.getByRole('checkbox'));
 
     // Act
     await userEvent.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));
@@ -238,7 +235,6 @@ describe('HR adds an application from a CV file', () => {
     await screen.findByText(/Không đọc được CV lúc này/);
     await fillBasics();
     await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), 'email');
-    await userEvent.click(screen.getByRole('checkbox'));
 
     // Act
     await userEvent.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }));

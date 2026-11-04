@@ -141,7 +141,6 @@ describe('HR sign-in with own password', () => {
       t.send('PUT', '/api/hr/jobs/template', {}),
       t.request('/api/hr/dashboard'),
       t.request('/api/hr/applications'),
-      t.send('DELETE', '/api/hr/applications/due'),
       t.request('/api/hr/subscribers'),
       t.request('/api/hr/users'),
       t.send('POST', '/api/hr/users', { email: 'moi@congty.vn' }),

@@ -1,10 +1,12 @@
-import { formatDate, type DashboardDto } from '@careers/shared';
+import type { DashboardDto } from '@careers/shared';
 import { useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Link } from 'react-router';
 import { useSources } from '../../../api/queries';
+import { bucketsOf, sumBuckets, unitOf } from './reportBuckets';
 import { peakLabels, sourceSeries, type SourceSeries } from './sourceSeries';
 
-const dayLabel = (iso: string) => formatDate(iso).slice(0, 5);
+/** Few points: their names would sit on top of each other, and the list under the chart has them. */
+const MIN_FOR_PEAK_NAMES = 20;
 /** Room above the highest point for its name. */
 const HEADROOM = 0.84;
 
@@ -27,7 +29,7 @@ function SeriesPath({ line, max }: { line: SourceSeries; max: number }) {
 const xOf = (day: number, last: number) => `${(day / last) * 100}%`;
 const yOf = (count: number, max: number) => `${100 - (count / max) * 100 * HEADROOM}%`;
 
-function Tooltip({ series, day, days }: { series: SourceSeries[]; day: number; days: string[] }) {
+function Tooltip({ series, day, labels: days }: { series: SourceSeries[]; day: number; labels: string[] }) {
   const last = days.length - 1;
   const isRightHalf = day > last / 2;
   return (
@@ -35,7 +37,7 @@ function Tooltip({ series, day, days }: { series: SourceSeries[]; day: number; d
       style={{ left: xOf(day, last) }}
       className={`pointer-events-none absolute top-0 z-10 w-max min-w-[150px] rounded-control border border-line bg-white px-3 py-2 text-xs shadow-lg ${isRightHalf ? '-translate-x-[calc(100%+10px)]' : 'translate-x-[10px]'}`}
     >
-      <div className="mb-1 font-semibold text-navy">{formatDate(days[day] ?? '')}</div>
+      <div className="mb-1 font-semibold text-navy">{days[day]}</div>
       {series.map((line) => (
         <div key={line.name} className="flex items-center justify-between gap-4 py-px text-slate">
           <span className="flex items-center gap-1.5">
@@ -63,7 +65,7 @@ function DayMarks({ series, day, days, max }: { series: SourceSeries[]; day: num
           style={{ left: xOf(day, last), top: yOf(line.counts[day] ?? 0, max), background: line.color }}
         />
       ))}
-      <Tooltip series={series} day={day} days={days} />
+      <Tooltip series={series} day={day} labels={days} />
     </>
   );
 }
@@ -96,7 +98,7 @@ function Plot({ series, days }: { series: SourceSeries[]; days: string[] }) {
       <div
         role="img"
         tabIndex={0}
-        aria-label={`Hồ sơ theo ngày, 30 ngày qua. ${summary}. Dùng phím trái, phải để xem từng ngày.`}
+        aria-label={`Hồ sơ theo thời gian. ${summary}. Dùng phím trái, phải để xem từng mốc.`}
         onPointerMove={onPointer}
         onPointerLeave={() => setPicked(null)}
         onKeyDown={onKey}
@@ -123,6 +125,7 @@ function Plot({ series, days }: { series: SourceSeries[]; days: string[] }) {
         </svg>
         {picked === null &&
           series.length <= 4 &&
+          days.length > MIN_FOR_PEAK_NAMES &&
           peakLabels(series).map((label) => (
             <span
               key={label.name}
@@ -141,15 +144,15 @@ function Plot({ series, days }: { series: SourceSeries[]; days: string[] }) {
         {picked !== null && <DayMarks series={series} day={picked} days={days} max={max} />}
       </div>
       <div aria-hidden="true" className="col-start-2 mt-2 flex justify-between text-xs text-muted">
-        <span>{dayLabel(days[0] ?? '')}</span>
-        <span>{dayLabel(days[Math.floor(last / 2)] ?? '')}</span>
-        <span>Hôm nay</span>
+        <span>{days[0]}</span>
+        {days.length > 2 && <span>{days[Math.floor(last / 2)]}</span>}
+        <span>{days[last]}</span>
       </div>
     </div>
   );
 }
 
-/** The same numbers in words: every source and the total of the 30 days, each opening its applications. */
+/** The same numbers in words: every source and its total, each opening its applications. */
 function Legend({ series }: { series: SourceSeries[] }) {
   return (
     <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0">
@@ -180,15 +183,24 @@ function Legend({ series }: { series: SourceSeries[] }) {
   );
 }
 
-/** How the last 30 days' applications arrived, one line per source. */
+/** How the period's applications arrived, one line per source. A single day has no line to draw, only its totals. */
 export function SourceTrendChart({ data }: { data: DashboardDto }) {
   const sources = useSources().data ?? [];
-  const series = sourceSeries(data.bySourcePerDay, sources);
-  if (series.length === 0) return <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong 30 ngày qua.</p>;
+  const days = data.perDay.map((d) => d.day);
+  const buckets = bucketsOf(days);
+  const series = sourceSeries(data.bySourcePerDay, sources).map((line) => ({
+    ...line,
+    counts: sumBuckets(line.counts, buckets),
+  }));
+  if (series.length === 0)
+    return <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong khoảng thời gian này.</p>;
   return (
     <div className="flex flex-col gap-3">
-      <Plot series={series} days={data.perDay.map((d) => d.day)} />
+      {buckets.length > 1 && <Plot series={series} days={buckets.map((b) => b.label)} />}
       <Legend series={series} />
+      {unitOf(days.length) !== 'ngày' && (
+        <p className="m-0 text-xs text-muted">Mỗi điểm là một {unitOf(days.length)}.</p>
+      )}
     </div>
   );
 }

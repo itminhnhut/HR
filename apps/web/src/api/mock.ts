@@ -8,10 +8,11 @@ import {
   DEFAULT_JOB_TEMPLATE,
   acceptsApplications,
   addDays,
+  daysBetween,
+  isAwaitingResult,
   applicationFieldsSchema,
   CV_MAX_BYTES,
   candidateStage,
-  endedOn,
   jobTemplateSchema,
   matchesQuery,
   effectiveStatus,
@@ -139,7 +140,6 @@ function findOrCreateCandidate(db: MockDb, email: string): MockDb['candidates'][
 }
 
 const NEEDS_PHONE = 'Nhập số điện thoại (Zalo) để nhận báo việc mới.';
-const DELETE_AFTER_DAYS = 30;
 
 const DEADLINE_MESSAGE = {
   missing: 'Chọn hạn nộp.',
@@ -169,19 +169,6 @@ const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
 });
 
 /** Like the BE's generatePassword: three groups of five letters and digits. */
-/** Due for deletion: the job ended and the consent was given more than 30 days ago (same rule as the BE). */
-function dueApplications(db: MockDb, now = new Date()): MockDb['applications'] {
-  const cutoff = addDays(todayInVietnam(now), -DELETE_AFTER_DAYS);
-  const endedLongAgo = db.jobs
-    .filter((j) => {
-      const ended = endedOn(j, now);
-      return ended !== null && ended < cutoff;
-    })
-    .map((j) => j.id);
-  return db.applications.filter(
-    (a) => endedLongAgo.includes(a.jobId) && todayInVietnam(new Date(a.consentAt)) < cutoff,
-  );
-}
 
 const firstLine = (text: string | null) =>
   text
@@ -203,6 +190,8 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     matchBonus: 0,
     noteLine: firstLine(a.note),
     interviewAt: a.interviewAt,
+    cvGender: null,
+    cvBirth: null,
     review: null,
     source: 'website',
     cvUpdatedByCandidate: false,
@@ -212,6 +201,8 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
 function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDetailDto {
   return {
     ...appRow(db, a),
+    rejectReason: null,
+    rejectNote: null,
     reviewInfo: null,
     referrer: null,
     addedBy: null,
@@ -488,12 +479,13 @@ export const mockApi: Api = {
   async hrRealtime() {
     return delay({ status: 'off' as const });
   },
-  async hrDashboard() {
+  async hrDashboard(period) {
     const db = load();
     requireHr(db);
     const now = new Date();
     const today = todayInVietnam(now);
-    const days = Array.from({ length: 30 }, (_, i) => addDays(today, i - 29));
+    const from = period?.from ?? addDays(today, -29);
+    const days = Array.from({ length: daysBetween(from, period?.to ?? today) + 1 }, (_, i) => addDays(from, i));
     const index = new Map(days.map((d, i) => [d, i]));
     const perDay = days.map((day) => ({ day, count: 0 }));
     const perJob = new Map<string, number[]>();
@@ -501,7 +493,7 @@ export const mockApi: Api = {
       const i = index.get(todayInVietnam(new Date(a.createdAt)));
       if (i === undefined) continue;
       perDay[i].count += 1;
-      const counts = perJob.get(a.jobId) ?? Array<number>(30).fill(0);
+      const counts = perJob.get(a.jobId) ?? Array<number>(days.length).fill(0);
       counts[i] += 1;
       perJob.set(a.jobId, counts);
     }
@@ -511,6 +503,9 @@ export const mockApi: Api = {
     return delay({
       bySource: [{ source: 'website' as const, count: perDay.reduce((n, d) => n + d.count, 0) }],
       bySourcePerDay: [{ source: 'website' as const, counts: perDay.map((d) => d.count) }],
+      awaitingResults: db.applications.filter((a) => isAwaitingResult(a, now)).length,
+      last7Days: db.applications.filter((a) => a.createdAt >= addDays(today, -6)).length,
+      sourceFunnel: [],
       interviewCounts: {
         total: db.applications.filter((a) => a.status === 'interview').length,
         noTime: db.applications.filter((a) => a.status === 'interview' && !a.interviewAt).length,
@@ -529,13 +524,16 @@ export const mockApi: Api = {
           appliedAt: a.createdAt,
           interviewAt: a.interviewAt,
           noteLine: firstLine(a.note),
+          phone: a.phone,
+          matchPercent: null,
+          cvGender: null,
+          cvBirth: null,
         })),
       endingJobs: db.jobs
         .map((j) => ({ j, status: statusOf(j, now) }))
         .filter(({ j, status }) => status === 'expiring' || (status === 'expired' && j.deadline >= addDays(today, -14)))
         .sort((a, b) => a.j.deadline.localeCompare(b.j.deadline))
         .map(({ j, status }) => ({ id: j.id, title: j.title, deadline: j.deadline, status })),
-      dueForDeletion: dueApplications(db, now).length,
     });
   },
 
@@ -565,7 +563,6 @@ export const mockApi: Api = {
     return delay({
       jobs,
       newApplications: db.applications.filter((a) => a.status === 'new').length,
-      dueForDeletion: dueApplications(db, now).length,
     });
   },
 
@@ -705,7 +702,7 @@ export const mockApi: Api = {
       .filter((a) => matchesQuery(`${a.fullName} ${a.phone}`, q) || (digits.length >= 3 && a.phone.includes(digits)))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .map((a) => appRow(db, a));
-    const counts = { all: all.length, new: 0, seen: 0, interview: 0, rejected: 0 };
+    const counts = { all: all.length, new: 0, seen: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
     for (const a of all) counts[a.status]++;
     const jobIds = [...new Set(db.applications.map((a) => a.jobId))];
     const jobs = db.jobs.filter((j) => jobIds.includes(j.id)).map((j) => ({ id: j.id, title: j.title }));
@@ -787,16 +784,6 @@ export const mockApi: Api = {
     db.applications = db.applications.filter((a) => a.id !== id);
     save();
     return delay({ ok: true as const });
-  },
-
-  async hrDeleteDueApplications() {
-    const db = load();
-    requireHr(db);
-    const due = dueApplications(db);
-    const before = db.applications.length;
-    db.applications = db.applications.filter((a) => !due.includes(a));
-    save();
-    return delay({ deleted: before - db.applications.length });
   },
 
   async hrUsers() {

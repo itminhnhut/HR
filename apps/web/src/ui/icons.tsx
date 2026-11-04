@@ -62,6 +62,24 @@ const PATHS = {
       <path d="M9 8h1M14 8h1M9 12h1M14 12h1M10 21v-4h4v4" />
     </>
   ),
+  mars: (
+    <>
+      <circle cx="10" cy="14" r="5.5" />
+      <path d="M14 10l6-6M15 4h5v5" />
+    </>
+  ),
+  venus: (
+    <>
+      <circle cx="12" cy="9" r="5.5" />
+      <path d="M12 14.5V21M9 18h6" />
+    </>
+  ),
+  cake: (
+    <>
+      <path d="M4 21h16v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z" />
+      <path d="M4 16c2.7 2 5.3-2 8 0s5.3 2 8 0M12 11V7M12 3.5v.5" />
+    </>
+  ),
   user: (
     <>
       <circle cx="12" cy="8" r="4" />

@@ -11,6 +11,7 @@ import { CvMatch } from './CvMatch';
 import { CvPanel } from './CvPanel';
 import { InterviewTime } from './InterviewTime';
 import { NoteField } from './NoteField';
+import { PersonalMarks } from './PersonalMarks';
 import { ReviewStatus } from './ReviewGate';
 
 function Fact({
@@ -91,6 +92,9 @@ function ContactFacts({ app }: { app: ApplicationDetailDto }) {
       <Fact icon="mail" label="Email" copy={app.email}>
         {app.email ?? 'Không cung cấp'}
       </Fact>
+      <Fact icon="user" label="Giới tính, tuổi (theo CV)">
+        {app.cvGender || app.cvBirth ? <PersonalMarks gender={app.cvGender} birth={app.cvBirth} /> : 'CV không ghi'}
+      </Fact>
       <Fact icon="calendar" label="Ngày nộp">
         {formatTimestamp(app.createdAt)}
       </Fact>
@@ -102,10 +106,7 @@ function RetentionNote() {
   return (
     <div className="flex items-start gap-2.5 rounded-control bg-mist px-3.5 py-3 text-[13px] leading-relaxed text-body">
       <Icon name="shield" size={16} className="mt-0.5 shrink-0 text-accent" />
-      <span>
-        Ứng viên đồng ý cho vị trí này. Nếu không tuyển, hồ sơ được xóa 30 ngày sau khi tin đóng (hồ sơ thêm sau khi tin
-        đóng: 30 ngày kể từ ngày thêm).
-      </span>
+      <span>Hồ sơ được lưu đến khi ứng viên yêu cầu xoá.</span>
     </div>
   );
 }

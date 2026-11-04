@@ -2,6 +2,7 @@ import type { DashboardDto } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { applications, type Job, type NewApplication } from '../db/schema.js';
 import { insertJob, json, loginHr } from '../test/fixtures.js';
+import { logStatus } from '../services/status-log.js';
 import { createTestContext, type TestContext } from '../test/harness.js';
 
 let t: TestContext;
@@ -33,6 +34,8 @@ async function insertApplication(job: Job, overrides: Partial<NewApplication> = 
       ...overrides,
     })
     .returning();
+
+  await logStatus(t.db, row, 'new', null, row.createdAt);
   return row;
 }
 
@@ -184,6 +187,10 @@ describe('GET /api/hr/dashboard', () => {
       jobTitle: 'Kỹ sư',
       interviewAt: null,
       noteLine: 'Chờ chốt lịch',
+      matchPercent: null,
+      cvGender: null,
+      cvBirth: null,
+      phone: expect.any(String),
     });
   });
 
@@ -202,20 +209,6 @@ describe('GET /api/hr/dashboard', () => {
     ]);
   });
 
-  it('counts applications due for deletion: jobs that ended more than 30 days ago', async () => {
-    const closed = await insertJob(t, { state: 'closed', closedOn: '2026-09-19', deadline: '2026-10-30' });
-    const expired = await insertJob(t, { deadline: '2026-09-15', publishedOn: '2026-09-01' });
-    const recent = await insertJob(t, { state: 'closed', closedOn: '2026-09-20', deadline: '2026-10-30' });
-    // Applied while the jobs were open: the 30 days then run from each job's end.
-    const applied = { consentAt: new Date('2026-09-01T00:00:00.000Z') };
-    await insertApplication(closed, applied);
-    await insertApplication(closed, applied);
-    await insertApplication(expired, applied);
-    await insertApplication(recent, applied);
-
-    expect((await dashboard()).dueForDeletion).toBe(3);
-  });
-
   it('answers with empty figures when there is no data yet', async () => {
     const body = await dashboard();
 
@@ -225,7 +218,6 @@ describe('GET /api/hr/dashboard', () => {
       perJobPerDay: [],
       interviews: [],
       endingJobs: [],
-      dueForDeletion: 0,
     });
     expect(body.perDay.every((d) => d.count === 0)).toBe(true);
   });

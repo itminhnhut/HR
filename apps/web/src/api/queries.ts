@@ -2,6 +2,7 @@ import type {
   ApplicationDetailDto,
   ApplicationSource,
   ContactChannel,
+  ReportPeriod,
   HrContactInput,
   HrNewsPostDto,
   JobInput,
@@ -231,14 +232,6 @@ export function useDeleteApplication() {
   });
 }
 
-export function useDeleteDueApplications() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.hrDeleteDueApplications(),
-    onSuccess: () => refreshApplications(qc),
-  });
-}
-
 export function useSetDeadline() {
   const qc = useQueryClient();
   return useMutation({
@@ -252,7 +245,12 @@ export function useSetDeadline() {
   });
 }
 
-export const useDashboard = () => useQuery({ queryKey: keys.hrDashboard, queryFn: api.hrDashboard });
+export const useDashboard = (period?: ReportPeriod) =>
+  useQuery({
+    queryKey: [...keys.hrDashboard, period ?? null],
+    queryFn: () => api.hrDashboard(period),
+    placeholderData: keepPreviousData,
+  });
 
 /** Once a minute while the tab is in view; the server shares one answer per minute too. */
 export const useRealtime = () =>

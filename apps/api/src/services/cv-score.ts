@@ -1,5 +1,6 @@
 import {
   CV_MATCH_VERSION,
+  readPersonalFacts,
   CV_LINK_NOTE,
   NO_REQUIREMENT,
   scoreCv,
@@ -92,11 +93,14 @@ export async function scoreApplication(deps: Deps, app: Application, job: Job): 
     today: todayInVietnam(deps.now()),
   });
   const items: MatchItem[] = result.items;
+  const personal = readPersonalFacts(text, todayInVietnam(deps.now()));
   const row = {
     applicationId: app.id,
     percent: text ? result.percent : null,
     items,
     note,
+    gender: personal.gender,
+    birth: personal.birth,
     version: CV_MATCH_VERSION,
     cvPathname: app.cvPathname,
     requirementsKey,

@@ -15,7 +15,6 @@ import { useDeleteJob, useHrJobs, useJobAction } from '../../api/queries';
 import { copyText, useFlash, usePageMeta } from '../../lib/hooks';
 import { jobUrl } from '../../lib/site';
 import { ButtonLink } from '../../ui/Button';
-import { DueForDeletionBanner } from './DueForDeletionBanner';
 import { JobDeadlineDialog } from './JobDeadlineDialog';
 import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
@@ -497,7 +496,6 @@ export function HrJobsPage() {
           <span role="alert">{actionError}</span>
         </Notice>
       )}
-      <DueForDeletionBanner count={jobs.data?.dueForDeletion ?? 0} />
       {expiring.map((row) => (
         <ExpiringBanner key={row.id} row={row} busy={handlers(row).busy} onDeadline={() => setDeadlineFor(row)} />
       ))}

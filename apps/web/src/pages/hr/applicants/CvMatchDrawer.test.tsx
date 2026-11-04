@@ -110,6 +110,22 @@ describe('Lines split by the part of the job', () => {
     expect(within(panel).queryByText(reason)).toBeNull();
   });
 
+  it('should not suggest asking in the interview when the CV itself could not be read', async () => {
+    // Arrange: a CV kept as a link, so every line, duties too, carries the same reason.
+    const reason = 'Không đọc được chữ trong CV (ảnh scan hoặc link), HR xem trực tiếp';
+    const unread = line('Theo dõi tiến độ đơn hàng', 'unknown', { section: 'duties', counted: false, reason });
+    const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([unread]) }));
+
+    // Act
+    await userEvent.click(within(dialog).getByRole('tab', { name: /Không chấm/ }));
+
+    // Assert
+    const panel = within(dialog).getByRole('tabpanel');
+    expect(within(panel).getByText('HR xem trực tiếp')).toBeTruthy();
+    expect(within(panel).queryByText('Hỏi khi phỏng vấn')).toBeNull();
+    expect(within(panel).queryByText(reason)).toBeNull();
+  });
+
   it('should show a line with only a possibly related quote under "Không chấm", asking HR to check', async () => {
     // Arrange
     const reason = 'CV có câu có thể liên quan, HR kiểm tra lại';
