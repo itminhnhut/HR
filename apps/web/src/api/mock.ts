@@ -201,6 +201,7 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
 function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDetailDto {
   return {
     ...appRow(db, a),
+    activity: [],
     rejectReason: null,
     rejectNote: null,
     reviewInfo: null,
@@ -504,6 +505,14 @@ export const mockApi: Api = {
       bySource: [{ source: 'website' as const, count: perDay.reduce((n, d) => n + d.count, 0) }],
       bySourcePerDay: [{ source: 'website' as const, counts: perDay.map((d) => d.count) }],
       awaitingResults: db.applications.filter((a) => isAwaitingResult(a, now)).length,
+      statusCounts: {
+        new: fresh.length,
+        seen: db.applications.filter((a) => a.status === 'seen').length,
+        interview: db.applications.filter((a) => a.status === 'interview').length,
+        passed: db.applications.filter((a) => a.status === 'passed').length,
+        hired: db.applications.filter((a) => a.status === 'hired').length,
+        rejected: db.applications.filter((a) => a.status === 'rejected').length,
+      },
       last7Days: db.applications.filter((a) => a.createdAt >= addDays(today, -6)).length,
       sourceFunnel: [],
       interviewCounts: {

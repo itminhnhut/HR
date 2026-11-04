@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { peakLabels, sourceSeries } from './sourceSeries';
+import { peakLabels, sourceLegend, sourceSeries } from './sourceSeries';
 
 const SOURCES = ['website', 'email', 'zalo', 'referral', 'topcv', 'vieclam24h', 'linkedin'].map((key) => ({
   key,
@@ -36,19 +36,72 @@ describe('sourceSeries', () => {
     expect(series.map((s) => s.source)).toEqual(['website', 'zalo']);
   });
 
-  it('should fold a source past the colours into "Khác", adding up each day', () => {
+  it('should draw every source that has applications while there are colours for them, wherever it sits in the list', () => {
+    // Arrange: the real case. Sources added later sit past the first six places of the list.
+    const sources = [
+      'website',
+      'email',
+      'zalo',
+      'referral',
+      'topcv',
+      'vietnamworks',
+      'facebook',
+      'other',
+      'viec-lam-24h',
+      'jobsgo',
+    ].map((key) => ({ key, name: key }));
+    const rows = [
+      { source: 'topcv', counts: [5] },
+      { source: 'viec-lam-24h', counts: [5] },
+      { source: 'jobsgo', counts: [3] },
+      { source: 'other', counts: [1] },
+    ];
+
     // Act
-    const series = sourceSeries(
-      [
-        { source: 'linkedin', counts: [1, 2] },
-        { source: 'gone-source', counts: [3, 0] },
-      ],
-      SOURCES,
-    );
+    const series = sourceSeries(rows, sources);
 
     // Assert
-    expect(series).toHaveLength(1);
-    expect(series[0]).toMatchObject({ source: null, name: 'Khác', counts: [4, 2], total: 6 });
+    expect(series.map((line) => line.name)).toEqual(['topcv', 'viec-lam-24h', 'jobsgo', 'other']);
+    expect(new Set(series.map((line) => line.color)).size).toBe(4);
+    expect(series.every((line) => line.source !== null)).toBe(true);
+  });
+
+  it('should fold what does not fit the colours into "Nguồn khác", adding up each day, the smallest first', () => {
+    // Arrange: seven sources on the list and six colours.
+    const rows = SOURCES.map(({ key }, i) => ({ source: key, counts: [10 - i, 0] }));
+
+    // Act
+    const series = sourceSeries(rows, SOURCES);
+
+    // Assert
+    expect(series).toHaveLength(7);
+    expect(series.filter((line) => line.source !== null)).toHaveLength(6);
+    expect(series.find((line) => line.source === null)).toMatchObject({ name: 'Nguồn khác', total: 4 });
+    expect(new Set(series.map((line) => line.color)).size).toBe(7);
+  });
+
+  it('should fold a source no longer on the list into "Nguồn khác"', () => {
+    // Act
+    const series = sourceSeries([{ source: 'gone-source', counts: [3, 0] }], SOURCES);
+
+    // Assert
+    expect(series).toEqual([expect.objectContaining({ source: null, name: 'Nguồn khác', counts: [3, 0], total: 3 })]);
+  });
+});
+
+describe('sourceLegend', () => {
+  it('should list every source, those with no application too, biggest first', () => {
+    // Arrange
+    const rows = [{ source: 'topcv', counts: [2, 3] }];
+    const series = sourceSeries(rows, SOURCES);
+
+    // Act
+    const legend = sourceLegend(rows, SOURCES, series);
+
+    // Assert
+    expect(legend).toHaveLength(SOURCES.length);
+    expect(legend[0]).toMatchObject({ source: 'topcv', total: 5, color: series[0]?.color });
+    expect(legend.slice(1).every((item) => item.total === 0)).toBe(true);
   });
 });
 

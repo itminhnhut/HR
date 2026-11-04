@@ -36,6 +36,42 @@ export function isAwaitingResult(a: { status: string; interviewAt: string | null
   return a.status === 'interview' && a.interviewAt !== null && new Date(a.interviewAt) <= now;
 }
 
+type Status = 'new' | 'seen' | 'interview' | 'passed' | 'hired' | 'rejected';
+
+/** The candidate has been invited, whatever came of it: from here a reviewer's decision no longer changes anything. */
+export const isInvited = (status: Status) => status === 'interview' || status === 'passed' || status === 'hired';
+
+/**
+ * The flow of an application, in one place for the screen and the server. Forward: Mới, Đã xem (opening it), Hẹn phỏng
+ * vấn, Chờ kết quả (the time passing), Đạt, Nhận việc; "Chưa phù hợp" from anywhere. Back only one step at a time, to
+ * correct a mistake. Returns why a change is not allowed, or null.
+ */
+export function statusChangeProblem(
+  app: { status: Status; interviewAt: string | null },
+  to: Status,
+  now: Date,
+): string | null {
+  if (to === app.status) return null;
+  const hasResult = app.status === 'passed' || app.status === 'hired';
+  switch (to) {
+    case 'new':
+      return app.status === 'seen' ? null : 'Chỉ đánh dấu chưa xem khi hồ sơ đang ở "Đã xem".';
+    case 'seen':
+      return hasResult ? 'Hồ sơ đã có kết quả, về "Hẹn phỏng vấn" trước.' : null;
+    case 'interview':
+      return app.status === 'hired' ? 'Về "Đạt" trước.' : null;
+    case 'passed':
+      if (!app.interviewAt) return 'Chọn giờ phỏng vấn trước khi ghi kết quả.';
+      return new Date(app.interviewAt) > now
+        ? 'Chưa tới giờ phỏng vấn. Nếu đã phỏng vấn sớm hơn, đổi giờ trước.'
+        : null;
+    case 'hired':
+      return app.status === 'passed' ? null : 'Ghi "Đạt" trước khi ghi "Nhận việc".';
+    default:
+      return null;
+  }
+}
+
 /** How far the applications that came in during the period went, per source: ever reached, not where they are now. */
 export interface SourceFunnelRow {
   source: string;

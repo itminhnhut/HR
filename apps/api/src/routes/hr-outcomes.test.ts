@@ -91,6 +91,79 @@ describe('the result of an interview', () => {
   });
 });
 
+describe('the flow, enforced by the server too', () => {
+  const statusOf = async (id: string) =>
+    (await t.db.select().from(applications).where(eq(applications.id, id)))[0]?.status;
+
+  it.each([
+    ['a result before the interview', 'interview', 3_600_000, 'passed'],
+    ['"Nhận việc" before "Đạt"', 'interview', -3_600_000, 'hired'],
+    ['"Mới" for someone with an interview', 'interview', 3_600_000, 'new'],
+  ] as const)('should refuse %s and change nothing', async (_name, status, offset, to) => {
+    // Arrange
+    const interviewAt = new Date(t.clock.now.getTime() + offset);
+    const app = await insertApplication(await insertJob(t), { status, interviewAt });
+
+    // Act
+    const res = await patch(app.id, { status: to });
+
+    // Assert
+    expect(res.status).toBe(422);
+    expect(await statusOf(app.id)).toBe(status);
+  });
+
+  it('should keep the interview date when "Đạt" was a mistake and goes back to waiting', async () => {
+    // Arrange
+    const app = await interviewed(await insertJob(t));
+    await patch(app.id, { status: 'passed' });
+
+    // Act
+    const body = await json<ApplicationDetailDto>(
+      await patch(app.id, { status: 'interview', interviewAt: interviewedOn().toISOString() }),
+    );
+
+    // Assert
+    expect(body).toMatchObject({ status: 'interview', interviewAt: interviewedOn().toISOString() });
+  });
+
+  it('should stop counting steps that a correction took back', async () => {
+    // Arrange
+    const app = await interviewed(await insertJob(t), { source: 'website' });
+    await patch(app.id, { status: 'passed' });
+    await patch(app.id, { status: 'hired' });
+
+    // Act: both were wrong, long past the five seconds of "Hoàn tác".
+    await patch(app.id, { status: 'passed' });
+    await patch(app.id, { status: 'interview', interviewAt: interviewedOn().toISOString() });
+
+    // Assert
+    expect((await dashboard()).sourceFunnel[0]).toMatchObject({ received: 1, interview: 1, passed: 0, hired: 0 });
+  });
+
+  it('should still count an interview for someone turned down after it', async () => {
+    // Arrange
+    const app = await interviewed(await insertJob(t), { source: 'website' });
+
+    // Act
+    await patch(app.id, { status: 'rejected', rejectReason: 'skills' });
+
+    // Assert
+    expect((await dashboard()).sourceFunnel[0]).toMatchObject({ interview: 1, topRejectReason: 'skills' });
+  });
+
+  it('should drop the reason from the numbers when someone turned down by mistake is invited again', async () => {
+    // Arrange
+    const app = await insertApplication(await insertJob(t), { status: 'seen', source: 'website' });
+    await patch(app.id, { status: 'rejected', rejectReason: 'salary' });
+
+    // Act
+    await patch(app.id, { status: 'interview' });
+
+    // Assert
+    expect((await dashboard()).sourceFunnel[0]).toMatchObject({ interview: 1, topRejectReason: null });
+  });
+});
+
 describe('why an application is turned down', () => {
   it('should refuse "Chưa phù hợp" without a reason', async () => {
     // Arrange
@@ -340,6 +413,22 @@ describe('the period of the reports', () => {
     ['too long', '2010-01-01', '2026-11-01'],
   ])('should refuse a period that is %s', async (_name, from, to) => {
     expect((await hr('GET', `/dashboard?from=${from}&to=${to}`)).status).toBe(422);
+  });
+});
+
+describe('how many stand at each status', () => {
+  it('should count every status, the new ones too, whatever the period', async () => {
+    // Arrange
+    const job = await insertJob(t);
+    const statuses = ['new', 'seen', 'interview', 'passed', 'hired', 'rejected'] as const;
+    for (const status of statuses) await insertApplication(job, { status });
+    await insertApplication(job, { status: 'passed' });
+
+    // Act
+    const { statusCounts } = await json<DashboardDto>(await hr('GET', '/dashboard?from=2020-01-01&to=2020-01-02'));
+
+    // Assert
+    expect(statusCounts).toEqual({ new: 1, seen: 1, interview: 1, passed: 2, hired: 1, rejected: 1 });
   });
 });
 

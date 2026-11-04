@@ -1,4 +1,4 @@
-import { REVIEW_BYPASS_MIN, type ApplicationDetailDto } from '@careers/shared';
+import { isInvited, REVIEW_BYPASS_MIN, type ApplicationDetailDto } from '@careers/shared';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Button } from '../../../ui/Button';
@@ -7,7 +7,7 @@ import { ReviewMark } from '../reviews/PickForReview';
 
 /** Sent to a reviewer who has not approved yet: "Hẹn phỏng vấn" first asks why (spec-boss-review.md). */
 export const needsBypass = (app: ApplicationDetailDto) =>
-  !!app.reviewInfo && app.reviewInfo.decision !== 'approve' && app.status !== 'interview';
+  !!app.reviewInfo && app.reviewInfo.decision !== 'approve' && !isInvited(app.status);
 
 /** Where this application stands with the reviewer, with a link to its batch. */
 export function ReviewStatus({ app }: { app: ApplicationDetailDto }) {

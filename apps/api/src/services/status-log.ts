@@ -1,5 +1,5 @@
 import type { ApplicationStatus, RejectReason } from '@careers/shared';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applicationStatusLog } from '../db/schema.js';
 
@@ -28,6 +28,23 @@ export async function logStatus(
     rejectReason,
     ...(at ? { createdAt: at } : {}),
   });
+}
+
+const STEPS_AFTER: Partial<Record<ApplicationStatus, ApplicationStatus[]>> = {
+  new: ['interview', 'passed', 'hired', 'rejected'],
+  seen: ['interview', 'passed', 'hired', 'rejected'],
+  interview: ['passed', 'hired', 'rejected'],
+  passed: ['hired', 'rejected'],
+  hired: ['rejected'],
+};
+
+/** Going back corrects a mistake: the steps after it did not happen, so the report must not count them. */
+export async function rewindSteps(db: Db, applicationId: string, to: ApplicationStatus): Promise<void> {
+  const undone = STEPS_AFTER[to];
+  if (!undone) return;
+  await db
+    .delete(applicationStatusLog)
+    .where(and(eq(applicationStatusLog.applicationId, applicationId), inArray(applicationStatusLog.toStatus, undone)));
 }
 
 /** "Hoàn tác": the last step never happened. */

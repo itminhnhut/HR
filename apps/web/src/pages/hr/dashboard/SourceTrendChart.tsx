@@ -3,7 +3,7 @@ import { useState, type KeyboardEvent, type PointerEvent } from 'react';
 import { Link } from 'react-router';
 import { useSources } from '../../../api/queries';
 import { bucketsOf, sumBuckets, unitOf } from './reportBuckets';
-import { peakLabels, sourceSeries, type SourceSeries } from './sourceSeries';
+import { peakLabels, sourceLegend, sourceSeries, type SourceLegendItem, type SourceSeries } from './sourceSeries';
 
 /** Few points: their names would sit on top of each other, and the list under the chart has them. */
 const MIN_FOR_PEAK_NAMES = 20;
@@ -153,32 +153,21 @@ function Plot({ series, days }: { series: SourceSeries[]; days: string[] }) {
 }
 
 /** The same numbers in words: every source and its total, each opening its applications. */
-function Legend({ series }: { series: SourceSeries[] }) {
+function Legend({ items }: { items: readonly SourceLegendItem[] }) {
   return (
     <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0">
-      {series.map((line) => {
-        const content = (
-          <>
-            <span aria-hidden="true" className="h-[3px] w-4 rounded-full" style={{ background: line.color }} />
-            {line.name}
-            <span className="font-semibold tabular-nums text-navy">{line.total}</span>
-          </>
-        );
-        return (
-          <li key={line.name}>
-            {line.source ? (
-              <Link
-                to={`/hr/ho-so?nguon=${line.source}`}
-                className="inline-flex min-h-8 items-center gap-2 text-sm text-body no-underline hover:text-navy hover:underline"
-              >
-                {content}
-              </Link>
-            ) : (
-              <span className="inline-flex min-h-8 items-center gap-2 text-sm text-body">{content}</span>
-            )}
-          </li>
-        );
-      })}
+      {items.map((item) => (
+        <li key={item.source}>
+          <Link
+            to={`/hr/ho-so?nguon=${item.source}`}
+            className={`inline-flex min-h-8 items-center gap-2 text-sm no-underline hover:text-navy hover:underline ${item.total > 0 ? 'text-body' : 'text-muted'}`}
+          >
+            <span aria-hidden="true" className="h-[3px] w-4 rounded-full" style={{ background: item.color }} />
+            {item.name}
+            <span className={`tabular-nums ${item.total > 0 ? 'font-semibold text-navy' : ''}`}>{item.total}</span>
+          </Link>
+        </li>
+      ))}
     </ul>
   );
 }
@@ -192,12 +181,11 @@ export function SourceTrendChart({ data }: { data: DashboardDto }) {
     ...line,
     counts: sumBuckets(line.counts, buckets),
   }));
-  if (series.length === 0)
-    return <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong khoảng thời gian này.</p>;
   return (
     <div className="flex flex-col gap-3">
-      {buckets.length > 1 && <Plot series={series} days={buckets.map((b) => b.label)} />}
-      <Legend series={series} />
+      {series.length === 0 && <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong khoảng thời gian này.</p>}
+      {series.length > 0 && buckets.length > 1 && <Plot series={series} days={buckets.map((b) => b.label)} />}
+      <Legend items={sourceLegend(data.bySourcePerDay, sources, series)} />
       {unitOf(days.length) !== 'ngày' && (
         <p className="m-0 text-xs text-muted">Mỗi điểm là một {unitOf(days.length)}.</p>
       )}

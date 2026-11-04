@@ -78,9 +78,12 @@ export const ALL_LOOK: StatusLook = {
   tone: 'blue',
 };
 
-/** "Chờ kết quả": not a status of its own, the interviews whose time has passed. */
-export const AWAITING_LOOK: StatusLook = {
+/** "Chờ kết quả": not a status of its own, the interviews whose time has passed. White on the fill: 5.0:1. */
+export const AWAITING_LOOK: StatusStyle = {
   label: 'Chờ kết quả',
   icon: 'clock',
   tone: 'amber',
+  filled: 'border-amber-700 bg-amber-700 text-white',
+  soft: 'border-amber-300 bg-amber-50 text-amber-800',
+  hover: 'hover:border-amber-300 hover:bg-amber-50 hover:text-amber-800',
 };

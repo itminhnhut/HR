@@ -57,6 +57,16 @@ const cameInBetween = (since: Date, until?: Date) =>
     until ? lt(applicationStatusLog.createdAt, until) : undefined,
   );
 
+async function countByStatus(db: Db): Promise<DashboardDto['statusCounts']> {
+  const rows = await db
+    .select({ status: applications.status, total: count() })
+    .from(applications)
+    .groupBy(applications.status);
+  const counts = { new: 0, seen: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
+  for (const row of rows) counts[row.status] = row.total;
+  return counts;
+}
+
 async function countSince(db: Db, since: Date): Promise<number> {
   const [row] = await db.select({ total: count() }).from(applicationStatusLog).where(cameInBetween(since));
   return row?.total ?? 0;
@@ -132,6 +142,7 @@ export async function dashboard(db: Db, now: Date, period = defaultPeriod(now)):
 
   return {
     bySource: countBySource(recent),
+    statusCounts: await countByStatus(db),
     awaitingResults: interviews.filter((i) => i.interviewAt && i.interviewAt <= now).length,
     sourceFunnel: await sourceFunnel(db, since, until),
     last7Days: await countSince(db, dayStart(addDays(todayInVietnam(now), -6))),

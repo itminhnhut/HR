@@ -1,4 +1,10 @@
-import { fieldErrors, reviewDecisionSchema, type ReviewItemPublicDto, type ReviewPageDto } from '@careers/shared';
+import {
+  fieldErrors,
+  reviewDecisionSchema,
+  type ReviewItemPublicDto,
+  type ReviewPageDto,
+  isInvited,
+} from '@careers/shared';
 import { and, eq } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, cvScores, jobs, reviewBatches, reviewItems, type ReviewBatch } from '../db/schema.js';
@@ -80,7 +86,7 @@ function toItem(row: Awaited<ReturnType<typeof itemRows>>[number], sentAt: Date)
     decidedAt: item.decidedAt?.toISOString() ?? null,
     hrReply: item.hrReply,
     hrRepliedAt: item.hrRepliedAt?.toISOString() ?? null,
-    scheduled: row.status === 'interview',
+    scheduled: isInvited(row.status),
     // Added later than the batch was sent: the reviewer may have read the previous CV.
     cvUpdated: !!row.cvChangedAt && row.cvChangedAt > (row.item.createdAt > sentAt ? row.item.createdAt : sentAt),
   };
@@ -137,7 +143,7 @@ export async function decideInReview(
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
   const { decision, comment } = parsed.data;
   const app = await db.query.applications.findFirst({ where: eq(applications.id, item.applicationId) });
-  if (app?.status === 'interview') {
+  if (app && isInvited(app.status)) {
     throw new HttpError(
       409,
       'HR đã hẹn phỏng vấn ứng viên này, không đổi được nữa. Nhắn HR nếu cần huỷ lịch.',
