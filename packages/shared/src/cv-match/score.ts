@@ -3,7 +3,7 @@
  */
 import type { Atom, AtomResult } from './atoms.js';
 import { parseToday } from './dates.js';
-import { scoreDuty } from './duties.js';
+import { dutyLines, scoreDuty } from './duties.js';
 import { extractEducation, type EducationEntry } from './education.js';
 import { evaluateEducation } from './education-eval.js';
 import { extractExperience, type ExperienceFacts } from './experience.js';
@@ -21,7 +21,7 @@ import { joinEvidence } from './text-match.js';
 import type { CvMatchResult, MatchItem, ScoreInput } from './types.js';
 
 /** Bump whenever scoring rules change so stored results get recomputed. */
-export const CV_MATCH_VERSION = 3;
+export const CV_MATCH_VERSION = 4;
 
 /** Fewer letters than this means the PDF has no usable text layer (scan, image, link). */
 export const MIN_CV_LETTERS = 15;
@@ -199,7 +199,7 @@ export const bonusCount = (items: readonly MatchItem[]): number =>
 /** Scores a CV against requirement lines. */
 export function scoreCv(input: ScoreInput): CvMatchResult {
   const doc = buildCvDoc(input.cvText);
-  const duties = input.duties ?? [];
+  const duties = dutyLines(input.duties ?? []);
   const preferred = input.preferred ?? [];
   if (doc.letterCount < MIN_CV_LETTERS) {
     const unread = (requirement: string): MatchItem => ({

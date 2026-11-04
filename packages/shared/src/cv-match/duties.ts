@@ -53,6 +53,26 @@ function namedTools(line: string, skills: SkillIndex): AtomResult[] {
     .map((atom) => evaluateKeywords({ ...atom, mode: 'any' }, skills));
 }
 
+const NUMBERED = /^\s*\d+[.)]\s/;
+const WORKING_HOURS = /\b(?:thoi gian lam viec|gio lam viec|nghi trua|thu hai|thu 2|thu bay|thu 7)\b/;
+
+function isWorkingHours(line: string): boolean {
+  const clean = cleanLine(line);
+  return clean === clean.toUpperCase() || WORKING_HOURS.test(foldClean(clean));
+}
+
+/**
+ * Job ads carry group titles and working hours in the same field as the duties, and neither is work to look for.
+ * A numbered line is a title only with a plain line under it: in a list numbered throughout, the lines are the duties.
+ */
+export function dutyLines(lines: readonly string[]): string[] {
+  return lines.filter((line, i) => {
+    const next = lines[i + 1];
+    const isTitle = NUMBERED.test(line) && next !== undefined && !NUMBERED.test(next);
+    return !isTitle && !isWorkingHours(line);
+  });
+}
+
 const dutyItem = (requirement: string, verdict: MatchItem['verdict'], evidence: string | null, reason: string) => ({
   requirement,
   verdict,

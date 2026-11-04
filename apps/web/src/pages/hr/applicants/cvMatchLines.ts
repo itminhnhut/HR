@@ -1,4 +1,5 @@
-import type { MatchItem } from '@careers/shared';
+import { UNPARSED_REASON, type MatchItem } from '@careers/shared';
+import type { IconName } from '../../../ui/icons';
 
 /**
  * A line of a result. `counted` (false for soft lines, bonuses and repeats) arrives with the scoring rules of
@@ -41,6 +42,17 @@ export function groupLines(lines: readonly MatchLine[]): Record<MatchTab, MatchL
 /** What HR most needs to see first: why not, if there is any. */
 export const defaultTab = (groups: Record<MatchTab, MatchLine[]>): MatchTab =>
   groups.unmet.length > 0 ? 'unmet' : 'met';
+
+/**
+ * Lines that repeat one long sentence say just what HR does next, in an icon and a few words; the sentence stays on
+ * hover. A job duty the CV is silent about is no fault of the candidate, only something to ask.
+ */
+export function shortNoteOf(line: MatchLine): { icon: IconName; text: string } | null {
+  if (line.section === 'duties' && line.verdict === 'unknown' && !line.evidence) {
+    return { icon: 'chat', text: 'Hỏi khi phỏng vấn' };
+  }
+  return line.reason === UNPARSED_REASON && !line.evidence ? { icon: 'eye', text: 'HR xem trực tiếp' } : null;
+}
 
 /** The explanation under a line. Every line left out says why, even if the scorer gave no reason. */
 export function reasonOf(line: MatchLine): string | null {

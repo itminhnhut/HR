@@ -36,6 +36,8 @@ function collapseSpacing(line: string): string {
 }
 
 const ENDS_IN_WORD_HYPHEN = /\p{L}-$/u;
+/** "Ngoại ngữ: Tiếng" + "Anh thương mại" in a narrow column. */
+const ENDS_IN_LANGUAGE_WORD = /(?:^|\s)tiếng$/iu;
 const ENDS_IN_OPEN_RANGE = /(?:^|\s)(?:\d{1,2}[/.-])?(?:19|20)\d{2}\s*[-–—~]$/;
 const STARTS_A_RANGE_END = /^(?:nay|hiện tại|hiện nay|present|now|current|(?:\d{1,2}[/.-])?(?:19|20)\d{2}\b)/i;
 
@@ -47,6 +49,8 @@ function joinBrokenLines(lines: readonly string[]): string[] {
     const last = out[out.length - 1];
     if (last !== undefined && ENDS_IN_WORD_HYPHEN.test(last) && /^\p{L}/u.test(line)) {
       out[out.length - 1] = `${last.slice(0, -1)}${line}`;
+    } else if (last !== undefined && ENDS_IN_LANGUAGE_WORD.test(last.trim()) && /^\p{L}/u.test(line)) {
+      out[out.length - 1] = `${last.trimEnd()} ${line}`;
     } else if (last !== undefined && ENDS_IN_OPEN_RANGE.test(last) && STARTS_A_RANGE_END.test(line)) {
       out[out.length - 1] = `${last} ${line}`;
     } else {
@@ -57,6 +61,10 @@ function joinBrokenLines(lines: readonly string[]): string[] {
 }
 
 const COLUMN_GAP = /\S {3,}\S/;
+/** Side-by-side columns gap about every line: at least one line in this many. A few gaps are only a heading row. */
+const MIN_COLUMN_SHARE = 5;
+/** The gap after a bullet is no column. */
+const BULLET_GAP = /^(\s*[•●▪■➢❖-])\s{2,}/;
 
 const MIN_FLOWING_ROWS = 3;
 
@@ -102,7 +110,8 @@ function hasFlowingColumn(lines: readonly string[]): boolean {
 function splitColumns(lines: readonly string[], isHeading: (cell: string) => boolean): string[] {
   const gapped = lines.filter((l) => COLUMN_GAP.test(l));
   const hasHeadingCell = gapped.some((l) => l.trim().split(/ {3,}/).some(isHeading));
-  if (gapped.length < 2 || (!hasHeadingCell && !hasFlowingColumn(lines))) return [...lines];
+  const isTooFewToBeColumns = gapped.length * MIN_COLUMN_SHARE < lines.filter((l) => l.trim()).length;
+  if (gapped.length < 2 || isTooFewToBeColumns || (!hasHeadingCell && !hasFlowingColumn(lines))) return [...lines];
   const left: string[] = [];
   const right: string[] = [];
   for (const line of lines) {
@@ -208,7 +217,8 @@ export function repairLayout(cvText: string, isHeading: (cell: string) => boolea
     .replace(FONT_CODES, ' ')
     .replace(PRIVATE_USE, '•')
     .replace(/[\u00A0\u2007\u202F]/g, ' ');
-  const columns = splitColumns(text.split('\n').map(collapseSpacing), isHeading);
+  const lines = text.split('\n').map((l) => collapseSpacing(l).replace(BULLET_GAP, '$1 '));
+  const columns = splitColumns(lines, isHeading);
   return joinWrappedLines(joinBrokenLines(columns))
     .flatMap((l) => l.split(/(?=[•●▪■➢❖])/))
     .flatMap(splitInlineHeaders)

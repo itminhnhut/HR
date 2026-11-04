@@ -80,6 +80,36 @@ describe('Lines split by the part of the job', () => {
     expect(within(dialog).getByRole('tab', { name: 'Không chấm: 1' })).toBeTruthy();
   });
 
+  it('should say only "Hỏi khi phỏng vấn" on a job description line the CV is silent about', async () => {
+    // Arrange
+    const reason = 'Không thấy việc tương tự trong phần kinh nghiệm của CV, HR hỏi thêm khi phỏng vấn';
+    const silent = { ...DUTY_OPEN, reason };
+    const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([MET, silent]) }));
+
+    // Act
+    await userEvent.click(within(dialog).getByRole('tab', { name: /Không chấm/ }));
+
+    // Assert
+    const panel = within(dialog).getByRole('tabpanel');
+    expect(within(panel).getByText('Hỏi khi phỏng vấn')).toBeTruthy();
+    expect(within(panel).queryByText(reason)).toBeNull();
+  });
+
+  it('should say only "HR xem trực tiếp" on a requirement the scorer cannot read', async () => {
+    // Arrange
+    const reason = 'Không tự chấm được yêu cầu này từ CV, HR xem trực tiếp';
+    const unread = line('Sẵn sàng đi công tác', 'unknown', { counted: false, reason });
+    const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([MET, unread]) }));
+
+    // Act
+    await userEvent.click(within(dialog).getByRole('tab', { name: /Không chấm/ }));
+
+    // Assert
+    const panel = within(dialog).getByRole('tabpanel');
+    expect(within(panel).getByText('HR xem trực tiếp')).toBeTruthy();
+    expect(within(panel).queryByText(reason)).toBeNull();
+  });
+
   it('should show a line with only a possibly related quote under "Không chấm", asking HR to check', async () => {
     // Arrange
     const reason = 'CV có câu có thể liên quan, HR kiểm tra lại';

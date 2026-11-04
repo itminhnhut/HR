@@ -131,15 +131,34 @@ function detectEnglish(lines: CvLine[], letters: number): boolean {
   return toned / letters < 0.01 && tokens > 0 && english / tokens >= 0.06;
 }
 
+/**
+ * "HỌC VẤN KINH NGHIỆM": two headings set side by side. What follows is both, so work wins: a job read as study is lost,
+ * and a school read as work is still told apart by its own words.
+ */
+function headingRowKind(folded: string): SectionKind | null {
+  const words = folded.split(' ');
+  for (let i = 1; i < words.length; i += 1) {
+    const left = detectHeader(words.slice(0, i).join(' '));
+    const right = detectHeader(words.slice(i).join(' '));
+    if (left && right && !left.inline && !right.inline) {
+      return left.kind === 'experience' || right.kind === 'experience' ? 'experience' : left.kind;
+    }
+  }
+  return null;
+}
+
 /** Splits a CV into cleaned lines with folded twins and the section each line belongs to. */
 export function buildCvDoc(cvText: string): CvDoc {
   let section: SectionKind = 'none';
   const lines: CvLine[] = splitRawLines(cvText).map((text, index) => {
     const folded = foldClean(text);
     const header = detectHeader(folded);
+    const rowKind = header ? null : headingRowKind(folded);
     // "Học vấn: Đại học X" speaks for its own line only; the next line may well be a job.
     if (header && !header.inline) section = header.kind;
-    return { index, text, folded, section: header?.kind ?? section, isHeader: header !== null && !header.inline };
+    if (rowKind) section = rowKind;
+    const isHeader = rowKind !== null || (header !== null && !header.inline);
+    return { index, text, folded, section: header?.kind ?? section, isHeader };
   });
   const letterCount = countLetters(lines.map((l) => l.text).join(' '));
   return { lines, letterCount, isEnglish: detectEnglish(lines, letterCount) };

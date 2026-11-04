@@ -212,6 +212,9 @@ export function evaluateExperience(atom: ExperienceAtom, facts: ExperienceFacts)
   if (atom.field === 'related') return relatedVerdict(facts, atom);
   const field = atom.field;
   const t = tally(facts, field);
+  if (field && t.jobs.length > 0 && t.jobs.every((j) => j.isRunTogether)) {
+    return result('unknown', 'CV trộn nhiều công việc trên một dòng, HR xem trực tiếp', jobEvidence(t.jobs));
+  }
   const counted = asksForInternship(atom) ? { ...t, strong: t.withInterns } : t;
   const met = metResult(counted, atom);
   if (met) return met;
@@ -220,6 +223,13 @@ export function evaluateExperience(atom: ExperienceAtom, facts: ExperienceFacts)
       'unknown',
       `Đủ ${formatMonths(t.withInterns)} nếu tính cả thực tập, yêu cầu ${wanted(atom)}`,
       jobEvidence(t.jobs),
+    );
+  }
+  if (field && facts.jobsAreScattered) {
+    return result(
+      'unknown',
+      'CV bị đảo thứ tự, chưa ghép được công việc với thời gian, HR xem trực tiếp',
+      jobEvidence(facts.jobs),
     );
   }
   if (field) return fieldShortfall(facts, atom, field, t);

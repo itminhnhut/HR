@@ -3,7 +3,7 @@
  * ("3 năm kinh nghiệm", "18 tháng bán hàng") and "chưa có kinh nghiệm".
  */
 import { extractStated, type StatedYears } from './experience-stated.js';
-import { extractJobs, type Job } from './experience-jobs.js';
+import { extractJobs, hasScatteredDates, type Job } from './experience-jobs.js';
 import { unbackedLists, withoutListLines } from './experience-lists.js';
 import { cvHeadline } from './experience-role.js';
 import type { CvDoc, CvLine } from './normalize.js';
@@ -26,6 +26,8 @@ export interface ExperienceFacts {
   undated: CvLine[];
   /** Those lines sit under a work-history heading, so what they leave out is really not there. */
   undatedIsSection: boolean;
+  /** The design scrambled the reading order: a job's dates and its description cannot be matched up. */
+  jobsAreScattered: boolean;
   /** The CV has real sections with content, so a missing work history means there is none. */
   hasStructure: boolean;
 }
@@ -74,6 +76,7 @@ export function extractExperience(doc: CvDoc, todayMonth: number | null): Experi
     noExperience,
     undated,
     undatedIsSection: undated.some((l) => l.section === 'experience'),
+    jobsAreScattered: jobs.length > 0 && hasScatteredDates(doc, todayMonth),
     hasStructure,
   };
 }

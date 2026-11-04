@@ -18,6 +18,8 @@ export interface Job extends JobRole {
   /** Folded text of the job: head and description, without mentions of other people's work. */
   blockFolded: string;
   isInternship: boolean;
+  /** Several date ranges on the line: jobs that ran together, so what the line says cannot be told apart by job. */
+  isRunTogether: boolean;
 }
 
 const NOT_WORK_SECTIONS: ReadonlySet<SectionKind> = new Set([
@@ -43,6 +45,9 @@ const WORK_AT_SCHOOL = /\b(giao vien|giang vien|tro giang|gia su|teacher|lecture
 const INTERNSHIP = /\b(thuc tap(?! sinh ky nang)|thuc tap sinh(?! ky nang)|intern|internship|trainee)\b/;
 const ORG_LINE = /\b(?:cong ty|cty|tap doan|ngan hang|benh vien|nha may|company|corp|ltd|jsc|inc)\b|\bco\.(?:\s|$)/;
 
+/** Two ranges can be one job with a break ("2019 – 2021, 2022 – nay"); three on a line have run together. */
+const MIN_RUN_TOGETHER = 3;
+
 function hasDates(line: CvLine, todayMonth: number | null): boolean {
   return !BIRTH.test(line.folded) && findRanges(line.folded, todayMonth).length > 0;
 }
@@ -51,10 +56,37 @@ function isStudyLine(line: CvLine): boolean {
   return SCHOOL.test(line.folded) && !WORK_AT_SCHOOL.test(line.folded);
 }
 
+/** A date range next to one of these words is a job wherever the design's reading order has put it. */
+const JOB_WORDS =
+  /\b(?:nhan vien|thuc tap|cong ty|cty|chuyen vien|truong phong|ky su|tro ly|ke toan|company|corp|ltd|jsc|intern|engineer|specialist|officer|staff)\b/;
+
+/**
+ * No dates where a job should be: a design read out of order can put them under any heading. Dates count only beside
+ * a job's words and away from a school's, so years of study, awards and projects stay out.
+ */
+function scatteredJobLines(doc: CvDoc, todayMonth: number | null): CvLine[] {
+  const isJobDate = (i: number) => {
+    const near = doc.lines.slice(Math.max(i - 1, 0), i + 2);
+    return (
+      near.some((l) => JOB_WORDS.test(l.folded)) &&
+      !near.some((l) => SCHOOL.test(l.folded) && !WORK_AT_SCHOOL.test(l.folded))
+    );
+  };
+  return doc.lines.filter((l, i) => !hasDates(l, todayMonth) || isJobDate(i));
+}
+
+const outsideSections = (doc: CvDoc) => doc.lines.filter((l) => !NOT_WORK_SECTIONS.has(l.section) && !isStudyLine(l));
+
+/** The job dates sit under other headings, so a job's description need not be anywhere near its dates. */
+export function hasScatteredDates(doc: CvDoc, todayMonth: number | null): boolean {
+  const isDated = (l: CvLine) => hasDates(l, todayMonth);
+  return !doc.lines.some((l) => l.section === 'experience' && isDated(l)) && !outsideSections(doc).some(isDated);
+}
+
 function jobLines(doc: CvDoc, todayMonth: number | null): CvLine[] {
+  if (hasScatteredDates(doc, todayMonth)) return scatteredJobLines(doc, todayMonth);
   const inSection = doc.lines.filter((l) => l.section === 'experience');
-  if (inSection.some((l) => hasDates(l, todayMonth))) return inSection;
-  return doc.lines.filter((l) => !NOT_WORK_SECTIONS.has(l.section) && !isStudyLine(l));
+  return inSection.some((l) => hasDates(l, todayMonth)) ? inSection : outsideSections(doc);
 }
 
 function isHeadCandidate(line: CvLine): boolean {
@@ -153,6 +185,7 @@ function jobsAt(
     head,
     blockFolded,
     isInternship,
+    isRunTogether: intervals.length >= MIN_RUN_TOGETHER,
   }));
 }
 

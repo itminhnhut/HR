@@ -12,6 +12,54 @@ export interface PdfReading {
   problem: PdfProblem | null;
 }
 
+/** A piece of text as pdf.js places it on the page. */
+export interface PdfTextItem {
+  str: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  hasEOL: boolean;
+}
+
+/** Gaps, in text heights: below a word gap the pieces are one word; from a column gap on they are apart on the page. */
+const WORD_GAP = 0.15;
+const COLUMN_GAP = 2;
+/** A blank piece this wide is a gap set on purpose: "Điện thoại: 0397   Email: …", "L Ê   M I N H". */
+const WIDE_BLANK = 0.8;
+
+function gapBetween(last: PdfTextItem, next: PdfTextItem): string {
+  if (last.hasEOL) return '\n';
+  const height = Math.max(last.height, next.height);
+  if (Math.abs(next.y - last.y) > height / 2) return ' ';
+  const gap = (next.x - (last.x + last.width)) / (height || 1);
+  if (gap < -1) return ' ';
+  if (gap <= WORD_GAP) return '';
+  return gap >= COLUMN_GAP ? '   ' : ' ';
+}
+
+/**
+ * Joins the pieces by where they sit on the page. A font without an accented letter splits a word around it ("ch", "ứ",
+ * "ng t", "ừ"), so a space between every piece reads "ch ứ ng t ừ" and the CV's words can no longer be found.
+ */
+export function joinPdfItems(items: readonly PdfTextItem[]): string {
+  return items.reduce((text, item, i) => {
+    const last = items[i - 1];
+    if (!last) return item.str;
+    const isWideBlank = item.str.trim() === '' && item.str !== '' && item.width >= WIDE_BLANK * last.height;
+    return text + gapBetween(last, item) + (isWideBlank ? '   ' : item.str);
+  }, '');
+}
+
+const toItem = (item: { str: string; transform: number[]; width: number; height: number; hasEOL: boolean }) => ({
+  str: item.str,
+  x: item.transform[4] ?? 0,
+  y: item.transform[5] ?? 0,
+  width: item.width,
+  height: item.height,
+  hasEOL: item.hasEOL,
+});
+
 /** The first pages, plus the last one of a longer file: some CVs close with the contact details. */
 export function pagesToRead(pageCount: number): number[] {
   const first = Array.from({ length: Math.min(pageCount, MAX_PAGES) }, (_, i) => i + 1);
@@ -30,11 +78,7 @@ export async function readPdf(bytes: Uint8Array): Promise<PdfReading> {
     for (const number of pagesToRead(pdf.numPages)) {
       const page = await pdf.getPage(number);
       const content = await page.getTextContent();
-      texts.push(
-        content.items
-          .map((item) => ('str' in item ? item.str : '') + ('hasEOL' in item && item.hasEOL ? '\n' : ' '))
-          .join(''),
-      );
+      texts.push(joinPdfItems(content.items.flatMap((item) => ('str' in item ? [toItem(item)] : []))));
     }
     const text = texts
       .join('\n')
