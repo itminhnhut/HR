@@ -1,6 +1,9 @@
 import {
   APPLICATION_STATUS_LABEL,
+  isAwaitingResult,
   isCandidateSideReason,
+  rejectReasonLabel,
+  statusChangeProblem,
   type ApplicationDetailDto,
   type ApplicationStatus,
   type RejectReason,
@@ -11,32 +14,34 @@ import type { ApplicationPatch } from '../../../api';
 import { useUpdateApplication } from '../../../api/queries';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
-import { OutcomeActions } from './OutcomeActions';
 import { RejectForm } from './RejectForm';
 import { BypassForm, needsBypass } from './ReviewGate';
 import { MARK_STROKE, StatusMark } from './StatusMark';
-import { STATUS_STYLE } from './statusStyle';
+import { AWAITING_LOOK, STATUS_STYLE } from './statusStyle';
 import { suggestedTemplate } from './useMailDraft';
 
-/**
- * The statuses in the order an application moves through them. The two with a `reason` or `title` say what a press
- * means, because it is not obvious: "Đã xem" is not a choice (the server sets it when a profile is opened), and "Mới"
- * marks it as not seen again.
- */
-const SEGMENTS: { status: ApplicationStatus; reason?: string; title?: string }[] = [
-  { status: 'new', title: 'Đánh dấu chưa xem' },
-  { status: 'seen', reason: 'Hồ sơ tự chuyển sang "Đã xem" khi được mở.' },
-  { status: 'interview' },
-  { status: 'rejected' },
-];
+type Segment = ApplicationStatus | 'awaiting';
+
+/** Every step in the order an application moves through them. */
+const SEGMENTS: readonly Segment[] = ['new', 'seen', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
+
+const lookOf = (segment: Segment) => (segment === 'awaiting' ? AWAITING_LOOK : STATUS_STYLE[segment]);
+
+/** Why a step cannot be pressed now, shown on a press, because a hover title never shows on a phone. */
+function lockReason(segment: Segment, app: ApplicationDetailDto, active: Segment): string | null {
+  if (segment === active) return null;
+  if (segment === 'awaiting') return 'Tự chuyển sang "Chờ kết quả" khi đã qua giờ phỏng vấn.';
+  if (segment === 'interview' && active === 'awaiting') return 'Muốn hẹn lại, đổi giờ ở mục Giờ phỏng vấn.';
+  return statusChangeProblem(app, segment, new Date());
+}
 
 const SEGMENT =
   'relative -ml-px inline-flex min-h-11 min-w-0 flex-wrap items-center justify-center gap-x-1 border px-1 py-1 text-center text-[12px] leading-tight transition-colors first:ml-0 first:rounded-l-control last:rounded-r-control focus-visible:z-10 lg:flex-nowrap lg:whitespace-nowrap lg:px-2 lg:py-0 lg:text-[13px]';
 
-function segmentTone(status: ApplicationStatus, isActive: boolean, isLocked: boolean): string {
-  if (isActive) return `z-[1] font-semibold ${STATUS_STYLE[status].filled}`;
+function segmentTone(segment: Segment, isActive: boolean, isLocked: boolean): string {
+  if (isActive) return `z-[1] font-semibold ${lookOf(segment).filled}`;
   if (isLocked) return 'cursor-not-allowed border-silver bg-mist text-muted';
-  return `border-silver bg-white text-navy ${STATUS_STYLE[status].hover}`;
+  return `border-silver bg-white text-navy ${lookOf(segment).hover}`;
 }
 
 const UNDO_MS = 5000;
@@ -44,7 +49,8 @@ const UNDO_MS = 5000;
 function UndoBar({ app, onCompose, onUndo }: { app: ApplicationDetailDto; onCompose: () => void; onUndo: () => void }) {
   // A candidate who left needs no letter of refusal.
   const canWrite =
-    app.status === 'interview' || (app.status === 'rejected' && !isCandidateSideReason(app.rejectReason));
+    (app.status === 'interview' && !isAwaitingResult(app, new Date())) ||
+    (app.status === 'rejected' && !isCandidateSideReason(app.rejectReason));
   return (
     <div
       role="status"
@@ -108,7 +114,13 @@ function useStatusChange(app: ApplicationDetailDto, onError: (msg: string) => vo
       setIsRejecting(true);
       return;
     }
-    send({ status, ...(reviewBypassReason ? { reviewBypassReason } : {}) });
+    // Back from a result: the interview did take place at that time.
+    const keepsTime = status === 'interview' && (app.status === 'passed' || app.status === 'hired');
+    send({
+      status,
+      ...(keepsTime ? { interviewAt: app.interviewAt } : {}),
+      ...(reviewBypassReason ? { reviewBypassReason } : {}),
+    });
   };
   const reject = (rejectReason: RejectReason, rejectNote: string | null = null) =>
     send({ status: 'rejected', rejectReason, rejectNote });
@@ -126,7 +138,6 @@ function useStatusChange(app: ApplicationDetailDto, onError: (msg: string) => vo
     isBypassing,
     stopBypass: () => setIsBypassing(false),
     isRejecting,
-    startReject: () => setIsRejecting(true),
     stopReject: () => setIsRejecting(false),
   };
 }
@@ -135,34 +146,32 @@ function StatusSegments({ app, status }: { app: ApplicationDetailDto; status: Re
   const id = useId();
   // A hover title never shows on a phone, so pressing a locked status says why, under the block.
   const [why, setWhy] = useState<string | null>(null);
+  const active: Segment = isAwaitingResult(app, new Date()) ? 'awaiting' : app.status;
   return (
     <div role="group" aria-labelledby={`${id}-label`} className="min-w-0 max-lg:w-full">
       <span id={`${id}-label`} className="mb-0.5 block text-[11px] leading-4 text-muted">
         Cập nhật trạng thái
       </span>
-      <div className="grid grid-cols-4 lg:inline-flex">
-        {SEGMENTS.map(({ status: slot, reason, title }) => {
-          // After the interview its result takes the place of "Hẹn phỏng vấn".
-          const isResult = slot === 'interview' && (app.status === 'passed' || app.status === 'hired');
-          const value = isResult ? app.status : slot;
-          const isActive = app.status === value;
-          const isLocked = !isActive && !!reason;
+      <div className="grid grid-cols-4 lg:flex lg:flex-wrap">
+        {SEGMENTS.map((segment) => {
+          const isActive = segment === active;
+          const reason = lockReason(segment, app, active);
           return (
             <button
-              key={value}
+              key={segment}
               type="button"
               aria-pressed={isActive}
-              aria-disabled={isLocked || undefined}
-              title={isActive ? undefined : (reason ?? title)}
+              aria-disabled={!!reason || undefined}
+              title={reason ?? (segment === 'new' && !isActive ? 'Đánh dấu chưa xem' : undefined)}
               disabled={status.isPending}
               onClick={() => {
-                setWhy(isLocked && reason ? reason : null);
-                if (!isActive && !isLocked) status.change(value);
+                setWhy(reason);
+                if (!isActive && !reason && segment !== 'awaiting') status.change(segment);
               }}
-              className={`${SEGMENT} ${segmentTone(value, isActive, isLocked)}`}
+              className={`${SEGMENT} ${segmentTone(segment, isActive, !!reason)}`}
             >
               {isActive && <Icon name="check" size={14} stroke={MARK_STROKE} className="shrink-0" />}
-              <StatusMark look={STATUS_STYLE[value]} />
+              <StatusMark look={lookOf(segment)} />
             </button>
           );
         })}
@@ -196,12 +205,13 @@ export function StatusControl({
     <>
       <div className="flex min-w-0 flex-col gap-2 max-lg:w-full">
         <StatusSegments app={app} status={status} />
-        <OutcomeActions
-          app={app}
-          busy={status.isPending}
-          onStatus={status.change}
-          onReject={(reason) => (reason ? status.reject(reason) : status.startReject())}
-        />
+        {app.status === 'rejected' && app.rejectReason && (
+          <p className="m-0 flex flex-wrap items-center gap-1.5 text-[13px] text-slate">
+            <Icon name="info" size={14} className="shrink-0" />
+            Lý do: <b className="font-semibold text-navy">{rejectReasonLabel(app.rejectReason)}</b>
+            {app.rejectNote && <span>· {app.rejectNote}</span>}
+          </p>
+        )}
       </div>
       {(status.isBypassing || status.isRejecting || status.hasUndo) && (
         <div className="absolute inset-x-3 top-full z-10 mt-1 flex max-h-[60dvh] flex-col gap-2 overflow-y-auto rounded-control">

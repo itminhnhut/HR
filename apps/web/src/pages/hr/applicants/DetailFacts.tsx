@@ -6,7 +6,7 @@ import { FieldError } from '../../../ui/Field';
 import { Icon, type IconName } from '../../../ui/icons';
 import { errorMessage } from '../parts';
 import { ContactOrigin } from './ContactOrigin';
-import { ContactHistoryRow, OtherApplicationsRow } from './DetailDrawers';
+import { ActivityLogRow, ContactHistoryRow, OtherApplicationsRow } from './DetailDrawers';
 import { CvMatch } from './CvMatch';
 import { CvPanel } from './CvPanel';
 import { InterviewTime } from './InterviewTime';
@@ -95,6 +95,11 @@ function ContactFacts({ app }: { app: ApplicationDetailDto }) {
       <Fact icon="user" label="Giới tính, tuổi (theo CV)">
         {app.cvGender || app.cvBirth ? <PersonalMarks gender={app.cvGender} birth={app.cvBirth} /> : 'CV không ghi'}
       </Fact>
+      {app.interviewAt && app.status !== 'interview' && (
+        <Fact icon="clock" label="Ngày phỏng vấn">
+          {formatTimestamp(app.interviewAt)}
+        </Fact>
+      )}
       <Fact icon="calendar" label="Ngày nộp">
         {formatTimestamp(app.createdAt)}
       </Fact>
@@ -144,6 +149,7 @@ export function DetailFacts({
           </div>
         )}
         <NoteField key={app.id} app={app} onError={onError} />
+        <ActivityLogRow app={app} />
         <ContactHistoryRow app={app} />
         <OtherApplicationsRow app={app} />
       </div>

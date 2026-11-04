@@ -15,6 +15,7 @@ import { CV_PROBLEM_MESSAGE, checkCvFile, cvFileName, deleteFilesQuietly } from 
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
 import { lockJobAndPhone } from './apply.js';
+import { actorOf, logActivity } from './activity.js';
 import { logStatus } from './status-log.js';
 import { newCvFrom, replaceCv } from './cv-replace.js';
 import { checkUsableSource } from './sources.js';
@@ -133,7 +134,7 @@ export async function hrReplaceCv(deps: Deps, id: string, body: MultipartBody, h
 }
 
 /** Contact details and source of an application HR added; the candidate's own applications keep what they sent. */
-export async function updateContact(deps: Deps, id: string, raw: unknown): Promise<void> {
+export async function updateContact(deps: Deps, id: string, raw: unknown, hr: HrMe): Promise<void> {
   const app = await findApplication(deps, id);
   if (!app.addedBy) {
     throw new HttpError(409, 'Hồ sơ ứng viên tự nộp giữ nguyên thông tin ứng viên gửi.', {}, 'candidate_sent');
@@ -153,5 +154,14 @@ export async function updateContact(deps: Deps, id: string, raw: unknown): Promi
       .update(applications)
       .set({ phone, email, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
       .where(eq(applications.id, app.id));
+    for (const [field, from, to] of [
+      ['phone', app.phone, phone],
+      ['email', app.email, email ?? null],
+      ['source', app.source, source],
+    ] as const) {
+      if (from !== to) {
+        await logActivity(tx, { applicationId: app.id, kind: 'contact', actor: actorOf(hr), from, to, detail: field });
+      }
+    }
   });
 }

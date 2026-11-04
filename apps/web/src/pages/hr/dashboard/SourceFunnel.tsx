@@ -15,10 +15,25 @@ function Count({ value, of }: { value: number; of: number }) {
   );
 }
 
+const nothing = (source: string): SourceFunnelRow => ({
+  source,
+  received: 0,
+  interview: 0,
+  passed: 0,
+  hired: 0,
+  topRejectReason: null,
+});
+
+/** Every source on the list, those with nothing too, and any no longer on it that still has numbers. Most hired first. */
+export function allSources(rows: readonly SourceFunnelRow[], sources: readonly { key: string }[]): SourceFunnelRow[] {
+  const missing = sources.filter((s) => !rows.some((row) => row.source === s.key)).map((s) => nothing(s.key));
+  return [...rows, ...missing].sort((a, b) => b.hired - a.hired || b.received - a.received);
+}
+
 /** From applications to people hired, per source: which source brings someone who stays. */
 export function SourceFunnel({ rows }: { rows: readonly SourceFunnelRow[] }) {
   const sources = useSources().data ?? [];
-  if (rows.length === 0) return <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong khoảng thời gian này.</p>;
+  const all = allSources(rows, sources);
   return (
     <div className="flex flex-col gap-2">
       <div className="overflow-x-auto">
@@ -39,7 +54,7 @@ export function SourceFunnel({ rows }: { rows: readonly SourceFunnelRow[] }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {all.map((row) => (
               <tr key={row.source}>
                 <th scope="row" className="border-b border-line-soft px-4 py-3 text-left font-medium text-navy">
                   <Link to={`/hr/ho-so?nguon=${row.source}`} className="text-navy no-underline hover:underline">

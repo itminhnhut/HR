@@ -1,4 +1,5 @@
 import type {
+  ActivityKind,
   ApplicationStatus,
   ArticleHeadingRef,
   ArticleState,
@@ -298,6 +299,24 @@ export const applicationStatusLog = pgTable(
     index('application_status_log_application_idx').on(t.applicationId),
     index('application_status_log_created_idx').on(t.createdAt),
   ],
+);
+
+/** "Nhật ký hồ sơ": who changed what on an application. Unlike the status log it names people, so it goes with the application. */
+export const applicationActivity = pgTable(
+  'application_activity',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    kind: text('kind').notNull().$type<ActivityKind>(),
+    actor: text('actor').notNull(),
+    fromValue: text('from_value'),
+    toValue: text('to_value'),
+    detail: text('detail'),
+    createdAt,
+  },
+  (t) => [index('application_activity_application_idx').on(t.applicationId)],
 );
 
 /** Last automatic CV check of an application against its job's requirements (spec-cv-match.md). */

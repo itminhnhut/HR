@@ -19,8 +19,8 @@ export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   new: 'Mới',
   seen: 'Đã xem',
   interview: 'Hẹn phỏng vấn',
-  passed: 'Đạt, chờ nhận việc',
-  hired: 'Đã nhận việc',
+  passed: 'Đạt',
+  hired: 'Nhận việc',
   rejected: 'Chưa phù hợp',
 };
 

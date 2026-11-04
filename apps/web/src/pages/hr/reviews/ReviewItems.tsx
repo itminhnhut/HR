@@ -4,6 +4,7 @@ import {
   REVIEW_TEXT_MAX,
   type ReviewBatchDto,
   type ReviewItemHrDto,
+  isInvited,
 } from '@careers/shared';
 import { useState } from 'react';
 import { Link } from 'react-router';
@@ -91,7 +92,7 @@ function NextStep({ batch, item }: { batch: ReviewBatchDto; item: ReviewItemHrDt
   const action = useReviewAction(batch.id);
   const open = `/hr/ho-so?id=${item.applicationId}`;
   if (item.decision === 'approve') {
-    return item.status === 'interview' ? (
+    return isInvited(item.status) ? (
       <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-ok">
         <Icon name="calendar" size={14} /> Đã hẹn
       </span>

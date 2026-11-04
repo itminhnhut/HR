@@ -53,7 +53,7 @@ hrApplicationRoutes.delete('/applications/:id', async (c) =>
 );
 
 hrApplicationRoutes.get('/applications/:id', async (c) => {
-  return c.json(await openApplication(c.get('deps').db, c.req.param('id')));
+  return c.json(await openApplication(c.get('deps').db, c.req.param('id'), hrOf(c)));
 });
 
 /** Scores CV files without an up-to-date result, a batch at a time (the list calls it until none remain). */
@@ -72,14 +72,14 @@ hrApplicationRoutes.patch('/applications/:id', async (c) => {
 hrApplicationRoutes.put('/applications/:id/cv', async (c) => {
   const deps = c.get('deps');
   await hrReplaceCv(deps, c.req.param('id'), await readMultipart(c, 'cv'), hrOf(c));
-  return c.json(await openApplication(deps.db, c.req.param('id')));
+  return c.json(await openApplication(deps.db, c.req.param('id'), hrOf(c)));
 });
 
 /** Phone, email, source of an application HR added. */
 hrApplicationRoutes.patch('/applications/:id/contact', async (c) => {
   const deps = c.get('deps');
-  await updateContact(deps, c.req.param('id'), await readJson(c));
-  return c.json(await openApplication(deps.db, c.req.param('id')));
+  await updateContact(deps, c.req.param('id'), await readJson(c), hrOf(c));
+  return c.json(await openApplication(deps.db, c.req.param('id'), hrOf(c)));
 });
 
 hrApplicationRoutes.post('/applications/:id/contacts', async (c) => {

@@ -184,7 +184,21 @@ export interface ApplicationReviewDto {
   cvChangedAfterDecision: boolean;
 }
 
+export type ActivityKind = 'status' | 'interview' | 'note' | 'contact';
+
+/** A line of "Nhật ký hồ sơ": who changed what, from what to what. */
+export interface ActivityDto {
+  kind: ActivityKind;
+  actor: string;
+  at: string;
+  from: string | null;
+  to: string | null;
+  /** status: a reject reason, or "undo". contact: phone, email or source. */
+  detail: string | null;
+}
+
 export interface ApplicationDetailDto extends ApplicationRowDto {
+  activity: ActivityDto[];
   /** Why it is "Chưa phù hợp"; null for one closed before reasons existed. Internal only. */
   rejectReason: import('./hiring.js').RejectReason | null;
   rejectNote: string | null;
@@ -293,6 +307,8 @@ export interface DashboardDto {
   bySource: { source: import('./cv-intake.js').ApplicationSource; count: number }[];
   /** Interviews whose time has passed with no result written down yet. */
   awaitingResults: number;
+  /** How many applications stand at each status now, whatever the period the reports show. */
+  statusCounts: Record<ApplicationStatus, number>;
   /** Applications of the last 7 days, whatever the period the reports show. */
   last7Days: number;
   sourceFunnel: import('./hiring.js').SourceFunnelRow[];

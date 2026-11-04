@@ -3,7 +3,9 @@ import {
   bonusCount,
   contactLogSchema,
   fieldErrors,
+  isInvited,
   matchesQuery,
+  statusChangeProblem,
   type ApplicationDetailDto,
   type ApplicationRowDto,
   type ApplicationsResponse,
@@ -23,7 +25,8 @@ import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './re
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { expiredApplicationsWhere } from './hr-jobs.js';
-import { dropLastStatus, isReportedStep, logStatus } from './status-log.js';
+import { activityOf, actorOf, logActivity, logNoteEdit } from './activity.js';
+import { dropLastStatus, isReportedStep, logStatus, rewindSteps } from './status-log.js';
 
 const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'passed', 'hired', 'rejected'];
 
@@ -108,6 +111,7 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
     referrer: a.referrer,
     addedBy: a.addedBy,
     consentBy: a.consentBy,
+    activity: await activityOf(db, a.id),
     cvHistory: await cvHistoryOf(db, a.id),
     interviewMode: a.interviewMode,
     meetingUrl: a.meetingUrl,
@@ -195,12 +199,21 @@ async function findApplication(db: Db, id: string): Promise<ApplicationWithJob> 
 }
 
 /** Opening an application marks it "seen" (the candidate sees "HR đã xem"). */
-export async function openApplication(db: Db, id: string): Promise<ApplicationDetailDto> {
+export async function openApplication(db: Db, id: string, hr: HrMe): Promise<ApplicationDetailDto> {
   const row = await findApplication(db, id);
   // An HR has now seen the candidate's new CV too.
   if (row.status !== 'new' && row.cvChangeSeen) return toDetail(db, row);
   const patch = { status: row.status === 'new' ? ('seen' as const) : row.status, cvChangeSeen: true };
   await db.update(applications).set(patch).where(eq(applications.id, id));
+  if (patch.status !== row.status) {
+    await logActivity(db, {
+      applicationId: id,
+      kind: 'status',
+      actor: actorOf(hr),
+      from: row.status,
+      to: patch.status,
+    });
+  }
   return toDetail(db, { ...row, ...patch });
 }
 
@@ -222,12 +235,15 @@ const DATED_STATUSES: readonly ApplicationStatus[] = ['interview', 'passed', 'hi
 type ApplicationUpdate = ReturnType<typeof applicationUpdateSchema.parse>;
 
 /** What a status change needs. An undo restores what was there, so it is free of these. */
-function checkStatusChange(row: Application, input: ApplicationUpdate): void {
+function checkStatusChange(row: Application, input: ApplicationUpdate, now: Date): void {
   const { status, rejectReason, rejectNote, isUndo } = input;
   if (!status || status === row.status || isUndo) return;
-  if ((status === 'passed' || status === 'hired') && !row.interviewAt) {
-    throw invalid('Chọn giờ phỏng vấn trước khi ghi kết quả.', { status: 'Hồ sơ chưa có giờ phỏng vấn.' });
-  }
+  const problem = statusChangeProblem(
+    { status: row.status, interviewAt: row.interviewAt?.toISOString() ?? null },
+    status,
+    now,
+  );
+  if (problem) throw invalid(problem, { status: problem });
   if (status !== 'rejected') return;
   if (!rejectReason) throw invalid('Chọn lý do chưa phù hợp.', { rejectReason: 'Chọn một lý do.' });
   if (rejectReason === 'other' && !rejectNote) {
@@ -246,6 +262,28 @@ function rejectFields(row: Application, input: ApplicationUpdate) {
   };
 }
 
+/** What this change did, for "Nhật ký hồ sơ". */
+async function logChanges(
+  db: Db,
+  before: Application,
+  after: Application,
+  input: ApplicationUpdate,
+  hr: HrMe,
+  now: Date,
+): Promise<void> {
+  const base = { applicationId: before.id, actor: actorOf(hr), at: now };
+  if (after.status !== before.status) {
+    const detail = input.isUndo ? 'undo' : (after.rejectReason ?? null);
+    await logActivity(db, { ...base, kind: 'status', from: before.status, to: after.status, detail });
+  }
+  const timeBefore = before.interviewAt?.toISOString() ?? null;
+  const timeAfter = after.interviewAt?.toISOString() ?? null;
+  if (input.interviewAt !== undefined && !input.isUndo && timeBefore !== timeAfter) {
+    await logActivity(db, { ...base, kind: 'interview', from: timeBefore, to: timeAfter });
+  }
+  if (after.note !== before.note) await logNoteEdit(db, before.id, base.actor, now);
+}
+
 export async function updateApplication(
   db: Db,
   id: string,
@@ -257,8 +295,9 @@ export async function updateApplication(
   const parsed = applicationUpdateSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Dữ liệu không hợp lệ.', fieldErrors(parsed.error));
   const { status, note, interviewAt, interviewMode, meetingUrl, reviewBypassReason, isUndo } = parsed.data;
-  checkStatusChange(row, parsed.data);
-  if (status === 'interview' && row.status !== 'interview' && !isUndo) {
+  checkStatusChange(row, parsed.data, now);
+  // Back from a result is a correction: the invitation was already decided.
+  if (status === 'interview' && !isInvited(row.status) && !isUndo) {
     await checkReview(db, row, reviewBypassReason, hr, now);
   }
   // An interview time only belongs to "Hẹn phỏng vấn" and to what comes after it.
@@ -279,7 +318,9 @@ export async function updateApplication(
   };
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
+  await logChanges(db, row, updated, parsed.data, hr, now);
   if (status && status !== row.status) {
+    if (!isUndo) await rewindSteps(db, id, status);
     if (!isUndo && isReportedStep(status)) await logStatus(db, row, status, parsed.data.rejectReason ?? null);
     if (isUndo && isReportedStep(row.status)) await dropLastStatus(db, id);
   }

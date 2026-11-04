@@ -24,6 +24,8 @@ Web chỉ ghi tới "Hẹn phỏng vấn". Không biết ai đậu, vì sao lo�
   `hr-added`, để không tự nhận là đã có đồng ý.
 - **So sánh tin:** chọn nhiều tin (tối đa 6, theo số màu), mỗi tin một cột, một màu. Số của từng ngày chỉ hiện khi rê chuột.
 
+- **Nhật ký hồ sơ:** ai đổi gì, lúc nào, từ giá trị nào sang giá trị nào (trạng thái, lý do, giờ phỏng vấn, ghi chú, liên hệ, CV, thư). Có dòng hoàn tác. Xoá theo hồ sơ.
+
 ## 3. Approach
 
 - Bảng `application_status_log`: mỗi bước một dòng, không có tên, SĐT, email và không có khoá ngoại tới hồ sơ. Xoá hồ sơ thì số thống

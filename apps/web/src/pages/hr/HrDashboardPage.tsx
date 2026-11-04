@@ -6,6 +6,7 @@ import { usePageMeta } from '../../lib/hooks';
 import { ButtonLink } from '../../ui/Button';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
+import { AWAITING_LOOK, STATUS_STYLE, type StatusLook } from './applicants/statusStyle';
 import { InterviewCalendar } from './dashboard/InterviewCalendar';
 import { RealtimePanel } from './dashboard/RealtimePanel';
 import { Panel } from './dashboard/Panel';
@@ -153,6 +154,39 @@ function DashboardSkeleton() {
   );
 }
 
+/** Where every application stands now, each opening its list, and how many came in lately. */
+function StatusCards({ data }: { data: DashboardDto }) {
+  const { statusCounts: counts, awaitingResults, waitingOver3Days, last7Days } = data;
+  const card = (look: StatusLook, value: number, tab: string, hint?: string) => (
+    <StatCard
+      key={tab}
+      icon={look.icon}
+      tone={look.tone}
+      label={look.label}
+      value={value}
+      hint={hint}
+      to={`/hr/ho-so?trang-thai=${tab}`}
+    />
+  );
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4">
+      {card(
+        STATUS_STYLE.new,
+        counts.new,
+        'new',
+        waitingOver3Days > 0 ? `${waitingOver3Days} hồ sơ chờ hơn 3 ngày` : undefined,
+      )}
+      {card(STATUS_STYLE.seen, counts.seen, 'seen')}
+      {card(STATUS_STYLE.interview, counts.interview, 'interview')}
+      {card(AWAITING_LOOK, awaitingResults, 'awaiting')}
+      {card(STATUS_STYLE.passed, counts.passed, 'passed')}
+      {card(STATUS_STYLE.hired, counts.hired, 'hired')}
+      {card(STATUS_STYLE.rejected, counts.rejected, 'rejected')}
+      <StatCard icon="trend" tone="green" label="Hồ sơ 7 ngày qua" value={last7Days} to="/hr/ho-so?trang-thai=all" />
+    </div>
+  );
+}
+
 export function HrDashboardPage() {
   usePageMeta('Tổng quan');
   const [period, setPeriod] = useState(defaultReportPeriod);
@@ -181,25 +215,7 @@ export function HrDashboardPage() {
       {dashboard.isError && <ErrorState onRetry={() => dashboard.refetch()} message={apiMessage(dashboard.error)} />}
       {data && (
         <div className="flex flex-col gap-5">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <StatCard
-              icon="inbox"
-              tone="sky"
-              label="Hồ sơ mới chưa xem"
-              value={data.newApplications}
-              hint={data.waitingOver3Days > 0 ? `${data.waitingOver3Days} hồ sơ đã chờ hơn 3 ngày` : undefined}
-              to="/hr/ho-so?trang-thai=new"
-            />
-            <StatCard
-              icon="calendar"
-              tone="orange"
-              label="Đang hẹn phỏng vấn"
-              value={data.interviewCounts.total}
-              hint={data.awaitingResults > 0 ? `${data.awaitingResults} người chờ ghi kết quả` : undefined}
-              to={`/hr/ho-so?trang-thai=${data.awaitingResults > 0 ? 'awaiting' : 'interview'}`}
-            />
-            <StatCard icon="trend" tone="green" label="Hồ sơ 7 ngày qua" value={data.last7Days} to="/hr/ho-so" />
-          </div>
+          <StatusCards data={data} />
           <RealtimePanel />
           <Interviews data={data} />
           <EndingJobs data={data} />

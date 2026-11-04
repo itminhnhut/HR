@@ -19,6 +19,7 @@ const application = (over: Partial<ApplicationDetailDto> = {}): ApplicationDetai
   fullName: 'Nguyễn Thị Mai Anh',
   phone: '0912345678',
   status: 'seen',
+  activity: [],
   rejectReason: null,
   cvGender: null,
   cvBirth: null,

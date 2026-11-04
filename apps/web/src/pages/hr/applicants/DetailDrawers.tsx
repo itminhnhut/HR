@@ -2,6 +2,7 @@ import { APPLICATION_STATUS_LABEL, formatTimestamp, type ApplicationDetailDto } 
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Icon, type IconName } from '../../../ui/icons';
+import { activityLines } from './activityLines';
 import { ContactHistory } from './ComposeMessage';
 import { DetailDrawer } from './DetailDrawer';
 
@@ -53,6 +54,55 @@ export function ContactHistoryRow({ app }: { app: ApplicationDetailDto }) {
         <div className="min-h-0 flex-1 overflow-y-auto p-5 max-sm:p-4">
           <ContactHistory app={app} limit={app.contacts.length} />
         </div>
+      </DetailDrawer>
+    </>
+  );
+}
+
+const logTime = (iso: string) =>
+  new Intl.DateTimeFormat('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour12: false,
+  }).format(new Date(iso));
+
+/** Who changed what and when: the whole story of this application, newest first. */
+export function ActivityLogRow({ app }: { app: ApplicationDetailDto }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const lines = activityLines(app);
+  return (
+    <>
+      <DrawerRow icon="clock" label={`Nhật ký hồ sơ (${lines.length})`} onClick={() => setIsOpen(true)} />
+      <DetailDrawer
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Nhật ký hồ sơ"
+        subtitle={`${app.fullName} · ${app.jobTitle}`}
+      >
+        <ol className="m-0 min-h-0 flex-1 list-none overflow-y-auto p-5 max-sm:p-4">
+          {lines.map((line, i) => (
+            <li key={`${line.at}-${i}`} className="relative flex gap-3 pb-5 last:pb-0">
+              {i < lines.length - 1 && (
+                <span aria-hidden="true" className="absolute bottom-0 left-[13px] top-7 w-px bg-line" />
+              )}
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-tint text-accent">
+                <Icon name={line.icon} size={14} />
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-sm">
+                <span className="font-medium text-navy">{line.title}</span>
+                {line.change && <span className="text-body">{line.change}</span>}
+                {line.note && <span className="text-[13px] text-slate">{line.note}</span>}
+                <span className="text-xs text-muted">
+                  {line.actor} · {logTime(line.at)}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </DetailDrawer>
     </>
   );

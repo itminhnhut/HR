@@ -787,6 +787,88 @@ describe('The status control in the header', () => {
       .getAllByRole('button', { pressed: true })
       .map((button) => button.textContent);
 
+  const pastTime = '2026-01-05T02:00:00.000Z';
+
+  it('should mark "Chờ kết quả" once the interview time has passed', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: pastTime })];
+
+    // Act
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Assert
+    expect(pressedOnes().map((text) => text?.replace(/\d+$/, ''))).toEqual(['Chờ kết quả']);
+  });
+
+  it('should record "Đạt" and "Nhận việc" with one press', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: pastTime })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Act
+    await userEvent.click(segment('Đạt'));
+
+    // Assert
+    await waitFor(() => expect(pressedOnes()).toEqual(['Đạt']));
+    await userEvent.click(segment('Nhận việc'));
+    await waitFor(() => expect(pressedOnes()).toEqual(['Nhận việc']));
+  });
+
+  it('should say why "Đạt" cannot be pressed with no interview time', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: null })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Act
+    await userEvent.click(segment('Đạt'));
+
+    // Assert
+    expect(screen.getByText('Chọn giờ phỏng vấn trước khi ghi kết quả.')).toBeTruthy();
+    expect(pressedOnes()).toEqual(['Hẹn phỏng vấn']);
+  });
+
+  it('should not take a result before the interview, and say why', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: '2099-01-05T02:00:00.000Z' })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Act
+    await userEvent.click(segment('Đạt'));
+
+    // Assert
+    expect(screen.getByText(/Chưa tới giờ phỏng vấn/)).toBeTruthy();
+    expect(pressedOnes()).toEqual(['Hẹn phỏng vấn']);
+  });
+
+  it('should not jump to "Nhận việc" without "Đạt"', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: pastTime })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Act
+    await userEvent.click(segment('Nhận việc'));
+
+    // Assert
+    expect(screen.getByText(/Ghi "Đạt" trước/)).toBeTruthy();
+  });
+
+  it('should say "Chờ kết quả" comes by itself', async () => {
+    // Arrange
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await userEvent.click(segment('Chờ kết quả'));
+
+    // Assert
+    expect(screen.getByText(/Tự chuyển sang "Chờ kết quả"/)).toBeTruthy();
+  });
+
   it('should show every status the code has, in one block', async () => {
     // Act
     show('?trang-thai=all&id=a1');
@@ -797,7 +879,7 @@ describe('The status control in the header', () => {
       block()
         .getAllByRole('button')
         .map((button) => button.textContent),
-    ).toEqual(['Mới', 'Đã xem', 'Hẹn phỏng vấn', 'Chưa phù hợp']);
+    ).toEqual(['Mới', 'Đã xem', 'Hẹn phỏng vấn', 'Chờ kết quả', 'Đạt', 'Nhận việc', 'Chưa phù hợp']);
   });
 
   it.each([
@@ -839,20 +921,33 @@ describe('The status control in the header', () => {
     expect(patches).toEqual([]);
   });
 
-  it('should not let HR choose "Đã xem", and say why when pressed', async () => {
+  it('should not go back to "Đã xem" from a result, and say why when pressed', async () => {
     // Arrange
+    rows = [row('a3', 'Chi Lê', 'passed', { interviewAt: pastTime })];
     show('?trang-thai=all&id=a3');
     await heading('Chi Lê');
-    const seen = segment('Đã xem');
-    expect(seen.getAttribute('aria-disabled')).toBe('true');
-    expect(seen.getAttribute('title')).toBe('Hồ sơ tự chuyển sang "Đã xem" khi được mở.');
 
     // Act
+    const seen = segment('Đã xem');
     await userEvent.click(seen);
 
     // Assert
-    expect(patches).toEqual([]);
-    expect(block().getByRole('status').textContent).toBe('Hồ sơ tự chuyển sang "Đã xem" khi được mở.');
+    expect(seen.getAttribute('aria-disabled')).toBe('true');
+    expect(screen.getByText(/về "Hẹn phỏng vấn" trước/)).toBeTruthy();
+    expect(pressedOnes()).toEqual(['Đạt']);
+  });
+
+  it('should cancel an appointment made by mistake with "Đã xem"', async () => {
+    // Arrange
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: null })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Act
+    await userEvent.click(segment('Đã xem'));
+
+    // Assert
+    await waitFor(() => expect(pressedOnes()).toEqual(['Đã xem']));
   });
 
   it('should mark a profile as not seen again from "Mới"', async () => {
