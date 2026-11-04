@@ -5,7 +5,8 @@ import { useDeleteNews, useHrNews } from '../../../api/queries';
 import { usePageMeta } from '../../../lib/hooks';
 import { Button, ButtonLink } from '../../../ui/Button';
 import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../../ui/feedback';
-import { Icon } from '../../../ui/icons';
+import { Icon, type IconName } from '../../../ui/icons';
+import type { Tone } from '../design/tone';
 import { apiMessage, errorMessage, FilterTabs, PageHeading, type TabItem } from '../parts';
 import { CategoryManager } from './CategoryManager';
 import { BulkDeleteBar, useDraftSelection } from './BulkDelete';
@@ -15,6 +16,12 @@ import type { RowNotice } from './RowStatus';
 
 type ListTab = NewsStatus | 'all';
 const TABS: ListTab[] = ['all', 'published', 'draft', 'hidden'];
+const TAB_LOOK: Record<ListTab, { icon: IconName; tone: Tone }> = {
+  all: { icon: 'list', tone: 'blue' },
+  published: { icon: 'globe', tone: 'green' },
+  draft: { icon: 'pencil', tone: 'amber' },
+  hidden: { icon: 'eyeOff', tone: 'slate' },
+};
 const TAB_LABEL: Record<ListTab, string> = { all: 'Tất cả', ...NEWS_STATUS_LABEL };
 const isTab = (value: string | null): value is ListTab => TABS.includes(value as ListTab);
 
@@ -44,6 +51,7 @@ function useNewsRows(tab: ListTab, search: string) {
   const tabs: TabItem<ListTab>[] = TABS.map((key) => ({
     key,
     label: TAB_LABEL[key],
+    ...TAB_LOOK[key],
     count: key === 'all' ? rows.length : rows.filter((r) => r.status === key).length,
   }));
   return { news, rows, visible, tabs };

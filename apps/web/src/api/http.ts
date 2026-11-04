@@ -193,6 +193,7 @@ export const httpApi: Api = {
   hrLogout: () => request('/hr/logout', { method: 'POST' }),
   hrJobs: () => request('/hr/jobs'),
   hrDashboard: () => request('/hr/dashboard'),
+  hrRealtime: () => request('/hr/analytics/realtime'),
   hrJobTemplate: () => request('/hr/jobs/template'),
   hrSaveJobTemplate: (template) => request('/hr/jobs/template', json('PUT', template)),
   hrAddTemplateChoice: (list, value) => request('/hr/jobs/template/choices', json('POST', { list, value })),

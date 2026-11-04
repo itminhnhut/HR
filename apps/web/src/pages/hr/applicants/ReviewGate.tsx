@@ -75,7 +75,7 @@ export function BypassForm({
         className="field-focus rounded-control border border-field bg-white px-3 py-2 text-sm text-navy"
       />
       <span className="flex flex-wrap gap-2">
-        <Button type="submit" size="sm" variant="dark" disabled={busy || reason.trim().length < REVIEW_BYPASS_MIN}>
+        <Button type="submit" size="sm" variant="primary" disabled={busy || reason.trim().length < REVIEW_BYPASS_MIN}>
           Vẫn hẹn phỏng vấn
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>

@@ -57,7 +57,7 @@ function ViewTabs({ view, onChange }: { view: ComposeView; onChange: (view: Comp
           type="button"
           aria-pressed={view === tab.key}
           onClick={() => onChange(tab.key)}
-          className={`min-h-10 flex-1 rounded-control text-sm font-medium ${view === tab.key ? 'bg-navy text-white' : 'bg-white text-slate'}`}
+          className={`min-h-10 flex-1 rounded-control text-sm font-medium ${view === tab.key ? 'bg-primary text-white' : 'bg-white text-slate'}`}
         >
           {tab.label}
         </button>

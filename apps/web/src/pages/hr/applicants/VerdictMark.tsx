@@ -1,4 +1,5 @@
 import { Icon, type IconName } from '../../../ui/icons';
+import type { Tone } from '../design/tone';
 import type { MatchTab } from './cvMatchLines';
 import { MARK_STROKE } from './StatusMark';
 
@@ -8,6 +9,9 @@ const VERDICT: Record<MatchTab, { icon: IconName; tone: string; fill: string }> 
   unmet: { icon: 'x', tone: 'text-error', fill: 'bg-error' },
   skipped: { icon: 'minusCircle', tone: 'text-slate', fill: 'bg-slate' },
 };
+
+/** The colour family of a verdict on tabs. */
+export const VERDICT_TONE: Record<MatchTab, Tone> = { met: 'green', unmet: 'red', skipped: 'slate' };
 
 export function VerdictIcon({
   tab,

@@ -1,0 +1,116 @@
+/*
+ * The admin's look (spec-admin-design.md): light surfaces, bright colours, sans-serif headings. It only redefines the
+ * design tokens inside .hr-admin, so the public site is untouched and every existing class follows.
+ * Text pairs are at least 4.5:1; the page audit in spec-admin-design.md checks them.
+ */
+.hr-admin {
+  --color-navy: #0f172a;
+  --color-ink: #1e293b;
+  --color-body: #334155;
+  --color-slate: #475569;
+  --color-muted: #566579;
+  --color-placeholder: #667387;
+  --color-silver: #cbd5e1;
+  --color-silver-soft: #94a3b8;
+  --color-ring: #dbe3ee;
+  --color-line: #e2e8f0;
+  --color-line-soft: #eef2f7;
+  --color-field: #d3dbe6;
+  --color-mist: #f5f8fd;
+  --color-tint: #eef3fb;
+  --color-remind: #e8f1ff;
+  --color-hover: #f3f7fd;
+  --color-accent: #1d4ed8;
+  --color-link: #1d4ed8;
+  --color-focus: #3b82f6;
+  --color-skeleton: #e6ecf5;
+  --color-ok: #15803d;
+  --color-ok-soft: #e9fbf0;
+  --color-ok-line: #a7e8c0;
+  --color-error: #c81e1e;
+  --color-error-deep: #9b1c1c;
+  --color-error-soft: #fef2f2;
+  /* The one main action of a view: blue here, the brand red stays with the public site. */
+  --color-brand: var(--color-primary);
+  --color-brand-deep: var(--color-primary-deep);
+  --color-brand-soft: var(--color-primary-soft);
+  --color-brand-line: var(--color-primary-line);
+  --radius-control: 8px;
+  --radius-card: 12px;
+  /* Headings read faster without serifs at these sizes. */
+  --font-serif: var(--font-sans);
+  --admin-shadow: 0 1px 2px rgb(15 23 42 / 0.05), 0 2px 8px rgb(15 23 42 / 0.04);
+  --admin-shadow-lift: 0 2px 4px rgb(15 23 42 / 0.06), 0 10px 24px -6px rgb(15 23 42 / 0.14);
+  background: var(--color-mist);
+}
+
+/* The dot of what is happening now. */
+@keyframes admin-live {
+  0% {
+    box-shadow: 0 0 0 0 rgb(22 163 74 / 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgb(22 163 74 / 0);
+  }
+}
+
+.hr-admin .live-dot {
+  animation: admin-live 1.8s ease-out infinite;
+}
+
+.hr-admin .font-serif {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Thicker lines read better on the bright backgrounds. */
+.hr-admin svg {
+  stroke-width: 1.9;
+}
+
+/* Surfaces. */
+.hr-admin .rounded-card.border-line {
+  box-shadow: var(--admin-shadow);
+}
+
+/* Effects: everything that can be pressed answers, quickly. The reduced-motion rule in styles.css turns these off. */
+.hr-admin button,
+.hr-admin a,
+.hr-admin select,
+.hr-admin input,
+.hr-admin textarea {
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.12s ease;
+}
+
+.hr-admin button:not(:disabled):active,
+.hr-admin a:active {
+  transform: scale(0.98);
+}
+
+.hr-admin .card-hover {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.hr-admin .card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--admin-shadow-lift);
+  border-color: var(--color-silver);
+}
+
+/* An icon at the end of a link moves towards where it goes. */
+.hr-admin .icon-nudge svg {
+  transition: transform 0.18s ease;
+}
+
+.hr-admin .icon-nudge:hover svg {
+  transform: translateX(2px);
+}

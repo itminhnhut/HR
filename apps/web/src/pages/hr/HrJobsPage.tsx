@@ -19,6 +19,9 @@ import { DueForDeletionBanner } from './DueForDeletionBanner';
 import { JobDeadlineDialog } from './JobDeadlineDialog';
 import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
+import { Pill } from './design/Pill';
+import { TABLE_HEAD_CELL } from './design/table';
+import { TONE, type Tone } from './design/tone';
 import { apiMessage, errorMessage, FilterTabs, MenuItem, PageHeading, PopupMenu, type TabItem } from './parts';
 
 type TabKey = 'all' | 'live' | 'ended' | 'draft';
@@ -30,20 +33,20 @@ const TAB_GROUPS: Record<TabKey, EffectiveStatus[] | null> = {
   draft: ['draft'],
 };
 
-const TAB_LABELS: [TabKey, string][] = [
-  ['all', 'Tất cả'],
-  ['live', 'Đang tuyển'],
-  ['ended', 'Đã đóng'],
-  ['draft', 'Bản nháp'],
+const TAB_LABELS: [TabKey, string, IconName, Tone][] = [
+  ['all', 'Tất cả', 'list', 'blue'],
+  ['live', 'Đang tuyển', 'radio', 'green'],
+  ['ended', 'Đã đóng', 'archive', 'slate'],
+  ['draft', 'Bản nháp', 'pencil', 'amber'],
 ];
 
-/** Dot + label colours per status, from the mockup (tokens only). */
-const STATUS_TONE: Record<EffectiveStatus, { text: string; dot: string }> = {
-  open: { text: 'text-ok', dot: 'bg-ok border-ok' },
-  expiring: { text: 'text-accent', dot: 'bg-focus border-accent' },
-  expired: { text: 'text-muted', dot: 'bg-silver-soft border-muted' },
-  closed: { text: 'text-body', dot: 'bg-transparent border-body' },
-  draft: { text: 'text-accent', dot: 'bg-transparent border-accent' },
+/** One look per job status: the word, its icon and its colour family. */
+const STATUS_LOOK: Record<EffectiveStatus, { tone: Tone; icon: IconName }> = {
+  open: { tone: 'green', icon: 'radio' },
+  expiring: { tone: 'amber', icon: 'clock' },
+  expired: { tone: 'rose', icon: 'clock' },
+  closed: { tone: 'slate', icon: 'archive' },
+  draft: { tone: 'amber', icon: 'pencil' },
 };
 
 const inTab = (row: HrJobRowDto, tab: TabKey) => TAB_GROUPS[tab]?.includes(row.status) ?? true;
@@ -62,12 +65,11 @@ interface RowHandlers {
 // ── Small pieces ────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: EffectiveStatus }) {
-  const tone = STATUS_TONE[status];
+  const { tone, icon } = STATUS_LOOK[status];
   return (
-    <span className={`inline-flex items-center gap-[7px] whitespace-nowrap text-xs font-medium ${tone.text}`}>
-      <span aria-hidden="true" className={`size-[7px] rounded-full border ${tone.dot}`} />
+    <Pill tone={tone} icon={icon}>
       {STATUS_LABEL[status]}
-    </span>
+    </Pill>
   );
 }
 
@@ -113,7 +115,7 @@ function ActButton({
 }) {
   return (
     <button type="button" onClick={onClick} disabled={disabled} className={`${actClass} font-medium text-accent`}>
-      <Icon name={icon} size={16} stroke={1.5} />
+      <Icon name={icon} size={16} />
       {children}
     </button>
   );
@@ -124,6 +126,7 @@ function ActLink({
   to,
   children,
   title,
+  tone,
   strong = false,
 }: {
   icon: IconName;
@@ -131,15 +134,17 @@ function ActLink({
   children: ReactNode;
   /** Tooltip, for the desktop table where only the icon shows. */
   title?: string;
+  /** The icon's colour, and the row's hover. */
+  tone?: Tone;
   strong?: boolean;
 }) {
   return (
     <Link
       to={to}
       title={title}
-      className={`${actClass} ${strong ? 'font-medium text-link' : 'text-body hover:text-navy'}`}
+      className={`${actClass} ${strong ? 'font-medium text-link' : 'text-body hover:text-navy'} ${tone ? TONE[tone].hover : ''}`}
     >
-      <Icon name={icon} size={16} stroke={1.5} />
+      <Icon name={icon} size={16} className={tone ? TONE[tone].text : ''} />
       {children}
     </Link>
   );
@@ -170,7 +175,7 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
           }}
           className={`${actClass} ${confirmDelete ? 'font-medium text-error' : 'text-body hover:text-navy'}`}
         >
-          <Icon name="trash" size={16} stroke={1.5} />
+          <Icon name="trash" size={16} />
           {confirmDelete ? 'Bấm lần nữa để xóa' : 'Xóa'}
         </button>
       )}
@@ -180,13 +185,13 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
         </ActButton>
       )}
       {row.totalApplications > 0 && (
-        <ActLink icon="inbox" to={`/hr/ho-so?tin=${row.id}`} title="Xem hồ sơ của tin này">
+        <ActLink icon="inbox" tone="sky" to={`/hr/ho-so?tin=${row.id}`} title="Xem hồ sơ của tin này">
           {/* Desktop table: icon only to keep each row on one line; the label stays for screen readers. */}
           <span className="xl:sr-only">Hồ sơ</span>
         </ActLink>
       )}
       {status !== 'draft' && (
-        <ActLink icon="copy" to={`/hr/tin/moi?tu=${row.id}`} title="Đăng tin mới giống tin này">
+        <ActLink icon="copy" tone="teal" to={`/hr/tin/moi?tu=${row.id}`} title="Đăng tin mới giống tin này">
           <span className="xl:sr-only">Nhân bản</span>
         </ActLink>
       )}
@@ -195,9 +200,9 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
           to={`/hr/tin/${row.id}`}
           aria-label={`Sửa tin ${row.title}`}
           title="Sửa tin"
-          className="inline-flex size-11 items-center justify-center rounded-control text-body transition-colors hover:bg-tint hover:text-navy lg:size-10"
+          className={`inline-flex size-11 items-center justify-center rounded-control ${TONE.blue.text} ${TONE.blue.hover}`}
         >
-          <Icon name="pencil" size={17} stroke={1.5} />
+          <Icon name="pencil" size={17} />
         </Link>
       }
       {isLive(status) && (
@@ -205,7 +210,7 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
           {(close) => (
             <>
               <MenuItem onClick={() => copyText(jobUrl(row.slug)).then((ok) => ok && flashCopied())}>
-                <Icon name={copied ? 'check' : 'link'} size={16} stroke={1.5} className="text-slate" />
+                <Icon name={copied ? 'check' : 'link'} size={16} className={TONE.blue.text} />
                 {copied ? 'Đã chép' : 'Sao chép link'}
               </MenuItem>
               <MenuItem
@@ -214,7 +219,7 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
                   onDeadline();
                 }}
               >
-                <Icon name="calendar" size={16} stroke={1.5} className="text-slate" />
+                <Icon name="calendar" size={16} className={TONE.orange.text} />
                 Sửa hạn nộp
               </MenuItem>
               <MenuItem
@@ -227,7 +232,7 @@ function JobActions({ row, busy, run, onDeadline, onDelete }: { row: HrJobRowDto
                   run('close');
                 }}
               >
-                <Icon name="x" size={16} stroke={1.5} className={confirmClose ? 'text-error' : 'text-slate'} />
+                <Icon name="x" size={16} className="text-error" />
                 {confirmClose ? <span className="font-medium text-error">Bấm lần nữa để đóng tin</span> : 'Đóng tin'}
               </MenuItem>
             </>
@@ -251,7 +256,7 @@ function TitleCell({ row }: { row: HrJobRowDto }) {
 
 // ── Table (tablet / desktop) and cards (phone) ──────────────────────────
 
-const th = 'border-b border-line-soft px-4 py-3.5 font-medium';
+const th = TABLE_HEAD_CELL;
 const td = 'border-b border-line-soft px-4 py-4 align-middle';
 
 function JobsTable({ rows, handlers }: { rows: HrJobRowDto[]; handlers: (row: HrJobRowDto) => RowHandlers }) {
@@ -398,7 +403,7 @@ function ExpiringBanner({ row, busy, onDeadline }: { row: HrJobRowDto; busy: boo
       className="flex flex-wrap items-center gap-x-[18px] gap-y-3 rounded-card border border-silver bg-tint px-5 py-4 text-sm text-navy"
     >
       <span className="flex shrink-0 rounded-full border border-silver bg-white p-2">
-        <Icon name="clock" size={18} stroke={1.5} />
+        <Icon name="clock" size={18} />
       </span>
       <span className="min-w-0 flex-[1_1_260px] leading-relaxed">
         <strong className="font-semibold">{row.title}</strong> {when} ({formatDate(row.deadline)}). Sửa hạn nộp nếu vẫn
@@ -434,9 +439,11 @@ export function HrJobsPage() {
   const rows = useMemo(() => jobs.data?.jobs ?? [], [jobs.data]);
   const visible = useMemo(() => rows.filter((r) => inTab(r, tab)), [rows, tab]);
   const expiring = rows.filter((r) => r.status === 'expiring');
-  const tabs: TabItem<TabKey>[] = TAB_LABELS.map(([key, label]) => ({
+  const tabs: TabItem<TabKey>[] = TAB_LABELS.map(([key, label, icon, tone]) => ({
     key,
     label,
+    icon,
+    tone,
     count: rows.filter((r) => inTab(r, key)).length,
   }));
 

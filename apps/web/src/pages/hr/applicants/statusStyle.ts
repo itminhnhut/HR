@@ -1,14 +1,13 @@
 import { APPLICATION_STATUS_LABEL, type ApplicationStatus } from '@careers/shared';
 import type { IconName } from '../../../ui/icons';
+import type { Tone } from '../design/tone';
 
 /** What every place that names a status needs: the word and the icon, so colour is never the only signal. */
 export interface StatusLook {
   label: string;
   icon: IconName;
-  /** Icon and count of the active tab. From 1024px: below that the tabs stand on navy and stay white. */
-  activeText: string;
-  /** The underline of the active tab. */
-  underline: string;
+  /** Its colour family on tabs. */
+  tone: Tone;
 }
 
 export interface StatusStyle extends StatusLook {
@@ -25,8 +24,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
   new: {
     label: APPLICATION_STATUS_LABEL.new,
     icon: 'bell',
-    activeText: 'lg:text-status-new-text',
-    underline: 'border-status-new',
+    tone: 'sky',
     filled: 'border-status-new bg-status-new text-white',
     soft: 'border-status-new/30 bg-status-new-soft text-status-new-text',
     hover: 'hover:border-status-new/30 hover:bg-status-new-soft hover:text-status-new-text',
@@ -34,8 +32,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
   seen: {
     label: APPLICATION_STATUS_LABEL.seen,
     icon: 'eye',
-    activeText: 'lg:text-status-seen-text',
-    underline: 'border-status-seen',
+    tone: 'slate',
     filled: 'border-status-seen bg-status-seen text-white',
     soft: 'border-status-seen/30 bg-status-seen-soft text-status-seen-text',
     hover: 'hover:border-status-seen/30 hover:bg-status-seen-soft hover:text-status-seen-text',
@@ -43,8 +40,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
   interview: {
     label: APPLICATION_STATUS_LABEL.interview,
     icon: 'calendar',
-    activeText: 'lg:text-status-interview-text',
-    underline: 'border-status-interview',
+    tone: 'orange',
     filled: 'border-status-interview bg-status-interview text-white',
     soft: 'border-status-interview/30 bg-status-interview-soft text-status-interview-text',
     hover: 'hover:border-status-interview/30 hover:bg-status-interview-soft hover:text-status-interview-text',
@@ -52,8 +48,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
   rejected: {
     label: APPLICATION_STATUS_LABEL.rejected,
     icon: 'xCircle',
-    activeText: 'lg:text-status-rejected-text',
-    underline: 'border-status-rejected',
+    tone: 'rose',
     filled: 'border-status-rejected bg-status-rejected text-white',
     soft: 'border-status-rejected/30 bg-status-rejected-soft text-status-rejected-text',
     hover: 'hover:border-status-rejected/30 hover:bg-status-rejected-soft hover:text-status-rejected-text',
@@ -64,6 +59,5 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
 export const ALL_LOOK: StatusLook = {
   label: 'Tất cả',
   icon: 'list',
-  activeText: 'lg:text-navy',
-  underline: 'border-navy',
+  tone: 'blue',
 };

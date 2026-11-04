@@ -485,6 +485,9 @@ export const mockApi: Api = {
     return delay({ ok: true as const });
   },
 
+  async hrRealtime() {
+    return delay({ status: 'off' as const });
+  },
   async hrDashboard() {
     const db = load();
     requireHr(db);
@@ -507,6 +510,11 @@ export const mockApi: Api = {
     const waitSince = `${addDays(today, -3)}T00:00:00.000+07:00`;
     return delay({
       bySource: [{ source: 'website' as const, count: perDay.reduce((n, d) => n + d.count, 0) }],
+      bySourcePerDay: [{ source: 'website' as const, counts: perDay.map((d) => d.count) }],
+      interviewCounts: {
+        total: db.applications.filter((a) => a.status === 'interview').length,
+        noTime: db.applications.filter((a) => a.status === 'interview' && !a.interviewAt).length,
+      },
       newApplications: fresh.length,
       waitingOver3Days: fresh.filter((a) => new Date(a.createdAt) < new Date(waitSince)).length,
       perDay,
@@ -514,11 +522,11 @@ export const mockApi: Api = {
       interviews: db.applications
         .filter((a) => a.status === 'interview')
         .sort((a, b) => (a.interviewAt ?? '9999').localeCompare(b.interviewAt ?? '9999'))
-        .slice(0, 8)
         .map((a) => ({
           id: a.id,
           fullName: a.fullName,
           jobTitle: title(a.jobId),
+          appliedAt: a.createdAt,
           interviewAt: a.interviewAt,
           noteLine: firstLine(a.note),
         })),

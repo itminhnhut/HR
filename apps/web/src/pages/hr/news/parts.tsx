@@ -3,30 +3,22 @@ import type { ReactNode } from 'react';
 import { newsCategoryClasses } from '../../../lib/colors';
 import { Button } from '../../../ui/Button';
 import { Dialog } from '../../../ui/Dialog';
-import { Icon } from '../../../ui/icons';
+import type { IconName } from '../../../ui/icons';
+import { Pill } from '../design/Pill';
+import type { Tone } from '../design/tone';
 
-const STATUS_TONE: Record<NewsStatus, string> = {
-  draft: 'border border-cat-amber-line bg-cat-amber-soft text-cat-amber',
-  published: 'border border-ok-line bg-ok-soft text-ok',
-  hidden: 'border border-transparent bg-line text-slate',
+const STATUS_LOOK: Record<NewsStatus, { tone: Tone; icon: IconName }> = {
+  published: { tone: 'green', icon: 'globe' },
+  draft: { tone: 'amber', icon: 'pencil' },
+  hidden: { tone: 'slate', icon: 'eyeOff' },
 };
 
-/** Nháp (amber, hollow dot) / Đã đăng (green) / Đã ẩn (grey, eye-off). */
 export function NewsStatusBadge({ status }: { status: NewsStatus }) {
+  const { tone, icon } = STATUS_LOOK[status];
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_TONE[status]}`}
-    >
-      {status === 'hidden' ? (
-        <Icon name="eyeOff" size={13} stroke={1.8} />
-      ) : (
-        <span
-          aria-hidden="true"
-          className={`size-[7px] rounded-full ${status === 'published' ? 'bg-ok' : 'border border-cat-amber'}`}
-        />
-      )}
+    <Pill tone={tone} icon={icon}>
       {NEWS_STATUS_LABEL[status]}
-    </span>
+    </Pill>
   );
 }
 

@@ -44,7 +44,7 @@ function ModeButtons({
             aria-pressed={on}
             disabled={disabled}
             onClick={() => !on && onChange(item)}
-            className={`min-h-11 rounded-full border px-4 text-sm ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+            className={`min-h-11 rounded-full border px-4 text-sm ${on ? 'border-primary bg-primary text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
           >
             {item === 'onsite' ? 'Trực tiếp' : 'Online (Meet)'}
           </button>

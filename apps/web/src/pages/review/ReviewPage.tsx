@@ -4,9 +4,9 @@ import { useParams } from 'react-router';
 import { ApiError } from '../../api';
 import { useReviewDone, useReviewPage } from '../../api/queries';
 import { useNoIndex, usePageMeta } from '../../lib/hooks';
-import { SITE } from '../../lib/site';
 import { LoadingStatus } from '../../ui/feedback';
-import { Icon, LogoMark } from '../../ui/icons';
+import { Icon } from '../../ui/icons';
+import { Logo } from '../../ui/Logo';
 import { errorMessage } from '../hr/parts';
 import { shortTime } from '../hr/reviews/reviewModel';
 import { CvViewer } from './CvViewer';
@@ -29,8 +29,7 @@ function Header({ page }: { page: ReviewPageDto }) {
     <header className="bg-linear-to-br from-navy to-[#13305a] text-white">
       <div className="mx-auto flex max-w-[1080px] flex-col gap-3.5 px-4 pb-6 pt-5 sm:px-6">
         <div className="flex items-center gap-2.5 font-serif text-lg">
-          <LogoMark size={28} />
-          {SITE.company}
+          <Logo onDark className="h-9" />
           <span className="ml-auto inline-flex items-center gap-1.5 font-sans text-xs text-silver">
             <Icon name="lock" size={13} /> Link riêng của {page.reviewerName}
           </span>

@@ -3,21 +3,12 @@ import { SITE } from '../../lib/site';
 import { MiniJobCard } from '../../site/JobCard';
 import { SectionHeading, TextLink } from '../../site/SectionHeading';
 import { Button, ButtonAnchor } from '../../ui/Button';
-import { IconRing } from '../../ui/icons';
+import { IconRing, LogoMark } from '../../ui/icons';
 
 function LogoTile() {
   return (
-    <span className="flex size-[52px] shrink-0 items-center justify-center rounded-card bg-navy">
-      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true">
-        <circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" strokeWidth="1.2" />
-        <path
-          d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0"
-          fill="none"
-          stroke="#fff"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        />
-      </svg>
+    <span className="flex size-[52px] shrink-0 items-center justify-center rounded-card border border-line bg-white">
+      <LogoMark size={38} />
     </span>
   );
 }

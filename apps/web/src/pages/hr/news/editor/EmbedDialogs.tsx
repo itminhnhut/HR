@@ -19,7 +19,7 @@ export function DialogButtons({ submit, onClose }: { submit: string; onClose: ()
       <Button variant="outline" onClick={onClose}>
         Huỷ
       </Button>
-      <Button type="submit" variant="dark">
+      <Button type="submit" variant="primary">
         {submit}
       </Button>
     </div>

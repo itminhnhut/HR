@@ -57,7 +57,7 @@ describe('HR news list', () => {
       within(tabs)
         .getAllByRole('button')
         .map((b) => b.textContent),
-    ).toEqual(['Tất cả3', 'Đã đăng1', 'Nháp1', 'Đã ẩn1']);
+    ).toEqual(['Tất cả 3', 'Đã đăng 1', 'Nháp 1', 'Đã ẩn 1']);
     expect(router.state.location.search).toBe('?tab=hidden');
     const rows = screen.getAllByRole('row').slice(1);
     expect(rows).toHaveLength(1);

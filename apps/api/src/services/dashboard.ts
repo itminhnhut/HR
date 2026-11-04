@@ -1,12 +1,11 @@
 import { addDays, effectiveStatus, todayInVietnam, type ApplicationSource, type DashboardDto } from '@careers/shared';
-import { asc, eq, gte, sql } from 'drizzle-orm';
+import { asc, eq, gte } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, jobs } from '../db/schema.js';
 import { countDueApplications } from './hr-jobs.js';
 
 const DAYS = 30;
 const WAITING_DAYS = 3;
-const INTERVIEWS_MAX = 8;
 /** Expired jobs stay on the dashboard this long, as a reminder to reopen or close them. */
 const RECENTLY_ENDED_DAYS = 14;
 
@@ -15,6 +14,14 @@ const firstLine = (text: string | null) =>
     ?.split('\n')
     .find((l) => l.trim())
     ?.trim() ?? null;
+
+/** Soonest first, then those already over with the latest first, then those without a time. */
+function byAgenda<T extends { interviewAt: Date | null }>(rows: readonly T[], now: Date): T[] {
+  const time = (row: T) => row.interviewAt?.getTime() ?? 0;
+  const upcoming = rows.filter((r) => r.interviewAt && r.interviewAt >= now).sort((a, b) => time(a) - time(b));
+  const past = rows.filter((r) => r.interviewAt && r.interviewAt < now).sort((a, b) => time(b) - time(a));
+  return [...upcoming, ...past, ...rows.filter((r) => !r.interviewAt)];
+}
 
 /** Where the last 30 days' applications came from, biggest first (spec-cv-intake.md). */
 function countBySource(rows: { source: ApplicationSource }[]): DashboardDto['bySource'] {
@@ -47,19 +54,20 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
         id: applications.id,
         fullName: applications.fullName,
         jobTitle: jobs.title,
+        createdAt: applications.createdAt,
         interviewAt: applications.interviewAt,
         note: applications.note,
       })
       .from(applications)
       .innerJoin(jobs, eq(jobs.id, applications.jobId))
       .where(eq(applications.status, 'interview'))
-      .orderBy(sql`${applications.interviewAt} asc nulls last`, asc(applications.createdAt))
-      .limit(INTERVIEWS_MAX),
+      .orderBy(asc(applications.createdAt)),
   ]);
 
   const index = new Map(days.map((d, i) => [d, i]));
   const perDay = days.map((day) => ({ day, count: 0 }));
   const perJob = new Map<string, number[]>();
+  const perSource = new Map<ApplicationSource, number[]>();
   for (const app of recent) {
     const i = index.get(todayInVietnam(app.createdAt));
     if (i === undefined) continue;
@@ -67,6 +75,9 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
     const counts = perJob.get(app.jobId) ?? Array<number>(DAYS).fill(0);
     counts[i] += 1;
     perJob.set(app.jobId, counts);
+    const ofSource = perSource.get(app.source) ?? Array<number>(DAYS).fill(0);
+    ofSource[i] += 1;
+    perSource.set(app.source, ofSource);
   }
   const titles = new Map(allJobs.map((j) => [j.id, j.title]));
 
@@ -84,6 +95,7 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
 
   return {
     bySource: countBySource(recent),
+    bySourcePerDay: [...perSource.entries()].map(([source, counts]) => ({ source, counts })),
     newApplications: waiting.length,
     waitingOver3Days: waiting.filter((a) => a.createdAt < waitSince).length,
     perDay,
@@ -92,10 +104,12 @@ export async function dashboard(db: Db, now: Date): Promise<DashboardDto> {
       jobTitle: titles.get(jobId) ?? '—',
       counts,
     })),
-    interviews: interviews.map((i) => ({
+    interviewCounts: { total: interviews.length, noTime: interviews.filter((i) => !i.interviewAt).length },
+    interviews: byAgenda(interviews, now).map((i) => ({
       id: i.id,
       fullName: i.fullName,
       jobTitle: i.jobTitle,
+      appliedAt: i.createdAt.toISOString(),
       interviewAt: i.interviewAt?.toISOString() ?? null,
       noteLine: firstLine(i.note),
     })),

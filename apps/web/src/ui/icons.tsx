@@ -5,6 +5,44 @@ import type { SVGProps } from 'react';
  * mockup so every screen uses the same drawings.
  */
 const PATHS = {
+  layout: (
+    <>
+      <rect x="3" y="3" width="7.5" height="9" rx="1.5" />
+      <rect x="13.5" y="3" width="7.5" height="5" rx="1.5" />
+      <rect x="13.5" y="11" width="7.5" height="10" rx="1.5" />
+      <rect x="3" y="15" width="7.5" height="6" rx="1.5" />
+    </>
+  ),
+  fileText: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5" />
+      <path d="M9 13h6" />
+      <path d="M9 17h6" />
+    </>
+  ),
+  archive: (
+    <>
+      <rect x="3" y="4" width="18" height="4.5" rx="1.2" />
+      <path d="M5 8.5V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5" />
+      <path d="M10 13h4" />
+    </>
+  ),
+  radio: (
+    <>
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M7.8 7.8a6 6 0 0 0 0 8.4" />
+      <path d="M16.2 7.8a6 6 0 0 1 0 8.4" />
+      <path d="M4.9 4.9a10 10 0 0 0 0 14.2" />
+      <path d="M19.1 4.9a10 10 0 0 1 0 14.2" />
+    </>
+  ),
+  video: (
+    <>
+      <rect x="3" y="6" width="13" height="12" rx="2" />
+      <path d="m16 10.5 5-3v9l-5-3" />
+    </>
+  ),
   home: (
     <>
       <path d="M3 10.5 12 3l9 7.5" />
@@ -398,16 +436,21 @@ export function Icon({ name, size = 18, stroke = 1.6, ...rest }: IconProps) {
 }
 
 /** The company mark: two waves in a ring. Replace with the real logo later. */
-export function LogoMark({ size = 30, light = true }: { size?: number; light?: boolean }) {
+/** The waves of the logo alone, for small places (the whole logo: Logo.tsx; the same drawing: favicon.svg). */
+export function LogoMark({ size = 30 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 30 30" aria-hidden="true" focusable="false">
-      <circle cx="15" cy="15" r="14" fill="none" stroke="#C5CFDC" strokeWidth="1.2" />
+    <svg width={size} height={size} viewBox="0 22 256 192" aria-hidden="true" focusable="false">
       <path
-        d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0"
-        fill="none"
-        stroke={light ? '#FFFFFF' : '#0B1F3A'}
-        strokeWidth="1.6"
-        strokeLinecap="round"
+        fill="#6b0f12"
+        d="M30 62C55 38 85 38 110 62c25 26 40 60 75 56 27-4 53-20 70-36-15 28-40 56-75 58-45 2-60-40-85-62C75 60 52 56 30 62Z"
+      />
+      <path
+        fill="#e8948a"
+        d="M15 96c25-22 55-24 80-2 25 24 38 60 72 56 27-3 52-18 73-36-16 28-42 58-77 58-44 1-58-40-83-60-20-16-42-20-65-16Z"
+      />
+      <path
+        fill="#e4222d"
+        d="M0 130c25-22 55-24 78-4 26 23 40 62 74 58 28-3 54-18 73-36-14 28-42 54-76 56-44 2-59-38-84-58-20-16-42-20-65-16Z"
       />
     </svg>
   );

@@ -31,7 +31,7 @@ function DeviceToggle({ value, onChange }: { value: Device; onChange: (d: Device
       type="button"
       aria-pressed={value === device}
       onClick={() => onChange(device)}
-      className={`min-h-9 rounded-control border-0 px-3 text-sm ${value === device ? 'bg-navy text-white' : 'bg-transparent text-navy hover:bg-tint'}`}
+      className={`min-h-9 rounded-control border-0 px-3 text-sm ${value === device ? 'bg-primary text-white' : 'bg-transparent text-navy hover:bg-tint'}`}
     >
       {label}
     </button>

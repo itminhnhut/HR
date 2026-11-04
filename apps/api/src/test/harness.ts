@@ -64,6 +64,7 @@ export async function createTestContext(): Promise<TestContext> {
     verifyCaptcha: null,
     now: () => clock.now,
     fetch: outbound.fetch,
+    readRealtime: async () => ({ status: 'off' }),
   };
   const app = createApp(deps);
   const request = async (path: string, init?: RequestInit) => app.request(path, init);

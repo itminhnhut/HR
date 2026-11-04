@@ -1,6 +1,6 @@
 import { renderMailHtml, type MailContent, type MailDetails } from '@careers/shared';
-import logo from './assets/top-flow-logo.png?inline';
-import mark from './assets/top-flow-mark.png?inline';
+import logo from '../../../assets/logo/top-flow-logo.png?inline';
+import mark from '../../../assets/logo/top-flow-mark.png?inline';
 
 /** HR's sample images, embedded in the mail as in their design files instead of linked to a site. */
 export const MAIL_LOGOS = { logo, mark };

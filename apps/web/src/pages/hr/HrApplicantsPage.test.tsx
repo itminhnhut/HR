@@ -406,6 +406,18 @@ describe('Going through candidates one after another', () => {
     expect(await heading('An Nguyễn')).toBeTruthy();
   });
 
+  it('should say the date on a row is the day the application came in, not an interview', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'interview', { createdAt: '2026-10-30T04:00:00.000Z' })];
+
+    // Act
+    show('?trang-thai=all');
+    await screen.findByText('An Nguyễn');
+
+    // Assert
+    expect(within(rowOf('An Nguyễn')).getByText('Nộp 30/10/2026')).toBeTruthy();
+  });
+
   it('should say on the row how many bonuses the CV shows', async () => {
     // Arrange
     rows = [row('a1', 'An Nguyễn', 'seen', { matchBonus: 2 }), row('a2', 'Bình Trần', 'seen', { matchBonus: 0 })];
@@ -689,10 +701,10 @@ describe('The interview time in the mail drawer', () => {
 
 describe('The status tabs', () => {
   it.each([
-    ['all', 'Tất cả 4', 'border-navy'],
-    ['seen', 'Đã xem 2', 'border-status-seen'],
-    ['interview', 'Hẹn phỏng vấn 1', 'border-status-interview'],
-    ['rejected', 'Chưa phù hợp 1', 'border-status-rejected'],
+    ['all', 'Tất cả 4', 'border-blue-600'],
+    ['seen', 'Đã xem 2', 'border-slate-600'],
+    ['interview', 'Hẹn phỏng vấn 1', 'border-orange-600'],
+    ['rejected', 'Chưa phù hợp 1', 'border-rose-600'],
   ])('should show the icon, word and count on "%s", with its colour while active', async (tab, name, border) => {
     // Act
     show(`?trang-thai=${tab}`);

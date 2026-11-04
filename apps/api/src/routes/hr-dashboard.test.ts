@@ -16,6 +16,8 @@ beforeEach(async () => {
 
 const dashboard = async () => json<DashboardDto>(await t.request('/api/hr/dashboard', { headers: { cookie } }));
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 let n = 0;
 async function insertApplication(job: Job, overrides: Partial<NewApplication> = {}) {
   n += 1;
@@ -33,6 +35,32 @@ async function insertApplication(job: Job, overrides: Partial<NewApplication> = 
     .returning();
   return row;
 }
+
+describe('GET /api/hr/analytics/realtime', () => {
+  const realtime = (headers: Record<string, string> = { cookie }) =>
+    t.request('/api/hr/analytics/realtime', { headers });
+
+  it('should refuse anyone not signed in, without asking Google', async () => {
+    // Arrange
+    let isAsked = false;
+    t.deps.readRealtime = async () => {
+      isAsked = true;
+      return { status: 'off' };
+    };
+
+    // Act
+    const res = await realtime({});
+
+    // Assert
+    expect(res.status).toBe(401);
+    expect(isAsked).toBe(false);
+    t.deps.readRealtime = async () => ({ status: 'off' });
+  });
+
+  it('should say it is off until Google Analytics is connected', async () => {
+    expect(await json(await realtime())).toEqual({ status: 'off' });
+  });
+});
 
 describe('GET /api/hr/dashboard', () => {
   it('counts applications per Vietnam day over the last 30 days, oldest first', async () => {
@@ -83,6 +111,56 @@ describe('GET /api/hr/dashboard', () => {
     expect(body.waitingOver3Days).toBe(2);
   });
 
+  it('should list applications per source and day, in the order of the days', async () => {
+    // Arrange
+    const job = await insertJob(t);
+    await insertApplication(job, { source: 'zalo', createdAt: t.clock.now });
+    await insertApplication(job, { source: 'zalo', createdAt: t.clock.now });
+    await insertApplication(job, { source: 'website', createdAt: new Date(t.clock.now.getTime() - DAY_MS) });
+
+    // Act
+    const { bySourcePerDay, perDay } = await dashboard();
+
+    // Assert
+    const zalo = bySourcePerDay.find((s) => s.source === 'zalo');
+    const website = bySourcePerDay.find((s) => s.source === 'website');
+    expect(zalo?.counts).toHaveLength(perDay.length);
+    expect(zalo?.counts.at(-1)).toBe(2);
+    expect(website?.counts.at(-2)).toBe(1);
+  });
+
+  it('should list and count everyone waiting for an interview, for the calendar', async () => {
+    // Arrange
+    const job = await insertJob(t);
+    for (let i = 0; i < 10; i += 1) await insertApplication(job, { status: 'interview' });
+
+    // Act
+    const { interviews, interviewCounts } = await dashboard();
+
+    // Assert
+    expect(interviews).toHaveLength(10);
+    expect(interviewCounts).toEqual({ total: 10, noTime: 10 });
+  });
+
+  it('should list an interview that is over after the coming ones', async () => {
+    // Arrange
+    const job = await insertJob(t);
+    const over = await insertApplication(job, {
+      status: 'interview',
+      interviewAt: new Date(t.clock.now.getTime() - DAY_MS),
+    });
+    const coming = await insertApplication(job, {
+      status: 'interview',
+      interviewAt: new Date(t.clock.now.getTime() + DAY_MS),
+    });
+
+    // Act
+    const { interviews } = await dashboard();
+
+    // Assert
+    expect(interviews.map((i) => i.id)).toEqual([coming.id, over.id]);
+  });
+
   it('lists interviews soonest first, those without a time last', async () => {
     const job = await insertJob(t, { title: 'Kỹ sư' });
     const later = await insertApplication(job, {
@@ -101,6 +179,7 @@ describe('GET /api/hr/dashboard', () => {
     expect(interviews.map((i) => i.id)).toEqual([sooner.id, later.id, noTime.id]);
     expect(interviews[2]).toEqual({
       id: noTime.id,
+      appliedAt: noTime.createdAt.toISOString(),
       fullName: noTime.fullName,
       jobTitle: 'Kỹ sư',
       interviewAt: null,

@@ -58,7 +58,7 @@ export interface RowPick {
 
 function rowTone(isCurrent: boolean, pick: RowPick | undefined): string {
   if (pick?.on) return 'border-ok bg-ok-soft';
-  if (!pick && isCurrent) return 'border-navy bg-remind';
+  if (!pick && isCurrent) return 'border-primary bg-remind';
   return 'border-transparent bg-white hover:bg-hover';
 }
 
@@ -78,7 +78,7 @@ function RowText({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
       </span>
       <span className="flex min-w-0 items-baseline justify-between gap-2 text-xs leading-4 text-slate">
         <span className="min-w-0 truncate">{row.jobTitle}</span>
-        <span className="shrink-0 text-muted">{formatTimestamp(row.createdAt)}</span>
+        <span className="shrink-0 text-muted">Nộp {formatTimestamp(row.createdAt)}</span>
       </span>
       <RowTags row={row} showStatus={showStatus} />
       {row.noteLine && (

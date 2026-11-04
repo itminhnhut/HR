@@ -1,26 +1,33 @@
-import { formatDate, sourceName, STATUS_LABEL, type DashboardDto } from '@careers/shared';
+import { formatDate, STATUS_LABEL, type DashboardDto } from '@careers/shared';
 import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
-import { useDashboard, useSources } from '../../api/queries';
+import { useDashboard } from '../../api/queries';
 import { usePageMeta } from '../../lib/hooks';
 import { ButtonLink } from '../../ui/Button';
 import { SelectField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon, type IconName } from '../../ui/icons';
-import { interviewLabel } from './applicants/InterviewField';
 import { DueForDeletionBanner } from './DueForDeletionBanner';
+import { InterviewCalendar } from './dashboard/InterviewCalendar';
+import { RealtimePanel } from './dashboard/RealtimePanel';
+import { SourceTrendChart } from './dashboard/SourceTrendChart';
+import { IconTile } from './design/IconTile';
+import { SectionTitle } from './design/SectionTitle';
+import { TONE, type Tone } from './design/tone';
 import { apiMessage, PageHeading } from './parts';
 
 const dayLabel = (iso: string) => formatDate(iso).slice(0, 5);
 
 function StatCard({
   icon,
+  tone,
   label,
   value,
   hint,
   to,
 }: {
   icon: IconName;
+  tone: Tone;
   label: string;
   value: number;
   hint?: string;
@@ -29,23 +36,39 @@ function StatCard({
   return (
     <Link
       to={to}
-      className="card-hover flex flex-col gap-2 rounded-card border border-line bg-white p-5 text-navy no-underline"
+      className="card-hover flex items-center gap-4 rounded-card border border-line bg-white p-5 text-navy no-underline"
     >
-      <span className="inline-flex items-center gap-2 text-sm text-slate">
-        <Icon name={icon} size={16} className="text-accent" />
-        {label}
+      <IconTile icon={icon} tone={tone} size={52} />
+      <span className="flex min-w-0 flex-col gap-1">
+        <span className="text-sm font-medium text-slate">{label}</span>
+        <span className={`font-serif text-[32px] leading-none ${TONE[tone].text}`}>{value}</span>
+        {hint && <span className="text-xs text-muted">{hint}</span>}
       </span>
-      <span className="font-serif text-[34px] font-medium leading-none">{value}</span>
-      {hint && <span className="text-xs text-muted">{hint}</span>}
     </Link>
   );
 }
 
-function Panel({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
+function Panel({
+  title,
+  icon,
+  tone,
+  action,
+  children,
+}: {
+  title: string;
+  icon: IconName;
+  tone: Tone;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <section className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 font-serif text-[22px] font-medium">{title}</h2>
+        <h2 className="m-0">
+          <SectionTitle icon={icon} tone={tone}>
+            {title}
+          </SectionTitle>
+        </h2>
         {action}
       </div>
       {children}
@@ -67,6 +90,8 @@ function PerDayChart({ data }: { data: DashboardDto }) {
   return (
     <Panel
       title="Hồ sơ nhận theo ngày"
+      icon="bars"
+      tone="blue"
       action={
         <SelectField
           label="Lọc theo tin"
@@ -123,7 +148,7 @@ function PerDayChart({ data }: { data: DashboardDto }) {
               className="group flex h-full min-w-0 flex-1 items-end border-0 bg-transparent p-0"
             >
               <span
-                className={`w-full rounded-t-[3px] transition-colors ${on ? 'bg-navy' : count ? 'bg-accent/70 group-hover:bg-accent' : 'bg-line'}`}
+                className={`w-full rounded-t-[3px] transition-colors ${on ? 'bg-primary-deep' : count ? 'bg-blue-400 group-hover:bg-primary' : 'bg-line group-hover:bg-silver'}`}
                 style={{ height: `${count ? Math.max(6, (count / max) * 100) : 3}%` }}
               />
             </button>
@@ -143,40 +168,26 @@ function Interviews({ data }: { data: DashboardDto }) {
   return (
     <Panel
       title="Lịch hẹn phỏng vấn"
+      icon="calendar"
+      tone="orange"
       action={
-        <Link to="/hr/ho-so?trang-thai=interview" className="text-sm no-underline hover:underline">
+        <Link
+          to="/hr/ho-so?trang-thai=interview"
+          className="icon-nudge inline-flex items-center gap-1 text-sm font-medium no-underline hover:underline"
+        >
           Xem tất cả
+          <Icon name="arrowRight" size={15} />
         </Link>
       }
     >
-      {data.interviews.length === 0 ? (
-        <p className="m-0 text-sm text-slate">Chưa có ai đang hẹn phỏng vấn.</p>
-      ) : (
-        <ul className="m-0 flex list-none flex-col p-0">
-          {data.interviews.map((i) => (
-            <li key={i.id} className="border-b border-line-soft py-3 last:border-b-0">
-              <Link
-                to={`/hr/ho-so?id=${i.id}`}
-                className="flex flex-col gap-0.5 text-navy no-underline hover:underline"
-              >
-                <span className="font-semibold">{i.fullName}</span>
-                <span className="text-[13px] text-slate">{i.jobTitle}</span>
-                <span className="text-[13px] font-medium text-accent">
-                  {i.interviewAt ? interviewLabel(i.interviewAt) : 'Chưa chọn giờ'}
-                </span>
-                {i.noteLine && <span className="truncate text-xs italic text-muted">“{i.noteLine}”</span>}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <InterviewCalendar data={data} now={new Date()} />
     </Panel>
   );
 }
 
 function EndingJobs({ data }: { data: DashboardDto }) {
   return (
-    <Panel title="Tin sắp hết hạn hoặc vừa hết hạn">
+    <Panel title="Tin sắp hết hạn hoặc vừa hết hạn" icon="clock" tone="rose">
       {data.endingJobs.length === 0 ? (
         <p className="m-0 text-sm text-slate">Không có tin nào cần để ý.</p>
       ) : (
@@ -204,31 +215,10 @@ function EndingJobs({ data }: { data: DashboardDto }) {
 }
 
 /** Where the last 30 days' applications came from (spec-cv-intake.md): a bar per source, each opens the list. */
-function Sources({ data }: { data: DashboardDto }) {
-  const names = useSources().data ?? [];
-  const max = Math.max(1, ...data.bySource.map((s) => s.count));
+function SourceTrend({ data }: { data: DashboardDto }) {
   return (
-    <Panel title="Hồ sơ 30 ngày qua theo nguồn">
-      {data.bySource.length === 0 ? (
-        <p className="m-0 text-sm text-slate">Chưa có hồ sơ nào trong 30 ngày qua.</p>
-      ) : (
-        <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
-          {data.bySource.map(({ source, count }) => (
-            <li key={source}>
-              <Link
-                to={`/hr/ho-so?nguon=${source}`}
-                className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-3 text-sm text-navy no-underline hover:underline"
-              >
-                <span className="truncate">{sourceName(names, source)}</span>
-                <span aria-hidden="true" className="h-2.5 overflow-hidden rounded-full bg-tint">
-                  <span className="block h-full rounded-full bg-accent" style={{ width: `${(count / max) * 100}%` }} />
-                </span>
-                <span className="font-semibold tabular-nums">{count}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+    <Panel title="Hồ sơ 30 ngày qua theo nguồn" icon="globe" tone="teal">
+      <SourceTrendChart data={data} />
     </Panel>
   );
 }
@@ -278,6 +268,7 @@ export function HrDashboardPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCard
               icon="inbox"
+              tone="sky"
               label="Hồ sơ mới chưa xem"
               value={data.newApplications}
               hint={data.waitingOver3Days > 0 ? `${data.waitingOver3Days} hồ sơ đã chờ hơn 3 ngày` : undefined}
@@ -285,17 +276,19 @@ export function HrDashboardPage() {
             />
             <StatCard
               icon="calendar"
+              tone="orange"
               label="Đang hẹn phỏng vấn"
-              value={data.interviews.length}
+              value={data.interviewCounts.total}
               to="/hr/ho-so?trang-thai=interview"
             />
-            <StatCard icon="trend" label="Hồ sơ 7 ngày qua" value={last7} to="/hr/ho-so" />
+            <StatCard icon="trend" tone="green" label="Hồ sơ 7 ngày qua" value={last7} to="/hr/ho-so" />
           </div>
+          <RealtimePanel />
+          <Interviews data={data} />
           <PerDayChart data={data} />
           <div className="grid items-start gap-5 xl:grid-cols-2">
-            <Interviews data={data} />
             <EndingJobs data={data} />
-            <Sources data={data} />
+            <SourceTrend data={data} />
           </div>
         </div>
       )}

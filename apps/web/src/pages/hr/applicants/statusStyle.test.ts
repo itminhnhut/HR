@@ -36,8 +36,7 @@ describe('The status design', () => {
     expect(style.filled).toContain('text-white');
     expect(style.soft).toContain('text-');
     expect(style.hover).toContain('hover:');
-    expect(style.underline).toContain('border-');
-    expect(style.activeText).toContain('text-');
+    expect(style.tone).toBeTruthy();
   });
 
   it('should give each status its own colour and icon', () => {

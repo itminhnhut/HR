@@ -45,7 +45,7 @@ function LinkButtons({
       <Button variant="outline" onClick={onClose}>
         Huỷ
       </Button>
-      <Button type="submit" variant="dark">
+      <Button type="submit" variant="primary">
         Lưu link
       </Button>
     </div>

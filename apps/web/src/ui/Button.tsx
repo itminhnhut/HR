@@ -10,7 +10,7 @@ type Size = 'sm' | 'compact' | 'md' | 'lg';
  * label (6.7:1; hover 9.2:1). Secondary actions are `outline`. Colour roles: styles.css.
  */
 const PRIMARY =
-  'bg-brand text-white font-semibold shadow-[0_6px_18px_-8px_rgb(176_33_63/0.6)] transition-colors hover:bg-brand-deep hover:text-white focus-visible:bg-brand-deep';
+  'bg-brand text-white font-semibold shadow-[0_6px_18px_-8px_color-mix(in_srgb,var(--color-brand)_60%,transparent)] transition-colors hover:bg-brand-deep hover:text-white focus-visible:bg-brand-deep';
 
 const VARIANT: Record<Variant, string> = {
   primary: PRIMARY,

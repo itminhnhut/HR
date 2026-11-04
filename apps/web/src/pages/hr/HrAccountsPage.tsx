@@ -8,6 +8,7 @@ import { CopyButton } from '../../ui/CopyButton';
 import { FieldError, TextField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
 import { Icon } from '../../ui/icons';
+import { SectionTitle } from './design/SectionTitle';
 import { apiMessage, Avatar, errorMessage, PageHeading } from './parts';
 
 /** Shown once after creating or resetting: HR copies it and sends it privately. */
@@ -115,7 +116,11 @@ function AddUser({ onCreated }: { onCreated: (r: TempPasswordResponse) => void }
       onSubmit={submit}
       className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
     >
-      <h2 className="m-0 font-serif text-xl font-medium">Thêm tài khoản HR</h2>
+      <h2 className="m-0">
+        <SectionTitle icon="plus" tone="blue">
+          Thêm tài khoản HR
+        </SectionTitle>
+      </h2>
       <div className="grid gap-3.5 sm:grid-cols-2">
         <TextField
           label="Email đăng nhập"
@@ -174,7 +179,11 @@ function SenderProfile() {
       className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
     >
       <div className="flex flex-col gap-1">
-        <h2 className="m-0 font-serif text-xl font-medium">Thông tin người gửi của bạn</h2>
+        <h2 className="m-0">
+          <SectionTitle icon="mail" tone="amber">
+            Thông tin người gửi của bạn
+          </SectionTitle>
+        </h2>
         <p className="m-0 text-[13px] text-slate">
           Điền vào chữ ký mẫu thư: {'{Tên HR}'}, {'{SĐT HR}'}, {'{Chức danh HR}'}, {'{Tên gọi khác}'}.
         </p>
@@ -258,7 +267,11 @@ function ChangeOwnPassword() {
       onSubmit={submit}
       className="flex flex-col gap-4 rounded-card border border-line bg-white px-5 py-5 sm:px-6"
     >
-      <h2 className="m-0 font-serif text-xl font-medium">Đổi mật khẩu của bạn</h2>
+      <h2 className="m-0">
+        <SectionTitle icon="lock" tone="slate">
+          Đổi mật khẩu của bạn
+        </SectionTitle>
+      </h2>
       <div className="grid gap-3.5 sm:grid-cols-2">
         <TextField
           label="Mật khẩu hiện tại"
@@ -316,7 +329,7 @@ export function HrAccountsPage() {
         titleHiddenOnPhone
         subtitle="Thêm người, đặt lại mật khẩu khi ai đó quên, hoặc xoá tài khoản người đã nghỉ."
       />
-      <div className="flex max-w-[860px] flex-col gap-5">
+      <div className="flex flex-col gap-5">
         {temp && <TempPassword result={temp} onDone={() => setTemp(null)} />}
         {error && (
           <Notice tone="error" icon="alert">
@@ -345,14 +358,18 @@ export function HrAccountsPage() {
             ))}
           </ul>
         )}
-        <AddUser
-          onCreated={(r) => {
-            setError(null);
-            setTemp(r);
-          }}
-        />
-        {me.data && <SenderProfile key={me.data.id} />}
-        <ChangeOwnPassword />
+        <div className="grid items-start gap-5 xl:grid-cols-2">
+          <div className="flex flex-col gap-5">
+            <AddUser
+              onCreated={(r) => {
+                setError(null);
+                setTemp(r);
+              }}
+            />
+            <ChangeOwnPassword />
+          </div>
+          {me.data && <SenderProfile key={me.data.id} />}
+        </div>
       </div>
     </>
   );

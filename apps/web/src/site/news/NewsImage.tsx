@@ -31,15 +31,16 @@ export interface NewsImageCategory {
 
 /** The TOP FLOW waves (favicon.svg) in white. */
 const WaveLogo = () => (
-  <svg viewBox="0 0 30 30" aria-hidden="true" className="w-[18%] min-w-6 max-w-16">
-    <rect width="30" height="30" rx="7" fill="#fff" fillOpacity="0.16" />
+  <svg viewBox="0 22 256 192" aria-hidden="true" className="w-[18%] min-w-6 max-w-16" fill="#fff">
     <path
-      d="M7 14c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0M7 18.5c2.6-2.4 5.2-2.4 8 0s5.4 2.4 8 0"
-      fill="none"
-      stroke="#fff"
-      strokeWidth="1.8"
-      strokeLinecap="round"
+      d="M30 62C55 38 85 38 110 62c25 26 40 60 75 56 27-4 53-20 70-36-15 28-40 56-75 58-45 2-60-40-85-62C75 60 52 56 30 62Z"
+      fillOpacity="0.55"
     />
+    <path
+      d="M15 96c25-22 55-24 80-2 25 24 38 60 72 56 27-3 52-18 73-36-16 28-42 58-77 58-44 1-58-40-83-60-20-16-42-20-65-16Z"
+      fillOpacity="0.75"
+    />
+    <path d="M0 130c25-22 55-24 78-4 26 23 40 62 74 58 28-3 54-18 73-36-14 28-42 54-76 56-44 2-59-38-84-58-20-16-42-20-65-16Z" />
   </svg>
 );
 

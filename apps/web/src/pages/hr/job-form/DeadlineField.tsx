@@ -9,7 +9,7 @@ import { Icon } from '../../../ui/icons';
 const QUICK_DAYS = [7, 14, 30, 60];
 
 const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-navy)',
+  '--rdp-accent-color': 'var(--color-primary)',
   '--rdp-accent-background-color': 'var(--color-tint)',
   '--rdp-day-height': '40px',
   '--rdp-day-width': '40px',
@@ -68,7 +68,7 @@ export function DeadlineField({
                 onChange(iso);
                 setCalendarOpen(false);
               }}
-              className={`min-h-11 rounded-full border px-4 text-sm transition-colors ${on ? 'border-navy bg-navy font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+              className={`min-h-11 rounded-full border px-4 text-sm transition-colors ${on ? 'border-primary bg-primary font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
             >
               {days} ngày
             </button>

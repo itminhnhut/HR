@@ -11,7 +11,6 @@ import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { ApplicantList, ListSkeleton, type RowPick } from './applicants/ApplicantList';
 import { ApplicantsToolbar, type ToolbarActions } from './applicants/ApplicantsToolbar';
 import { DetailNav } from './applicants/DetailNav';
-import { StatusMark } from './applicants/StatusMark';
 import { ALL_LOOK, STATUS_STYLE } from './applicants/statusStyle';
 import { useApplicantQueue, type TabKey } from './applicants/useApplicantQueue';
 import { useQueueShortcuts } from './applicants/useQueueShortcuts';
@@ -24,27 +23,11 @@ const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'interview', 'rejected'];
 
 const isTab = (v: string | null): v is TabKey => TAB_KEYS.some((k) => k === v);
 
-/** Each tab shows its status's icon and word; while active, its colour on the icon, the count and the underline. */
+/** Each tab shows its status's icon, word and colour. */
 function tabItems(counts: Record<TabKey, number> | undefined): TabItem<TabKey>[] {
   return TAB_KEYS.map((key) => {
     const look = key === 'all' ? ALL_LOOK : STATUS_STYLE[key];
-    const count = counts?.[key];
-    return {
-      key,
-      label: look.label,
-      count,
-      activeBorder: look.underline,
-      render: (isActive) => (
-        <span className="inline-flex items-center gap-1.5">
-          <StatusMark
-            look={look}
-            count={count}
-            iconClass={isActive ? look.activeText : ''}
-            countClass={isActive ? `font-bold ${look.activeText}` : 'font-normal text-muted max-lg:text-silver-soft'}
-          />
-        </span>
-      ),
-    };
+    return { key, label: look.label, count: counts?.[key], icon: look.icon, tone: look.tone };
   });
 }
 
@@ -309,8 +292,7 @@ export function HrApplicantsPage() {
         value={tab}
         onChange={(key) => model.setListed('trang-thai', key)}
         label="Lọc theo trạng thái"
-        navyOnPhone
-        className="flex-none border-b border-field max-lg:order-first max-lg:-mx-4 max-lg:-mt-6 max-lg:border-b-0 max-lg:bg-navy max-lg:px-4 max-sm:gap-x-[18px] sm:max-lg:-mx-6 sm:max-lg:px-6"
+        className="flex-none border-b border-line max-sm:gap-x-[18px]"
       />
       <PageContent model={model} isDesktop={isDesktop} />
       {picking.active && (

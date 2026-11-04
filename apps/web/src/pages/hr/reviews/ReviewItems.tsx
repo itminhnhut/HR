@@ -98,7 +98,7 @@ function NextStep({ batch, item }: { batch: ReviewBatchDto; item: ReviewItemHrDt
     ) : (
       <Link
         to={open}
-        className="inline-flex min-h-9 items-center rounded-control bg-navy px-3 text-[13px] font-semibold text-white no-underline"
+        className="inline-flex min-h-9 items-center rounded-control bg-primary px-3 text-[13px] font-semibold text-white no-underline"
       >
         Hẹn phỏng vấn
       </Link>

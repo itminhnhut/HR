@@ -237,6 +237,29 @@ export interface TempPasswordResponse {
   password: string;
 }
 
+export interface RealtimeRow {
+  name: string;
+  users: number;
+}
+
+/**
+ * "Đang truy cập": who was on the site in the last 30 minutes, from Google Analytics. The Realtime API has no traffic
+ * source and no page address: pages are their titles, and "where from" is the city. `off`: not connected yet.
+ */
+export type RealtimeDto =
+  | { status: 'off' }
+  | { status: 'error' }
+  | {
+      status: 'ok';
+      activeUsers: number;
+      /** Oldest first, 30 entries, the last one is the current minute. */
+      perMinute: number[];
+      pages: RealtimeRow[];
+      cities: RealtimeRow[];
+      devices: RealtimeRow[];
+      fetchedAt: string;
+    };
+
 export interface DashboardDto {
   newApplications: number;
   /** "Mới" for more than 3 days. */
@@ -245,12 +268,23 @@ export interface DashboardDto {
   perDay: { day: string; count: number }[];
   /** Per job, for the chart filter: same 30 days. */
   perJobPerDay: { jobId: string; jobTitle: string; counts: number[] }[];
-  interviews: { id: string; fullName: string; jobTitle: string; interviewAt: string | null; noteLine: string | null }[];
+  interviews: {
+    id: string;
+    fullName: string;
+    jobTitle: string;
+    appliedAt: string;
+    interviewAt: string | null;
+    noteLine: string | null;
+  }[];
   /** Live jobs ending within 3 days and jobs that expired in the last 14 days. */
   endingJobs: { id: string; title: string; deadline: string; status: EffectiveStatus }[];
   dueForDeletion: number;
   /** Applications of the last 30 days per source, biggest first. */
   bySource: { source: import('./cv-intake.js').ApplicationSource; count: number }[];
+  /** The same applications per source and Vietnam day: the 30 entries of `perDay`, in its order. */
+  bySourcePerDay: { source: import('./cv-intake.js').ApplicationSource; counts: number[] }[];
+  /** Everyone at "Hẹn phỏng vấn", and how many of them have no time. */
+  interviewCounts: { total: number; noTime: number };
 }
 
 export interface SubscriberDto {
