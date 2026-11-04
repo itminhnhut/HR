@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { useCandidate } from '../api/queries';
-import { SITE } from '../lib/site';
 import { Dialog } from '../ui/Dialog';
-import { Icon, LogoMark, type IconName } from '../ui/icons';
+import { Icon, type IconName } from '../ui/icons';
+import { Logo } from '../ui/Logo';
 
 export function Wordmark({ size = 'md' }: { size?: 'md' | 'lg' }) {
   return (
-    <Link to="/" className="flex items-center gap-3 text-white no-underline hover:text-white">
-      <LogoMark size={size === 'lg' ? 32 : 28} />
-      <span className={`whitespace-nowrap font-serif font-medium ${size === 'lg' ? 'text-[22px]' : 'text-[19px]'}`}>
-        {SITE.company}
-      </span>
+    <Link to="/" className="flex shrink-0 items-center no-underline">
+      <Logo onDark className={size === 'lg' ? 'h-12' : 'h-9 sm:h-11'} />
     </Link>
   );
 }

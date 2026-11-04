@@ -116,7 +116,7 @@ export function RequirementPicks({
               type="button"
               aria-pressed={on}
               onClick={() => onChange(togglePick(text, o))}
-              className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-ring bg-white text-navy hover:bg-mist'}`}
+              className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors ${on ? 'border-primary bg-primary text-white' : 'border-ring bg-white text-navy hover:bg-mist'}`}
             >
               {on ? '✓' : '+'} {o}
             </button>
@@ -151,7 +151,7 @@ export function WorkModeField({
               type="button"
               aria-pressed={on}
               onClick={() => onChange(on ? '' : mode)}
-              className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-control border px-3 text-sm font-medium transition-colors ${on ? 'border-navy bg-navy text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
+              className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-control border px-3 text-sm font-medium transition-colors ${on ? 'border-primary bg-primary text-white' : 'border-field bg-white text-navy hover:bg-mist'}`}
             >
               {on && <span aria-hidden="true">✓</span>}
               {WORK_MODE_LABEL[mode]}

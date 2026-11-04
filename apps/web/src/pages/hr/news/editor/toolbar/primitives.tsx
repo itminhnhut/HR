@@ -71,7 +71,7 @@ export function ToolButton({
       disabled={disabled}
       onMouseDown={keepFocus}
       onClick={onClick}
-      className={`${buttonBase} ${pressed ? 'bg-navy text-white' : 'bg-transparent text-navy hover:bg-tint'}`}
+      className={`${buttonBase} ${pressed ? 'bg-primary text-white' : 'bg-transparent text-navy hover:bg-tint'}`}
     >
       {children}
     </button>

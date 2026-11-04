@@ -40,7 +40,7 @@ function RenameForm({
         autoFocus
         onChange={(e) => setName(e.target.value)}
       />
-      <Button type="submit" variant="dark" size="sm" className="min-h-[52px]" disabled={rename.isPending}>
+      <Button type="submit" variant="primary" size="sm" className="min-h-[52px]" disabled={rename.isPending}>
         Lưu
       </Button>
       <Button variant="ghost" size="sm" className="min-h-[52px]" onClick={onDone}>
@@ -137,7 +137,7 @@ function AddCategory({ onError }: { onError: OnError }) {
       />
       <Button
         type="submit"
-        variant="dark"
+        variant="primary"
         icon="plus"
         className="min-h-[52px]"
         disabled={create.isPending || !name.trim()}

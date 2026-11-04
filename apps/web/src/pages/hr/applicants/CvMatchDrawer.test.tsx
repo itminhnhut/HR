@@ -63,7 +63,9 @@ describe('Lines split by the part of the job', () => {
     const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([DUTY_MET, MET]) }));
 
     // Assert
-    const titles = within(dialog).getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
+    const titles = within(dialog)
+      .getAllByRole('heading', { level: 3 })
+      .map((h) => h.textContent);
     expect(titles).toEqual(['Yêu cầu (1)', 'Mô tả công việc (1)']);
     const duties = within(dialog).getByRole('region', { name: 'Mô tả công việc' });
     expect(within(duties).getByText('Trong CV: “Lập báo cáo tuyển dụng hàng tháng”')).toBeTruthy();
@@ -81,7 +83,11 @@ describe('Lines split by the part of the job', () => {
   it('should show a line with only a possibly related quote under "Không chấm", asking HR to check', async () => {
     // Arrange
     const reason = 'CV có câu có thể liên quan, HR kiểm tra lại';
-    const hint = line('Quản lý nhập xuất tồn', 'unknown', { counted: false, reason, evidence: 'Quản lý xuất nhập tồn kho' });
+    const hint = line('Quản lý nhập xuất tồn', 'unknown', {
+      counted: false,
+      reason,
+      evidence: 'Quản lý xuất nhập tồn kho',
+    });
 
     // Act
     const section = await openDetail(storedPdf({ cvScore: scoreOf([hint]) }));
@@ -133,7 +139,9 @@ describe('Lines split by the part of the job', () => {
 
   it('should keep a soft requirement left out of the percent under "Không chấm"', async () => {
     // Act
-    const { dialog } = await openDrawer(storedPdf({ cvScore: scoreOf([line('Biết Word', 'met', { counted: false })]) }));
+    const { dialog } = await openDrawer(
+      storedPdf({ cvScore: scoreOf([line('Biết Word', 'met', { counted: false })]) }),
+    );
 
     // Assert
     expect(within(dialog).getByRole('tab', { name: 'Không chấm: 1' })).toBeTruthy();

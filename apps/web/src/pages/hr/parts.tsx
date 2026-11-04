@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { lastName } from '@careers/shared';
+import { useInRouterContext, useLocation } from 'react-router';
 import { ApiError } from '../../api';
+import { Icon, type IconName } from '../../ui/icons';
+import { IconTile } from './design/IconTile';
+import { sectionOf } from './design/sections';
+import { TONE, type Tone } from './design/tone';
 
 /** Turns any thrown value into the message HR should read. */
 export function errorMessage(error: unknown, fallback = 'Chưa thực hiện được, thử lại sau ít phút.'): string {
@@ -12,6 +17,17 @@ export function apiMessage(error: unknown): string | undefined {
   return error instanceof ApiError && error.message ? error.message : undefined;
 }
 
+/** The icon of the area this page belongs to, the same as in the menu. */
+function SectionMark({ isHiddenOnPhone }: { isHiddenOnPhone: boolean }) {
+  const section = sectionOf(useLocation().pathname);
+  if (!section) return null;
+  return (
+    <span className={isHiddenOnPhone ? 'max-lg:hidden' : ''}>
+      <IconTile icon={section.icon} tone={section.tone} size={48} />
+    </span>
+  );
+}
+
 export function PageHeading({
   title,
   subtitle,
@@ -21,18 +37,22 @@ export function PageHeading({
   title: string;
   subtitle?: ReactNode;
   action?: ReactNode;
-  /** The navy top bar already shows this title below 1024px. */
+  /** The top bar already shows this title below 1024px. */
   titleHiddenOnPhone?: boolean;
 }) {
+  const isRouted = useInRouterContext();
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div className="flex min-w-0 flex-col gap-1.5">
-        <h1
-          className={`m-0 font-serif text-[30px] font-medium sm:text-[36px] ${titleHiddenOnPhone ? 'max-lg:sr-only' : ''}`}
-        >
-          {title}
-        </h1>
-        {subtitle && <p className="m-0 max-w-[640px] text-sm leading-relaxed text-slate">{subtitle}</p>}
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex min-w-0 items-center gap-3.5">
+        {isRouted && <SectionMark isHiddenOnPhone={titleHiddenOnPhone} />}
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <h1
+            className={`m-0 font-serif text-2xl text-navy sm:text-[28px] ${titleHiddenOnPhone ? 'max-lg:sr-only' : ''}`}
+          >
+            {title}
+          </h1>
+          {subtitle && <p className="m-0 max-w-[640px] text-sm leading-relaxed text-slate">{subtitle}</p>}
+        </div>
       </div>
       {action}
     </div>
@@ -43,49 +63,43 @@ export interface TabItem<K extends string> {
   key: K;
   label: string;
   count?: number;
-  /** The underline of this tab while active; navy without it. */
-  activeBorder?: string;
-  /** What the tab shows, in place of the label and count. */
-  render?: (isActive: boolean) => ReactNode;
+  icon?: IconName;
+  /** Its colour while active, and of its icon always. Blue without it. */
+  tone?: Tone;
 }
 
-function TabText<K extends string>({ item, navyOnPhone }: { item: TabItem<K>; navyOnPhone: boolean }) {
+/** Every tab in the admin: FilterTabs and the tabs of a drawer. */
+export function tabClass(isOn: boolean, tone: Tone = 'blue'): string {
+  const state = isOn
+    ? `${TONE[tone].underline} font-semibold text-navy`
+    : 'border-transparent text-slate hover:border-silver hover:text-navy';
+  return `-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-0 border-b-[3px] bg-transparent px-1 text-sm ${state}`;
+}
+
+/** The number on a tab: filled in the tab's colour while active; a zero stays quiet. */
+export function TabCount({ count, isOn, tone = 'blue' }: { count: number; isOn: boolean; tone?: Tone }) {
+  const fill = isOn && count > 0 ? TONE[tone].solid : 'bg-tint text-slate';
   return (
-    <>
-      {item.label}
-      {item.count != null && (
-        <span className={`ml-1 font-normal ${navyOnPhone ? 'text-muted max-lg:text-silver-soft' : 'text-muted'}`}>
-          {item.count}
-        </span>
-      )}
-    </>
+    <span
+      className={`inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full px-1.5 text-xs font-bold ${fill}`}
+    >
+      {count}
+    </span>
   );
 }
 
-function tabTone(isOn: boolean, activeBorder: string | undefined, navyOnPhone: boolean): string {
-  if (isOn) {
-    return `${activeBorder ?? 'border-navy'} font-semibold text-navy ${navyOnPhone ? 'max-lg:border-white max-lg:text-white' : ''}`;
-  }
-  return `border-transparent text-slate hover:text-navy ${navyOnPhone ? 'max-lg:text-silver-soft max-lg:hover:text-white' : ''}`;
-}
-
-/**
- * Underlined filter tabs (aria-pressed buttons, like the mockups).
- * `navyOnPhone` paints them white-on-navy below 1024px so they join the top bar.
- */
+/** Underlined filter tabs (aria-pressed buttons), with an icon and a count: one look on every page. */
 export function FilterTabs<K extends string>({
   items,
   value,
   onChange,
   label,
-  navyOnPhone = false,
   className = '',
 }: {
   items: TabItem<K>[];
   value: K;
   onChange: (key: K) => void;
   label: string;
-  navyOnPhone?: boolean;
   className?: string;
 }) {
   return (
@@ -94,20 +108,23 @@ export function FilterTabs<K extends string>({
       aria-label={label}
       // No scrollbar: the tabs' underline overlaps the bottom line by 1px, which made browsers draw a stray
       // scrollbar; on narrow screens the faded edge shows that the row scrolls.
-      className={`scroll-fade-x flex gap-x-6 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
+      className={`scroll-fade-x flex gap-x-5 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${className}`}
     >
       {items.map((item) => {
         const on = item.key === value;
-        const tone = tabTone(on, item.activeBorder, navyOnPhone);
+        const tone = item.tone ?? 'blue';
         return (
           <button
             key={item.key}
             type="button"
             aria-pressed={on}
             onClick={() => onChange(item.key)}
-            className={`-mb-px min-h-12 shrink-0 border-0 border-b-2 bg-transparent px-0.5 text-sm ${tone}`}
+            className={tabClass(on, tone)}
           >
-            {item.render ? item.render(on) : <TabText item={item} navyOnPhone={navyOnPhone} />}
+            {item.icon && <Icon name={item.icon} size={16} className={TONE[tone].text} />}
+            {item.label}
+            {/* The space keeps the word and the number apart for screen readers. */}{' '}
+            {item.count != null && <TabCount count={item.count} isOn={on} tone={tone} />}
           </button>
         );
       })}
@@ -226,7 +243,7 @@ export function Avatar({ name, size = 42, solid = false }: { name: string; size?
       aria-hidden="true"
       style={{ width: size, height: size, fontSize: Math.round(size * 0.43) }}
       className={`flex shrink-0 items-center justify-center rounded-full font-serif font-medium ${
-        solid ? 'bg-navy text-white' : 'border border-silver text-accent'
+        solid ? 'bg-primary text-white' : 'border border-primary-line bg-primary-soft text-accent'
       }`}
     >
       {initial}

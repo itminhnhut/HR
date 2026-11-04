@@ -18,7 +18,8 @@ import {
 } from './cvMatchLines';
 import { ReplaceCv } from './CvPanel';
 import { DetailDrawer } from './DetailDrawer';
-import { VerdictCount, VerdictIcon } from './VerdictMark';
+import { VERDICT_TONE, VerdictCount, VerdictIcon } from './VerdictMark';
+import { tabClass } from '../parts';
 
 const DRAWER_CV_ACTION =
   'inline-flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-control px-3 text-sm no-underline';
@@ -116,7 +117,7 @@ function TabBar({
             aria-controls={on ? `${id}-panel` : undefined}
             tabIndex={on ? 0 : -1}
             onClick={() => onChoose(key)}
-            className={`-mb-px inline-flex min-h-12 shrink-0 items-center gap-1.5 whitespace-nowrap border-0 border-b-2 bg-transparent px-0.5 text-sm ${on ? 'border-navy font-semibold text-navy' : 'border-transparent text-slate hover:text-navy'}`}
+            className={tabClass(on, VERDICT_TONE[key])}
           >
             <VerdictIcon tab={key} isMuted={groups[key].length === 0} />
             {label}

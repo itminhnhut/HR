@@ -6,6 +6,7 @@ import { ButtonLink } from '../../../ui/Button';
 import { EmptyState, ErrorState, LoadingStatus } from '../../../ui/feedback';
 import { Icon } from '../../../ui/icons';
 import { apiMessage, PageHeading } from '../parts';
+import { Pill } from '../design/Pill';
 import { shortTime, STATE_LABEL } from './reviewModel';
 
 /** Green when the reviewer finished, amber while waiting, grey when the link is closed. */
@@ -13,22 +14,22 @@ function BatchStatus({ batch }: { batch: ReviewBatchRowDto }) {
   const decided = batch.approved + batch.rejected + batch.asked;
   if (batch.state !== 'open') {
     return (
-      <span className="rounded-full border border-line bg-mist px-2.5 py-0.5 text-xs text-slate">
+      <Pill tone="slate" icon="archive">
         {STATE_LABEL[batch.state]}
-      </span>
+      </Pill>
     );
   }
   if (batch.doneAt) {
     return (
-      <span className="rounded-full border border-ok-line bg-ok-soft px-2.5 py-0.5 text-xs font-semibold text-ok">
+      <Pill tone="green" icon="check">
         Sếp đã xem xong
-      </span>
+      </Pill>
     );
   }
   return (
-    <span className="rounded-full border border-cat-amber-line bg-cat-amber-soft px-2.5 py-0.5 text-xs font-semibold text-cat-amber">
+    <Pill tone="amber" icon={batch.openedAt ? 'eye' : 'clock'}>
       {batch.openedAt ? `Sếp đang xem · ${decided}/${batch.total}` : 'Sếp chưa mở link'}
-    </span>
+    </Pill>
   );
 }
 

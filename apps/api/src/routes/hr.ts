@@ -57,6 +57,8 @@ signedIn.get('/dashboard', async (c) => {
   return c.json(await dashboard(db, now()));
 });
 
+signedIn.get('/analytics/realtime', async (c) => c.json(await c.get('deps').readRealtime()));
+
 /** "Tài khoản HR": every HR account has full rights, so any of them manages the others. */
 signedIn.get('/users', async (c) => c.json(await listHrUsers(c.get('deps').db, hrOf(c))));
 signedIn.post('/users', async (c) => c.json(await createHrUser(c.get('deps').db, await readJson(c), hrOf(c))));

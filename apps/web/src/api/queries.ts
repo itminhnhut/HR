@@ -37,6 +37,7 @@ export const keys = {
   hrJob: (id: string) => ['hr', 'job', id] as const,
   hrJobTemplate: ['hr', 'job-template'] as const,
   hrDashboard: ['hr', 'dashboard'] as const,
+  hrRealtime: ['hr', 'realtime'] as const,
   hrUsers: ['hr', 'users'] as const,
   hrMessageTemplates: ['hr', 'message-templates'] as const,
   hrApps: (jobId?: string, q = '') => ['hr', 'apps', jobId ?? 'all', q] as const,
@@ -252,6 +253,10 @@ export function useSetDeadline() {
 }
 
 export const useDashboard = () => useQuery({ queryKey: keys.hrDashboard, queryFn: api.hrDashboard });
+
+/** Once a minute while the tab is in view; the server shares one answer per minute too. */
+export const useRealtime = () =>
+  useQuery({ queryKey: keys.hrRealtime, queryFn: api.hrRealtime, refetchInterval: 60_000 });
 
 export function useSaveJobTemplate() {
   const qc = useQueryClient();

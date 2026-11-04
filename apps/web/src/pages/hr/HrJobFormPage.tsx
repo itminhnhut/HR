@@ -14,7 +14,7 @@ import { usePageMeta } from '../../lib/hooks';
 import { Button } from '../../ui/Button';
 import { Checkbox, SelectField, TextArea, TextField } from '../../ui/Field';
 import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../ui/feedback';
-import { Icon, IconRing } from '../../ui/icons';
+import { Icon, IconRing, type IconName } from '../../ui/icons';
 import { DeadlineField } from './job-form/DeadlineField';
 import {
   OpeningsInput,
@@ -37,6 +37,9 @@ import {
 import { PreviewDialog } from './job-form/PreviewDialog';
 import { AddressField, BenefitsField, RoadmapField } from './job-form/TemplateFields';
 import { useUnsavedGuard } from './job-form/useUnsavedGuard';
+import { IconTile } from './design/IconTile';
+import { SectionTitle } from './design/SectionTitle';
+import type { Tone } from './design/tone';
 import { apiMessage } from './parts';
 
 const DRAFT_SAVED = 'Đã lưu nháp. Tin chưa hiển thị với ứng viên.';
@@ -44,10 +47,24 @@ const PUBLISHED = 'Đã đăng tin. Tin đang hiển thị trên trang việc l�
 
 // ── Small pieces ────────────────────────────────────────────────────────
 
-function Section({ legend, children }: { legend: string; children: ReactNode }) {
+function Section({
+  legend,
+  icon,
+  tone,
+  children,
+}: {
+  legend: string;
+  icon: IconName;
+  tone: Tone;
+  children: ReactNode;
+}) {
   return (
     <fieldset className="m-0 flex min-w-0 flex-col gap-[18px] rounded-card border border-line bg-white px-4 pb-6 pt-3 sm:px-[26px] sm:pb-[26px]">
-      <legend className="px-2 font-serif text-xl font-medium">{legend}</legend>
+      <legend className="px-2">
+        <SectionTitle icon={icon} tone={tone}>
+          {legend}
+        </SectionTitle>
+      </legend>
       {children}
     </fieldset>
   );
@@ -211,7 +228,7 @@ function JobForm({
             <span role="status">{saved}</span>
           </Notice>
         )}
-        <Section legend="Thông tin chính">
+        <Section legend="Thông tin chính" icon="briefcase" tone="orange">
           <TextField
             label="Tên vị trí"
             placeholder="Dùng tên phổ biến, vd: Nhân viên Kinh doanh"
@@ -277,7 +294,7 @@ function JobForm({
           <AddressField value={form.address} error={errors.address} onChange={(v) => set('address', v)} />
         </Section>
 
-        <Section legend="Lương và hạn nộp">
+        <Section legend="Lương và hạn nộp" icon="money" tone="green">
           <div className="grid items-start gap-3.5 sm:grid-cols-2">
             <SalaryInput
               label="Lương từ"
@@ -318,7 +335,7 @@ function JobForm({
           <DeadlineField value={form.deadline} error={errors.deadline} onChange={(v) => set('deadline', v)} />
         </Section>
 
-        <Section legend="Nội dung tin">
+        <Section legend="Nội dung tin" icon="fileText" tone="blue">
           <p className="m-0 -mt-1 text-[13px] text-slate">
             Mỗi dòng một ý, trang ứng viên tự hiển thị thành gạch đầu dòng. Viết ngắn, 3–5 ý mỗi phần là đủ.
           </p>
@@ -360,7 +377,7 @@ function JobForm({
           </p>
         </Section>
 
-        <Section legend="Quyền lợi và lộ trình">
+        <Section legend="Quyền lợi và lộ trình" icon="gift" tone="rose">
           <BenefitsField
             value={form.benefits}
             template={options.template}
@@ -454,7 +471,10 @@ export function HrJobFormPage() {
           <Icon name="arrowLeft" size={16} />
           Danh sách tin
         </Link>
-        <h1 className="m-0 font-serif text-[30px] font-medium sm:text-[36px]">{HEADINGS[mode]}</h1>
+        <h1 className="m-0 flex items-center gap-3 font-serif text-2xl text-navy sm:text-[28px]">
+          <IconTile icon="briefcase" tone="orange" size={48} />
+          {HEADINGS[mode]}
+        </h1>
       </div>
       {copyFrom && source.data && (
         <Notice tone="mist" icon="copy">

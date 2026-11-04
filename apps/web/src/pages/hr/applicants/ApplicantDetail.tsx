@@ -7,6 +7,7 @@ import { ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } from '../../../
 import { Icon } from '../../../ui/icons';
 import { apiMessage, Avatar } from '../parts';
 import { ComposeMessage } from './ComposeMessage';
+import { TONE } from '../design/tone';
 import { CvAction } from './CvAction';
 import { DetailFacts } from './DetailFacts';
 import { StatusControl } from './StatusControl';
@@ -35,19 +36,32 @@ function ContactActions({
   onComposeDone: () => void;
 }) {
   const shape = `${CONTACT_BASE} ${CONTACT_SIZE[layout]}`;
-  const outline = `${shape} border border-silver bg-white text-navy hover:bg-mist`;
+  const outline = `${shape} border border-field bg-white text-navy`;
   return (
     <>
-      <a href={telLink(app.phone)} className={`${shape} btn-glow bg-accent text-white hover:text-white`}>
-        <Icon name="phone" size={16} stroke={1.5} />
+      <a
+        href={telLink(app.phone)}
+        className={`${shape} bg-green-700 font-semibold text-white hover:bg-green-800 hover:text-white`}
+      >
+        <Icon name="phone" size={16} />
         Gọi
       </a>
-      <a href={zaloLink(app.phone)} target="_blank" rel="noopener noreferrer" className={outline}>
-        <Icon name="chat" size={16} stroke={1.5} />
+      <a
+        href={zaloLink(app.phone)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${outline} ${TONE.blue.hover}`}
+      >
+        <Icon name="chat" size={16} className={TONE.blue.text} />
         Zalo
       </a>
-      <ComposeMessage app={app} request={composeRequest} onRequestDone={onComposeDone} triggerClassName={outline} />
-      <CvAction app={app} shape={shape} />
+      <ComposeMessage
+        app={app}
+        request={composeRequest}
+        onRequestDone={onComposeDone}
+        triggerClassName={`${outline} ${TONE.amber.hover} [&_svg]:text-amber-700`}
+      />
+      <CvAction app={app} shape={`${shape} ${TONE.teal.hover} [&_svg]:text-teal-700`} />
     </>
   );
 }

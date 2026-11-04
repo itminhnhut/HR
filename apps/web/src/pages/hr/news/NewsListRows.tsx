@@ -1,6 +1,8 @@
 import { newsPath, type HrNewsRowDto } from '@careers/shared';
 import { Link } from 'react-router';
 import { Icon } from '../../../ui/icons';
+import { TABLE_HEAD_CELL } from '../design/table';
+import { TONE } from '../design/tone';
 import { CategoryName, formatDateTime } from './parts';
 import { RowStatus, type RowNotice } from './RowStatus';
 
@@ -25,12 +27,12 @@ function RowActionsPhone({ row, onDelete }: { row: HrNewsRowDto; onDelete: () =>
   return (
     <div className="flex items-center gap-1">
       <Link to={`/hr/tin-tuc/${row.id}`} className={labeled}>
-        <Icon name="pencil" size={16} stroke={1.5} />
+        <Icon name="pencil" size={16} className={TONE.blue.text} />
         Sửa
       </Link>
       {row.status === 'published' && (
         <a href={newsPath(row.slug)} target="_blank" rel="noopener" className={labeled}>
-          <Icon name="external" size={16} stroke={1.5} />
+          <Icon name="external" size={16} className={TONE.teal.text} />
           Xem trên trang
         </a>
       )}
@@ -40,7 +42,7 @@ function RowActionsPhone({ row, onDelete }: { row: HrNewsRowDto; onDelete: () =>
         aria-label={`Xoá bài ${untitled(row)}`}
         className={`${labeled} ml-auto text-error hover:bg-error-soft`}
       >
-        <Icon name="trash" size={16} stroke={1.5} />
+        <Icon name="trash" size={16} />
         Xoá
       </button>
     </div>
@@ -51,7 +53,7 @@ function RowActions({ row, onDelete }: { row: HrNewsRowDto; onDelete: () => void
   return (
     <div className="flex items-center gap-0.5 lg:justify-end">
       <Link to={`/hr/tin-tuc/${row.id}`} aria-label={`Sửa bài ${untitled(row)}`} title="Sửa bài" className={iconLink}>
-        <Icon name="pencil" size={17} stroke={1.5} />
+        <Icon name="pencil" size={17} className={TONE.blue.text} />
       </Link>
       {row.status === 'published' && (
         <a
@@ -62,7 +64,7 @@ function RowActions({ row, onDelete }: { row: HrNewsRowDto; onDelete: () => void
           title="Xem trên trang"
           className={iconLink}
         >
-          <Icon name="external" size={17} stroke={1.5} />
+          <Icon name="external" size={17} className={TONE.teal.text} />
         </a>
       )}
       <button
@@ -72,7 +74,7 @@ function RowActions({ row, onDelete }: { row: HrNewsRowDto; onDelete: () => void
         title="Xoá bài"
         className={`${iconLink} hover:bg-error-soft hover:text-error`}
       >
-        <Icon name="trash" size={17} stroke={1.5} />
+        <Icon name="trash" size={17} className="text-error" />
       </button>
     </div>
   );
@@ -115,14 +117,14 @@ function TitleLink({ row }: { row: HrNewsRowDto }) {
   );
 }
 
-const th = 'border-b border-line-soft px-4 py-3.5 text-left text-xs font-medium text-muted';
+const th = `${TABLE_HEAD_CELL} text-left`;
 const td = 'border-b border-line-soft px-4 py-3 align-middle';
 
 const HEADERS: [label: string, width: string, extra?: string][] = [
   ['Chọn', 'w-[60px]', 'pl-[14px] pr-0'],
-  ['Tiêu đề', 'w-[36%]'],
-  ['Trạng thái', 'w-[15%]'],
-  ['Chuyên mục', 'w-[15%]'],
+  ['Tiêu đề', 'w-[32%]'],
+  ['Trạng thái', 'w-[14%]'],
+  ['Chuyên mục', 'w-[18%]'],
   ['Ngày sửa', 'w-[14%]'],
   ['Người sửa', 'w-[12%]'],
   ['Thao tác', 'w-[132px]', 'pr-[22px] text-right'],

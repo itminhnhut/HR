@@ -61,7 +61,7 @@ export function usePicking(all: ApplicationRowDto[]) {
 /** Pinned to the bottom while picking: how many, cancel, next. */
 export function PickBar({ count, onCancel, onNext }: { count: number; onCancel: () => void; onNext: () => void }) {
   return (
-    <div className="sticky bottom-3 z-20 flex flex-wrap items-center gap-3 rounded-card border border-navy bg-navy px-4 py-3 text-white shadow-[0_10px_30px_rgba(11,31,58,0.25)]">
+    <div className="sticky bottom-3 z-20 flex flex-wrap items-center gap-3 rounded-card border border-primary bg-primary px-4 py-3 text-white shadow-[0_10px_30px_rgba(11,31,58,0.25)]">
       <span className="flex-1 text-sm">
         {count === 0 ? 'Bấm vào ứng viên để chọn gửi sếp duyệt.' : `Đã chọn ${count} ứng viên`}
         <span className="block text-xs text-silver">

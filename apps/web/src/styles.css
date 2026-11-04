@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 /* Article blocks (contents, FAQ, columns, checklist, code…) and the editor's own extras. */
 @import './article-blocks.css';
+/* The admin's tokens and effects, only inside .hr-admin. */
+@import './admin.css';
 
 /* Self-hosted fonts, Vietnamese + Latin subsets only. */
 @import '@fontsource/playfair-display/vietnamese-500.css';
@@ -30,6 +32,12 @@
  *   Hashtags are neutral (grey chips, navy text): they are many and would turn the page into a rainbow.
  */
 @theme {
+  /* The main action in the admin (admin.css): white on it 5.2:1, on primary-deep 6.7:1. */
+  --color-primary: #2563eb;
+  --color-primary-deep: #1d4ed8;
+  --color-primary-soft: #eff6ff;
+  --color-primary-line: #bfdbfe;
+
   --color-navy: #0b1f3a;
   --color-accent: #1c3f78;
   /* Links: a clear blue (6.7:1 on white, 6.3:1 on mist, 6.0:1 on brand-soft). */

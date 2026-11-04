@@ -80,7 +80,7 @@ function LayoutToggle({ value, onChange }: { value: ImageLayout; onChange: (layo
         {options.map(([key, label]) => (
           <label
             key={key}
-            className={`inline-flex min-h-9 cursor-pointer items-center rounded-[3px] px-3 text-sm ${value === key ? 'bg-navy text-white' : 'text-navy hover:bg-mist'}`}
+            className={`inline-flex min-h-9 cursor-pointer items-center rounded-[3px] px-3 text-sm ${value === key ? 'bg-primary text-white' : 'text-navy hover:bg-mist'}`}
           >
             <input
               type="radio"
@@ -122,7 +122,7 @@ function PopoverButtons({ onClose }: { onClose: () => void }) {
       <Button variant="ghost" size="sm" onClick={onClose}>
         Huỷ
       </Button>
-      <Button type="submit" variant="dark" size="sm">
+      <Button type="submit" variant="primary" size="sm">
         Lưu
       </Button>
     </div>

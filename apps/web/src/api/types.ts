@@ -17,6 +17,7 @@ import type {
   ContactChannel,
   JobTemplate,
   DashboardDto,
+  RealtimeDto,
   JobInput,
   JobListResponse,
   JobPageResponse,
@@ -162,6 +163,7 @@ export interface Api {
   hrLogout(): Promise<{ ok: true }>;
   hrJobs(): Promise<HrJobsResponse>;
   hrDashboard(): Promise<DashboardDto>;
+  hrRealtime(): Promise<RealtimeDto>;
   hrJobTemplate(): Promise<JobTemplateResponse>;
   hrSaveJobTemplate(template: JobTemplate): Promise<JobTemplateResponse>;
   hrAddTemplateChoice(list: TemplateChoiceList, value: string): Promise<JobTemplateResponse>;

@@ -38,7 +38,9 @@ export function MatchBadge({ result, isScoring }: { result: CvScoreDto | null; i
 export function BonusBadge({ result }: { result: CvScoreDto | null }) {
   const count = bonusCount(result?.items ?? []);
   if (count === 0) return null;
-  return <span className="rounded-full bg-ok-soft px-2.5 py-0.5 text-sm font-semibold text-ok">+{count} điểm cộng</span>;
+  return (
+    <span className="rounded-full bg-ok-soft px-2.5 py-0.5 text-sm font-semibold text-ok">+{count} điểm cộng</span>
+  );
 }
 
 /** One stat per verdict: its icon, a big number and the word. Pressing one opens the drawer on that tab. */

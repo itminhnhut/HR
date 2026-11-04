@@ -1,5 +1,6 @@
 import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
+import { createGaRealtimeReader, gaRealtimeConfig, type RealtimeReader } from './lib/ga-realtime.js';
 import { vercelBlobCvStore, type CvStore } from './lib/cv-store.js';
 import { turnstileVerifier, type CaptchaVerifier } from './lib/captcha.js';
 import { googleVerifier, type GoogleVerifier } from './lib/google.js';
@@ -68,6 +69,13 @@ function indexNowKey(isProduction: boolean): string | null {
   return null;
 }
 
+/** "Đang truy cập": off until the Google Analytics settings exist. */
+function realtimeReader(now: () => Date): RealtimeReader {
+  const config = gaRealtimeConfig(process.env);
+  if (!config) return async () => ({ status: 'off' });
+  return createGaRealtimeReader(config, (url, init) => fetch(url, init), now);
+}
+
 /** Local stand-ins for services without credentials yet (see local-dev.ts). Ignored on Vercel. */
 export interface LocalOverrides {
   db?: Db;
@@ -95,5 +103,6 @@ export function createProductionApp(local: LocalOverrides = {}) {
     verifyCaptcha: captcha(),
     now: () => new Date(),
     fetch: (url, init) => fetch(url, init),
+    readRealtime: realtimeReader(() => new Date()),
   });
 }

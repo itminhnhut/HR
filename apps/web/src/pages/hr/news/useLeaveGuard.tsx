@@ -44,7 +44,7 @@ export function LeaveDialog({ blocker }: { blocker: Blocker }) {
           <Button variant="outline" onClick={() => blocker.proceed?.()}>
             Rời trang
           </Button>
-          <Button variant="dark" onClick={stay}>
+          <Button variant="primary" onClick={stay}>
             Ở lại sửa tiếp
           </Button>
         </div>

@@ -6,7 +6,7 @@ import 'react-day-picker/style.css';
 import { Button } from '../../../ui/Button';
 
 const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-navy)',
+  '--rdp-accent-color': 'var(--color-primary)',
   '--rdp-accent-background-color': 'var(--color-tint)',
   '--rdp-today-color': 'var(--color-accent)',
   '--rdp-day-height': '36px',
@@ -19,7 +19,7 @@ const CALENDAR_STYLE = {
 
 /** "!": the calendar's own stylesheet sits outside Tailwind's layers and would win otherwise. */
 const DAY_CLASSES = {
-  selected: '[&_button]:bg-navy! [&_button]:font-semibold [&_button]:text-white!',
+  selected: '[&_button]:bg-primary! [&_button]:font-semibold [&_button]:text-white!',
   today: 'font-bold underline underline-offset-2',
 };
 
@@ -33,7 +33,7 @@ const toIsoDay = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 const quickClass = (on: boolean) =>
-  `min-h-9 flex-1 rounded-control border px-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-11 ${on ? 'border-navy bg-navy font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`;
+  `min-h-9 flex-1 rounded-control border px-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-11 ${on ? 'border-primary bg-primary font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`;
 
 const selectClass =
   'field-focus min-h-10 rounded-control border border-field bg-white px-2.5 text-sm text-navy outline-none max-sm:min-h-11';
@@ -145,7 +145,7 @@ export function InterviewPicker(props: PickerState) {
           <Button size="compact" variant="outline" onClick={onCancel} className={onClear ? '' : 'ml-auto'}>
             Huỷ
           </Button>
-          <Button size="compact" variant="dark" disabled={!canApply} onClick={onApply}>
+          <Button size="compact" variant="primary" disabled={!canApply} onClick={onApply}>
             Áp dụng
           </Button>
         </div>

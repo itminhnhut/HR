@@ -3,6 +3,7 @@ import type { CvStore } from './lib/cv-store.js';
 import type { CaptchaVerifier } from './lib/captcha.js';
 import type { GoogleVerifier } from './lib/google.js';
 import type { ImageStore } from './lib/image-store.js';
+import type { RealtimeReader } from './lib/ga-realtime.js';
 import type { FetchFn } from './lib/indexnow.js';
 
 export interface AppConfig {
@@ -34,4 +35,6 @@ export interface Deps {
   now: () => Date;
   /** Outgoing HTTP calls the app makes itself (IndexNow pings). */
   fetch: FetchFn;
+  /** "Đang truy cập" on the HR overview. */
+  readRealtime: RealtimeReader;
 }

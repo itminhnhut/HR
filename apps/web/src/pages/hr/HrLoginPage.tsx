@@ -3,16 +3,17 @@ import { Link, Navigate, useNavigate } from 'react-router';
 import { demoHrSignIn } from '../../api';
 import { useHrMe, useHrSignIn } from '../../api/queries';
 import { useNoIndex, usePageMeta } from '../../lib/hooks';
-import { SITE } from '../../lib/site';
+import { useAdminTheme } from './design/useAdminTheme';
 import { Button } from '../../ui/Button';
 import { TextField } from '../../ui/Field';
 import { Notice } from '../../ui/feedback';
-import { Icon, LogoMark } from '../../ui/icons';
+import { Icon } from '../../ui/icons';
+import { Logo } from '../../ui/Logo';
 import { errorMessage } from './parts';
 
 function Brand() {
   return (
-    <section className="relative flex flex-col justify-between gap-10 overflow-hidden bg-navy p-7 text-white sm:p-10 lg:p-14">
+    <section className="relative flex flex-col justify-between gap-10 overflow-hidden bg-gradient-to-br from-blue-800 to-blue-600 p-7 text-white sm:p-10 lg:p-14">
       <svg
         viewBox="0 0 560 800"
         preserveAspectRatio="none"
@@ -34,17 +35,16 @@ function Brand() {
           strokeWidth="1"
         />
       </svg>
-      <Link to="/" className="relative flex items-center gap-3 text-white no-underline hover:text-white">
-        <LogoMark />
-        <span className="font-serif text-[22px] font-medium">{SITE.company}</span>
+      <Link to="/" className="relative flex w-fit no-underline">
+        <Logo onDark className="h-12" />
       </Link>
       <div className="relative flex flex-col gap-4">
         <h1 className="m-0 animate-rise font-serif text-[34px] font-medium sm:text-[46px]">Quản trị tuyển dụng</h1>
-        <p className="m-0 max-w-[400px] text-base font-light leading-relaxed text-silver">
+        <p className="m-0 max-w-[400px] text-base leading-relaxed text-white">
           Đăng tin, xem hồ sơ và liên hệ ứng viên ở một chỗ.
         </p>
       </div>
-      <span className="relative text-[13px] text-silver-soft">Trang dành riêng cho bộ phận nhân sự.</span>
+      <span className="relative text-[13px] text-white">Trang dành riêng cho bộ phận nhân sự.</span>
     </section>
   );
 }
@@ -175,6 +175,7 @@ function LoginNotes() {
 export function HrLoginPage() {
   usePageMeta('Đăng nhập HR');
   useNoIndex();
+  useAdminTheme();
   const me = useHrMe();
   if (me.data) return <Navigate to="/hr" replace />;
 
