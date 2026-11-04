@@ -188,6 +188,15 @@ export const useApplications = (jobId?: string, q = '', source?: ApplicationSour
     placeholderData: keepPreviousData,
   });
 
+/** A stored CV's address for an interview invitation; a new file means a new address. */
+export const useCvLink = (app: { id: string; cvFileName: string | null }, isEnabled: boolean) =>
+  useQuery({
+    queryKey: ['hr', 'cv-link', app.id, app.cvFileName],
+    queryFn: () => api.hrCvLink(app.id),
+    enabled: isEnabled,
+    staleTime: 60 * 60_000,
+  });
+
 export function useApplication(id: string | null) {
   const qc = useQueryClient();
   return useQuery({

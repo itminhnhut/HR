@@ -105,7 +105,7 @@ function NoTimePerson({ person }: { person: Interview }) {
       <Link
         to={`/hr/ho-so?id=${person.id}`}
         aria-describedby={id}
-        className="block max-w-[260px] truncate rounded-full border border-amber-300 bg-white px-3 py-1 text-[13px] font-medium text-amber-900 no-underline hover:border-amber-500 hover:bg-amber-100 hover:text-amber-950"
+        className="block max-w-[260px] truncate rounded-full border border-amber-300 bg-white px-3 py-1 text-[13px] max-sm:py-2.5 font-medium text-amber-900 no-underline hover:border-amber-500 hover:bg-amber-100 hover:text-amber-950"
       >
         {person.fullName}
       </Link>

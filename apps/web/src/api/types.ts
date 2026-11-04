@@ -206,6 +206,8 @@ export interface Api {
   hrScorePending(): Promise<{ scored: number; remaining: number }>;
   /** Link that opens an uploaded CV for HR, or null where files are not stored (demo). */
   hrCvUrl(applicationId: string): string | null;
+  /** The address an interview invitation carries; the demo stores no files, so it has none. */
+  hrCvLink(applicationId: string): Promise<{ url: string; expiresAt: string } | null>;
   hrUsers(): Promise<HrUserDto[]>;
   hrCreateUser(input: { email: string; name: string }): Promise<TempPasswordResponse>;
   hrResetPassword(id: string): Promise<TempPasswordResponse>;

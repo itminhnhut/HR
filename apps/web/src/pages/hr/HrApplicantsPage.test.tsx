@@ -1,3 +1,4 @@
+import { chooseOption } from '../../test/choose';
 import type { ApplicationDetailDto, ApplicationRowDto, ApplicationStatus, TemplateKey } from '@careers/shared';
 import { DEFAULT_MESSAGE_TEMPLATES, WEBSITE_SOURCE } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -388,7 +389,7 @@ describe('Going through candidates one after another', () => {
   });
 
   it.each([
-    ['the job filter', async () => userEvent.selectOptions(screen.getByLabelText('Lọc theo vị trí'), 'j2')],
+    ['the job filter', async () => chooseOption(screen.getByLabelText('Lọc theo vị trí'), 'j2')],
     ['the search box', async () => userEvent.type(screen.getByRole('searchbox'), 'B')],
   ])('should close the open profile when %s changes the list', async (_what, act) => {
     // Arrange
@@ -677,7 +678,7 @@ describe('The interview time in the mail drawer', () => {
     await heading('An Nguyễn');
     await userEvent.click(screen.getByRole('button', { name: 'Soạn thư' }));
     const mail = screen.getByRole('dialog', { name: 'Soạn thư' });
-    await userEvent.selectOptions(await within(mail).findByLabelText('Mẫu thư'), 'interview_onsite');
+    await chooseOption(await within(mail).findByLabelText('Mẫu thư'), 'interview_onsite');
     await userEvent.click(within(mail).getByRole('button', { name: /^Giờ phỏng vấn/ }));
     const picker = screen.getByRole('dialog', { name: 'Chọn ngày giờ phỏng vấn' });
     await userEvent.click(within(picker).getByRole('button', { name: 'Ngày mai' }));
@@ -685,11 +686,9 @@ describe('The interview time in the mail drawer', () => {
   };
 
   it('should move to "Hẹn phỏng vấn" with the time once HR confirms', async () => {
-    // Arrange
-    vi.stubGlobal('confirm', () => true);
-
     // Act
     await pickTomorrow();
+    await userEvent.click(await screen.findByRole('button', { name: 'Chuyển' }));
 
     // Assert
     await waitFor(() => expect(patches.at(-1)?.body.status).toBe('interview'));
@@ -697,11 +696,9 @@ describe('The interview time in the mail drawer', () => {
   });
 
   it('should change nothing when HR declines the confirmation', async () => {
-    // Arrange
-    vi.stubGlobal('confirm', () => false);
-
     // Act
     await pickTomorrow();
+    await userEvent.click(await screen.findByRole('button', { name: 'Huỷ' }));
 
     // Assert
     expect(patches).toEqual([]);

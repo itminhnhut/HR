@@ -10,14 +10,16 @@ import {
   type TemplateKey,
 } from '@careers/shared';
 import { useState } from 'react';
-import { useHrMe, useMessageTemplates } from '../../../api/queries';
+import { useCvLink, useHrMe, useMessageTemplates } from '../../../api/queries';
 import { buttonClass } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { FieldError, SelectField } from '../../../ui/Field';
+import { FieldError } from '../../../ui/Field';
+import { SelectField } from '../shadcn/Select';
 import { ErrorState, LoadingStatus, Notice } from '../../../ui/feedback';
 import { Icon } from '../../../ui/icons';
 import { designedMailHtml } from '../mail/mailLogos';
 import { MailPreview } from '../mail/MailPreview';
+import { carriesCvLink, CvAttachment } from './CvAttachment';
 import { DraftEditor, DraftNotices } from './DraftEditor';
 import { MessageFields } from './MessageFields';
 import { SendActions } from './SendActions';
@@ -93,7 +95,8 @@ function ComposeForm({
   onChooseTemplate: (key: TemplateKey) => void;
 }) {
   const me = useHrMe();
-  const draft = useMailDraft(app, me.data, template);
+  const cvLink = useCvLink(app, carriesCvLink(app, template.key));
+  const draft = useMailDraft(app, me.data, template, cvLink.data?.url);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [view, setView] = useState<ComposeView>('edit');
   return (
@@ -104,6 +107,7 @@ function ComposeForm({
           className={`flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto p-5 max-sm:p-4 ${view === 'preview' ? 'max-lg:hidden' : ''}`}
         >
           <TemplateSelect value={template.key} onChange={onChooseTemplate} />
+          <CvAttachment app={app} templateKey={template.key} link={cvLink} />
           <MessageFields
             app={app}
             mode={interviewModeOf(template.key)}
@@ -166,7 +170,7 @@ export function ComposeMessage({
         <div className="flex h-full min-h-0 flex-col">
           <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-3 max-sm:px-4">
             <div className="flex min-w-0 flex-col">
-              <h2 className="m-0 font-serif text-[22px] font-medium">Soạn thư</h2>
+              <h2 className="m-0 text-lg font-semibold">Soạn thư</h2>
               <span className="truncate text-sm text-slate">
                 {app.fullName} · {app.jobTitle}
               </span>

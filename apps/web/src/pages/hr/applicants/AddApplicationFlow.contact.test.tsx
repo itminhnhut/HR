@@ -1,3 +1,4 @@
+import { optionNames } from '../../../test/choose';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -138,10 +139,9 @@ describe('Contact details', () => {
   it('should offer closed and expired jobs marked as such, and no draft', async () => {
     // Act
     show();
-    await screen.findByRole('option', { name: 'Kế toán' });
+    const names = await optionNames(await screen.findByLabelText('Vị trí ứng tuyển'), 'Kế toán');
 
     // Assert
-    const names = [...box('Vị trí ứng tuyển').querySelectorAll('option')].map((o) => o.textContent);
     expect(names).toEqual(['Chọn vị trí…', 'Kế toán', 'Lái xe (đã đóng)', 'Thủ kho (đã đóng)']);
   });
 

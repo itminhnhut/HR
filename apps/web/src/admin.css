@@ -35,11 +35,12 @@
   --color-brand-deep: var(--color-primary-deep);
   --color-brand-soft: var(--color-primary-soft);
   --color-brand-line: var(--color-primary-line);
-  --radius-control: 8px;
+  --radius-control: 6px;
   --radius-card: 12px;
   /* Headings read faster without serifs at these sizes. */
   --font-serif: var(--font-sans);
-  --admin-shadow: 0 1px 2px rgb(15 23 42 / 0.05), 0 2px 8px rgb(15 23 42 / 0.04);
+  --admin-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+  --admin-ring: 0 0 0 3px rgb(37 99 235 / 0.25);
   --admin-shadow-lift: 0 2px 4px rgb(15 23 42 / 0.06), 0 10px 24px -6px rgb(15 23 42 / 0.14);
   background: var(--color-mist);
 }
@@ -113,4 +114,155 @@
 
 .hr-admin .icon-nudge:hover svg {
   transform: translateX(2px);
+}
+
+/*
+ * Sizes, focus and states after shadcn/ui (spec-admin-shadcn.md), keeping the admin's colours. This file sits outside
+ * Tailwind's layers, so these win over the utilities on the shared components while the public site stays as it is.
+ * Phones keep the 44px touch height; the 36px of shadcn is for a mouse.
+ */
+.hr-admin .ui-btn {
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.hr-admin .ui-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hr-admin .ui-btn-primary,
+.hr-admin .ui-btn-brand {
+  box-shadow: none;
+}
+
+.hr-admin .ui-btn-outline {
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+}
+
+.hr-admin .ui-field,
+.hr-admin .field-focus {
+  border-color: var(--color-field);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+}
+
+.hr-admin .ui-field,
+.hr-admin input.field-focus,
+.hr-admin textarea.field-focus,
+.hr-admin select.field-focus {
+  padding-inline: 12px;
+}
+
+.hr-admin .ui-field,
+.hr-admin input.field-focus,
+.hr-admin select.field-focus {
+  min-height: 44px;
+}
+
+.hr-admin .ui-field:focus-within,
+.hr-admin .ui-field:focus-visible,
+.hr-admin .field-focus:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--admin-ring);
+}
+
+/* Over the border colour above when a field has an error. */
+.hr-admin .ui-field.border-error,
+.hr-admin .field-focus.border-error {
+  border-color: var(--color-error);
+}
+
+.hr-admin button:focus-visible,
+.hr-admin a:focus-visible,
+.hr-admin [role='tab']:focus-visible {
+  outline: none;
+  box-shadow: var(--admin-ring);
+}
+
+.hr-admin tbody tr {
+  transition: background-color 0.16s ease;
+}
+
+.hr-admin tbody tr:hover {
+  background: var(--color-hover);
+}
+
+.hr-admin dialog::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+
+.hr-admin dialog:not(.rounded-none) {
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+}
+
+@media (min-width: 1024px) {
+  .hr-admin .ui-btn-sm {
+    min-height: 32px;
+    padding-inline: 12px;
+  }
+
+  .hr-admin .ui-btn-compact,
+  .hr-admin .ui-btn-md {
+    min-height: 36px;
+    padding-inline: 16px;
+  }
+
+  .hr-admin .ui-btn-lg {
+    min-height: 40px;
+    padding-inline: 24px;
+  }
+
+  .hr-admin .ui-field,
+  .hr-admin input.field-focus,
+  .hr-admin select.field-focus,
+  .hr-admin label.field-focus,
+  .hr-admin label.min-h-11 {
+    min-height: 36px;
+  }
+
+  .hr-admin .ui-field input,
+  .hr-admin .ui-field select,
+  .hr-admin input.field-focus,
+  .hr-admin textarea.field-focus {
+    font-size: 14px;
+  }
+
+  /* Controls written by hand follow the same height. */
+  .hr-admin button.min-h-11,
+  .hr-admin a.min-h-11 {
+    min-height: 36px;
+  }
+}
+
+/* The form's choice of how to send a CV: shared with the public form, so restyled here. */
+.hr-admin .ui-toggle {
+  border-color: var(--color-field);
+  border-radius: var(--radius-control);
+  background: #fff;
+  box-shadow: var(--admin-shadow);
+  color: var(--color-navy);
+  font-weight: 500;
+}
+
+.hr-admin .ui-toggle-on {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* The month calendar's own buttons, like every other button. */
+.hr-admin button[class*='fc-forma-'] {
+  min-height: 36px;
+  border-radius: var(--radius-control);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (min-width: 1024px) {
+  .hr-admin .ui-toggle {
+    min-height: 36px;
+  }
 }

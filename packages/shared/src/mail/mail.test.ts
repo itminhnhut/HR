@@ -711,3 +711,46 @@ describe('the heading of a details box', () => {
     );
   });
 });
+
+describe('the CV in an interview invitation', () => {
+  const cvUrl = 'https://site.test/api/cv/abc.123.sig';
+
+  it.each(['interview_onsite', 'interview_online'] as const)('should carry the link in the %s letter', (key) => {
+    // Act
+    const html = renderMailHtml(filled(key), { ...details, cvUrl });
+    const text = renderMailText(filled(key), { ...details, cvUrl });
+
+    // Assert
+    expect(html).toContain(`href="${cvUrl}"`);
+    expect(html).toContain('CV BẠN ĐÃ NỘP');
+    expect(text).toContain(`- CV bạn đã nộp: ${cvUrl}`);
+  });
+
+  it('should show no empty row without a link', () => {
+    // Act
+    const html = renderMailHtml(filled('interview_onsite'), details);
+    const text = renderMailText(filled('interview_onsite'), details);
+
+    // Assert
+    expect(html).not.toContain('CV BẠN ĐÃ NỘP');
+    expect(text).not.toContain('CV bạn đã nộp');
+  });
+
+  it('should leave it out of a letter that is not an invitation', () => {
+    // Act
+    const html = renderMailHtml(filled('rejection'), { ...details, cvUrl });
+    const text = renderMailText(filled('rejection'), { ...details, cvUrl });
+
+    // Assert
+    expect(html).not.toContain(cvUrl);
+    expect(text).not.toContain(cvUrl);
+  });
+
+  it('should not let a link break out of the letter', () => {
+    // Act
+    const html = renderMailHtml(filled('interview_onsite'), { ...details, cvUrl: 'https://x.test/"><script>' });
+
+    // Assert
+    expect(html).not.toContain('"><script>');
+  });
+});

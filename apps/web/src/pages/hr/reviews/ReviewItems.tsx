@@ -1,3 +1,4 @@
+import { buttonClass } from '../../../ui/Button';
 import {
   REVIEW_DECISION_LABEL,
   REVIEW_PICK_LABEL,
@@ -97,20 +98,14 @@ function NextStep({ batch, item }: { batch: ReviewBatchDto; item: ReviewItemHrDt
         <Icon name="calendar" size={14} /> Đã hẹn
       </span>
     ) : (
-      <Link
-        to={open}
-        className="inline-flex min-h-9 items-center rounded-control bg-primary px-3 text-[13px] font-semibold text-white no-underline"
-      >
+      <Link to={open} className={buttonClass('primary', 'md')}>
         Hẹn phỏng vấn
       </Link>
     );
   }
   if (item.decision === 'reject') {
     return (
-      <Link
-        to={open}
-        className="inline-flex min-h-9 items-center rounded-control border border-field px-3 text-[13px] font-semibold text-navy no-underline"
-      >
+      <Link to={open} className={buttonClass('outline', 'md')}>
         Gửi tin cảm ơn
       </Link>
     );
@@ -121,7 +116,7 @@ function NextStep({ batch, item }: { batch: ReviewBatchDto; item: ReviewItemHrDt
       type="button"
       disabled={action.isPending}
       onClick={() => action.mutate({ type: 'remove', itemId: item.id })}
-      className="min-h-9 rounded-control border border-field bg-white px-3 text-[13px] text-slate hover:bg-mist"
+      className={buttonClass('outline', 'md')}
     >
       Bỏ khỏi đợt
     </button>

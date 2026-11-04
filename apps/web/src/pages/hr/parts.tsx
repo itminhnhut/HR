@@ -51,7 +51,7 @@ export function PageHeading({
           >
             {title}
           </h1>
-          {subtitle && <p className="m-0 max-w-[640px] text-sm leading-relaxed text-slate">{subtitle}</p>}
+          {subtitle && <p className="m-0 max-w-[760px] text-sm leading-relaxed text-slate">{subtitle}</p>}
         </div>
       </div>
       {action}
@@ -73,7 +73,7 @@ export function tabClass(isOn: boolean, tone: Tone = 'blue'): string {
   const state = isOn
     ? `${TONE[tone].underline} font-semibold text-navy`
     : 'border-transparent text-slate hover:border-silver hover:text-navy';
-  return `-mb-px inline-flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-0 border-b-[3px] bg-transparent px-1 text-sm ${state}`;
+  return `-mb-px inline-flex min-h-12 shrink-0 lg:min-h-10 items-center gap-2 whitespace-nowrap border-0 border-b-[3px] bg-transparent px-1 text-sm ${state}`;
 }
 
 /** The number on a tab: filled in the tab's colour while active; a zero stays quiet. */
@@ -204,7 +204,7 @@ export function PopupMenu({ label, children }: { label: string; children: (close
           role="menu"
           aria-label={label}
           style={style}
-          className="fixed z-30 flex w-[min(230px,calc(100vw-16px))] animate-fade flex-col rounded-card border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
+          className="fixed z-30 flex w-[min(230px,calc(100vw-16px))] animate-fade flex-col rounded-control border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
         >
           {children(close)}
         </div>

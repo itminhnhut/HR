@@ -1,6 +1,8 @@
+import { toggleClass } from '../shadcn/toggle';
 import { CHOICE_MAX, groupThousands, OPENINGS_MAX, WORK_DAYS, WORK_MODE_LABEL, type WorkMode } from '@careers/shared';
 import { useState } from 'react';
-import { SelectField, TextField } from '../../../ui/Field';
+import { TextField } from '../../../ui/Field';
+import { SelectField } from '../shadcn/Select';
 import { hasPick, OTHER, roundSalary, salaryDigits, salaryProblem, togglePick, type FormState } from './model';
 
 const ADD_NEW = '__add__';
@@ -116,7 +118,7 @@ export function RequirementPicks({
               type="button"
               aria-pressed={on}
               onClick={() => onChange(togglePick(text, o))}
-              className={`inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] transition-colors ${on ? 'border-primary bg-primary text-white' : 'border-ring bg-white text-navy hover:bg-mist'}`}
+              className={toggleClass(on)}
             >
               {on ? '✓' : '+'} {o}
             </button>

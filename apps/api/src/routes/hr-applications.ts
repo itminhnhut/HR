@@ -1,3 +1,5 @@
+import { createCvLink } from '../lib/cv-link.js';
+import { cvResponse } from '../lib/cv-response.js';
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { notFound } from '../lib/http-error.js';
@@ -93,14 +95,15 @@ hrApplicationRoutes.get('/applications/:id/cv', async (c) => {
   const { pathname, fullName } = await cvOf(db, c.req.param('id'));
   const stream = await cvStore.get(pathname);
   if (!stream) throw notFound('Không đọc được file CV.');
-  return new Response(stream, {
-    headers: {
-      'content-type': 'application/pdf',
-      'content-disposition': `inline; filename*=UTF-8''${encodeURIComponent(`CV-${fullName}.pdf`)}`,
-      'x-content-type-options': 'nosniff',
-      'cache-control': 'private, no-store',
-    },
-  });
+  return cvResponse(stream, fullName);
+});
+
+/** The address an interview invitation carries. Only for a stored file: a pasted job-site address may hold its own key. */
+hrApplicationRoutes.get('/applications/:id/cv-link', async (c) => {
+  const { db, config, now } = c.get('deps');
+  const id = c.req.param('id');
+  const { pathname } = await cvOf(db, id);
+  return c.json(createCvLink(config.sessionSecret, config.siteUrl, id, pathname, now()));
 });
 
 hrApplicationRoutes.get('/subscribers', async (c) => {

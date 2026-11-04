@@ -82,7 +82,7 @@ export function ConfirmDialog({
   return (
     <Dialog open={open} onClose={onClose} label={title}>
       <div className="flex flex-col gap-4 p-5 sm:p-6">
-        <h2 className="m-0 font-serif text-[24px] font-medium">{title}</h2>
+        <h2 className="m-0 text-lg font-semibold">{title}</h2>
         <div className="text-[15px] leading-relaxed text-body">{children}</div>
         <div className="flex flex-wrap justify-end gap-2.5">
           <Button variant="outline" onClick={onClose}>

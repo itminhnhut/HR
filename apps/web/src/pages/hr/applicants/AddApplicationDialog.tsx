@@ -11,7 +11,8 @@ import { useAddApplication, useHrJobs } from '../../../api/queries';
 import { CvPicker } from '../../../site/CvPicker';
 import { Button } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { FieldError, SelectField, TextArea, TextField } from '../../../ui/Field';
+import { FieldError, TextArea, TextField } from '../../../ui/Field';
+import { SelectField } from '../shadcn/Select';
 import { Notice } from '../../../ui/feedback';
 import { PhoneField } from '../../../ui/PhoneField';
 import { errorMessage } from '../parts';
@@ -196,7 +197,7 @@ function AddForm({ onClose, onAdded }: { onClose: () => void; onAdded: (id: stri
   return (
     <form onSubmit={submit} noValidate className="flex max-h-dvh flex-col sm:max-h-[calc(100dvh-48px)]">
       <header className="flex items-center gap-3 border-b border-line px-5 py-4 sm:px-7">
-        <h2 className="m-0 flex-1 font-serif text-[24px] font-medium">Thêm hồ sơ</h2>
+        <h2 className="m-0 flex-1 text-lg font-semibold">Thêm hồ sơ</h2>
         <CloseButton onClick={onClose} />
       </header>
       <div className="grid flex-1 gap-4 overflow-y-auto px-5 py-5 sm:grid-cols-2 sm:px-7">

@@ -53,9 +53,19 @@ export const halfCell = (label: string, value: string) => `<td width="50%" valig
                 <div style="font-size:15px;color:#1f1f1f;margin-top:3px;">${escapeHtml(value)}</div>
               </td>`;
 
+/** Copied with the letter, where a file attached by hand could be forgotten. */
+function cvRow(details: MailDetails): string {
+  if (!details.cvUrl) return '';
+  return `<tr><td style="${ROW_LINE}">
+            <div style="${LABEL}">CV BẠN ĐÃ NỘP</div>
+            <a href="${escapeHtml(details.cvUrl)}" style="display:inline-block;margin-top:4px;font-size:12px;font-weight:bold;letter-spacing:1px;color:#C8102E;text-decoration:none;">MỞ FILE CV &rarr;</a>
+          </td></tr>`;
+}
+
 function infoRows(content: MailContent, details: MailDetails): string {
   const online = content.key === 'interview_online';
   return `${online ? meetingRow(details) : placeRow(details)}
+          ${cvRow(details)}
           <tr><td style="${ROW_LINE}">
             <div style="${LABEL}">NGƯỜI TRAO ĐỔI</div>
             <div style="font-size:15px;line-height:1.5;color:#1f1f1f;margin-top:3px;">${escapeHtml(interviewerOf(details))}</div>

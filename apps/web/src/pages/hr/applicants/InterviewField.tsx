@@ -51,6 +51,7 @@ function FieldButton({
   hasValue,
   disabled,
   isOpen,
+  fieldName,
   onClick,
 }: {
   ref: RefObject<HTMLButtonElement | null>;
@@ -58,6 +59,7 @@ function FieldButton({
   hasValue: boolean;
   disabled?: boolean;
   isOpen: boolean;
+  fieldName: string;
   onClick: () => void;
 }) {
   return (
@@ -67,7 +69,7 @@ function FieldButton({
       disabled={disabled}
       aria-haspopup="dialog"
       aria-expanded={isOpen}
-      aria-label={`Giờ phỏng vấn: ${text}`}
+      aria-label={`${fieldName}: ${text}`}
       onClick={onClick}
       className={`field-focus flex min-h-11 w-full items-center gap-2.5 rounded-control border border-field bg-white px-3.5 text-left text-sm disabled:opacity-60 ${hasValue ? 'font-medium text-navy' : 'text-placeholder'}`}
     >
@@ -132,19 +134,21 @@ function PickerDialog({
   place,
   draft,
   canClear,
+  dialogLabel,
   finish,
 }: {
   isOpen: boolean;
   place: CSSProperties | undefined;
   draft: ReturnType<typeof useDraft>;
   canClear: boolean;
+  dialogLabel: string;
   finish: (next?: string | null) => void;
 }) {
   return (
     <Dialog
       open={isOpen}
       onClose={() => finish()}
-      label="Chọn ngày giờ phỏng vấn"
+      label={dialogLabel}
       style={place}
       className="sm:backdrop:bg-transparent"
     >
@@ -173,12 +177,19 @@ export function InterviewField({
   value,
   disabled,
   showTitle = true,
+  fieldName = 'Giờ phỏng vấn',
+  placeholder = 'Chọn ngày giờ phỏng vấn',
+  isRequired = false,
   onChange,
 }: {
   value: string | null;
   disabled?: boolean;
   /** Off where the surrounding form already labels the field. */
   showTitle?: boolean;
+  fieldName?: string;
+  placeholder?: string;
+  /** No "Xoá giờ hẹn": the form cannot do without a time. */
+  isRequired?: boolean;
   onChange: (iso: string | null) => void;
 }) {
   const field = useRef<HTMLButtonElement>(null);
@@ -192,20 +203,28 @@ export function InterviewField({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {showTitle && <span className="text-xs text-muted">Giờ phỏng vấn</span>}
+      {showTitle && <span className="text-sm font-medium text-navy">{fieldName}</span>}
       <FieldButton
         ref={field}
-        text={value ? fieldLabel(value) : 'Chọn ngày giờ phỏng vấn'}
+        text={value ? fieldLabel(value) : placeholder}
         hasValue={!!value}
         disabled={disabled}
         isOpen={isOpen}
+        fieldName={fieldName}
         onClick={() => {
           draft.reset();
           setPlace(pickerPlace(field.current));
           setIsOpen(true);
         }}
       />
-      <PickerDialog isOpen={isOpen} place={place} draft={draft} canClear={!!value} finish={finish} />
+      <PickerDialog
+        isOpen={isOpen}
+        place={place}
+        draft={draft}
+        canClear={!!value && !isRequired}
+        dialogLabel={placeholder}
+        finish={finish}
+      />
     </div>
   );
 }

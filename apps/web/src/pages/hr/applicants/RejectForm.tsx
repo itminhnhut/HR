@@ -34,12 +34,12 @@ export function RejectForm({
       <strong className="font-semibold text-navy">Lý do chưa phù hợp</strong>
       {GROUPS.map((group) => (
         <fieldset key={group.key} className="m-0 flex flex-col gap-1.5 border-0 p-0">
-          {group.title && <legend className="mb-1 p-0 text-xs text-muted">{group.title}</legend>}
+          {group.title && <legend className="mb-1 p-0 text-sm font-medium text-navy">{group.title}</legend>}
           <span className="flex flex-wrap gap-1.5">
             {REJECT_REASONS.filter((r) => r.group === group.key).map((r) => (
               <label
                 key={r.key}
-                className={`inline-flex min-h-9 cursor-pointer items-center rounded-full border px-3 text-[13px] has-[:focus-visible]:outline-2 ${reason === r.key ? 'border-status-rejected bg-status-rejected-soft font-semibold text-status-rejected-text' : 'border-silver bg-white text-navy hover:bg-hover'}`}
+                className={`inline-flex min-h-11 cursor-pointer items-center rounded-control border px-3 text-sm has-[:focus-visible]:outline-2 lg:min-h-9 ${reason === r.key ? 'border-status-rejected bg-status-rejected-soft font-semibold text-status-rejected-text' : 'border-silver bg-white text-navy hover:bg-hover'}`}
               >
                 <input
                   type="radio"

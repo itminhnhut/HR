@@ -1,3 +1,4 @@
+import { chooseOption } from '../../../test/choose';
 import { addDays, todayInVietnam } from '@careers/shared';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -71,7 +72,7 @@ describe('PeriodPicker', () => {
     const [yearList] = dialog.getAllByRole('combobox', { name: /năm/i });
 
     // Act
-    if (yearList) await userEvent.selectOptions(yearList, '2025');
+    if (yearList) await chooseOption(yearList, '2025');
 
     // Assert
     expect(dialog.getAllByRole('combobox', { name: /năm/i })[0]).toHaveProperty('value', '2025');
@@ -82,8 +83,8 @@ describe('PeriodPicker', () => {
     const { dialog, onChange } = await open();
 
     // Act
-    await userEvent.selectOptions(dialog.getByRole('combobox', { name: 'Từ năm' }), '2020');
-    await userEvent.selectOptions(dialog.getByRole('combobox', { name: 'Đến năm' }), '2022');
+    await chooseOption(dialog.getByRole('combobox', { name: 'Từ năm' }), '2020');
+    await chooseOption(dialog.getByRole('combobox', { name: 'Đến năm' }), '2022');
     await userEvent.click(dialog.getByRole('button', { name: 'Xem theo năm' }));
 
     // Assert

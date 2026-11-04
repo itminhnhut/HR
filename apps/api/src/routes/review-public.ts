@@ -1,3 +1,4 @@
+import { cvResponse } from '../lib/cv-response.js';
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { notFound } from '../lib/http-error.js';
@@ -39,13 +40,5 @@ reviewPublicRoutes.get('/:token/items/:itemId/cv', async (c) => {
   const { pathname, fullName } = await reviewCvOf(db, token, itemId, now());
   const stream = await cvStore.get(pathname);
   if (!stream) throw notFound('Không đọc được file CV.');
-  return new Response(stream, {
-    headers: {
-      'content-type': 'application/pdf',
-      'content-disposition': `inline; filename*=UTF-8''${encodeURIComponent(`CV-${fullName}.pdf`)}`,
-      'x-content-type-options': 'nosniff',
-      'cache-control': 'private, no-store',
-      'x-robots-tag': 'noindex, nofollow',
-    },
-  });
+  return cvResponse(stream, fullName);
 });

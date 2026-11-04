@@ -1,29 +1,8 @@
+import { SelectField } from '../shadcn/Select';
 import { addDays, todayInVietnam } from '@careers/shared';
-import { type CSSProperties } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { vi } from 'react-day-picker/locale';
-import 'react-day-picker/style.css';
+import { Calendar } from '../shadcn/Calendar';
+import { toggleClass } from '../shadcn/toggle';
 import { Button } from '../../../ui/Button';
-
-const CALENDAR_STYLE = {
-  '--rdp-accent-color': 'var(--color-primary)',
-  '--rdp-accent-background-color': 'var(--color-tint)',
-  '--rdp-today-color': 'var(--color-accent)',
-  '--rdp-day-height': '36px',
-  '--rdp-day-width': '40px',
-  '--rdp-day_button-height': '34px',
-  '--rdp-day_button-width': '38px',
-  '--rdp-day_button-border-radius': '6px',
-  '--rdp-nav-height': '36px',
-} as CSSProperties;
-
-/** "!": the calendar's own stylesheet sits outside Tailwind's layers and would win otherwise. */
-const DAY_CLASSES = {
-  selected: '[&_button]:bg-primary! [&_button]:font-semibold [&_button]:text-white!',
-  today: 'font-bold underline underline-offset-2',
-};
-
-const CAPTION_CLASSES = { caption_label: 'text-sm font-semibold text-navy capitalize' };
 
 const toLocal = (iso: string) => {
   const [y = 0, m = 1, d = 1] = iso.split('-').map(Number);
@@ -31,12 +10,6 @@ const toLocal = (iso: string) => {
 };
 const toIsoDay = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-
-const quickClass = (on: boolean) =>
-  `min-h-9 flex-1 rounded-control border px-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 max-sm:min-h-11 ${on ? 'border-primary bg-primary font-medium text-white' : 'border-field bg-white text-navy hover:bg-mist'}`;
-
-const selectClass =
-  'field-focus min-h-10 rounded-control border border-field bg-white px-2.5 text-sm text-navy outline-none max-sm:min-h-11';
 
 export interface PickerState {
   /** The chosen day (YYYY-MM-DD) and time (HH:MM), Vietnam time; nothing is saved until "Áp dụng". */
@@ -74,7 +47,7 @@ function QuickDays({ day, onDay }: Pick<PickerState, 'day' | 'onDay'>) {
           type="button"
           aria-pressed={day === iso}
           onClick={() => onDay(iso)}
-          className={quickClass(day === iso)}
+          className={`flex-1 ${toggleClass(day === iso)}`}
         >
           {label}
         </button>
@@ -89,23 +62,23 @@ function TimeSelects(
   const { hour, minute, hours, minutes, isTimeOpen, onHour, onMinute } = props;
   return (
     <div role="group" aria-label="Giờ phỏng vấn" className="flex items-center justify-center gap-1.5">
-      <select aria-label="Giờ" value={hour} onChange={(e) => onHour(e.target.value)} className={selectClass}>
+      <SelectField label="Giờ" hideLabel className="w-20" value={hour} onChange={(e) => onHour(e.target.value)}>
         {hours.map((h) => (
           <option key={h} value={h} disabled={!minutes.some((m) => isTimeOpen(h, m))}>
             {h}
           </option>
         ))}
-      </select>
+      </SelectField>
       <span aria-hidden="true" className="font-semibold text-slate">
         :
       </span>
-      <select aria-label="Phút" value={minute} onChange={(e) => onMinute(e.target.value)} className={selectClass}>
+      <SelectField label="Phút" hideLabel className="w-20" value={minute} onChange={(e) => onMinute(e.target.value)}>
         {minutes.map((m) => (
           <option key={m} value={m} disabled={!isTimeOpen(hour, m)}>
             {m}
           </option>
         ))}
-      </select>
+      </SelectField>
     </div>
   );
 }
@@ -118,13 +91,8 @@ export function InterviewPicker(props: PickerState) {
     <div className="flex max-h-[calc(100dvh-16px)] flex-col gap-2.5 overflow-y-auto p-3">
       <QuickDays day={day} onDay={onDay} />
       <div className="flex justify-center">
-        <DayPicker
+        <Calendar
           mode="single"
-          locale={vi}
-          weekStartsOn={1}
-          style={CALENDAR_STYLE}
-          classNames={CAPTION_CLASSES}
-          modifiersClassNames={DAY_CLASSES}
           startMonth={toLocal(today)}
           endMonth={toLocal(addDays(today, 90))}
           disabled={[{ before: toLocal(today) }, { after: toLocal(addDays(today, 90)) }]}

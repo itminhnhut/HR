@@ -40,6 +40,7 @@ function detailsText(content: MailContent, details: MailDetails): string {
     `- Thời lượng: ${durationOf(details)}`,
     `- Hình thức: ${online ? 'Online' : 'Trực tiếp'}`,
     parts ? `- Thêm vào lịch: ${calendarLinkOf(content.key, details)}` : '',
+    details.cvUrl ? `- CV bạn đã nộp: ${details.cvUrl}` : '',
   ]
     .filter(Boolean)
     .join('\n');

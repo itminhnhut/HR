@@ -109,7 +109,7 @@ export function MenuButton({ label, children }: { label: string; children: (clos
           id={`${id}-menu`}
           role="menu"
           aria-labelledby={`${id}-button`}
-          className="absolute right-0 top-full z-30 mt-1 flex w-[220px] animate-fade flex-col rounded-card border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
+          className="absolute right-0 top-full z-30 mt-1 flex w-[220px] animate-fade flex-col rounded-control border border-line bg-white py-1.5 text-left shadow-[0_10px_30px_rgba(11,31,58,0.12)]"
         >
           {children(close)}
         </div>

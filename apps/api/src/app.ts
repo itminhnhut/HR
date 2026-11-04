@@ -1,3 +1,4 @@
+import { cvLinkRoutes } from './routes/cv-link.js';
 import type { HrMe } from '@careers/shared';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
@@ -45,6 +46,7 @@ export function createApp(deps: Deps) {
   api.route('/', publicRoutes);
   api.route('/', publicNewsRoutes);
   api.route('/review', reviewPublicRoutes);
+  api.route('/cv', cvLinkRoutes);
   api.route('/candidate', candidateRoutes);
   api.route('/hr', hrRoutes);
   app.route('/api', api);

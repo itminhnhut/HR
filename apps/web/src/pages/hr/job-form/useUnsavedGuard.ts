@@ -1,14 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { useBlocker } from 'react-router';
-
-const QUESTION = 'Tin chưa được lưu. Rời trang thì mất nội dung vừa nhập. Vẫn rời đi?';
+import { useConfirm } from '../shadcn/Confirm';
 
 /**
  * Asks before leaving a form with unsaved changes: closing the tab, or a link inside the app.
- * Returns `allowLeave`, to call right before navigating away after a successful save.
+ * Returns `allowLeave`, to call right before navigating away after a successful save, and the dialog to render.
  */
-export function useUnsavedGuard(dirty: boolean): () => void {
+export function useUnsavedGuard(dirty: boolean): { allowLeave: () => void; guardDialog: ReactNode } {
   const allowed = useRef(false);
+  const isAsking = useRef(false);
+  const [confirm, guardDialog] = useConfirm();
   useEffect(() => {
     // Once the saved form is shown again, new edits are guarded again.
     if (!dirty) allowed.current = false;
@@ -23,12 +24,25 @@ export function useUnsavedGuard(dirty: boolean): () => void {
       dirty && !allowed.current && currentLocation.pathname !== nextLocation.pathname,
   );
   useEffect(() => {
-    if (blocker.state !== 'blocked') return;
-    if (window.confirm(QUESTION)) blocker.proceed();
-    else blocker.reset();
-  }, [blocker]);
+    if (blocker.state !== 'blocked' || isAsking.current) return;
+    isAsking.current = true;
+    void confirm({
+      title: 'Rời trang?',
+      description: 'Tin chưa được lưu, nội dung vừa nhập sẽ mất.',
+      action: 'Rời trang',
+      cancel: 'Ở lại',
+      isDanger: true,
+    }).then((agreed) => {
+      isAsking.current = false;
+      if (agreed) blocker.proceed();
+      else blocker.reset();
+    });
+  }, [blocker, confirm]);
 
-  return () => {
-    allowed.current = true;
+  return {
+    allowLeave: () => {
+      allowed.current = true;
+    },
+    guardDialog,
   };
 }

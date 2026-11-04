@@ -29,7 +29,8 @@ interface FieldShell {
   trailing?: ReactNode;
 }
 
-const boxBase = 'field-focus flex items-center gap-3 rounded-control border bg-white px-4';
+/** ui-field: the admin's look (admin.css) restyles every field without touching the public site. */
+const boxBase = 'ui-field field-focus flex items-center gap-3 rounded-control border bg-white px-4';
 
 export function TextField({
   label,

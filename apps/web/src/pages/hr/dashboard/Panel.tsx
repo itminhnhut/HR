@@ -17,7 +17,7 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-5 sm:p-6">
+    <section className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="m-0">
           <SectionTitle icon={icon} tone={tone}>

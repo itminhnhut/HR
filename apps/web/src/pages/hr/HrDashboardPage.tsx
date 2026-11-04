@@ -57,7 +57,7 @@ function Interviews({ data }: { data: DashboardDto }) {
       action={
         <Link
           to="/hr/ho-so?trang-thai=interview"
-          className="icon-nudge inline-flex items-center gap-1 text-sm font-medium no-underline hover:underline"
+          className="icon-nudge inline-flex items-center gap-1 text-sm font-medium no-underline hover:underline max-sm:min-h-11"
         >
           Xem tất cả
           <Icon name="arrowRight" size={15} />

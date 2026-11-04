@@ -3,7 +3,8 @@ import { useRef, useState, type RefObject } from 'react';
 import { useUploadNewsImage } from '../../../api/queries';
 import { SITE } from '../../../lib/site';
 import { Button } from '../../../ui/Button';
-import { FieldError, SelectField, TextField } from '../../../ui/Field';
+import { FieldError, TextField } from '../../../ui/Field';
+import { SelectField } from '../shadcn/Select';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
 import { imageFileProblem } from './editor/rules';
@@ -13,8 +14,8 @@ import { uploadPicture } from './uploadPicture';
 /** A card in the right column of the editor page. */
 export function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-5">
-      <h2 className="m-0 font-serif text-xl font-medium">{title}</h2>
+    <section className="flex flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6">
+      <h2 className="m-0 text-lg font-semibold text-navy">{title}</h2>
       {children}
     </section>
   );

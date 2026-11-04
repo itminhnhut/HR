@@ -7,7 +7,7 @@ import { youtubeId } from './embeds';
 export function DialogHead({ title, onClose }: { title: string; onClose: () => void }) {
   return (
     <div className="flex items-start justify-between gap-3">
-      <h2 className="m-0 font-serif text-[24px] font-medium">{title}</h2>
+      <h2 className="m-0 text-lg font-semibold">{title}</h2>
       <CloseButton onClick={onClose} />
     </div>
   );

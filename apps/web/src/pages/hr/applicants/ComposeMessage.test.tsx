@@ -1,3 +1,4 @@
+import { chooseOption } from '../../../test/choose';
 import { DEFAULT_MESSAGE_TEMPLATES, MAIL_COMPANY, type ApplicationDetailDto, type HrMe } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
@@ -211,11 +212,11 @@ describe('filling the mail', () => {
 
   it('should show the note box only for the templates that have one', async () => {
     // Arrange
-    const user = await openCompose(application({ status: 'rejected' }));
+    await openCompose(application({ status: 'rejected' }));
     expect(screen.queryByRole('textbox', { name: 'Đoạn sau khung thông tin' })).toBeNull();
 
     // Act
-    await user.selectOptions(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
+    await chooseOption(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
 
     // Assert
     expect(box('Đoạn sau khung thông tin').value).toContain('Buổi phỏng vấn');
@@ -545,6 +546,95 @@ describe('the plain-text channels', () => {
     // Assert
     expect(screen.queryByRole('link', { name: 'Mở ứng dụng mail' })).toBeNull();
     expect(screen.getByText(/Thư dài, ứng dụng mail có thể cắt bớt/)).toBeTruthy();
+  });
+});
+
+describe('The CV in an interview invitation', () => {
+  const invited = { status: 'interview' as const, hasCv: true, cvLink: null };
+  const CV_URL = 'https://site.test/api/cv/a1.123.sig';
+  const preview = () => screen.getByTitle<HTMLIFrameElement>('Xem trước thư').getAttribute('srcdoc') ?? '';
+
+  let linkAsked: number;
+  let linkReply: () => Response;
+
+  beforeEach(() => {
+    linkAsked = 0;
+    linkReply = () => reply(200, { url: CV_URL, expiresAt: '2026-12-05T00:00:00.000Z' });
+    const others = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        if (!String(input).endsWith('/cv-link')) return others(input, init);
+        linkAsked += 1;
+        return linkReply();
+      }),
+    );
+  });
+
+  it.each(['interview_onsite', 'interview_online'] as const)('should put the link into the %s letter', async (key) => {
+    // Act
+    await openCompose(application(invited));
+    await chooseOption(screen.getByLabelText('Mẫu thư'), key);
+
+    // Assert
+    expect(await screen.findByText(/Đã có link mở CV trong thư, hạn đến 05\/12\/2026/)).toBeTruthy();
+    await waitFor(() => expect(preview()).toContain(CV_URL));
+  });
+
+  it("should still offer the file to save under the person's name", async () => {
+    // Act
+    await openCompose(application(invited));
+    await chooseOption(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
+
+    // Assert
+    const link = screen.getByRole('link', { name: 'Tải CV' });
+    expect(link.getAttribute('href')).toContain('/hr/applications/a1/cv');
+    expect(link.getAttribute('download')).toBe('CV-Nguyễn Thị Mai Anh.pdf');
+  });
+
+  it('should not ask for a link on a letter that is not an invitation', async () => {
+    // Act
+    await openCompose(application({ status: 'rejected', hasCv: true, cvLink: null }));
+
+    // Assert
+    expect(screen.queryByRole('region', { name: 'CV trong thư' })).toBeNull();
+    expect(linkAsked).toBe(0);
+  });
+
+  it('should keep a pasted job-site address out of the letter', async () => {
+    // Arrange
+    const pasted = 'https://ntd.vieclam24h.vn/cv?token=abc';
+
+    // Act
+    await openCompose(application({ ...invited, cvLink: pasted }));
+    await chooseOption(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
+
+    // Assert
+    expect(screen.getByText('CV là link nên thư không kèm CV.')).toBeTruthy();
+    expect(screen.queryByRole('link', { name: 'Tải CV' })).toBeNull();
+    expect(linkAsked).toBe(0);
+    expect(preview()).not.toContain('vieclam24h');
+  });
+
+  it('should say so when the link could not be made', async () => {
+    // Arrange
+    linkReply = () => reply(500, { error: 'down' });
+
+    // Act
+    await openCompose(application(invited));
+    await chooseOption(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
+
+    // Assert
+    expect(await screen.findByText(/Chưa gắn được link CV/)).toBeTruthy();
+  });
+
+  it('should show nothing for an application without a CV', async () => {
+    // Act
+    await openCompose(application({ status: 'interview', hasCv: false, cvLink: null }));
+    await chooseOption(screen.getByLabelText('Mẫu thư'), 'interview_onsite');
+
+    // Assert
+    expect(screen.queryByRole('region', { name: 'CV trong thư' })).toBeNull();
   });
 });
 

@@ -25,4 +25,6 @@ export interface MailDetails {
   hrTitle: string;
   hrAlias: string;
   hrEmail: string;
+  /** Opens the candidate's CV. Only on interview invitations with a stored file. */
+  cvUrl?: string;
 }

@@ -1,3 +1,4 @@
+import { chooseOption } from '../../../test/choose';
 import { fieldErrors, hrApplicationSchema, type ApplicationDetailDto, type SourceDto } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen } from '@testing-library/react';
@@ -222,14 +223,10 @@ export const pasteLink = async (link: string) => {
 };
 
 export async function pickJob(name = 'Kế toán') {
-  await userEvent.selectOptions(
-    await screen.findByLabelText('Vị trí ứng tuyển'),
-    await screen.findByRole('option', { name }),
-  );
+  await chooseOption(await screen.findByLabelText('Vị trí ứng tuyển'), name);
 }
 export async function pickSource(key = 'zalo') {
-  await screen.findByRole('option', { name: 'Zalo' });
-  await userEvent.selectOptions(screen.getByLabelText('Nguồn hồ sơ'), key);
+  await chooseOption(screen.getByLabelText('Nguồn hồ sơ'), key);
 }
 
 /** Everything the form needs except the CV. */

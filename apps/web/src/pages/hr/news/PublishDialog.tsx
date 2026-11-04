@@ -92,7 +92,7 @@ export function PublishDialog({
       <div className="flex max-h-[92dvh] flex-col sm:max-h-[calc(100dvh-48px)]">
         <div className="flex flex-col gap-4 overflow-y-auto px-5 pb-4 pt-3 sm:px-6 sm:pt-6">
           <SheetHandle />
-          <h2 className="m-0 font-serif text-[24px] font-medium">{confirmLabel}?</h2>
+          <h2 className="m-0 text-lg font-semibold">{confirmLabel}?</h2>
           <section aria-label="Kiểm tra trước khi đăng" className="flex flex-col">
             <span className="text-sm font-medium text-navy">Kiểm tra trước khi đăng</span>
             <ul className="m-0 list-none p-0">

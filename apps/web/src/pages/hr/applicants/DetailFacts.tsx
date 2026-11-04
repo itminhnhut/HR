@@ -1,7 +1,9 @@
 import { formatPhone, formatTimestamp, type ApplicationDetailDto } from '@careers/shared';
 import { useState, type ReactNode } from 'react';
 import { useDeleteApplication } from '../../../api/queries';
+import { Button } from '../../../ui/Button';
 import { CopyButton } from '../../../ui/CopyButton';
+import { useConfirm } from '../shadcn/Confirm';
 import { FieldError } from '../../../ui/Field';
 import { Icon, type IconName } from '../../../ui/icons';
 import { errorMessage } from '../parts';
@@ -45,32 +47,32 @@ function Fact({
 /** Deletes the application and its CV file; two taps, it cannot be undone. */
 function DeleteApplication({ app, onDeleted }: { app: ApplicationDetailDto; onDeleted: () => void }) {
   const remove = useDeleteApplication();
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, dialog] = useConfirm();
   const [error, setError] = useState<string | null>(null);
+  const ask = async () => {
+    const agreed = await confirm({
+      title: `Xoá hồ sơ ${app.fullName}?`,
+      description: 'Xoá cả file CV, không khôi phục được.',
+      action: 'Xoá hồ sơ',
+      isDanger: true,
+    });
+    if (!agreed) return;
+    setError(null);
+    remove.mutate(app.id, { onSuccess: onDeleted, onError: (e) => setError(errorMessage(e)) });
+  };
   return (
     <div className="flex flex-col gap-1.5">
-      <button
-        type="button"
+      {dialog}
+      <Button
+        variant="outline"
+        icon="trash"
         disabled={remove.isPending}
-        onClick={() => {
-          if (!confirm) return setConfirm(true);
-          setError(null);
-          remove.mutate(app.id, {
-            onSuccess: onDeleted,
-            onError: (e) => {
-              setConfirm(false);
-              setError(errorMessage(e));
-            },
-          });
-        }}
-        className={`inline-flex min-h-11 w-fit items-center gap-2 rounded-control border px-4 text-sm transition-colors disabled:opacity-60 ${confirm ? 'border-error bg-error font-medium text-white' : 'border-field bg-white text-error hover:bg-error-soft'}`}
+        className="w-fit text-error! hover:bg-error-soft!"
+        onClick={() => void ask()}
       >
-        <Icon name="trash" size={16} />
-        {remove.isPending ? 'Đang xoá…' : confirm ? 'Bấm lần nữa để xoá hẳn' : 'Xoá hồ sơ'}
-      </button>
-      <span className="text-xs text-muted">
-        Xoá cả file CV, không khôi phục được. Dùng khi ứng viên yêu cầu xoá dữ liệu.
-      </span>
+        {remove.isPending ? 'Đang xoá…' : 'Xoá hồ sơ'}
+      </Button>
+      <span className="text-xs text-muted">Dùng khi ứng viên yêu cầu xoá dữ liệu.</span>
       <FieldError>{error}</FieldError>
     </div>
   );

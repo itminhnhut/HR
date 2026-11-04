@@ -117,7 +117,7 @@ export function FloatingToolbar() {
       ref={bar}
       role="toolbar"
       aria-label="Định dạng chữ đã chọn"
-      className="fixed z-30 flex animate-fade items-center gap-0.5 rounded-card border border-line bg-white p-1 shadow-[0_10px_30px_rgba(11,31,58,0.16)]"
+      className="fixed z-30 flex animate-fade items-center gap-0.5 rounded-control border border-line bg-white p-1 shadow-[0_10px_30px_rgba(11,31,58,0.16)]"
     >
       <ToolButton label="Đậm" shortcut={`${mod}+B`} pressed={state.bold} onClick={() => format('bold')}>
         <span className="font-bold">B</span>

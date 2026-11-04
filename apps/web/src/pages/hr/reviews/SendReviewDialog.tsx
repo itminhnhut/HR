@@ -1,3 +1,4 @@
+import { InterviewField } from '../applicants/InterviewField';
 import {
   REVIEW_NAME_MAX,
   REVIEW_TEXT_MAX,
@@ -10,10 +11,10 @@ import { ApiError } from '../../../api';
 import { useCreateReview, useHrMe } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { TextArea, TextField } from '../../../ui/Field';
+import { TextArea, TextField, FieldError } from '../../../ui/Field';
 import { Notice } from '../../../ui/feedback';
 import { errorMessage } from '../parts';
-import { defaultRespondBy, defaultTitle, fromLocalInput } from './reviewModel';
+import { defaultRespondBy, defaultTitle, fromLocalInput, toLocalInput } from './reviewModel';
 
 /** The reviewer's name HR typed last time, a per-browser convenience. */
 const LAST_REVIEWER = 'hr-review-last-reviewer';
@@ -50,7 +51,7 @@ function PickSwitch({ value, onChange }: { value: ReviewPick; onChange: (v: Revi
           type="button"
           aria-pressed={value === key}
           onClick={() => onChange(key)}
-          className={`min-h-9 rounded-full border px-3 text-[13px] font-semibold ${value === key ? on : 'border-field bg-white text-slate hover:bg-mist'}`}
+          className={`min-h-11 rounded-control border px-3 text-sm font-medium lg:min-h-9 ${value === key ? on : 'border-field bg-white text-slate hover:bg-mist'}`}
         >
           {label}
         </button>
@@ -164,11 +165,11 @@ function SendReviewForm({
   return (
     <form onSubmit={submit} noValidate className="flex max-h-dvh flex-col sm:max-h-[calc(100dvh-48px)]">
       <header className="flex items-center gap-3 border-b border-line px-5 py-4 sm:px-7">
-        <h2 className="m-0 flex-1 font-serif text-[24px] font-medium">Gửi sếp duyệt · {rows.length} ứng viên</h2>
+        <h2 className="m-0 flex-1 text-lg font-semibold">Gửi sếp duyệt · {rows.length} ứng viên</h2>
         <CloseButton onClick={onClose} />
       </header>
       <div className="flex flex-1 flex-col gap-5 overflow-y-auto bg-mist px-5 py-5 sm:px-7">
-        <div className="grid gap-4 rounded-card border border-line bg-white p-4 sm:grid-cols-2 sm:p-5">
+        <div className="grid gap-4 rounded-card border border-line bg-white p-4 sm:grid-cols-2 sm:p-6">
           <TextField
             label="Tiêu đề (sếp thấy đầu trang)"
             value={title}
@@ -194,14 +195,17 @@ function SendReviewForm({
             hint="Hiện trên trang của sếp và trong chữ chìm của CV."
             error={fieldErrors.reviewerName}
           />
-          <TextField
-            label="Mong sếp phản hồi trước"
-            type="datetime-local"
-            value={respondBy}
-            onChange={(e) => setRespondBy(e.target.value)}
-            hint="Link dùng được thêm 5 ngày sau hạn này."
-            error={fieldErrors.respondBy}
-          />
+          <div className="flex flex-col gap-1.5">
+            <InterviewField
+              fieldName="Mong sếp phản hồi trước"
+              placeholder="Chọn hạn phản hồi"
+              isRequired
+              value={fromLocalInput(respondBy) || null}
+              onChange={(iso) => iso && setRespondBy(toLocalInput(new Date(iso)))}
+            />
+            <span className="text-xs text-muted">Link dùng được thêm 5 ngày sau hạn này.</span>
+            <FieldError>{fieldErrors.respondBy}</FieldError>
+          </div>
           <TextArea
             label="Lời nhắn cho sếp"
             optional

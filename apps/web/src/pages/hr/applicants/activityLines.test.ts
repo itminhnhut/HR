@@ -68,4 +68,17 @@ describe('activityLines', () => {
 
     expect(line).toMatchObject({ title: 'Sửa số điện thoại', change: '0912 → 0913' });
   });
+
+  it('should say only the site of an old CV link, whose address can be hundreds of characters', () => {
+    // Arrange
+    const previous = `https://www.ntd.vieclam24h.vn/chi-tiet?id=1&token=${'x'.repeat(400)}`;
+
+    // Act
+    const [line] = activityLines(app({ cvHistory: [{ by: 'Lan', at: '2026-11-02T03:00:00.000Z', previous }] })).filter(
+      (l) => l.title === 'Đổi CV',
+    );
+
+    // Assert
+    expect(line?.note).toBe('CV trước: link ntd.vieclam24h.vn');
+  });
 });

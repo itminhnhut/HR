@@ -1,3 +1,4 @@
+import { linkSite } from './cvLabel';
 import {
   APPLICATION_STATUS_LABEL,
   rejectReasonLabel,
@@ -59,6 +60,11 @@ function fromActivity(entry: ActivityDto): ActivityLine {
   return { ...base, icon: 'fileText', title: 'Sửa ghi chú' };
 }
 
+const previousCvWords = (previous: string) => {
+  const site = linkSite(previous);
+  return site ? `link ${site}` : previous;
+};
+
 /** Everything that happened to this application, newest first: the log, CV changes, letters, and how it came in. */
 export function activityLines(app: ApplicationDetailDto): ActivityLine[] {
   const empty = { change: null, note: null };
@@ -68,7 +74,7 @@ export function activityLines(app: ApplicationDetailDto): ActivityLine[] {
       ...empty,
       icon: 'file' as const,
       title: 'Đổi CV',
-      note: cv.previous ? `CV trước: ${cv.previous}` : null,
+      note: cv.previous ? `CV trước: ${previousCvWords(cv.previous)}` : null,
       actor: cv.by,
       at: cv.at,
     })),

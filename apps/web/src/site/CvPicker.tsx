@@ -64,7 +64,7 @@ export function CvPicker({
             type="button"
             aria-pressed={mode === key}
             onClick={() => pick(key)}
-            className={`min-h-9 rounded-full border px-3 text-[13px] ${mode === key ? 'border-navy bg-navy font-semibold text-white' : 'border-field bg-white text-slate hover:bg-mist'}`}
+            className={`ui-toggle ${mode === key ? 'ui-toggle-on' : ''} min-h-9 rounded-full border px-3 text-[13px] ${mode === key ? 'border-navy bg-navy font-semibold text-white' : 'border-field bg-white text-slate hover:bg-mist'}`}
           >
             {label}
           </button>

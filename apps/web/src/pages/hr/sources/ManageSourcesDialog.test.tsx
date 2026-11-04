@@ -38,7 +38,6 @@ beforeEach(() => {
       return new Response(JSON.stringify(list), { status: 200, headers: { 'content-type': 'application/json' } });
     }),
   );
-  vi.stubGlobal('confirm', () => true);
 });
 afterEach(() => {
   cleanup();

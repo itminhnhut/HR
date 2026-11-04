@@ -129,7 +129,7 @@ export function BenefitsField({
             if (e.key === 'Enter' && !e.nativeEvent.isComposing) add(e);
           }}
         />
-        <Button variant="outline" icon="plus" disabled={!draft.trim() || full} onClick={add} className="min-h-[52px]">
+        <Button variant="outline" icon="plus" disabled={!draft.trim() || full} onClick={add} className="min-h-11">
           Thêm
         </Button>
       </div>

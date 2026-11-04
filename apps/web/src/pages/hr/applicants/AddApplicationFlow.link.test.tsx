@@ -464,6 +464,8 @@ describe('Replacing the CV of a saved profile', () => {
     render(wrap(<ApplicantDetail id="a1" onDeleted={() => undefined} />));
 
     // Assert
-    expect(await screen.findByText(/trước đó: https:\/\/example\.com\/cu\.pdf/)).toBeTruthy();
+    const old = await screen.findByRole('link', { name: 'example.com' });
+    expect(old.getAttribute('href')).toBe('https://example.com/cu.pdf');
+    expect(screen.queryByText(/https:\/\/example\.com/)).toBeNull();
   });
 });

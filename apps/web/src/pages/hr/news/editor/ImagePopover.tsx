@@ -159,7 +159,7 @@ export function ImagePopover({
       role="dialog"
       aria-label="Ảnh trong bài"
       style={{ ...style, width: `min(${WIDTH}px, calc(100vw - 16px))` }}
-      className="fixed z-40 flex animate-fade flex-col gap-2.5 rounded-card border border-line bg-white p-4 text-navy shadow-[0_10px_30px_rgba(11,31,58,0.16)]"
+      className="fixed z-40 flex animate-fade flex-col gap-2.5 rounded-control border border-line bg-white p-4 text-navy shadow-[0_10px_30px_rgba(11,31,58,0.16)]"
       onKeyDown={(e) => {
         if (e.key !== 'Escape') return;
         e.preventDefault();

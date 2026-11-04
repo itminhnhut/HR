@@ -1,3 +1,4 @@
+import { toggleClass } from '../shadcn/toggle';
 import {
   DEFAULT_MESSAGE_TEMPLATES,
   PLACEHOLDERS,
@@ -37,7 +38,7 @@ function PlaceholderButtons({ onInsert }: { onInsert: (token: string) => void })
             // Keep the cursor in the text box.
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onInsert(token)}
-            className="min-h-9 rounded-full border border-ring bg-tint px-3 text-[13px] text-accent hover:bg-remind"
+            className={toggleClass(false)}
           >
             {token}
           </button>
@@ -78,7 +79,7 @@ function SamplePreview({ template }: { template: MessageTemplate }) {
       <MailPreview
         templateKey={template.key}
         title="Xem trước thư"
-        html={designedMailHtml(content, mailDetails(values, start))}
+        html={designedMailHtml(content, { ...mailDetails(values, start), cvUrl: MAIL_COMPANY.careersSite })}
         className="h-[520px] rounded-control border border-line xl:h-[720px]"
       />
       {missing.length > 0 && (
@@ -131,7 +132,7 @@ function useTemplateTexts(template: MessageTemplate) {
 }
 
 const inputClass =
-  'field-focus min-h-[52px] rounded-control border border-field bg-white px-4 text-[15px] text-navy outline-none';
+  'field-focus min-h-11 rounded-control border border-field bg-white px-3 text-sm text-navy outline-none';
 
 function TemplateFields({ template, form }: { template: MessageTemplate; form: ReturnType<typeof useTemplateTexts> }) {
   return (
@@ -206,7 +207,7 @@ export function TemplateEditor({ template, customized }: { template: MessageTemp
   const dirty = JSON.stringify(form.texts) !== JSON.stringify(textsOf(template));
   return (
     <div className="grid gap-6 xl:grid-cols-2">
-      <div className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white px-4 py-5 sm:px-6">
+      <div className="flex min-w-0 flex-col gap-4 rounded-card border border-line bg-white p-4 sm:p-6">
         {notice && (
           <Notice tone={notice.ok ? 'ok' : 'error'} icon={notice.ok ? 'check' : 'alert'}>
             <span role={notice.ok ? 'status' : 'alert'}>{notice.text}</span>

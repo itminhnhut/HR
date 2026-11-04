@@ -47,7 +47,7 @@ export function NoteField({ app, onError }: { app: ApplicationDetailDto; onError
   const left = NOTE_MAX - note.length;
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-xs text-muted">Ghi chú nội bộ</span>
+      <span className="text-sm font-medium text-navy">Ghi chú nội bộ</span>
       <textarea
         rows={3}
         value={note}

@@ -63,6 +63,7 @@ export function useMailDraft(
   app: ApplicationDetailDto,
   me: HrMe | null | undefined,
   template: MessageTemplate,
+  cvUrl?: string,
 ): MailDraft {
   const [overrides, setOverrides] = useState<Partial<TemplateValues>>({});
   // `base` is the built text this hand edit started from: when the built text moves on, the edit is behind.
@@ -73,7 +74,7 @@ export function useMailDraft(
   const content = own ? own.content : built;
   return {
     content,
-    details: mailDetails(values, app.interviewAt),
+    details: { ...mailDetails(values, app.interviewAt), cvUrl },
     values,
     missing: missingTokens(content, values),
     stale: !!own && mailText(own.base) !== mailText(built),

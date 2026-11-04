@@ -1,3 +1,4 @@
+import { useConfirm } from '../shadcn/Confirm';
 import type { SourceDto } from '@careers/shared';
 import { useState } from 'react';
 import { ApiError } from '../../../api';
@@ -48,12 +49,14 @@ function Rename({ source, onDone }: { source: SourceDto; onDone: () => void }) {
 }
 
 function SourceRow({ source }: { source: SourceDto }) {
+  const [confirm, dialog] = useConfirm();
   const { update, remove } = useSourceActions();
   const [renaming, setRenaming] = useState(false);
   const fixed = source.kind === 'system';
   const canDelete = source.kind === 'custom' && source.applications === 0;
   return (
     <li className="flex flex-col gap-2 border-b border-line-soft px-5 py-3 last:border-b-0">
+      {dialog}
       {renaming ? (
         <Rename source={source} onDone={() => setRenaming(false)} />
       ) : (
@@ -87,7 +90,11 @@ function SourceRow({ source }: { source: SourceDto }) {
                   size="sm"
                   variant="danger"
                   disabled={remove.isPending}
-                  onClick={() => window.confirm(`Xoá nguồn "${source.name}"?`) && remove.mutate(source.key)}
+                  onClick={() =>
+                    void confirm({ title: `Xoá nguồn "${source.name}"?`, action: 'Xoá', isDanger: true }).then(
+                      (agreed) => agreed && remove.mutate(source.key),
+                    )
+                  }
                 >
                   Xoá
                 </Button>

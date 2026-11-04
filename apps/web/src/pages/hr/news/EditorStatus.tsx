@@ -48,7 +48,7 @@ export function StatusField({
   );
   if (variant === 'badge') return menu;
   return (
-    <div className="flex flex-col gap-2 rounded-card border border-line bg-white p-4 sm:p-5">
+    <div className="flex flex-col gap-2 rounded-card border border-line bg-white p-4 sm:p-6">
       <span className="text-sm font-medium text-navy">Trạng thái</span>
       {menu}
     </div>
