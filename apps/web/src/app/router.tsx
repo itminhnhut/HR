@@ -50,6 +50,8 @@ const routes: RouteObject[] = [
       { path: 'ho-so', lazy: lazy(() => import('../pages/hr/HrApplicantsPage')) },
       { path: 'duyet', lazy: lazy(() => import('../pages/hr/reviews/HrReviewsPage')) },
       { path: 'duyet/:id', lazy: lazy(() => import('../pages/hr/reviews/HrReviewPage')) },
+      // Có tab riêng: Bảng công, Nhân viên, Cài đặt (spec-cham-cong.md).
+      { path: 'cham-cong/*', lazy: lazy(() => import('../pages/hr/timesheet/TimesheetPage')) },
       { path: 'mau-tin', lazy: lazy(() => import('../pages/hr/HrTemplatePage')) },
       { path: 'mau-thu', lazy: lazy(() => import('../pages/hr/HrMessagesPage')) },
       { path: 'tai-khoan', lazy: lazy(() => import('../pages/hr/HrAccountsPage')) },

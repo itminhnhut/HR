@@ -23,6 +23,7 @@ import { hrJobRoutes } from './hr-jobs.js';
 import { hrNewsRoutes } from './hr-news.js';
 import { hrReviewRoutes } from './hr-reviews.js';
 import { hrSourceRoutes } from './hr-sources.js';
+import { hrTimesheetRoutes } from './hr-timesheet.js';
 
 export const hrRoutes = new Hono<Env>();
 
@@ -52,6 +53,7 @@ signedIn.route('/jobs', hrJobRoutes);
 signedIn.route('/news', hrNewsRoutes);
 signedIn.route('/reviews', hrReviewRoutes);
 signedIn.route('/sources', hrSourceRoutes);
+signedIn.route('/timesheet', hrTimesheetRoutes);
 signedIn.get('/dashboard', async (c) => {
   const { db, now } = c.get('deps');
   const { from, to } = c.req.query();

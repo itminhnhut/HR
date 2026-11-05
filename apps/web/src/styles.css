@@ -31,6 +31,24 @@
  * - Category colours (cat-*): news categories and job departments only, as chips, labels, dots and 3px bars.
  *   Hashtags are neutral (grey chips, navy text): they are many and would turn the page into a rainbow.
  */
+/* Tên màu của shadcn cho trang Chấm công (pages/hr/timesheet/timesheet.css đặt giá trị). */
+@theme inline {
+  --color-background: var(--sc-background, #fff);
+  --color-foreground: var(--sc-foreground, #0b1f3a);
+  --color-card: var(--sc-background, #fff);
+  --color-card-foreground: var(--sc-foreground, #0b1f3a);
+  --color-popover: var(--sc-background, #fff);
+  --color-popover-foreground: var(--sc-foreground, #0b1f3a);
+  --color-primary-foreground: #fff;
+  --color-secondary: var(--sc-muted, #f1f5f9);
+  --color-secondary-foreground: var(--sc-foreground, #0b1f3a);
+  --color-muted-foreground: var(--sc-muted-foreground, #64748b);
+  --color-accent-foreground: var(--sc-foreground, #0b1f3a);
+  --color-destructive: #dc2626;
+  --color-border: var(--sc-border, #dde3eb);
+  --color-input: var(--sc-border, #dde3eb);
+}
+
 @theme {
   /* The main action in the admin (admin.css): white on it 5.2:1, on primary-deep 6.7:1. */
   --color-primary: #2563eb;

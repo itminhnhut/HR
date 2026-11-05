@@ -1,0 +1,20 @@
+/* Chỉ khi trang Chấm công đang mở: lưới shadcn dùng muted, accent, ring khác nghĩa với màu của site. */
+body.hr-timesheet {
+  /* Ô ghim của lưới tô nền bằng biến thô này, thiếu nó cột ghim thành trong suốt. */
+  --background: #fff;
+  --foreground: #0b1f3a;
+  --secondary: #f1f5f9;
+  --radius: 8px;
+  --color-muted: #f1f5f9;
+  --color-accent: #eff6ff;
+  --color-ring: #2563eb;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+@layer base {
+  body.hr-timesheet * {
+    border-color: var(--color-border);
+  }
+}

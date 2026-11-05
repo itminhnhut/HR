@@ -40,7 +40,17 @@ import type {
   ApplicationSource,
   HrApplicationInput,
   HrContactInput,
+  EmployeeDto,
+  EmployeeInput,
+  HolidayInput,
+  RegionInput,
   SourceDto,
+  TimesheetAdjustmentInput,
+  TimesheetCellsInput,
+  TimesheetDto,
+  TimesheetHolidayDto,
+  TimesheetLogDto,
+  TimesheetRegionDto,
   ParsedCvDto,
   TemplateChoiceList,
 } from '@careers/shared';
@@ -188,6 +198,25 @@ export interface Api {
   /** "Thêm CV" / "Đổi CV" on any application. */
   hrReplaceCv(id: string, cv: CvInput): Promise<ApplicationDetailDto>;
   /** HR's source list (spec-custom-sources.md), with the number of applications of each. */
+  hrTimesheet(year: number, month: number): Promise<TimesheetDto>;
+  hrTimesheetRange(from: string, to: string): Promise<TimesheetDto>;
+  hrTimesheetCells(periodId: string, cells: TimesheetCellsInput['cells']): Promise<TimesheetDto>;
+  hrTimesheetNorms(periodId: string, norms: Record<string, number>): Promise<TimesheetDto>;
+  hrTimesheetAddAdjustment(periodId: string, input: TimesheetAdjustmentInput): Promise<TimesheetDto>;
+  hrTimesheetRemoveAdjustment(periodId: string, adjustmentId: string): Promise<TimesheetDto>;
+  hrTimesheetClose(periodId: string): Promise<TimesheetDto>;
+  hrTimesheetReopen(periodId: string, reason: string): Promise<TimesheetDto>;
+  hrTimesheetLog(periodId: string): Promise<TimesheetLogDto[]>;
+  hrEmployees(): Promise<EmployeeDto[]>;
+  hrCreateEmployee(input: EmployeeInput): Promise<EmployeeDto>;
+  hrUpdateEmployee(id: string, input: EmployeeInput): Promise<EmployeeDto>;
+  hrRegions(): Promise<TimesheetRegionDto[]>;
+  hrCreateRegion(input: RegionInput): Promise<TimesheetRegionDto[]>;
+  hrUpdateRegion(id: string, input: RegionInput): Promise<TimesheetRegionDto[]>;
+  hrDeleteRegion(id: string): Promise<TimesheetRegionDto[]>;
+  hrHolidays(): Promise<TimesheetHolidayDto[]>;
+  hrSaveHoliday(input: HolidayInput): Promise<TimesheetHolidayDto[]>;
+  hrDeleteHoliday(day: string): Promise<TimesheetHolidayDto[]>;
   hrSources(): Promise<SourceDto[]>;
   /** 422 { fieldErrors: { name } } for a name that exists (case and tones ignored) or the 50th source. */
   hrCreateSource(name: string): Promise<SourceDto>;
