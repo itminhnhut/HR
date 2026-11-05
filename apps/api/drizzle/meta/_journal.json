@@ -162,6 +162,48 @@
       "when": 1793854889809,
       "tag": "0022_timesheet",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793859625853,
+      "tag": "0023_timesheet_frozen",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793860637784,
+      "tag": "0024_timesheet_saturday_changes",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793860819867,
+      "tag": "0025_timesheet_absences",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793861289568,
+      "tag": "0026_timesheet_leave_changes",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793862704159,
+      "tag": "0027_timesheet_absence_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793863449209,
+      "tag": "0028_timesheet_approvers",
+      "breakpoints": true
     }
   ]
 }

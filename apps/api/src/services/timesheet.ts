@@ -19,7 +19,15 @@ import {
   type StaffType,
   type HrMe,
   type TimesheetDto,
+  holidaysInEffect,
+  leaveChangeSchema,
+  saturdaysFor,
+  monthStatus,
+  type TimesheetLeaveChangeDto,
   type TimesheetLogDto,
+  type TimesheetTotals,
+  type TimesheetMonthDto,
+  type TimesheetRegionDto,
   type TimesheetRowDto,
 } from '@careers/shared';
 import { and, asc, desc, eq, gte, inArray, isNull, lt, lte, or } from 'drizzle-orm';
@@ -28,6 +36,7 @@ import {
   employees,
   timesheetAdjustments,
   timesheetEntries,
+  timesheetLeaveChanges,
   timesheetLog,
   timesheetPeriods,
   timesheetSnapshots,
@@ -39,6 +48,9 @@ import { listHolidays, listRegions } from './timesheet-people.js';
 
 type Period = typeof timesheetPeriods.$inferSelect;
 type Employee = typeof employees.$inferSelect;
+type Snapshot = typeof timesheetSnapshots.$inferSelect;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 
 /** The log is read by HR: dates and numbers as they appear in the Excel sheet. */
@@ -48,13 +60,15 @@ const actor = (hr: HrMe) => hr.name || hr.email;
 const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
 
 /** Someone who became official by the last day counts as official for the whole period. */
-const employmentOn = (e: Pick<Employee, 'employment' | 'officialOn'>, lastDay: string): StaffType =>
-  e.officialOn && e.officialOn <= lastDay ? 'official' : e.employment;
+const employmentOn = (e: Pick<Employee, 'employment' | 'officialOn'>, lastDay: string): StaffType => {
+  if (!e.officialOn) return e.employment;
+  return e.officialOn <= lastDay ? 'official' : 'probation';
+};
 
 async function ensurePeriod(db: Db, year: number, month: number): Promise<Period> {
   const { from, to } = standardPeriod(year, month);
   const regions = await listRegions(db);
-  const norms = Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, r.saturdays)]));
+  const norms = Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, saturdaysFor(r, monthKey(year, month)))]));
   await db
     .insert(timesheetPeriods)
     .values({ year, month, fromOn: from, toOn: to, norms })
@@ -67,6 +81,7 @@ async function ensurePeriod(db: Db, year: number, month: number): Promise<Period
 }
 
 async function findPeriod(db: Db, id: string): Promise<Period> {
+  if (!UUID.test(id)) throw notFound('Không tìm thấy kỳ công.');
   const period = await db.query.timesheetPeriods.findFirst({ where: eq(timesheetPeriods.id, id) });
   if (!period) throw notFound('Không tìm thấy kỳ công.');
   return period;
@@ -76,13 +91,72 @@ function requireOpen(period: Period) {
   if (period.status !== 'open') throw new HttpError(409, 'Kỳ công đã chốt. Mở lại kỳ để sửa.', {}, 'period_closed');
 }
 
+const nextMonth = (m: { year: number; month: number }) => (m.month === 12 ? { year: m.year + 1, month: 1 } : { year: m.year, month: m.month + 1 });
+const isBefore = (a: { year: number; month: number }, b: { year: number; month: number }) => monthKey(a.year, a.month) < monthKey(b.year, b.month);
+
+/** Where HR began: the first month closed or entered, else this month. Before it, the balance is what HR typed. */
+async function firstMonthInUse(db: Db, now: Date) {
+  const [[first], [closed]] = await Promise.all([
+    db.select({ day: timesheetEntries.day }).from(timesheetEntries).orderBy(asc(timesheetEntries.day)).limit(1),
+    db.select({ year: timesheetPeriods.year, month: timesheetPeriods.month }).from(timesheetSnapshots)
+      .innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetSnapshots.periodId)).orderBy(asc(timesheetPeriods.toOn)).limit(1),
+  ]);
+  const earliest = [periodMonthOf(todayInVietnam(now)), first && periodMonthOf(first.day), closed].flatMap((m) => (m ? [m] : []));
+  return earliest.reduce((a, b) => (isBefore(b, a) ? b : a));
+}
+
+const MAX_MONTHS_CARRIED = 36;
+
+/**
+ * The balance a period opens with. Months since the last closed one count as they stand, so a month not closed yet,
+ * or reopened, does not make the next one read short: the sheet this replaces looks up last month's closing figure.
+ */
+async function carriedBalances(db: Db, period: Period, people: readonly Employee[], now: Date): Promise<Map<string, number>> {
+  const balances = await openingBalances(db, period.fromOn);
+  const latest = await db.query.timesheetPeriods.findFirst({
+    where: and(eq(timesheetPeriods.status, 'closed'), lt(timesheetPeriods.toOn, period.fromOn)),
+    orderBy: desc(timesheetPeriods.toOn),
+  });
+  const months: { year: number; month: number }[] = [];
+  for (let m = latest ? nextMonth(latest) : await firstMonthInUse(db, now); isBefore(m, period) && months.length <= MAX_MONTHS_CARRIED; m = nextMonth(m)) months.push(m);
+  const [firstMonth] = months;
+  if (!firstMonth || people.length === 0 || months.length > MAX_MONTHS_CARRIED) return balances;
+  const ids = people.map((p) => p.id);
+  const [cells, holidays, changes] = await Promise.all([
+    cellsFor(db, ids, standardPeriod(firstMonth.year, firstMonth.month).from, period.fromOn),
+    listHolidays(db),
+    db.select({ year: timesheetPeriods.year, month: timesheetPeriods.month, employeeId: timesheetLeaveChanges.employeeId, amount: timesheetLeaveChanges.amount })
+      .from(timesheetLeaveChanges).innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetLeaveChanges.periodId)),
+  ]);
+  const holidayDays = new Set(holidaysInEffect(holidays).map((h) => h.day));
+  const today = todayInVietnam(now);
+  for (const m of months) {
+    const range = standardPeriod(m.year, m.month);
+    const days = periodDays(range);
+    for (const p of people) {
+      const codes = days.map((day) => dayCode({ day, entered: cells.get(p.id)?.[day]?.entered ?? null, isHoliday: holidayDays.has(day), today, joinedOn: p.joinedOn, leftOn: p.leftOn }));
+      const leaveChange = changes.filter((c) => c.employeeId === p.id && c.year === m.year && c.month === m.month).reduce((sum, c) => sum + c.amount, 0);
+      const { leaveClosing } = timesheetTotals({ codes, norm: 0, leaveOpening: balances.get(p.id) ?? p.openingLeave, employment: employmentOn(p, range.to), leaveChange });
+      balances.set(p.id, leaveClosing);
+    }
+  }
+  return balances;
+}
+
+async function leaveChangesFor(db: Db, periodId: string) {
+  const rows = await db.select().from(timesheetLeaveChanges).where(eq(timesheetLeaveChanges.periodId, periodId)).orderBy(asc(timesheetLeaveChanges.createdAt));
+  const out = new Map<string, TimesheetLeaveChangeDto[]>();
+  for (const r of rows) out.set(r.employeeId, [...(out.get(r.employeeId) ?? []), { id: r.id, amount: r.amount, reason: r.reason, createdBy: r.createdBy }]);
+  return out;
+}
+
 /** Each person's balance: what the last closed period before this one ended with, else what HR entered at the start. */
 async function openingBalances(db: Db, fromOn: string): Promise<Map<string, number>> {
   const rows = await db
     .select({ employeeId: timesheetSnapshots.employeeId, closing: timesheetSnapshots.leaveClosing })
     .from(timesheetSnapshots)
     .innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetSnapshots.periodId))
-    .where(lt(timesheetPeriods.toOn, fromOn))
+    .where(and(lt(timesheetPeriods.toOn, fromOn), eq(timesheetPeriods.status, 'closed')))
     .orderBy(asc(timesheetPeriods.toOn));
   return new Map(rows.map((r) => [r.employeeId, r.closing]));
 }
@@ -127,56 +201,81 @@ async function cellsFor(db: Db, ids: string[], from: string, to: string) {
 const workingInRange = (from: string, to: string) =>
   and(or(isNull(employees.joinedOn), lte(employees.joinedOn, to)), or(isNull(employees.leftOn), gte(employees.leftOn, from)));
 
-async function liveRows(db: Db, period: Period): Promise<TimesheetRowDto[]> {
-  const people = await db.select().from(employees).where(workingInRange(period.fromOn, period.toOn)).orderBy(asc(employees.code));
-  const ids = people.map((p) => p.id);
-  const [opening, cells, adjustments, regions] = await Promise.all([
-    openingBalances(db, period.fromOn),
+const personOf = (p: Employee, lastDay: string) => ({
+  employeeId: p.id,
+  code: p.code,
+  fullName: p.fullName,
+  department: p.department,
+  title: p.title,
+  regionId: p.regionId,
+  employment: employmentOn(p, lastDay),
+  joinedOn: p.joinedOn,
+  officialOn: p.officialOn,
+  leftOn: p.leftOn,
+});
+
+const frozenPersonOf = (s: Snapshot) => ({
+  employeeId: s.employeeId,
+  code: s.code,
+  fullName: s.fullName,
+  department: s.department,
+  title: s.title,
+  regionId: s.regionId,
+  employment: s.employment,
+  joinedOn: s.joinedOn,
+  leftOn: s.leftOn,
+});
+
+/**
+ * Who a period lists. Once closed it reads what it said then, whatever happened to the person since, and reopening it
+ * to fix a cell does not change that. Only someone it never listed comes from the staff list, and only while open.
+ */
+async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegionDto[], now: Date): Promise<TimesheetRowDto[]> {
+  const frozen = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, period.id));
+  const frozenIds = new Set(frozen.map((f) => f.employeeId));
+  const people = period.status === 'closed'
+    ? []
+    : (await db.select().from(employees).where(workingInRange(period.fromOn, period.toOn))).filter((p) => !frozenIds.has(p.id));
+  const ids = [...frozenIds, ...people.map((p) => p.id)];
+  const [opening, cells, adjustments, leaveChanges] = await Promise.all([
+    carriedBalances(db, period, people, now),
     cellsFor(db, ids, period.fromOn, period.toOn),
     adjustmentsFor(db, ids, monthKey(period.year, period.month)),
-    listRegions(db),
+    leaveChangesFor(db, period.id),
   ]);
   const range = { from: period.fromOn, to: period.toOn };
-  return people.map((p) => ({
-    employeeId: p.id,
-    code: p.code,
-    fullName: p.fullName,
-    department: p.department,
-    title: p.title,
-    regionId: p.regionId,
-    employment: employmentOn(p, period.toOn),
-    joinedOn: p.joinedOn,
-    leftOn: p.leftOn,
-    leaveOpening: opening.get(p.id) ?? p.openingLeave,
-    norm: period.norms[p.regionId] ?? suggestedNorm(range, regions.find((r) => r.id === p.regionId)?.saturdays ?? 0),
-    cells: cells.get(p.id) ?? {},
-    adjustments: adjustments.get(p.id) ?? [],
-  }));
+  const key = monthKey(period.year, period.month);
+  const normOf = (regionId: string) => {
+    const region = regions.find((r) => r.id === regionId);
+    return suggestedNorm(range, region ? saturdaysFor(region, key) : 0);
+  };
+  const extras = (employeeId: string) => ({ cells: cells.get(employeeId) ?? {}, adjustments: adjustments.get(employeeId) ?? [], leaveChanges: leaveChanges.get(employeeId) ?? [] });
+  return sortedRows([
+    ...frozen.map((f) => ({
+      ...frozenPersonOf(f),
+      leaveOpening: f.leaveOpening,
+      norm: period.norms[f.regionId] ?? f.norm,
+      frozenTotals: period.status === 'closed' ? f.totals : null,
+      ...extras(f.employeeId),
+    })),
+    ...people.map((p) => ({
+      ...personOf(p, period.toOn),
+      leaveOpening: opening.get(p.id) ?? p.openingLeave,
+      norm: period.norms[p.regionId] ?? normOf(p.regionId),
+      frozenTotals: null,
+      ...extras(p.id),
+    })),
+  ], regions);
 }
 
-/** A closed period reads what it said when it closed, whatever happened to the person since. */
-async function closedRows(db: Db, period: Period): Promise<TimesheetRowDto[]> {
-  const rows = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, period.id)).orderBy(asc(timesheetSnapshots.code));
-  const ids = rows.map((r) => r.employeeId);
-  const [cells, adjustments] = await Promise.all([
-    cellsFor(db, ids, period.fromOn, period.toOn),
-    adjustmentsFor(db, ids, monthKey(period.year, period.month)),
-  ]);
-  return rows.map((r) => ({
-    employeeId: r.employeeId,
-    code: r.code,
-    fullName: r.fullName,
-    department: r.department,
-    title: r.title,
-    regionId: r.regionId,
-    employment: r.employment,
-    joinedOn: r.joinedOn,
-    leftOn: r.leftOn,
-    leaveOpening: r.leaveOpening,
-    norm: r.norm,
-    cells: cells.get(r.employeeId) ?? {},
-    adjustments: adjustments.get(r.employeeId) ?? [],
-  }));
+/** As both sheets list people: by region, official before probation, then by code. */
+function sortedRows<T extends { regionId: string; employment: StaffType; code: string }>(rows: T[], regions: readonly TimesheetRegionDto[]): T[] {
+  const place = new Map(regions.map((r, i) => [r.id, i]));
+  const regionOf = (row: T) => place.get(row.regionId) ?? regions.length;
+  return [...rows].sort((a, b) =>
+    regionOf(a) - regionOf(b) ||
+    Number(a.employment === 'probation') - Number(b.employment === 'probation') ||
+    a.code.localeCompare(b.code));
 }
 
 async function latestClosed(db: Db) {
@@ -187,12 +286,11 @@ async function latestClosed(db: Db) {
 }
 
 async function toDto(db: Db, period: Period, now: Date): Promise<TimesheetDto> {
-  const [regions, holidays, rows, latest] = await Promise.all([
-    listRegions(db),
-    listHolidays(db),
-    period.status === 'closed' ? closedRows(db, period) : liveRows(db, period),
-    latestClosed(db),
-  ]);
+  const frozen = period.status === 'closed' ? period.frozen : null;
+  const [liveRegions, liveHolidays, latest] = await Promise.all([listRegions(db), listHolidays(db), latestClosed(db)]);
+  const regions = frozen?.regions ?? liveRegions;
+  const range = { from: period.fromOn, to: period.toOn };
+  const suggested = Object.fromEntries(regions.map((r) => [r.id, suggestedNorm(range, saturdaysFor(r, monthKey(period.year, period.month)))]));
   return {
     periodId: period.id,
     year: period.year,
@@ -203,12 +301,12 @@ async function toDto(db: Db, period: Period, now: Date): Promise<TimesheetDto> {
     closedAt: period.closedAt?.toISOString() ?? null,
     closedBy: period.closedBy,
     canReopen: period.status === 'closed' && latest?.id === period.id,
-    norms: period.norms,
+    norms: { ...suggested, ...period.norms },
     rule: { threshold: period.leaveThreshold, perPeriod: period.leavePerPeriod },
     today: todayInVietnam(now),
     regions,
-    holidays: holidays.filter((h) => h.day >= period.fromOn && h.day <= period.toOn),
-    rows,
+    holidays: frozen?.holidays ?? holidaysInEffect(liveHolidays).filter((h) => h.day >= period.fromOn && h.day <= period.toOn),
+    rows: await sheetRows(db, period, regions, now),
   };
 }
 
@@ -219,14 +317,46 @@ export async function getTimesheet(db: Db, year: number, month: number, now: Dat
   return toDto(db, await ensurePeriod(db, year, month), now);
 }
 
+/** The twelve months of a year, for choosing one to read or several to download. Reading this creates nothing. */
+export async function listYear(db: Db, year: number, now: Date): Promise<TimesheetMonthDto[]> {
+  if (!Number.isInteger(year) || year < 2020 || year > 2100) throw invalid('Năm không hợp lệ.');
+  const first = standardPeriod(year, 1).from;
+  const last = standardPeriod(year, 12).to;
+  const [periods, entered] = await Promise.all([
+    db.select().from(timesheetPeriods).where(eq(timesheetPeriods.year, year)),
+    db.selectDistinct({ day: timesheetEntries.day }).from(timesheetEntries).where(and(gte(timesheetEntries.day, first), lte(timesheetEntries.day, last))),
+  ]);
+  const today = todayInVietnam(now);
+  const monthsEntered = new Set(entered.map((e) => periodMonthOf(e.day).month));
+  return Array.from({ length: 12 }, (_, i) => {
+    const month = i + 1;
+    const range = standardPeriod(year, month);
+    const period = periods.find((p) => p.month === month);
+    return {
+      year,
+      month,
+      from: range.from,
+      to: range.to,
+      status: monthStatus({ isClosed: period?.status === 'closed', hasEntries: monthsEntered.has(month), range, today }),
+      closedBy: period?.closedBy ?? null,
+    };
+  });
+}
+
 /** Any days up to a month: to read and download. Entering and closing belong to the 26–25 periods. */
 export async function getTimesheetRange(db: Db, from: string, to: string, now: Date): Promise<TimesheetDto> {
   const isDay = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d);
   if (!isDay(from) || !isDay(to) || from > to) throw invalid('Khoảng ngày không hợp lệ.');
   if (daysBetweenInclusive(from, to) > TIMESHEET_MAX_DAYS) throw invalid(`Tối đa ${TIMESHEET_MAX_DAYS} ngày.`);
   const { year, month } = periodMonthOf(to);
+  const standard = standardPeriod(year, month);
+  if (standard.from === from && standard.to === to) {
+    // The same days must say the same as the period, balance and edited norms included. Still only to read.
+    const sheet = await getTimesheet(db, year, month, now);
+    return { ...sheet, periodId: null, status: 'open', closedAt: null, closedBy: null, canReopen: false };
+  }
   const [people, regions, holidays] = await Promise.all([
-    db.select().from(employees).where(workingInRange(from, to)).orderBy(asc(employees.code)),
+    db.select().from(employees).where(workingInRange(from, to)),
     listRegions(db),
     listHolidays(db),
   ]);
@@ -242,26 +372,20 @@ export async function getTimesheetRange(db: Db, from: string, to: string, now: D
     closedAt: null,
     closedBy: null,
     canReopen: false,
-    norms: Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, r.saturdays)])),
+    norms: Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, saturdaysFor(r, monthKey(year, month)))])),
     rule: DEFAULT_LEAVE_RULE,
     today: todayInVietnam(now),
     regions,
-    holidays: holidays.filter((h) => h.day >= from && h.day <= to),
-    rows: people.map((p) => ({
-      employeeId: p.id,
-      code: p.code,
-      fullName: p.fullName,
-      department: p.department,
-      title: p.title,
-      regionId: p.regionId,
-      employment: employmentOn(p, to),
-      joinedOn: p.joinedOn,
-      leftOn: p.leftOn,
+    holidays: holidaysInEffect(holidays).filter((h) => h.day >= from && h.day <= to),
+    rows: sortedRows(people.map((p) => ({
+      ...personOf(p, to),
       leaveOpening: 0,
-      norm: suggestedNorm({ from, to }, regions.find((r) => r.id === p.regionId)?.saturdays ?? 0),
+      norm: suggestedNorm({ from, to }, saturdaysFor(regions.find((r) => r.id === p.regionId) ?? { saturdays: 0 }, monthKey(year, month))),
       cells: cells.get(p.id) ?? {},
       adjustments: adjustments.get(p.id) ?? [],
-    })),
+      leaveChanges: [],
+      frozenTotals: null,
+    })), regions),
   };
 }
 
@@ -362,26 +486,69 @@ export async function removeAdjustment(db: Db, periodId: string, adjustmentId: s
   return toDto(db, period, now);
 }
 
+/**
+ * Periods close one after another, or a period's leave is lost. Before the first close, only a month HR has entered
+ * something in counts: a look at an older month does not make it the start of the timesheet.
+ */
+async function requireNextToClose(db: Db, period: Period): Promise<void> {
+  const latest = await latestClosed(db);
+  const blockedBy = (year: number, month: number) =>
+    new HttpError(409, `Chốt kỳ tháng ${month}/${year} trước, vì phép của kỳ này tính tiếp từ kỳ đó.`, {}, 'earlier_open');
+  if (latest) {
+    if (latest.toOn >= period.toOn) throw new HttpError(409, `Kỳ này cũ hơn kỳ tháng ${latest.month}/${latest.year} đã chốt.`, {}, 'older_than_closed');
+    const next = latest.month === 12 ? { year: latest.year + 1, month: 1 } : { year: latest.year, month: latest.month + 1 };
+    if (next.year !== period.year || next.month !== period.month) throw blockedBy(next.year, next.month);
+    return;
+  }
+  const [first] = await db.select({ day: timesheetEntries.day }).from(timesheetEntries).where(lt(timesheetEntries.day, period.fromOn)).orderBy(asc(timesheetEntries.day)).limit(1);
+  if (first) {
+    const owner = periodMonthOf(first.day);
+    throw blockedBy(owner.year, owner.month);
+  }
+}
+
+const COMPARED: [key: 'paid' | 'overtime' | 'leaveClosing', label: string][] = [['paid', 'Công hưởng lương'], ['overtime', 'OT'], ['leaveClosing', 'Phép cuối kỳ']];
+
+/** When a reopened period closes again: what moved since the figures that were paid. */
+function closeDifferences(before: readonly Snapshot[], after: readonly { employeeId: string; code: string; totals: TimesheetTotals }[]): string {
+  return after
+    .flatMap((row) => {
+      const old = before.find((b) => b.employeeId === row.employeeId)?.totals;
+      if (!old) return [];
+      const moved = COMPARED.filter(([key]) => old[key] !== row.totals[key]).map(([key, label]) => `${label} ${numberWords(old[key])} → ${numberWords(row.totals[key])}`);
+      return moved.length > 0 ? [`${row.code}: ${moved.join(', ')}`] : [];
+    })
+    .join('; ');
+}
+
 export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date): Promise<TimesheetDto> {
   const period = await findPeriod(db, periodId);
   requireOpen(period);
-  const earlier = await db.query.timesheetPeriods.findFirst({
-    where: and(eq(timesheetPeriods.status, 'open'), lt(timesheetPeriods.toOn, period.fromOn)),
-    orderBy: asc(timesheetPeriods.toOn),
-  });
-  if (earlier) throw new HttpError(409, `Chốt kỳ tháng ${earlier.month}/${earlier.year} trước, vì phép của kỳ này tính tiếp từ kỳ đó.`, {}, 'earlier_open');
+  await requireNextToClose(db, period);
   if (todayInVietnam(now) < period.toOn) throw new HttpError(409, `Kỳ chưa hết, chốt được từ ngày ${dayWords(period.toOn)}.`, {}, 'period_running');
   const dto = await toDto(db, period, now);
   const holidays = new Set(dto.holidays.map((h) => h.day));
   const days = periodDays({ from: period.fromOn, to: period.toOn });
   const snapshots = dto.rows.map((row) => {
     const codes = days.map((day) => dayCode({ day, entered: row.cells[day]?.entered ?? null, isHoliday: holidays.has(day), today: dto.today, joinedOn: row.joinedOn, leftOn: row.leftOn }));
-    const { leaveClosing } = timesheetTotals({ codes, norm: row.norm, leaveOpening: row.leaveOpening, employment: row.employment, rule: dto.rule });
-    return { periodId, employeeId: row.employeeId, code: row.code, fullName: row.fullName, department: row.department, title: row.title, regionId: row.regionId, employment: row.employment, joinedOn: row.joinedOn, leftOn: row.leftOn, norm: row.norm, leaveOpening: row.leaveOpening, leaveClosing };
+    const totals = timesheetTotals({
+      codes,
+      norm: row.norm,
+      leaveOpening: row.leaveOpening,
+      employment: row.employment,
+      rule: dto.rule,
+      adjustment: row.adjustments.reduce((sum, a) => sum + a.amount, 0),
+      leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
+    });
+    return { periodId, employeeId: row.employeeId, code: row.code, fullName: row.fullName, department: row.department, title: row.title, regionId: row.regionId, employment: row.employment, joinedOn: row.joinedOn, leftOn: row.leftOn, norm: row.norm, leaveOpening: row.leaveOpening, leaveClosing: totals.leaveClosing, totals };
   });
+  const before = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
+  const differences = closeDifferences(before, snapshots);
   const updated = await db.transaction(async (tx) => {
+    await tx.delete(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
     if (snapshots.length > 0) await tx.insert(timesheetSnapshots).values(snapshots);
-    const [row] = await tx.update(timesheetPeriods).set({ status: 'closed', closedAt: now, closedBy: actor(hr) }).where(eq(timesheetPeriods.id, periodId)).returning();
+    const [row] = await tx.update(timesheetPeriods).set({ status: 'closed', closedAt: now, closedBy: actor(hr), frozen: { holidays: dto.holidays, regions: dto.regions } }).where(eq(timesheetPeriods.id, periodId)).returning();
+    if (differences) await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Chênh lệch khi chốt lại', detail: differences, at: now });
     await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Chốt kỳ', detail: `Tháng ${period.month}/${period.year}`, at: now });
     return row;
   });
@@ -398,13 +565,38 @@ export async function reopenPeriod(db: Db, periodId: string, raw: unknown, hr: H
   const latest = await latestClosed(db);
   if (latest?.id !== period.id) throw new HttpError(409, 'Chỉ mở lại được kỳ chốt gần nhất. Sai ở kỳ cũ thì điều chỉnh ở kỳ hiện tại.', {}, 'not_latest');
   const updated = await db.transaction(async (tx) => {
-    await tx.delete(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
-    const [row] = await tx.update(timesheetPeriods).set({ status: 'open', closedAt: null, closedBy: null }).where(eq(timesheetPeriods.id, periodId)).returning();
+    const [row] = await tx.update(timesheetPeriods).set({ status: 'open', closedAt: null, closedBy: null, frozen: null }).where(eq(timesheetPeriods.id, periodId)).returning();
     await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Mở lại kỳ', detail: parsed.data.reason, at: now });
     return row;
   });
   if (!updated) throw notFound('Không tìm thấy kỳ công.');
   return toDto(db, updated, now);
+}
+
+export async function addLeaveChange(db: Db, periodId: string, raw: unknown, hr: HrMe, now: Date): Promise<TimesheetDto> {
+  const period = await findPeriod(db, periodId);
+  requireOpen(period);
+  const parsed = leaveChangeSchema.safeParse(raw);
+  if (!parsed.success) throw invalid('Kiểm tra lại điều chỉnh phép.', fieldErrors(parsed.error));
+  const { employeeId, amount, reason } = parsed.data;
+  const dto = await toDto(db, period, now);
+  const row = dto.rows.find((r) => r.employeeId === employeeId);
+  if (!row) throw notFound('Không tìm thấy nhân viên trong kỳ này.');
+  const already = row.leaveChanges.reduce((sum, c) => sum + c.amount, 0);
+  if (row.leaveOpening + already + amount < 0) throw invalid('Không trừ quá số phép đang có.', { amount: 'Không trừ quá số phép đang có.' });
+  await db.insert(timesheetLeaveChanges).values({ periodId, employeeId, amount, reason, createdBy: actor(hr) });
+  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Điều chỉnh phép', detail: `${row.code} ${row.fullName}: ${numberWords(amount)} ngày (${reason})`, at: now });
+  return toDto(db, period, now);
+}
+
+export async function removeLeaveChange(db: Db, periodId: string, changeId: string, hr: HrMe, now: Date): Promise<TimesheetDto> {
+  const period = await findPeriod(db, periodId);
+  requireOpen(period);
+  if (!UUID.test(changeId)) throw notFound('Không tìm thấy điều chỉnh phép.');
+  const [row] = await db.delete(timesheetLeaveChanges).where(and(eq(timesheetLeaveChanges.id, changeId), eq(timesheetLeaveChanges.periodId, periodId))).returning();
+  if (!row) throw notFound('Không tìm thấy điều chỉnh phép.');
+  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Bỏ điều chỉnh phép', detail: `${numberWords(row.amount)} ngày (${row.reason})`, at: now });
+  return toDto(db, period, now);
 }
 
 export async function periodLog(db: Db, periodId: string): Promise<TimesheetLogDto[]> {

@@ -79,11 +79,9 @@ function PasteDialogImpl<TData extends RowData>({
     <Dialog open={pasteDialog.open} onOpenChange={onOpenChange}>
       <DialogContent data-grid-popover="">
         <DialogHeader>
-          <DialogTitle>Do you want to add more rows?</DialogTitle>
+          <DialogTitle>Dữ liệu dán nhiều hơn số dòng</DialogTitle>
           <DialogDescription>
-            We need <strong>{pasteDialog.rowsNeeded}</strong> additional row
-            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} to paste everything from
-            your clipboard.
+            Thừa <strong>{pasteDialog.rowsNeeded}</strong> dòng so với bảng.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 py-1">
@@ -96,12 +94,10 @@ function PasteDialogImpl<TData extends RowData>({
             />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Create new rows
+                Thêm dòng mới
               </span>
               <span className="text-sm text-muted-foreground">
-                Add {pasteDialog.rowsNeeded} new row
-                {pasteDialog.rowsNeeded !== 1 ? "s" : ""} to the table and paste
-                all data
+                Thêm {pasteDialog.rowsNeeded} dòng và dán hết
               </span>
             </div>
           </label>
@@ -109,19 +105,19 @@ function PasteDialogImpl<TData extends RowData>({
             <RadioItem name="expand-option" value="no-expand" />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Keep current rows
+                Giữ số dòng hiện tại
               </span>
               <span className="text-sm text-muted-foreground">
-                Paste only what fits in the existing rows
+                Chỉ dán phần vừa bảng
               </span>
             </div>
           </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
-            Cancel
+            Huỷ
           </Button>
-          <Button onClick={onContinue}>Continue</Button>
+          <Button onClick={onContinue}>Tiếp tục</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

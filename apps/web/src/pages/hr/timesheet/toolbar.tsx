@@ -1,45 +1,51 @@
 import { Check, ChevronDown, Keyboard, type LucideIcon } from 'lucide-react';
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, useRef, type ReactNode } from 'react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../../../vendor/shadcn-grid/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../vendor/shadcn-grid/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../vendor/shadcn-grid/components/ui/tooltip';
 import { CODES, OFF_CODE } from '../../../vendor/shadcn-grid/lib/codes';
 import type { DayColumn, GridRow } from './timesheetModel';
 
-/** What each code means, how many so far in this period, and its key. */
+const CHIP = 'inline-flex h-7 cursor-default items-center gap-1 rounded-full border px-1.5 text-xs font-medium whitespace-nowrap max-[1399px]:text-[11px]';
+
+function HintChip({ className, hint, children }: { className: string; hint: string; children: ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger render={<span tabIndex={0} className={`${CHIP} ${className}`} />}>{children}</TooltipTrigger>
+      <TooltipContent>{hint}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+/** What each code means, how many among the people shown, and its key. */
 export function CodeLegend({ rows, days }: { rows: readonly GridRow[]; days: readonly DayColumn[] }) {
   return (
-    <section aria-label="Ký hiệu" className="flex flex-wrap items-center gap-1.5 rounded-md border bg-white px-3 py-2">
+    <section aria-label="Ký hiệu" className="ts-card flex flex-wrap items-center gap-1 px-2.5 py-1.5">
       {CODES.map((code) => {
         const Mark = code.icon;
         const used = rows.reduce((n, r) => n + days.filter((d) => r[d.key] === code.value).length, 0);
+        if (code.isRare && used === 0) return null;
         return (
-          <Tooltip key={code.value}>
-            <TooltipTrigger render={<span tabIndex={0} className={`inline-flex h-7 cursor-default items-center gap-1 rounded-full border px-2 text-xs font-medium whitespace-nowrap ${code.tone}`} />}>
-              <Mark className="size-3.5" />
-              <span className="font-semibold">{code.value}</span>
-              <span>{code.name}</span>
-              {used > 0 && <span className="rounded-full bg-white/70 px-1.5 text-[11px] font-semibold text-slate-800 tabular-nums">{used}</span>}
-            </TooltipTrigger>
-            <TooltipContent>{code.hint}{code.key ? ` · Phím ${code.key}` : ' · Chọn trong danh sách'}</TooltipContent>
-          </Tooltip>
+          <HintChip key={code.value} className={code.tone} hint={`${code.hint}${code.key ? ` · Phím ${code.key}` : ' · Chọn trong danh sách'}`}>
+            <Mark className="size-3.5" />
+            <span className="font-semibold">{code.value}</span>
+            <span>{code.name}</span>
+            {used > 0 && <span className="rounded-full bg-white/70 px-1 text-[11px] font-semibold text-slate-800 tabular-nums">{used}</span>}
+          </HintChip>
         );
       })}
-      <Tooltip>
-        <TooltipTrigger render={<span tabIndex={0} className="inline-flex h-7 cursor-default items-center gap-1 rounded-full border border-slate-200 bg-slate-100 px-2 text-xs font-medium whitespace-nowrap text-slate-600" />}>
-          <OFF_CODE.icon className="size-3.5" />
-          {OFF_CODE.name}
-        </TooltipTrigger>
-        <TooltipContent>{OFF_CODE.hint}</TooltipContent>
-      </Tooltip>
-      <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 text-xs font-medium whitespace-nowrap text-blue-800">
+      <HintChip className="border-slate-300 bg-slate-200 text-slate-700" hint={OFF_CODE.hint}>
+        <OFF_CODE.icon className="size-3.5" />
+        {OFF_CODE.name}
+      </HintChip>
+      <HintChip className="border-blue-200 bg-blue-50 text-blue-800" hint="Ô có ghi chú, rê chuột vào ô để đọc">
         <span aria-hidden="true" className="size-2 rounded-full bg-blue-600" />
         Ghi chú
-      </span>
-      <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-2.5 text-xs font-medium whitespace-nowrap text-red-700">
+      </HintChip>
+      <HintChip className="border-red-200 bg-red-50 text-red-700" hint="Công đã điều chỉnh, xem ở cột Công hưởng lương">
         <span aria-hidden="true" className="size-2.5 bg-red-600 [clip-path:polygon(0_0,100%_0,100%_100%)]" />
         Điều chỉnh
-      </span>
+      </HintChip>
     </section>
   );
 }
@@ -54,11 +60,12 @@ export function MultiFilter({ label, icon: Icon, items, picked, onChange, mark, 
   mark?: (value: string) => ReactNode;
   isSearchable?: boolean;
 }) {
+  const trigger = useRef<HTMLButtonElement>(null);
   const toggle = (value: string) => onChange(picked.includes(value) ? picked.filter((x) => x !== value) : [...picked, value]);
   const only = picked.length === 1 ? items.find((i) => i.value === picked[0])?.label : null;
   return (
     <Popover>
-      <PopoverTrigger render={<button type="button" aria-label={`Lọc ${label}`} className={`inline-flex h-9 items-center gap-2 rounded-md border bg-white px-3 text-sm font-medium hover:bg-slate-50 ${picked.length ? 'border-blue-400' : 'border-dashed'}`} />}>
+      <PopoverTrigger ref={trigger} render={<button type="button" aria-label={`Lọc ${label}`} className={`ts-field inline-flex items-center gap-2 rounded-md border bg-white px-3 text-sm font-medium whitespace-nowrap hover:bg-slate-50 ${picked.length ? 'border-blue-400' : 'border-dashed'}`} />}>
         <Icon className="size-4 text-slate-500" />
         {label}
         {picked.length > 0 && <span aria-hidden="true" className="h-4 w-px bg-slate-200" />}
@@ -66,8 +73,8 @@ export function MultiFilter({ label, icon: Icon, items, picked, onChange, mark, 
         {picked.length > 1 && <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-800">{picked.length} đã chọn</span>}
         <ChevronDown className="size-4 text-slate-400" />
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-60 p-0">
-        <Command>
+      <PopoverContent align="start" finalFocus={trigger} className="w-60 p-0">
+        <Command label={`Chọn ${label.toLowerCase()}`}>
           {isSearchable && <CommandInput placeholder={`Tìm ${label.toLowerCase()}`} />}
           <CommandList>
             <CommandEmpty>Không có kết quả.</CommandEmpty>
@@ -106,7 +113,7 @@ const SHORTCUTS: [string, string][] = [
 export function ShortcutHelp() {
   return (
     <Popover>
-      <PopoverTrigger render={<button type="button" aria-label="Phím tắt" className="hidden h-9 items-center gap-2 rounded-md border bg-white px-3 text-sm font-medium hover:bg-slate-50 md:inline-flex" />}>
+      <PopoverTrigger render={<button type="button" aria-label="Phím tắt" className="ts-field hidden items-center gap-2 rounded-md border bg-white px-3 text-sm font-medium whitespace-nowrap hover:bg-slate-50 md:inline-flex" />}>
         <Keyboard className="size-4 text-slate-500" />
         Phím tắt
       </PopoverTrigger>

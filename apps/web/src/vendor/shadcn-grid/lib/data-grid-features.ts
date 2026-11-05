@@ -1815,7 +1815,7 @@ async function writeSelectedCells(table: DataGridInstance, isCut: boolean) {
       table.resetCutCellGrid(true);
     notify?.({
       variant: "success",
-      message: `${pluralizeCells(serialized.cellCount)} ${isCut ? "cut" : "copied"}`,
+      message: `Đã ${isCut ? "cắt" : "sao chép"} ${pluralizeCells(serialized.cellCount)}`,
     });
   } catch (error) {
     notify?.({
@@ -1823,7 +1823,7 @@ async function writeSelectedCells(table: DataGridInstance, isCut: boolean) {
       message:
         error instanceof Error
           ? error.message
-          : `Failed to ${isCut ? "cut" : "copy"} to clipboard`,
+          : `Chưa ${isCut ? "cắt" : "sao chép"} được`,
     });
   }
 }
@@ -1975,7 +1975,7 @@ function getDataColumnIds(table: DataGridInstance) {
 }
 
 function pluralizeCells(count: number) {
-  return `${count} cell${count !== 1 ? "s" : ""}`;
+  return `${count} ô`;
 }
 
 async function pasteCells(
@@ -2025,6 +2025,7 @@ async function pasteCells(
     }
 
     const rows = table.getRowModel().rows;
+    const droppedRows = Math.max(0, target.rowIndex + target.values.length - rows.length);
     const cutCellGrid = table.atoms.cutCellGrid.get();
     const updates: CellUpdate[] = [];
     const writtenCellKeys = new Set<string>();
@@ -2096,13 +2097,15 @@ async function pasteCells(
         variant: "success",
         message:
           skippedCount > 0
-            ? `${pluralizeCells(updates.length)} pasted, ${skippedCount} skipped`
-            : `${pluralizeCells(updates.length)} pasted`,
+            ? `Đã dán ${pluralizeCells(updates.length)}, bỏ qua ${skippedCount} ô sai`
+            : droppedRows > 0
+              ? `Đã dán ${pluralizeCells(updates.length)}, thừa ${droppedRows} dòng không dán`
+              : `Đã dán ${pluralizeCells(updates.length)}`,
       });
     } else if (skippedCount > 0) {
       notify?.({
         variant: "error",
-        message: `${pluralizeCells(skippedCount)} skipped pasting for invalid data`,
+        message: `Không dán được: ${pluralizeCells(skippedCount)} sai mã`,
       });
     }
 
@@ -2113,7 +2116,7 @@ async function pasteCells(
       message:
         error instanceof Error
           ? error.message
-          : "Failed to paste. Please try again.",
+          : "Chưa dán được, thử lại",
     });
   }
 }

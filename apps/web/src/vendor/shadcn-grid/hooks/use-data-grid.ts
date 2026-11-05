@@ -662,7 +662,7 @@ function useDataGrid<TData extends RowData>({
         row = await createRow(trigger);
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to add row",
+          error instanceof Error ? error.message : "Chưa thêm được dòng",
         );
         return;
       }
@@ -1192,10 +1192,10 @@ function useDataGrid<TData extends RowData>({
         const isRedo = undoRedoKey === "y" || shiftKey;
         const count = isRedo ? currentTable.redo() : currentTable.undo();
         if (count === 0) {
-          toast.info(isRedo ? "No actions to redo" : "No actions to undo");
+          toast.info(isRedo ? "Không còn gì để làm lại" : "Không còn gì để hoàn tác");
         } else {
           toast.success(
-            `${count} action${count === 1 ? "" : "s"} ${isRedo ? "redone" : "undone"}`,
+            `Đã ${isRedo ? "làm lại" : "hoàn tác"} ${count} thao tác`,
           );
         }
         return;

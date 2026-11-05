@@ -49,7 +49,16 @@ import type {
   TimesheetCellsInput,
   TimesheetDto,
   TimesheetHolidayDto,
+  AbsenceInput,
+  AbsenceKindDto,
+  AbsenceKindInput,
+  AbsenceRowDto,
+  ApproverDto,
+  HolidayRangeInput,
+  LeaveChangeInput,
+  TimesheetAbsenceDto,
   TimesheetLogDto,
+  TimesheetMonthDto,
   TimesheetRegionDto,
   ParsedCvDto,
   TemplateChoiceList,
@@ -200,6 +209,23 @@ export interface Api {
   /** HR's source list (spec-custom-sources.md), with the number of applications of each. */
   hrTimesheet(year: number, month: number): Promise<TimesheetDto>;
   hrTimesheetRange(from: string, to: string): Promise<TimesheetDto>;
+  hrTimesheetYear(year: number): Promise<TimesheetMonthDto[]>;
+  hrSaveHolidayRange(input: HolidayRangeInput): Promise<TimesheetHolidayDto[]>;
+  hrDeleteHolidayRange(from: string, to: string): Promise<TimesheetHolidayDto[]>;
+  hrAllAbsences(year: number): Promise<AbsenceRowDto[]>;
+  hrUpdateAbsence(employeeId: string, absenceId: string, input: AbsenceInput): Promise<TimesheetAbsenceDto[]>;
+  hrAbsenceKinds(): Promise<AbsenceKindDto[]>;
+  hrApprovers(): Promise<ApproverDto[]>;
+  hrAddApprover(name: string): Promise<ApproverDto[]>;
+  hrDeleteApprover(id: string): Promise<ApproverDto[]>;
+  hrAddAbsenceKind(input: AbsenceKindInput): Promise<AbsenceKindDto[]>;
+  hrDeleteAbsenceKind(key: string): Promise<AbsenceKindDto[]>;
+  hrUpdateAbsenceKind(key: string, input: AbsenceKindInput): Promise<AbsenceKindDto[]>;
+  hrRegisterAbsence(employeeId: string, input: AbsenceInput): Promise<TimesheetAbsenceDto[]>;
+  hrRemoveAbsence(employeeId: string, absenceId: string): Promise<TimesheetAbsenceDto[]>;
+  hrTimesheetAddLeaveChange(periodId: string, input: LeaveChangeInput): Promise<TimesheetDto>;
+  hrTimesheetRemoveLeaveChange(periodId: string, changeId: string): Promise<TimesheetDto>;
+  hrDeleteEmployee(id: string): Promise<EmployeeDto[]>;
   hrTimesheetCells(periodId: string, cells: TimesheetCellsInput['cells']): Promise<TimesheetDto>;
   hrTimesheetNorms(periodId: string, norms: Record<string, number>): Promise<TimesheetDto>;
   hrTimesheetAddAdjustment(periodId: string, input: TimesheetAdjustmentInput): Promise<TimesheetDto>;

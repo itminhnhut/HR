@@ -1,16 +1,16 @@
-import { standardPeriod, type TimesheetDto, type TimesheetRowDto } from '@careers/shared';
+import { standardPeriod, type AttendanceCode, type TimesheetDto, type TimesheetRowDto } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
-import { changedCells, dayColumns, findProblems, gridRows, notesOf, withCells } from './timesheetModel';
+import { changedCells, dayColumns, findProblems, gridRows, notesOf, rowTotals, withCells } from './timesheetModel';
 
 const REGION = '00000000-0000-4000-8000-000000000001';
 const person = (over: Partial<TimesheetRowDto> = {}): TimesheetRowDto => ({
   employeeId: '00000000-0000-4000-8000-000000000011', code: 'NV01', fullName: 'Người A', department: 'HR', title: '', regionId: REGION,
-  employment: 'official', joinedOn: null, leftOn: null, leaveOpening: 2, norm: 25, cells: {}, adjustments: [], ...over,
+  employment: 'official', joinedOn: null, leftOn: null, leaveChanges: [], frozenTotals: null, leaveOpening: 2, norm: 25, cells: {}, adjustments: [], ...over,
 });
 const sheet = (rows: TimesheetRowDto[], over: Partial<TimesheetDto> = {}): TimesheetDto => ({
   periodId: 'p', year: 2026, month: 11, ...standardPeriod(2026, 11), status: 'open', closedAt: null, closedBy: null, canReopen: false,
   norms: { [REGION]: 25 }, rule: { threshold: 14, perPeriod: 1 }, today: '2026-11-05',
-  regions: [{ id: REGION, name: 'HCM', saturdays: 2, tone: 'blue', hidden: false, employees: 1 }], holidays: [], rows, ...over,
+  regions: [{ id: REGION, name: 'HCM', saturdays: 2, saturdayChanges: [], tone: 'blue', hidden: false, employees: 1 }], holidays: [], rows, ...over,
 });
 const column = (dto: TimesheetDto, iso: string) => dayColumns(dto).find((d) => d.iso === iso)?.key ?? '';
 
@@ -121,9 +121,12 @@ describe('applying an edit ahead of the server', () => {
 });
 
 describe('what to look at before closing', () => {
+  // Those tests look at people, so the holiday list stands complete.
+  const problemsOnly: typeof findProblems = (...args) => findProblems(...args).filter((p) => p.kind !== 'missingHoliday');
+
   const problems = (dto: TimesheetDto) => {
     const days = dayColumns(dto);
-    return findProblems(dto, days, gridRows(dto, days));
+    return problemsOnly(dto, days, gridRows(dto, days));
   };
 
   it('should not nag about Saturdays while enough are left', () => {
@@ -156,5 +159,70 @@ describe('what to look at before closing', () => {
 
     // Assert
     expect(problems(dto)).toEqual([expect.objectContaining({ group: 'Cần xem', text: 'Người A: điều chỉnh -0,5 công (Sáng thứ 6)' })]);
+  });
+});
+
+describe('working on a day of rest', () => {
+  const holidaySheet = (cells: Record<string, { entered: AttendanceCode; note: null }>) => {
+    const base = sheet([person({ cells })]);
+    return { ...base, holidays: [{ day: '2026-11-24', name: 'Lễ' }] };
+  };
+
+  it('should count a holiday worked and a Sunday worked apart, and say so in the review', () => {
+    // Arrange: 24/11 is the holiday, 08/11 a Sunday
+    const dto = holidaySheet({ '2026-11-24': { entered: '1', note: null }, '2026-11-08': { entered: '1', note: null } });
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+    const kinds = findProblems(dto, days, rows).map((p) => p.kind);
+
+    // Assert
+    expect(rows[0]).toMatchObject({ lamLe: 1, lamCN: 1 });
+    expect(kinds).toEqual(expect.arrayContaining(['holidayWork', 'sundayWork']));
+  });
+
+  it('should leave a holiday nobody worked out of it', () => {
+    // Arrange
+    const dto = holidaySheet({});
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+
+    // Assert
+    expect(rows[0]).toMatchObject({ lamLe: 0, lamCN: 0, le: 1 });
+  });
+
+  it('should read a closed period from the totals it closed with', () => {
+    // Arrange
+    const frozen = { ...rowTotals(sheet([person()]), person(), dayColumns(sheet([person()]))), paid: 99 };
+    const dto = sheet([person({ frozenTotals: frozen })]);
+
+    // Act + Assert
+    expect(rowTotals(dto, person({ frozenTotals: frozen }), dayColumns(dto)).paid).toBe(99);
+  });
+});
+
+describe('a fixed holiday nobody entered', () => {
+  it('should be raised before closing, once, not per person', () => {
+    // Arrange: November's period holds 24/11
+    const dto = sheet([person(), person({ employeeId: 'other', code: 'B' })]);
+    const days = dayColumns(dto);
+
+    // Act
+    const missing = findProblems(dto, days, gridRows(dto, days)).filter((p) => p.kind === 'missingHoliday');
+
+    // Assert
+    expect(missing.map((p) => p.text)).toEqual(['Chưa nhập ngày lễ 24/11: Ngày Văn hoá Việt Nam']);
+  });
+
+  it('should stay quiet once it is entered, under any name', () => {
+    // Arrange
+    const dto = { ...sheet([person()]), holidays: [{ day: '2026-11-24', name: 'Lễ công ty' }] };
+    const days = dayColumns(dto);
+
+    // Act + Assert
+    expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'missingHoliday')).toBe(false);
   });
 });

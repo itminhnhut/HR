@@ -417,7 +417,7 @@ function DataGridViewport<TData extends RowData>({
   return (
     <div
       role="grid"
-      aria-label="Data grid"
+      aria-label="Bảng chấm công"
       aria-rowcount={rows.length + 1 + (hasFooter ? 1 : 0)}
       aria-colcount={visibleColumnCount}
       aria-multiselectable="true"

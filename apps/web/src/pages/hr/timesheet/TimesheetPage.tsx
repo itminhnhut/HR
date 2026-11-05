@@ -1,21 +1,26 @@
 import { periodMonthOf, standardPeriod, todayInVietnam } from '@careers/shared';
-import { CalendarDays, ChevronRight, Home, Settings, Users, type LucideIcon } from 'lucide-react';
+import { CalendarDays, CalendarOff, ChevronRight, Home, Settings, Users, type LucideIcon } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
+import { Toaster } from 'sonner';
+import { ApiError } from '../../../api';
 import { usePageMeta } from '../../../lib/hooks';
-import { ErrorState, LoadingStatus } from '../../../ui/feedback';
+import { EmptyState, ErrorState } from '../../../ui/feedback';
 import { Logo } from '../../../ui/Logo';
 import { TooltipProvider } from '../../../vendor/shadcn-grid/components/ui/tooltip';
 import { errorMessage } from '../parts';
 import { GridTab } from './GridTab';
 import { PeopleTab } from './PeopleTab';
 import { useTimesheet, type PeriodChoice } from './queries';
+import { LeaveTab } from './LeaveTab';
 import { SettingsTab } from './SettingsTab';
+import { SheetSkeleton } from './skeletons';
 import './timesheet.css';
 
 const BASE = '/hr/cham-cong';
-const TABS: { id: 'grid' | 'people' | 'settings'; label: string; icon: LucideIcon; path: string }[] = [
+const TABS: { id: 'grid' | 'leave' | 'people' | 'settings'; label: string; icon: LucideIcon; path: string }[] = [
   { id: 'grid', label: 'Bảng công', icon: CalendarDays, path: BASE },
+  { id: 'leave', label: 'Nghỉ, đi muộn', icon: CalendarOff, path: `${BASE}/nghi` },
   { id: 'people', label: 'Nhân viên', icon: Users, path: `${BASE}/nhan-vien` },
   { id: 'settings', label: 'Cài đặt', icon: Settings, path: `${BASE}/cai-dat` },
 ];
@@ -37,13 +42,43 @@ function useChoice() {
   return { choice, apply };
 }
 
+function SheetError({ error, onRetry }: { error: unknown; onRetry: () => void }) {
+  // A wrong month in the link will not get better by trying again.
+  if (error instanceof ApiError && error.status < 500) {
+    return (
+      <div className="ts-site-tokens">
+        <EmptyState icon="calendar" title="Không mở được kỳ này" actions={<Link to={BASE} className="ts-field inline-flex items-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white no-underline hover:text-white">Về kỳ này</Link>}>
+          {errorMessage(error)}
+        </EmptyState>
+      </div>
+    );
+  }
+  return <div className="ts-site-tokens"><ErrorState onRetry={onRetry} message={errorMessage(error)} /></div>;
+}
+
 function SheetTab({ slot }: { slot: HTMLElement | null }) {
   const { choice, apply } = useChoice();
   const sheet = useTimesheet(choice);
-  if (sheet.isPending) return <LoadingStatus />;
-  if (sheet.isError) return <ErrorState onRetry={() => sheet.refetch()} message={errorMessage(sheet.error)} />;
+  if (sheet.isPending) return <SheetSkeleton />;
+  if (sheet.isError) return <SheetError error={sheet.error} onRetry={() => void sheet.refetch()} />;
   // A new key for a new period: the grid's columns and its undo history belong to one period.
   return <GridTab key={`${sheet.data.from}|${sheet.data.to}`} dto={sheet.data} choice={choice} onPeriod={apply} actionsSlot={slot} />;
+}
+
+function TopBar({ label }: { label?: string }) {
+  return (
+    <header className="flex min-h-14 flex-wrap items-center gap-3 border-b bg-white px-5 py-2">
+      <Link to="/hr" aria-label="Về trang quản trị" className="flex no-underline"><Logo isCompact className="h-8" /></Link>
+      <span aria-hidden="true" className="h-6 w-px bg-slate-200 max-sm:hidden" />
+      <nav aria-label="Đường dẫn" className="flex items-center gap-1 text-sm whitespace-nowrap text-slate-500">
+        <Link to="/hr" className="inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-slate-500 no-underline hover:text-blue-700 hover:underline"><Home className="size-3.5" />Quản trị</Link>
+        <ChevronRight className="size-3.5" />
+        <Link to={BASE} className="inline-flex items-center rounded px-1.5 py-0.5 text-slate-500 no-underline hover:text-blue-700 hover:underline">Chấm công</Link>
+        <ChevronRight className="size-3.5" />
+        <span aria-current="page" className="px-1.5 font-medium text-slate-800">{label}</span>
+      </nav>
+    </header>
+  );
 }
 
 export function TimesheetPage() {
@@ -58,35 +93,28 @@ export function TimesheetPage() {
   return (
     <TooltipProvider>
       <div className="flex min-w-0 flex-col">
-        <header className="flex min-h-14 flex-wrap items-center gap-3 border-b bg-white px-5 py-2">
-          <Link to="/hr" aria-label="Về trang quản trị" className="flex no-underline"><Logo isCompact className="h-8" /></Link>
-          <span aria-hidden="true" className="h-6 w-px bg-slate-200 max-sm:hidden" />
-          <nav aria-label="Đường dẫn" className="flex items-center gap-1 text-sm text-slate-500">
-            <Link to="/hr" className="inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-slate-500 no-underline hover:text-blue-700 hover:underline"><Home className="size-3.5" />Quản trị</Link>
-            <ChevronRight className="size-3.5" />
-            <Link to={BASE} className="rounded px-1.5 py-0.5 text-slate-500 no-underline hover:text-blue-700 hover:underline">Chấm công</Link>
-            <ChevronRight className="size-3.5" />
-            <span aria-current="page" className="px-1.5 font-medium text-slate-800">{tab?.label}</span>
-          </nav>
-        </header>
-        <div className="flex flex-col gap-3 p-5 max-sm:p-3">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <h1 className="m-0 text-2xl font-bold">Chấm công</h1>
-            <nav aria-label="Mục chấm công" className="flex border-b">
+        <TopBar label={tab?.label} />
+        <div className="flex flex-col gap-2.5 px-5 py-3 max-sm:px-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-red-100 text-red-700"><CalendarDays className="size-5" /></span>
+            <h1 className="m-0 text-2xl font-bold whitespace-nowrap sm:text-[28px]">Chấm công</h1>
+            <nav aria-label="Mục chấm công" className="max-w-full overflow-x-auto flex border-b">
               {TABS.map((t) => (
-                <Link key={t.id} to={t.path} aria-current={tab?.id === t.id ? 'page' : undefined} className={`-mb-px inline-flex h-9 items-center gap-2 border-b-2 px-3 text-sm font-medium no-underline ${tab?.id === t.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-600 hover:text-slate-900'}`}>
+                <Link key={t.id} to={t.path} aria-current={tab?.id === t.id ? 'page' : undefined} className={`-mb-px inline-flex shrink-0 whitespace-nowrap h-9 items-center gap-1.5 border-b-2 px-2.5 text-sm font-medium whitespace-nowrap no-underline ${tab?.id === t.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-600 hover:text-slate-900'}`}>
                   <t.icon className="size-4" />
                   {t.label}
                 </Link>
               ))}
             </nav>
-            <div ref={setSlot} className="ml-auto flex flex-wrap items-center gap-2" />
+            <div ref={setSlot} className="ml-auto flex flex-wrap items-center gap-2 max-md:ml-0" />
           </div>
           {tab?.id === 'grid' && <SheetTab slot={slot} />}
+          {tab?.id === 'leave' && <LeaveTab />}
           {tab?.id === 'people' && <PeopleTab />}
           {tab?.id === 'settings' && <SettingsTab />}
         </div>
       </div>
+      <Toaster position="bottom-center" offset={{ bottom: 72 }} mobileOffset={{ bottom: 72 }} richColors duration={2500} />
     </TooltipProvider>
   );
 }

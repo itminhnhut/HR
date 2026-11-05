@@ -99,6 +99,7 @@ export function DataGridCellPreview<TData extends RowData>({
       aria-readonly={readOnly || undefined}
       data-slot="data-grid-cell"
       data-preview=""
+      data-selected={isSelected ? "" : undefined}
       data-row-id={cell.row.id}
       data-column-id={columnId}
       className={cn(

@@ -1,7 +1,7 @@
 "use client";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { codeOf, NotesContext } from "../../lib/codes";
+import { codeOf, NotesContext, OFF_CODE } from "../../lib/codes";
 import type { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import type { RowData } from "@tanstack/react-table";
 import type { ExternalToast } from "sonner";
@@ -557,13 +557,19 @@ function CodeMark({ value }: { value: string }) {
   const code = codeOf(value);
   if (!code) return <span className="block w-full text-center text-sm">{value}</span>;
   const CodeIcon = code.icon;
-  // Most cells are "1": a tooltip on each would follow the mouse across the whole table.
+  // Most cells are "1": it waits a moment, or its tooltip would follow the mouse across the whole table.
   if (code.isQuiet) {
     return (
-      <span className="inline-flex w-full items-center justify-center gap-1 rounded text-[13px] font-medium leading-5 text-green-700">
-        <CodeIcon className="size-3 shrink-0" />
-        {code.value}
-      </span>
+      <Tooltip>
+        <TooltipTrigger
+          delay={600}
+          render={<span className="inline-flex w-full items-center justify-center gap-1 rounded text-[13px] font-medium leading-5 text-green-700" />}
+        >
+          <CodeIcon className="size-3 shrink-0" />
+          {code.value}
+        </TooltipTrigger>
+        <TooltipContent>{code.name}: {code.hint}</TooltipContent>
+      </Tooltip>
     );
   }
   return (
@@ -606,6 +612,28 @@ export function SelectCell<TData extends RowData>(
     commandRef.current?.focus();
   }, []);
 
+  const noteRef = React.useRef<HTMLTextAreaElement>(null);
+  const onListKeyDown = React.useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab" || event.shiftKey) return;
+    event.preventDefault();
+    event.stopPropagation();
+    noteRef.current?.focus();
+  }, []);
+  const onNoteKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      event.stopPropagation();
+      if (event.nativeEvent.isComposing) return;
+      const isDone = event.key === "Escape" || (event.key === "Enter" && !event.shiftKey);
+      if (!isDone && event.key !== "Tab") return;
+      event.preventDefault();
+      // Leaving the box is what saves the note.
+      event.currentTarget.blur();
+      if (isDone) cell.table.stopEditing();
+      else cell.table.stopEditing({ direction: event.shiftKey ? "shift+tab" : "tab" });
+    },
+    [cell],
+  );
+
   const displayLabel = value ? getOptionLabel(options, value) : null;
   const { notes, setNote } = React.useContext(NotesContext);
   const noteKey = `${cell.row.id}:${cell.column.id}`;
@@ -634,6 +662,8 @@ export function SelectCell<TData extends RowData>(
           className="bg-transparent p-px outline-none"
           defaultValue={value ?? undefined}
           loop
+          label="Chọn mã công"
+          onKeyDown={onListKeyDown}
         >
           <CommandList>
             <CommandGroup className="p-1.5">
@@ -655,11 +685,12 @@ export function SelectCell<TData extends RowData>(
           Ghi chú
           <textarea
             key={noteKey}
+            ref={noteRef}
             rows={2}
             defaultValue={note}
-            placeholder="vd: Trễ 30 phút do họp khách"
+            placeholder="vd: Muộn 30 phút do họp khách"
             aria-label="Ghi chú ô"
-            onKeyDown={(e) => e.stopPropagation()}
+            onKeyDown={onNoteKeyDown}
             onBlur={(e) => setNote(noteKey, e.target.value.trim())}
             className="w-full resize-none rounded border px-2 py-1 text-sm font-normal text-slate-800 outline-none focus:border-blue-500"
           />
@@ -667,18 +698,23 @@ export function SelectCell<TData extends RowData>(
       </CellEditorPopover>
       {isOff ? (
         <Tooltip>
-          <TooltipTrigger render={<span data-off className="absolute inset-0 bg-slate-200" />} />
-          <TooltipContent>Ngoài thời gian làm việc, không chấm</TooltipContent>
+          <TooltipTrigger render={<span data-off className="absolute inset-0 flex items-center justify-center bg-slate-200 text-slate-600" />}>
+            <OFF_CODE.icon className="size-3" />
+          </TooltipTrigger>
+          <TooltipContent>{OFF_CODE.hint}</TooltipContent>
         </Tooltip>
       ) : displayLabel ? (
         <CodeMark value={String(value)} />
-      ) : readOnly ? null : (
-        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-slate-400 opacity-0 transition-opacity hover:opacity-100">+</span>
-      )}
+      ) : null}
       {note ? (
         <Tooltip>
-          <TooltipTrigger render={<span data-note-dot className="absolute top-0.5 right-0.5 size-2 rounded-full bg-blue-600 ring-1 ring-white" />} />
-          <TooltipContent>{note}</TooltipContent>
+          {/* The whole cell answers to the mouse: an 8px dot is too small to find. */}
+          <TooltipTrigger render={<span data-note-cell className="absolute inset-0" />}>
+            <span data-note-dot className="absolute top-0.5 right-0.5 size-2 rounded-full bg-blue-600 ring-1 ring-white" />
+          </TooltipTrigger>
+          <TooltipContent>
+            {codeOf(value)?.name ? `${codeOf(value)?.name}. ` : ""}Ghi chú: {note}
+          </TooltipContent>
         </Tooltip>
       ) : null}
     </DataGridCell>
@@ -1763,8 +1799,9 @@ function getPendingChar<TData extends RowData>(
   return cell.table.getEditingCell()?.pendingChar ?? null;
 }
 
-function onEditingCellMouseDown(event: React.MouseEvent) {
-  event.preventDefault();
+function onEditingCellMouseDown(event: React.MouseEvent<HTMLElement>) {
+  // React bubbles through portals: the editor's own controls (the note box) must still take focus.
+  if (event.target instanceof Node && event.currentTarget.contains(event.target)) event.preventDefault();
 }
 
 function getOptionLabel(options: ColumnSelectOption[], value: string) {

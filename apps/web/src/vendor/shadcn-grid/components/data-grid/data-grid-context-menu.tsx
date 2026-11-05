@@ -114,7 +114,7 @@ function ContextMenuImpl<TData extends RowData>({
     table.clearCells(cells);
 
     toast.success(
-      `${cells.length} cell${cells.length !== 1 ? "s" : ""} cleared`,
+      `Đã xoá ${cells.length} ô`,
     );
   }, [table]);
 
@@ -124,7 +124,7 @@ function ContextMenuImpl<TData extends RowData>({
 
     table.deleteRows(Array.from(rowIds));
 
-    toast.success(`${rowIds.size} row${rowIds.size !== 1 ? "s" : ""} deleted`);
+    toast.success(`Đã xoá ${rowIds.size} dòng`);
   }, [table]);
 
   return (
@@ -139,17 +139,17 @@ function ContextMenuImpl<TData extends RowData>({
         <DropdownMenuItem onClick={onCopy}>
           <CopyIcon
           />
-          Copy
+          Sao chép
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onCut} disabled={readOnly}>
           <ScissorsIcon
           />
-          Cut
+          Cắt
         </DropdownMenuItem>
         <DropdownMenuItem onClick={onClear} disabled={readOnly}>
           <EraserIcon
           />
-          Clear
+          Xoá
         </DropdownMenuItem>
         {canDeleteRows && (
           <>
@@ -157,7 +157,7 @@ function ContextMenuImpl<TData extends RowData>({
             <DropdownMenuItem variant="destructive" onClick={onDelete}>
               <Trash2Icon
               />
-              Delete rows
+              Xoá dòng
             </DropdownMenuItem>
           </>
         )}

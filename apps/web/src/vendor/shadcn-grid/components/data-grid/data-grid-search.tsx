@@ -156,12 +156,12 @@ function DataGridSearchContentImpl<TData extends RowData>({
     >
       <div className="flex items-center gap-2">
         <Input
-          aria-label="Find in table"
+          aria-label="Tìm trong bảng"
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="Find in table..."
+          placeholder="Tìm trong bảng"
           className="w-64"
           ref={inputRef}
           defaultValue={searchQuery}
@@ -172,7 +172,7 @@ function DataGridSearchContentImpl<TData extends RowData>({
         />
         <div className="flex items-center gap-1">
           <Button
-            aria-label="Previous match"
+            aria-label="Kết quả trước"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -184,7 +184,7 @@ function DataGridSearchContentImpl<TData extends RowData>({
             />
           </Button>
           <Button
-            aria-label="Next match"
+            aria-label="Kết quả sau"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -196,7 +196,7 @@ function DataGridSearchContentImpl<TData extends RowData>({
             />
           </Button>
           <Button
-            aria-label="Close search"
+            aria-label="Đóng tìm kiếm"
             variant="ghost"
             size="icon"
             className="size-7"
@@ -213,12 +213,12 @@ function DataGridSearchContentImpl<TData extends RowData>({
       >
         {matchCount > 0 ? (
           <span>
-            {matchIndex + 1} of {matchCount}
+            {matchIndex + 1}/{matchCount}
           </span>
         ) : hasQuery ? (
-          <span>No results</span>
+          <span>Không thấy</span>
         ) : (
-          <span>Type to search</span>
+          <span>Gõ để tìm</span>
         )}
       </div>
     </div>

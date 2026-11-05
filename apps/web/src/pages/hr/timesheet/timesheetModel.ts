@@ -1,7 +1,9 @@
 import {
   dayCode,
+  FIXED_HOLIDAYS,
   isWeekend,
   periodDays,
+  saturdaysFor,
   timesheetTotals,
   WEEKDAY_LABELS,
   weekdayOf,
@@ -42,13 +44,27 @@ function codeOn(dto: TimesheetDto, row: TimesheetRowDto, day: string, entered: A
   return dayCode({ day, entered, isHoliday: dto.holidays.some((h) => h.day === day), today: dto.today, joinedOn: row.joinedOn, leftOn: row.leftOn });
 }
 
+const WORKED: readonly (AttendanceCode | null)[] = ['1', 'M'];
+
+/** Days worked on a holiday or a Sunday: they pay at a different rate, which the sheet leaves to payroll (Đ.98). */
+function restDayWork(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]) {
+  const worked = days.filter((d) => WORKED.includes(row.cells[d.iso]?.entered ?? null));
+  const isHoliday = (d: DayColumn) => dto.holidays.some((h) => h.day === d.iso);
+  return {
+    lamLe: worked.filter(isHoliday).length,
+    lamCN: worked.filter((d) => d.weekday === 'CN' && !isHoliday(d)).length,
+  };
+}
+
 export function rowTotals(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]): TimesheetTotals {
+  if (row.frozenTotals) return row.frozenTotals;
   return timesheetTotals({
     codes: days.map((d) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null)),
     norm: row.norm,
     leaveOpening: row.leaveOpening,
     employment: row.employment,
     adjustment: adjustmentOf(row),
+    leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
     rule: dto.rule,
   });
 }
@@ -74,6 +90,10 @@ export function gridRows(dto: TimesheetDto, days: readonly DayColumn[]): GridRow
       khongLuong: totals.unpaidLeave,
       khongPhep: totals.absent,
       le: totals.holiday,
+      coLuong: totals.personalPaid,
+      bhxh: totals.insured,
+      ...restDayWork(dto, row, days),
+      doiPhep: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
       chuan: totals.norm,
       huong: totals.paid,
       huongTinhRa: totals.paidBeforeAdjustment,
@@ -102,6 +122,17 @@ export const notesOf = (dto: TimesheetDto, days: readonly DayColumn[]): Record<s
  * What changed between two versions of the grid. A value equal to what the rules give is not an entry: pressing 1
  * on a passed Monday, or deleting it, both leave the day automatic.
  */
+/** What each person's adjustments say, for the mark on "Công hưởng lương" and the note in Excel. */
+export function adjustmentNotesOf(dto: TimesheetDto): Record<string, string> {
+  const words: Record<string, string> = {};
+  for (const row of dto.rows) {
+    if (row.adjustments.length === 0) continue;
+    const list = row.adjustments.map((a) => `${String(a.amount).replace('.', ',')} công: ${a.reason}`).join('; ');
+    words[row.employeeId] = `Điều chỉnh ${list}`;
+  }
+  return words;
+}
+
 export function changedCells(
   dto: TimesheetDto,
   days: readonly DayColumn[],
@@ -150,7 +181,7 @@ export function withCells(dto: TimesheetDto, cells: TimesheetCellsInput['cells']
 export interface TimesheetProblem {
   id: string;
   group: 'Cần xử lý' | 'Cần xem';
-  kind: 'saturday' | 'leave' | 'left' | 'adjustment';
+  kind: 'saturday' | 'leave' | 'left' | 'adjustment' | 'missingHoliday' | 'holidayWork' | 'sundayWork' | 'holidayOvertime' | 'becameOfficial';
   employeeId: string;
   columnId: string;
   text: string;
@@ -159,20 +190,51 @@ export interface TimesheetProblem {
 export const asNumber = (v: unknown) => (v === 0 ? '-' : String(v).replace('.', ','));
 const balance = (v: unknown) => String(v).replace('.', ',');
 
+const AWAY: readonly (AttendanceCode | null)[] = ['TS', 'OM', 'KL'];
+
+/** A fixed holiday nobody entered would read as an ordinary working day: leave taken on it would be charged. */
+function missingHolidays(dto: TimesheetDto, days: readonly DayColumn[]): TimesheetProblem[] {
+  const [first] = dto.rows;
+  if (!first) return [];
+  return days.flatMap((d) => {
+    const fixed = FIXED_HOLIDAYS.find((h) => d.iso.endsWith(`-${h.monthDay}`));
+    if (!fixed || dto.holidays.some((h) => h.day === d.iso || h.name.endsWith(fixed.name))) return [];
+    return [{ id: `f${d.iso}`, group: 'Cần xử lý' as const, kind: 'missingHoliday' as const, employeeId: first.employeeId, columnId: d.key, text: `Chưa nhập ngày lễ ${d.label}: ${fixed.name}` }];
+  });
+}
+
+function restDayProblems(name: string, employeeId: string, grid: GridRow): TimesheetProblem[] {
+  const out: TimesheetProblem[] = [];
+  const base = { employeeId, group: 'Cần xem' as const };
+  if (Number(grid.lamLe) > 0) {
+    out.push({ ...base, id: `h${employeeId}`, kind: 'holidayWork', columnId: 'lamLe', text: `${name}: đi làm ${balance(grid.lamLe)} ngày lễ, lương làm lễ tính riêng` });
+  }
+  if (Number(grid.lamCN) > 0) {
+    out.push({ ...base, id: `c${employeeId}`, kind: 'sundayWork', columnId: 'lamCN', text: `${name}: làm ${balance(grid.lamCN)} ngày Chủ nhật, lương tính riêng` });
+  }
+  if (Number(grid.ot) > 0 && Number(grid.le) >= Number(grid.ot)) {
+    out.push({ ...base, id: `v${employeeId}`, kind: 'holidayOvertime', columnId: 'ot', text: `${name}: OT ${balance(grid.ot)} có thể chỉ do ngày lễ, không phải làm thêm` });
+  }
+  return out;
+}
+
 /** What needs a look before closing. A Saturday only counts once the remaining ones can no longer make the norm. */
 export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows: readonly GridRow[]): TimesheetProblem[] {
   const out: TimesheetProblem[] = [];
   const saturdays = days.filter((d) => d.weekday === 'T7');
+  out.push(...missingHolidays(dto, days));
   for (const row of dto.rows) {
     const grid = rows.find((r) => r.id === row.employeeId);
     if (!grid) continue;
-    const need = dto.regions.find((r) => r.id === row.regionId)?.saturdays ?? 0;
+    const region = dto.regions.find((r) => r.id === row.regionId);
+    const need = region ? saturdaysFor(region, `${dto.year}-${String(dto.month).padStart(2, '0')}`) : 0;
     const usable = saturdays.filter((d) => (!row.joinedOn || d.iso >= row.joinedOn) && (!row.leftOn || d.iso <= row.leftOn));
     const done = usable.filter((d) => grid[d.key]).length;
     const left = usable.filter((d) => d.iso > dto.today && !grid[d.key]).length;
     const base = { employeeId: row.employeeId };
     const isFullPeriod = usable.length === saturdays.length;
-    if (isFullPeriod && done + left < need) {
+    const isAwayAllPeriod = days.filter((d) => !d.isWeekend).every((d) => AWAY.includes(row.cells[d.iso]?.entered ?? null));
+    if (isFullPeriod && !isAwayAllPeriod && done + left < need) {
       out.push({ ...base, id: `t${row.employeeId}`, group: 'Cần xử lý', kind: 'saturday', columnId: usable.filter((d) => d.iso <= dto.today).at(-1)?.key ?? days[0]?.key ?? '', text: `${row.fullName}: ${done}/${need} thứ Bảy, không còn đủ ngày để đạt định mức` });
     }
     if (Number(grid.phepVuot) > 0) {
@@ -180,6 +242,13 @@ export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows
     }
     if (row.leftOn && row.leftOn <= dto.to && Number(grid.tonCuoi) > 0) {
       out.push({ ...base, id: `n${row.employeeId}`, group: 'Cần xử lý', kind: 'left', columnId: 'tonCuoi', text: `${row.fullName}: nghỉ việc ${dayMonth(row.leftOn)}, còn ${balance(grid.tonCuoi)} ngày phép cần thanh toán` });
+    }
+    out.push(...restDayProblems(row.fullName, row.employeeId, grid));
+    if (row.officialOn && row.officialOn > dto.from && row.officialOn <= dto.to) {
+      const isCounted = (d: DayColumn) => WORKED.includes(String(grid[d.key]) as AttendanceCode);
+      const before = days.filter((d) => isCounted(d) && d.iso < String(row.officialOn)).length;
+      const after = days.filter((d) => isCounted(d) && d.iso >= String(row.officialOn)).length;
+      out.push({ ...base, id: `o${row.employeeId}`, group: 'Cần xem', kind: 'becameOfficial', columnId: 'loai', text: `${row.fullName}: lên chính thức ${dayMonth(row.officialOn)}, ${before} công thử việc, ${after} công chính thức` });
     }
     for (const a of row.adjustments) {
       out.push({ ...base, id: `a${a.id}`, group: 'Cần xem', kind: 'adjustment', columnId: 'huong', text: `${row.fullName}: điều chỉnh ${balance(a.amount)} công (${a.reason})` });

@@ -204,9 +204,11 @@ describe('closing a period', () => {
     expect(after.rows[0]).toMatchObject({ fullName: 'Người Thử', department: 'Kế toán', regionId: hcm.id, norm: 22 });
   });
 
-  it('should refuse closing before an earlier open period', async () => {
+  it('should refuse closing before an earlier open period HR has entered something in', async () => {
     // Arrange
-    await october();
+    const person = await addPerson();
+    const earlier = await october();
+    await call('PATCH', `/${earlier.periodId}/cells`, { cells: [{ employeeId: person.id, day: '2026-10-05', code: 'P', note: null }] });
     const { periodId } = await november();
 
     // Act
