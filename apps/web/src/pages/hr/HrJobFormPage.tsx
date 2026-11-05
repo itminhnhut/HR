@@ -37,7 +37,7 @@ import {
 } from './job-form/model';
 import { PreviewDialog } from './job-form/PreviewDialog';
 import { AddressField, BenefitsField, RoadmapField } from './job-form/TemplateFields';
-import { useUnsavedGuard } from './job-form/useUnsavedGuard';
+import { useUnsavedGuard } from './useUnsavedGuard';
 import { IconTile } from './design/IconTile';
 import { SectionTitle } from './design/SectionTitle';
 import type { Tone } from './design/tone';
@@ -152,6 +152,7 @@ function JobForm({
   const [savedForm, setSavedForm] = useState(initial);
   const { allowLeave, guardDialog } = useUnsavedGuard(
     form !== savedForm && JSON.stringify(form) !== JSON.stringify(savedForm),
+    { description: 'Tin chưa được lưu, nội dung vừa nhập sẽ mất.' },
   );
   /** A live or paused job: one button, state stays as it is. */
   const editsLiveJob = mode === 'edit' && !!job && job.status !== 'draft';

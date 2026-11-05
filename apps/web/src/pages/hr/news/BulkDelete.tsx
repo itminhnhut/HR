@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useDeleteNews } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
 import { errorMessage } from '../parts';
-import { ConfirmDialog } from './parts';
+import { useConfirm } from '../shadcn/Confirm';
 
 /**
  * Ticked drafts for "Xoá N bản nháp". Only drafts can be ticked; a ticked post that is no longer a draft
@@ -33,7 +33,7 @@ interface BulkDeleteBarProps {
 /** "Đã chọn 2 bản nháp · Bỏ chọn · Xoá 2 bản nháp", then a confirm; deletes one after another. */
 export function BulkDeleteBar({ selected, onClear, onDone, onError }: BulkDeleteBarProps) {
   const remove = useDeleteNews();
-  const [asking, setAsking] = useState(false);
+  const [confirm, dialog] = useConfirm();
   const [busy, setBusy] = useState(false);
   const count = selected.size;
   if (count === 0) return null;
@@ -46,10 +46,18 @@ export function BulkDeleteBar({ selected, onClear, onDone, onError }: BulkDelete
       onError(errorMessage(error));
     } finally {
       setBusy(false);
-      setAsking(false);
       onClear();
     }
   };
+  const ask = () =>
+    void confirm({
+      title: `Xoá ${count} bản nháp?`,
+      description: 'Các bản nháp đã chọn sẽ bị xoá hẳn. Không khôi phục được.',
+      action: `Xoá ${count} bài`,
+      isDanger: true,
+    }).then((agreed) => {
+      if (agreed) void run();
+    });
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-tint px-4 py-2.5 sm:px-[22px]">
       <span role="status" className="text-sm font-medium text-navy">
@@ -62,19 +70,10 @@ export function BulkDeleteBar({ selected, onClear, onDone, onError }: BulkDelete
       >
         Bỏ chọn
       </button>
-      <Button variant="danger" size="sm" icon="trash" className="ml-auto" onClick={() => setAsking(true)}>
+      <Button variant="danger" size="sm" icon="trash" className="ml-auto" disabled={busy} onClick={ask}>
         Xoá {count} bản nháp
       </Button>
-      <ConfirmDialog
-        open={asking}
-        title={`Xoá ${count} bản nháp?`}
-        confirmLabel={`Xoá ${count} bài`}
-        busy={busy}
-        onConfirm={() => void run()}
-        onClose={() => setAsking(false)}
-      >
-        Các bản nháp đã chọn sẽ bị xoá hẳn. Không khôi phục được.
-      </ConfirmDialog>
+      {dialog}
     </div>
   );
 }

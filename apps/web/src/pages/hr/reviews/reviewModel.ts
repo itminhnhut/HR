@@ -1,8 +1,20 @@
-import type { ApplicationRowDto, ReviewState } from '@careers/shared';
+import { REVIEW_MAX_DAYS, type ApplicationRowDto, type ReviewState } from '@careers/shared';
+import type { TimeLimits } from '../applicants/InterviewField';
 
 /** Small rules of the review screens (spec-boss-review.md), kept apart so they are easy to test. */
 
 const pad = (n: number) => String(n).padStart(2, '0');
+
+/**
+ * A reply can be due at any hour. The server counts its days from this very moment, so the last whole day it accepts at
+ * any hour is the one before the limit.
+ */
+export const REPLY_LIMITS: TimeLimits = {
+  hours: Array.from({ length: 24 }, (_, hour) => pad(hour)),
+  lastTime: '23:45',
+  maxDays: REVIEW_MAX_DAYS - 1,
+  timeLabel: 'Giờ phản hồi',
+};
 
 /** "2026-10-31T17:00" for <input type="datetime-local">, in the browser's own time zone. */
 export const toLocalInput = (d: Date) =>

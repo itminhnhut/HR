@@ -26,7 +26,7 @@ import { TagsField } from './TagsField';
 import { draftFrom, renderDraft, shownSlug, toInput, type Draft } from './model';
 import { imagesWaitingForAlt } from './saveErrors';
 import { NewsStatusBadge } from './parts';
-import { LeaveDialog, useLeaveGuard } from './useLeaveGuard';
+import { useUnsavedGuard } from '../useUnsavedGuard';
 import { useNewsAutosave } from './useNewsAutosave';
 
 /** The only import of the Lexical editor: its own chunk, loaded when this page opens. */
@@ -219,8 +219,11 @@ function useEditorState(initial: HrNewsPostDto | null, onCreated: (id: string) =
     initial,
     useCallback((d: Draft) => change(toInput(d)), [change]),
   );
-  const { allowAll: allowLeave, blocker } = useLeaveGuard(autosave.dirty, allowedPath);
-  return { autosave, draft, update, allowLeave, blocker };
+  const { allowLeave, guardDialog } = useUnsavedGuard(autosave.dirty, {
+    description: 'Bài có thay đổi chưa lưu. Rời trang thì mất phần vừa sửa.',
+    allowedPath,
+  });
+  return { autosave, draft, update, allowLeave, guardDialog };
 }
 
 /** Back link, the post's status, and the page heading for screen readers. */
@@ -251,7 +254,7 @@ function NewsEditor({
   categories: NewsCategoryDto[];
   onCreated: (id: string) => void;
 }) {
-  const { autosave, draft, update, allowLeave, blocker } = useEditorState(initial, onCreated);
+  const { autosave, draft, update, allowLeave, guardDialog } = useEditorState(initial, onCreated);
   const actions = useEditorActions({ autosave, draft, allowLeave });
   const deferredContent = useDeferredValue(draft.content);
   const article = useMemo(() => renderDraft(deferredContent), [deferredContent]);
@@ -286,7 +289,7 @@ function NewsEditor({
         />
       </div>
       <ActionBar autosave={autosave} actions={actions} preview={{ card, article, imagesWithoutAlt }} />
-      <LeaveDialog blocker={blocker} />
+      {guardDialog}
     </>
   );
 }

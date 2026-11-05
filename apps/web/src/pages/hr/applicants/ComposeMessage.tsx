@@ -19,10 +19,10 @@ import { ErrorState, LoadingStatus, Notice } from '../../../ui/feedback';
 import { Icon } from '../../../ui/icons';
 import { designedMailHtml } from '../mail/mailLogos';
 import { MailPreview } from '../mail/MailPreview';
-import { carriesCvLink, CvAttachment } from './CvAttachment';
+import { carriesCvLink, CvAttachment, cvLinkState } from './CvAttachment';
 import { DraftEditor, DraftNotices } from './DraftEditor';
 import { MessageFields } from './MessageFields';
-import { SendActions } from './SendActions';
+import { SendActions, type SendCvLink } from './SendActions';
 import { suggestedTemplate, useMailDraft, type MailDraft } from './useMailDraft';
 
 const interviewPlace = (app: ApplicationDetailDto) =>
@@ -85,6 +85,12 @@ function DraftPreview({ draft, isHiddenOnPhone }: { draft: MailDraft; isHiddenOn
   );
 }
 
+const sendCvLink = (app: ApplicationDetailDto, key: TemplateKey, link: ReturnType<typeof useCvLink>): SendCvLink => ({
+  state: cvLinkState(app, key, link),
+  isRetrying: link.isFetching,
+  onRetry: () => void link.refetch(),
+});
+
 function ComposeForm({
   app,
   template,
@@ -95,7 +101,7 @@ function ComposeForm({
   onChooseTemplate: (key: TemplateKey) => void;
 }) {
   const me = useHrMe();
-  const cvLink = useCvLink(app, carriesCvLink(app, template.key));
+  const cvLink = useCvLink(app.id, carriesCvLink(app, template.key));
   const draft = useMailDraft(app, me.data, template, cvLink.data?.url);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [view, setView] = useState<ComposeView>('edit');
@@ -125,7 +131,13 @@ function ComposeForm({
         </div>
         <DraftPreview draft={draft} isHiddenOnPhone={view === 'edit'} />
       </div>
-      <SendActions app={app} me={me.data} draft={draft} onError={setFieldError} />
+      <SendActions
+        app={app}
+        me={me.data}
+        draft={draft}
+        onError={setFieldError}
+        cvLink={sendCvLink(app, template.key, cvLink)}
+      />
     </>
   );
 }

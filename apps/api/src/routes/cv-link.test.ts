@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { seedDemoData } from '../db/seed.js';
 import { applications } from '../db/schema.js';
 import { upsertHrUser } from '../services/hr-accounts.js';
@@ -157,6 +157,70 @@ describe('The CV link in an interview invitation', () => {
     // Assert
     expect(res.status).toBe(404);
     expect(await res.text()).not.toContain('vieclam24h');
+  });
+
+  describe('the page a candidate sees when it fails', () => {
+    const expectReadablePage = async (res: Response, words: RegExp) => {
+      const body = await res.text();
+      expect(res.headers.get('content-type')).toContain('text/html');
+      expect(res.headers.get('x-robots-tag')).toContain('noindex');
+      expect(res.headers.get('cache-control')).toContain('no-store');
+      expect(body).toContain('<html lang="vi">');
+      expect(body).toMatch(words);
+      expect(body).not.toContain('"error"');
+    };
+
+    it('should explain in Vietnamese with a 404 when the link is no longer usable', async () => {
+      // Arrange
+      const url = await openLink();
+      await t.db.delete(applications).where(eq(applications.id, appId));
+
+      // Act
+      const res = await t.request(url.pathname);
+
+      // Assert
+      expect(res.status).toBe(404);
+      await expectReadablePage(res, /Link CV không còn dùng được/);
+    });
+
+    it('should explain in Vietnamese with a 404 when the address is nonsense', async () => {
+      // Act
+      const res = await t.request('/api/cv/khong-phai-link');
+
+      // Assert
+      expect(res.status).toBe(404);
+      await expectReadablePage(res, /Link CV không còn dùng được/);
+    });
+
+    it('should explain in Vietnamese with a 404 when the stored file is gone', async () => {
+      // Arrange
+      const url = await openLink();
+      t.cvStore.clear();
+
+      // Act
+      const res = await t.request(url.pathname);
+
+      // Assert
+      expect(res.status).toBe(404);
+      await expectReadablePage(res, /Link CV không còn dùng được/);
+    });
+
+    it('should ask to try later with a 503 when the file store is down, without blaming the link', async () => {
+      // Arrange
+      const url = await openLink();
+      const down = vi.spyOn(t.cvStore, 'get').mockRejectedValueOnce(new Error('blob store down'));
+      const logged = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      // Act
+      const res = await t.request(url.pathname);
+
+      // Assert
+      expect(res.status).toBe(503);
+      await expectReadablePage(res, /thử lại sau/);
+      expect(down).toHaveBeenCalledOnce();
+      expect(logged).toHaveBeenCalled();
+      logged.mockRestore();
+    });
   });
 
   it('should say the same for a link to nobody as for a bad signature', async () => {

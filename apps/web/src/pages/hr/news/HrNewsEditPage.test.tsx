@@ -147,7 +147,7 @@ describe('news editor page', () => {
     // Act: hide it
     await pickStatus(user, 'Đã ẩn');
     await user.click(
-      within(screen.getByRole('dialog', { name: 'Ẩn bài viết?' })).getByRole('button', { name: 'Ẩn bài' }),
+      within(screen.getByRole('alertdialog', { name: 'Ẩn bài viết?' })).getByRole('button', { name: 'Ẩn bài' }),
     );
 
     // Assert
@@ -162,7 +162,7 @@ describe('news editor page', () => {
 
     // Act: hide (with the confirm), then show again
     await pickStatus(user, 'Đã ẩn');
-    const confirm = screen.getByRole('dialog', { name: 'Ẩn bài viết?' });
+    const confirm = screen.getByRole('alertdialog', { name: 'Ẩn bài viết?' });
     await user.click(within(confirm).getByRole('button', { name: 'Ẩn bài' }));
 
     // Assert
@@ -211,7 +211,7 @@ describe('news editor page', () => {
     expect(draft.textContent).toMatch(/không về nháp được/);
   });
 
-  it('should ask in the site dialog before leaving with unsaved changes', async () => {
+  it("should ask in the admin's own dialog before leaving with unsaved changes", async () => {
     // Arrange
     const user = userEvent.setup();
     const router = open(`/hr/tin-tuc/${PUBLISHED_ID}`);
@@ -219,18 +219,51 @@ describe('news editor page', () => {
 
     // Act: follow the back link, stay, then leave
     await user.click(screen.getByRole('link', { name: 'Tin tức' }));
-    const dialog = screen.getByRole('dialog', { name: 'Rời trang khi chưa lưu?' });
-    await user.click(within(dialog).getByRole('button', { name: 'Ở lại sửa tiếp' }));
+    const dialog = screen.getByRole('alertdialog', { name: 'Rời trang?' });
+    expect(dialog.textContent).toContain('Bài có thay đổi chưa lưu.');
+    await user.click(within(dialog).getByRole('button', { name: 'Ở lại' }));
 
     // Assert
     expect(router.state.location.pathname).toBe(`/hr/tin-tuc/${PUBLISHED_ID}`);
     await user.click(screen.getByRole('link', { name: 'Tin tức' }));
     await user.click(
-      within(screen.getByRole('dialog', { name: 'Rời trang khi chưa lưu?' })).getByRole('button', {
-        name: 'Rời trang',
-      }),
+      within(screen.getByRole('alertdialog', { name: 'Rời trang?' })).getByRole('button', { name: 'Rời trang' }),
     );
     await waitFor(() => expect(router.state.location.pathname).toBe('/hr/tin-tuc'));
+  });
+
+  it('should delete a post with unsaved changes after one question, without asking about leaving', async () => {
+    // Arrange
+    const user = userEvent.setup();
+    const router = open(`/hr/tin-tuc/${PUBLISHED_ID}`);
+    await user.type(await screen.findByLabelText('Tiêu đề'), ' (sửa)');
+
+    // Act
+    await user.click(screen.getByRole('button', { name: 'Xoá bài' }));
+    const dialog = screen.getByRole('alertdialog', { name: 'Xoá bài viết?' });
+    expect(dialog.textContent).toContain('gỡ khỏi trang tin tức');
+    await user.click(within(dialog).getByRole('button', { name: 'Xoá bài' }));
+
+    // Assert
+    await waitFor(() => expect(router.state.location.pathname).toBe('/hr/tin-tuc'));
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    expect((await mockApi.hrNews()).posts.map((p) => p.id)).not.toContain(PUBLISHED_ID);
+  });
+
+  it('should keep the post when HR declines the delete question', async () => {
+    // Arrange
+    const user = userEvent.setup();
+    const router = open(`/hr/tin-tuc/${DRAFT_ID}`);
+    await user.click(await screen.findByRole('button', { name: 'Xoá bài' }));
+
+    // Act
+    await user.click(
+      within(screen.getByRole('alertdialog', { name: 'Xoá bài viết?' })).getByRole('button', { name: 'Huỷ' }),
+    );
+
+    // Assert
+    expect(router.state.location.pathname).toBe(`/hr/tin-tuc/${DRAFT_ID}`);
+    expect((await mockApi.hrNews()).posts.map((p) => p.id)).toContain(DRAFT_ID);
   });
 
   it('should show the address under the title and let HR change it', async () => {

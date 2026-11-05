@@ -120,6 +120,37 @@ describe('PeriodPicker', () => {
   });
 });
 
+describe('PeriodPicker and its lists', () => {
+  it('should close only the open list on Esc and keep the days already pressed', async () => {
+    // Arrange
+    const { dialog } = await open(PICKED);
+    await press('2026-10-10');
+    await userEvent.click(dialog.getByRole('combobox', { name: 'Từ năm' }));
+    expect(screen.getByRole('listbox')).toBeTruthy();
+
+    // Act
+    await userEvent.keyboard('{Escape}');
+
+    // Assert
+    expect(screen.queryByRole('listbox')).toBeNull();
+    expect(screen.getByRole('dialog', { name: 'Chọn khoảng thời gian' })).toBeTruthy();
+    expect(screen.getByText('Chọn ngày kết thúc')).toBeTruthy();
+  });
+
+  it('should close on the next Esc once no list is open', async () => {
+    // Arrange
+    const { dialog } = await open(PICKED);
+    await userEvent.click(dialog.getByRole('combobox', { name: 'Từ năm' }));
+    await userEvent.keyboard('{Escape}');
+
+    // Act
+    await userEvent.keyboard('{Escape}');
+
+    // Assert
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});
+
 describe('quickPeriods', () => {
   const find = (label: string) => quickPeriods('2026-11-04').find((q) => q.label === label)?.period;
 

@@ -284,7 +284,7 @@ const td = 'border-b border-line-soft px-4 py-4 align-middle';
 function JobsTable({ rows, handlers }: { rows: HrJobRowDto[]; handlers: (row: HrJobRowDto) => RowHandlers }) {
   return (
     <div className="hidden overflow-x-auto xl:block">
-      <table className="w-full table-fixed border-collapse text-sm">
+      <table className="ui-table w-full table-fixed border-collapse text-sm">
         <colgroup>
           <col className="w-[25%]" />
           <col className="w-[13%]" />

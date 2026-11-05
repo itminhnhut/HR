@@ -1,12 +1,16 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react';
 import { useBlocker } from 'react-router';
-import { useConfirm } from '../shadcn/Confirm';
+import { useConfirm } from './shadcn/Confirm';
 
 /**
  * Asks before leaving a form with unsaved changes: closing the tab, or a link inside the app.
- * Returns `allowLeave`, to call right before navigating away after a successful save, and the dialog to render.
+ * Returns `allowLeave`, to call right before navigating away on purpose (after a save, after deleting), and the dialog
+ * to render. `allowedPath` lets one address through: going from /moi to the post's own address is not leaving.
  */
-export function useUnsavedGuard(dirty: boolean): { allowLeave: () => void; guardDialog: ReactNode } {
+export function useUnsavedGuard(
+  dirty: boolean,
+  { description, allowedPath }: { description: string; allowedPath?: RefObject<string | null> },
+): { allowLeave: () => void; guardDialog: ReactNode } {
   const allowed = useRef(false);
   const isAsking = useRef(false);
   const [confirm, guardDialog] = useConfirm();
@@ -21,14 +25,17 @@ export function useUnsavedGuard(dirty: boolean): { allowLeave: () => void; guard
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      dirty && !allowed.current && currentLocation.pathname !== nextLocation.pathname,
+      dirty &&
+      !allowed.current &&
+      currentLocation.pathname !== nextLocation.pathname &&
+      nextLocation.pathname !== allowedPath?.current,
   );
   useEffect(() => {
     if (blocker.state !== 'blocked' || isAsking.current) return;
     isAsking.current = true;
     void confirm({
       title: 'Rời trang?',
-      description: 'Tin chưa được lưu, nội dung vừa nhập sẽ mất.',
+      description,
       action: 'Rời trang',
       cancel: 'Ở lại',
       isDanger: true,
@@ -37,7 +44,7 @@ export function useUnsavedGuard(dirty: boolean): { allowLeave: () => void; guard
       if (agreed) blocker.proceed();
       else blocker.reset();
     });
-  }, [blocker, confirm]);
+  }, [blocker, confirm, description]);
 
   return {
     allowLeave: () => {

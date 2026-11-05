@@ -11,10 +11,10 @@ import { ApiError } from '../../../api';
 import { useCreateReview, useHrMe } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
 import { CloseButton, Dialog } from '../../../ui/Dialog';
-import { TextArea, TextField, FieldError } from '../../../ui/Field';
+import { TextArea, TextField } from '../../../ui/Field';
 import { Notice } from '../../../ui/feedback';
 import { errorMessage } from '../parts';
-import { defaultRespondBy, defaultTitle, fromLocalInput, toLocalInput } from './reviewModel';
+import { defaultRespondBy, defaultTitle, fromLocalInput, REPLY_LIMITS, toLocalInput } from './reviewModel';
 
 /** The reviewer's name HR typed last time, a per-browser convenience. */
 const LAST_REVIEWER = 'hr-review-last-reviewer';
@@ -200,11 +200,14 @@ function SendReviewForm({
               fieldName="Mong sếp phản hồi trước"
               placeholder="Chọn hạn phản hồi"
               isRequired
+              limits={REPLY_LIMITS}
+              error={fieldErrors.respondBy}
               value={fromLocalInput(respondBy) || null}
               onChange={(iso) => iso && setRespondBy(toLocalInput(new Date(iso)))}
             />
-            <span className="text-xs text-muted">Link dùng được thêm 5 ngày sau hạn này.</span>
-            <FieldError>{fieldErrors.respondBy}</FieldError>
+            {!fieldErrors.respondBy && (
+              <span className="text-xs text-muted">Link dùng được thêm 5 ngày sau hạn này.</span>
+            )}
           </div>
           <TextArea
             label="Lời nhắn cho sếp"

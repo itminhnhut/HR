@@ -1,8 +1,5 @@
 import { NEWS_STATUS_LABEL, type NewsStatus } from '@careers/shared';
-import type { ReactNode } from 'react';
 import { newsCategoryClasses } from '../../../lib/colors';
-import { Button } from '../../../ui/Button';
-import { Dialog } from '../../../ui/Dialog';
 import type { IconName } from '../../../ui/icons';
 import { Pill } from '../design/Pill';
 import type { Tone } from '../design/tone';
@@ -56,48 +53,4 @@ export function formatClock(date: Date): string {
     minute: '2-digit',
     hour12: false,
   }).format(date);
-}
-
-/** Asks once more before something that cannot be undone. */
-export function ConfirmDialog({
-  open,
-  title,
-  children,
-  confirmLabel,
-  busy,
-  onConfirm,
-  onClose,
-  tone = 'danger',
-}: {
-  open: boolean;
-  title: string;
-  children: ReactNode;
-  confirmLabel: string;
-  busy?: boolean;
-  onConfirm: () => void;
-  onClose: () => void;
-  /** Deleting is red; hiding is a reversible change. */
-  tone?: 'danger' | 'neutral';
-}) {
-  return (
-    <Dialog open={open} onClose={onClose} label={title}>
-      <div className="flex flex-col gap-4 p-5 sm:p-6">
-        <h2 className="m-0 text-lg font-semibold">{title}</h2>
-        <div className="text-[15px] leading-relaxed text-body">{children}</div>
-        <div className="flex flex-wrap justify-end gap-2.5">
-          <Button variant="outline" onClick={onClose}>
-            Huỷ
-          </Button>
-          <Button
-            variant={tone === 'danger' ? 'danger' : 'dark'}
-            icon={tone === 'danger' ? 'trash' : 'eyeOff'}
-            onClick={onConfirm}
-            disabled={busy}
-          >
-            {confirmLabel}
-          </Button>
-        </div>
-      </div>
-    </Dialog>
-  );
 }

@@ -2,10 +2,11 @@ import type { NewsCardDto, NewsStatus, RenderedArticle } from '@careers/shared';
 import { useEffect, useState } from 'react';
 import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/icons';
+import { useConfirm } from '../shadcn/Confirm';
 import type { EditorActions } from './EditorActions';
-import { HideConfirm, jumpToField, MissingFields, StatusField } from './EditorStatus';
+import { jumpToField, MissingFields, StatusField } from './EditorStatus';
 import { NewsPreviewDialog } from './NewsPreviewDialog';
-import { ConfirmDialog, formatClock } from './parts';
+import { formatClock } from './parts';
 import { PublishDialog } from './PublishDialog';
 import type { Autosave } from './useNewsAutosave';
 
@@ -86,33 +87,30 @@ function PrimaryAction({
 
 /** Set apart on the left, in the error colour, so it is not pressed instead of the main button. */
 function DeletePost({ actions, isPublished }: { actions: EditorActions; isPublished: boolean }) {
-  const [open, setOpen] = useState(false);
+  const [confirm, dialog] = useConfirm();
+  const ask = () =>
+    void confirm({
+      title: 'Xoá bài viết?',
+      description: `Bài sẽ bị xoá hẳn${isPublished ? ' và gỡ khỏi trang tin tức' : ''}. Không khôi phục được.`,
+      action: 'Xoá bài',
+      isDanger: true,
+    }).then((agreed) => {
+      if (agreed) void actions.deletePost();
+    });
   return (
     <>
       <Button
         variant="ghost"
         size="sm"
         icon="trash"
-        onClick={() => setOpen(true)}
+        onClick={ask}
         disabled={actions.busy}
         aria-label="Xoá bài"
         className="text-error hover:bg-error-soft"
       >
         <span className="max-sm:sr-only">Xoá</span>
       </Button>
-      <ConfirmDialog
-        open={open}
-        title="Xoá bài viết?"
-        confirmLabel="Xoá bài"
-        busy={actions.busy}
-        onConfirm={() => {
-          setOpen(false);
-          void actions.deletePost();
-        }}
-        onClose={() => setOpen(false)}
-      >
-        Bài sẽ bị xoá hẳn{isPublished ? ' và gỡ khỏi trang tin tức' : ''}. Không khôi phục được.
-      </ConfirmDialog>
+      {dialog}
     </>
   );
 }
@@ -158,7 +156,7 @@ function ImageAltWarning({ count }: { count: number }) {
   );
 }
 
-/** The sheets the bar opens: preview, publish (with its checklist) and hide. */
+/** The sheets the bar opens: preview, publish (with its checklist), and the question before hiding. */
 function BarDialogs({
   autosave,
   actions,
@@ -182,12 +180,7 @@ function BarDialogs({
         onConfirm={actions.publish}
         onClose={actions.closePublish}
       />
-      <HideConfirm
-        open={actions.confirmHide}
-        busy={actions.busy}
-        onConfirm={actions.hide}
-        onClose={actions.closeHide}
-      />
+      {actions.confirmDialog}
     </>
   );
 }

@@ -8,10 +8,10 @@ import { EmptyState, ErrorState, LoadingStatus, Notice, Sk, useDelayedFlag } fro
 import { Icon, type IconName } from '../../../ui/icons';
 import type { Tone } from '../design/tone';
 import { apiMessage, errorMessage, FilterTabs, PageHeading, type TabItem } from '../parts';
+import { useConfirm } from '../shadcn/Confirm';
 import { CategoryManager } from './CategoryManager';
 import { BulkDeleteBar, useDraftSelection } from './BulkDelete';
 import { NewsCards, NewsTable, type RowHandlers } from './NewsListRows';
-import { ConfirmDialog } from './parts';
 import type { RowNotice } from './RowStatus';
 
 type ListTab = NewsStatus | 'all';
@@ -219,34 +219,28 @@ function ListBody({
   );
 }
 
-function DeletePostDialog({
-  row,
-  onClose,
-  onError,
-}: {
-  row: HrNewsRowDto | null;
-  onClose: () => void;
-  onError: (msg: string | null) => void;
-}) {
+/** "Xoá" on a row: asks first, naming the post. A delete on its way is not asked about twice. */
+function useDeleteRow(onError: (msg: string | null) => void) {
   const remove = useDeleteNews();
-  const confirm = () => {
-    if (!row) return;
+  const [confirm, dialog] = useConfirm();
+  const ask = async (row: HrNewsRowDto) => {
+    if (remove.isPending) return;
+    const agreed = await confirm({
+      title: 'Xoá bài viết?',
+      description: (
+        <>
+          Bài <strong className="font-semibold text-navy">{row.title || 'chưa có tiêu đề'}</strong> sẽ bị xoá hẳn
+          {row.status === 'published' ? ' và gỡ khỏi trang tin tức' : ''}. Không khôi phục được.
+        </>
+      ),
+      action: 'Xoá bài',
+      isDanger: true,
+    });
+    if (!agreed) return;
     onError(null);
-    remove.mutate(row.id, { onSettled: onClose, onError: (e) => onError(errorMessage(e)) });
+    remove.mutate(row.id, { onError: (e) => onError(errorMessage(e)) });
   };
-  return (
-    <ConfirmDialog
-      open={!!row}
-      title="Xoá bài viết?"
-      confirmLabel="Xoá bài"
-      busy={remove.isPending}
-      onConfirm={confirm}
-      onClose={onClose}
-    >
-      Bài <strong className="font-semibold text-navy">{row?.title || 'chưa có tiêu đề'}</strong> sẽ bị xoá hẳn
-      {row?.status === 'published' ? ' và gỡ khỏi trang tin tức' : ''}. Không khôi phục được.
-    </ConfirmDialog>
-  );
+  return { ask, dialog };
 }
 
 /** The tab is kept in the address (?tab=published), so going back to the list opens the same one. */
@@ -267,18 +261,11 @@ function useTab(): [ListTab, (tab: ListTab) => void] {
   return [tab, setTab];
 }
 
-export function HrNewsListPage() {
-  usePageMeta('Tin tức');
+/** The tab, the search and the page; another tab or search starts again at page 1. */
+function useListFilters() {
   const [tab, setTabState] = useTab();
-  const [notice, setNotice] = useState<RowNotice | null>(null);
   const [search, setSearchState] = useState('');
   const [page, setPage] = useState(1);
-  const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const [toDelete, setToDelete] = useState<HrNewsRowDto | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const list = useNewsRows(tab, search);
-  const selection = useDraftSelection(list.rows);
-  // Another tab or search starts again at page 1.
   const setTab = (next: ListTab) => {
     setTabState(next);
     setPage(1);
@@ -287,6 +274,18 @@ export function HrNewsListPage() {
     setSearchState(q);
     setPage(1);
   };
+  return { tab, setTab, search, setSearch, page, setPage };
+}
+
+export function HrNewsListPage() {
+  usePageMeta('Tin tức');
+  const { tab, setTab, search, setSearch, page, setPage } = useListFilters();
+  const [notice, setNotice] = useState<RowNotice | null>(null);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const deleteRow = useDeleteRow(setError);
+  const list = useNewsRows(tab, search);
+  const selection = useDraftSelection(list.rows);
 
   return (
     <>
@@ -308,7 +307,7 @@ export function HrNewsListPage() {
           search={search}
           page={page}
           onPage={setPage}
-          onDelete={setToDelete}
+          onDelete={(row) => void deleteRow.ask(row)}
           onNotice={setNotice}
           selected={selection.selected}
           onSelect={selection.onSelect}
@@ -319,7 +318,7 @@ export function HrNewsListPage() {
         categories={list.news.data?.categories ?? []}
         onClose={() => setCategoriesOpen(false)}
       />
-      <DeletePostDialog row={toDelete} onClose={() => setToDelete(null)} onError={setError} />
+      {deleteRow.dialog}
     </>
   );
 }

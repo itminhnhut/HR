@@ -188,13 +188,17 @@ export const useApplications = (jobId?: string, q = '', source?: ApplicationSour
     placeholderData: keepPreviousData,
   });
 
-/** A stored CV's address for an interview invitation; a new file means a new address. */
-export const useCvLink = (app: { id: string; cvFileName: string | null }, isEnabled: boolean) =>
+/**
+ * A stored CV's address for an interview invitation. The server signs it for the file stored right now, and HR or the
+ * candidate can replace that file at any time under any name, so each letter asks afresh and nothing is kept.
+ */
+export const useCvLink = (id: string, isEnabled: boolean) =>
   useQuery({
-    queryKey: ['hr', 'cv-link', app.id, app.cvFileName],
-    queryFn: () => api.hrCvLink(app.id),
+    queryKey: ['hr', 'cv-link', id],
+    queryFn: () => api.hrCvLink(id),
     enabled: isEnabled,
-    staleTime: 60 * 60_000,
+    staleTime: 0,
+    gcTime: 0,
   });
 
 export function useApplication(id: string | null) {

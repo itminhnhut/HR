@@ -39,9 +39,22 @@ export function useCopyMail(
   };
 }
 
-export function CopyMailButton({ state, className = '' }: { state: CopyMailState; className?: string }) {
+export function CopyMailButton({
+  state,
+  disabled,
+  className = '',
+}: {
+  state: CopyMailState;
+  disabled: boolean;
+  className?: string;
+}) {
   return (
-    <Button icon={state.result === 'copied' ? 'check' : 'copy'} onClick={() => void state.copy()} className={className}>
+    <Button
+      icon={state.result === 'copied' ? 'check' : 'copy'}
+      disabled={disabled}
+      onClick={() => void state.copy()}
+      className={className}
+    >
       Sao chép &amp; mở Outlook
     </Button>
   );

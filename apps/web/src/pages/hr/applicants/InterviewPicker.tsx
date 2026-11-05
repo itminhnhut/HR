@@ -18,6 +18,10 @@ export interface PickerState {
   minute: string;
   hours: readonly string[];
   minutes: readonly string[];
+  /** How many days ahead can be chosen. */
+  maxDays: number;
+  /** What a screen reader calls the hour and minute. */
+  timeLabel: string;
   /** Times of today already past cannot be picked: the hour and minutes still open today. */
   isTimeOpen: (hour: string, minute: string) => boolean;
   /** "Thứ Năm, 05/11/2026 · 09:00", or empty while no day is chosen. */
@@ -57,11 +61,14 @@ function QuickDays({ day, onDay }: Pick<PickerState, 'day' | 'onDay'>) {
 }
 
 function TimeSelects(
-  props: Pick<PickerState, 'hour' | 'minute' | 'hours' | 'minutes' | 'isTimeOpen' | 'onHour' | 'onMinute'>,
+  props: Pick<
+    PickerState,
+    'hour' | 'minute' | 'hours' | 'minutes' | 'timeLabel' | 'isTimeOpen' | 'onHour' | 'onMinute'
+  >,
 ) {
-  const { hour, minute, hours, minutes, isTimeOpen, onHour, onMinute } = props;
+  const { hour, minute, hours, minutes, timeLabel, isTimeOpen, onHour, onMinute } = props;
   return (
-    <div role="group" aria-label="Giờ phỏng vấn" className="flex items-center justify-center gap-1.5">
+    <div role="group" aria-label={timeLabel} className="flex items-center justify-center gap-1.5">
       <SelectField label="Giờ" hideLabel className="w-20" value={hour} onChange={(e) => onHour(e.target.value)}>
         {hours.map((h) => (
           <option key={h} value={h} disabled={!minutes.some((m) => isTimeOpen(h, m))}>
@@ -85,8 +92,9 @@ function TimeSelects(
 
 /** One moment: the month, the hour and minute below it, and nothing saved until "Áp dụng". */
 export function InterviewPicker(props: PickerState) {
-  const { day, summary, canApply, onDay, onClear, onCancel, onApply } = props;
+  const { day, maxDays, summary, canApply, onDay, onClear, onCancel, onApply } = props;
   const today = todayInVietnam();
+  const lastDay = toLocal(addDays(today, maxDays));
   return (
     <div className="flex max-h-[calc(100dvh-16px)] flex-col gap-2.5 overflow-y-auto p-3">
       <QuickDays day={day} onDay={onDay} />
@@ -94,8 +102,8 @@ export function InterviewPicker(props: PickerState) {
         <Calendar
           mode="single"
           startMonth={toLocal(today)}
-          endMonth={toLocal(addDays(today, 90))}
-          disabled={[{ before: toLocal(today) }, { after: toLocal(addDays(today, 90)) }]}
+          endMonth={lastDay}
+          disabled={[{ before: toLocal(today) }, { after: lastDay }]}
           selected={day ? toLocal(day) : undefined}
           defaultMonth={toLocal(day ?? today)}
           onSelect={(date) => date && onDay(toIsoDay(date))}

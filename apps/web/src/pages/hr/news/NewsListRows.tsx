@@ -140,7 +140,7 @@ const HEADERS: [label: string, width: string, extra?: string][] = [
 export function NewsTable({ rows, onDelete, onNotice, selected, onSelect }: { rows: HrNewsRowDto[] } & RowHandlers) {
   return (
     <div className="hidden overflow-x-auto lg:block">
-      <table className="w-full table-fixed border-collapse text-sm">
+      <table className="ui-table w-full table-fixed border-collapse text-sm">
         <colgroup>
           {HEADERS.map(([label, width]) => (
             <col key={label} className={width} />
