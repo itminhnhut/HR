@@ -162,11 +162,11 @@ function RowAction({ label, render, children }: { label: string; render: ReactEl
   );
 }
 
-function PersonRow({ person, regions, kinds, today, onEdit, onLeaveJob }: { person: EmployeeDto; regions: readonly TimesheetRegionDto[]; kinds: readonly StaffKindDto[]; today: string; onEdit: () => void; onLeaveJob: () => void }) {
+function PersonRow({ person, regions, kinds, today, isPicked, onPick, onEdit, onLeaveJob }: { person: EmployeeDto; regions: readonly TimesheetRegionDto[]; kinds: readonly StaffKindDto[]; today: string; isPicked: boolean; onPick: () => void; onEdit: () => void; onLeaveJob: () => void }) {
   const hasLeft = !!person.leftOn && person.leftOn <= today;
   const now = person.officialOn && person.officialOn <= today ? 'official' : person.employment;
   return (
-    <tr className="group border-b hover:bg-slate-50">
+    <tr data-picked={isPicked ? '' : undefined} onClick={onPick} className="cursor-pointer border-b">
       <td className="p-2 text-slate-600"><CopyValue text={person.code} label="mã NV"><span className="pr-7">{person.code}</span></CopyValue></td>
       <td className="p-2 font-medium"><CopyValue text={person.fullName} label="họ tên"><span className="pr-7">{person.fullName}</span></CopyValue></td>
       <td className="p-2"><CopyValue text={person.department} label="bộ phận"><span className="pr-7">{person.department || '-'}</span></CopyValue></td>
@@ -179,7 +179,7 @@ function PersonRow({ person, regions, kinds, today, onEdit, onLeaveJob }: { pers
       </td>
       <td className="p-2 tabular-nums"><CopyValue text={person.joinedOn ? show(person.joinedOn) : ''} label="ngày vào"><span className="pr-7">{show(person.joinedOn)}</span></CopyValue></td>
       <td className="p-2 tabular-nums"><CopyValue text={person.leftOn ? show(person.leftOn) : ''} label="ngày nghỉ việc"><span className="pr-7">{show(person.leftOn)}</span></CopyValue></td>
-      <td className="sticky right-0 bg-white p-2 text-right group-hover:bg-slate-50 shadow-[-6px_0_6px_-6px_rgba(15,23,42,0.18)]">
+      <td className="sticky right-0 bg-white p-2 text-right shadow-[-6px_0_6px_-6px_rgba(15,23,42,0.18)]">
         <span className="inline-flex gap-1">
           <RowAction label="Ghi nghỉ" render={<Link to={`/hr/cham-cong/nghi?nv=${person.id}`} aria-label={`Ghi nghỉ ${person.fullName}`} className={`${ROW_ACTION} text-slate-800 no-underline`} />}><CalendarOff className="size-3.5 text-blue-600" /></RowAction>
           <RowAction label="Cho nghỉ việc" render={<button type="button" aria-label={`Cho nghỉ việc ${person.fullName}`} onClick={onLeaveJob} className={ROW_ACTION} />}><UserX className="size-3.5 text-orange-600" /></RowAction>
@@ -198,6 +198,7 @@ export function PeopleTab() {
   const [dialog, setDialog] = useState<{ editing: EmployeeDto | null; key: number } | null>(null);
   const [leavingJob, setLeavingJob] = useState<EmployeeDto | null>(null);
   const [warning, setWarning] = useState('');
+  const [pickedId, setPickedId] = useState<string | null>(null);
   const afterSave = (saved: EmployeeDto) => {
     setDialog(null);
     setLeavingJob(null);
@@ -229,7 +230,7 @@ export function PeopleTab() {
           <table className="w-full min-w-[1120px] border-collapse text-sm whitespace-nowrap">
             <thead><tr className="border-b text-left">{HEADS.map((h) => <th key={h} className="h-10 px-2 font-medium">{h}</th>)}<th aria-label="Sửa" className="sticky right-0 bg-white" /></tr></thead>
             <tbody>
-              {people.data.map((p) => <PersonRow key={p.id} person={p} regions={regions.data} kinds={kinds.data} today={today} onEdit={() => setDialog({ editing: p, key: Date.now() })} onLeaveJob={() => setLeavingJob(p)} />)}
+              {people.data.map((p) => <PersonRow key={p.id} person={p} regions={regions.data} kinds={kinds.data} today={today} isPicked={p.id === pickedId} onPick={() => setPickedId(p.id)} onEdit={() => setDialog({ editing: p, key: Date.now() })} onLeaveJob={() => setLeavingJob(p)} />)}
             </tbody>
           </table>
         </div>

@@ -93,7 +93,7 @@ function LogLine({ line }: { line: TimesheetLogLineDto }) {
   const look = lookOf(line.action);
   const area = AREAS.find((a) => a.id === line.area);
   return (
-    <li className="flex gap-3 border-b py-3 last:border-b-0">
+    <li className="flex gap-3 rounded-md border-b px-2 py-3 last:border-b-0 hover:bg-blue-100">
       <span aria-hidden="true" className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full border ${look.tone}`}><look.icon className="size-4" /></span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

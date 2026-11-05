@@ -372,3 +372,4 @@ Mở lại file bằng ExcelJS, so với mẫu của HR.
 | TC-LOG-06 đến 09 | Thao tác trong tab Cấu hình | Người duyệt, khu vực, loại nhân viên | Ghi cả người duyệt thêm, xoá, gõ mới khi nhập nghỉ; khu vực và loại ghi cũ → mới | Yêu cầu chủ dự án | A-LOG |
 | TC-LOG-10 đến 17 | Tab Nhật ký | Mở tab, lọc, tìm, xem thêm | Một thay đổi hiện một dòng dù nhiều kỳ mở; không có kỳ mở vẫn xem được; đủ 4 nơi, ghi tháng của bảng công; tìm theo mã, tên; đọc từng trang không sót | Thực tế | A-LOG |
 | WEB-LOG | Tab Nhật ký | Mở tab | Hiện thẳng trên trang theo ngày, có icon, ai, giờ VN; cũ → mới tách dòng; bộ lọc và ô tìm nằm trên địa chỉ | Yêu cầu chủ dự án | WEB |
+| WEB-ROW | Tô dòng | Rê chuột, bấm vào một dòng | Cả dòng sáng, không sót cột có màu riêng; bấm dòng khác thì dấu chuyển theo | Yêu cầu chủ dự án | WEB, kiểm trên Chrome |

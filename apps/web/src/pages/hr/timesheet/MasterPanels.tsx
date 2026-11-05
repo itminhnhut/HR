@@ -25,7 +25,7 @@ export function MasterRow({ icon: Icon, tone, name, detail, count, isEditing, lo
   onRemove: () => void;
 }) {
   return (
-    <li className={`flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 ${isEditing ? 'bg-blue-50' : ''}`}>
+    <li className={`flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 hover:bg-blue-100 ${isEditing ? 'bg-blue-50' : ''}`}>
       <span aria-hidden="true" className={`inline-flex size-6 shrink-0 items-center justify-center rounded-md border ${tone}`}><Icon className="size-3.5" /></span>
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-sm font-medium">{name}</span>
