@@ -1,5 +1,5 @@
-import type { TimesheetCellsInput, TimesheetDto } from '@careers/shared';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { TimesheetCellsInput, TimesheetDto, TimesheetLogArea } from '@careers/shared';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../../../api';
 import { withCells } from './timesheetModel';
@@ -96,14 +96,32 @@ export function useSheetAction<T>(choice: PeriodChoice, run: (input: T) => Promi
   });
 }
 
-export const useTimesheetLog = (periodId: string | null, isOpen: boolean) =>
-  useQuery({
-    queryKey: ['hr', 'timesheet-log', periodId],
-    queryFn: () => api.hrTimesheetLog(periodId ?? ''),
-    enabled: !!periodId && isOpen,
+const LOG_PAGE_SIZE = 100;
+
+/** The whole log, newest first, read a page at a time. */
+export const useTimesheetLog = (area: TimesheetLogArea | undefined, search: string) =>
+  useInfiniteQuery({
+    queryKey: ['hr', 'timesheet-log', area ?? 'all', search],
+    queryFn: ({ pageParam }) => api.hrTimesheetLog({ area, search, offset: pageParam }),
+    initialPageParam: 0,
+    getNextPageParam: (last, _all, offset) => (last.hasMore ? offset + LOG_PAGE_SIZE : undefined),
+    placeholderData: keepPreviousData,
     staleTime: 0,
   });
 
 export const useEmployees = () => useQuery({ queryKey: ['hr', 'employees'], queryFn: () => api.hrEmployees() });
+export const useDepartments = () => useQuery({ queryKey: ['hr', 'departments'], queryFn: () => api.hrDepartments() });
+export const useStaffKinds = () => useQuery({ queryKey: ['hr', 'staff-kinds'], queryFn: () => api.hrStaffKinds() });
+
+/** A change in Cấu hình reaches everything that shows it: filters, the staff form, the sheet, the counts. */
+export function useConfigRefresh() {
+  const qc = useQueryClient();
+  return () => {
+    for (const key of ['timesheet', 'employees', 'regions', 'departments', 'staff-kinds', 'absences']) {
+      void qc.invalidateQueries({ queryKey: ['hr', key] });
+    }
+  };
+}
+
 export const useRegions = () => useQuery({ queryKey: ['hr', 'regions'], queryFn: () => api.hrRegions() });
 export const useHolidays = () => useQuery({ queryKey: ['hr', 'holidays'], queryFn: () => api.hrHolidays() });

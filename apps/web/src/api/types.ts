@@ -50,6 +50,10 @@ import type {
   TimesheetDto,
   TimesheetHolidayDto,
   AbsenceInput,
+  DepartmentDto,
+  DepartmentInput,
+  StaffKindDto,
+  StaffKindInput,
   AbsenceKindDto,
   AbsenceKindInput,
   AbsenceRowDto,
@@ -57,11 +61,12 @@ import type {
   HolidayRangeInput,
   LeaveChangeInput,
   TimesheetAbsenceDto,
-  TimesheetLogDto,
+  TimesheetLogPageDto,
   TimesheetMonthDto,
   TimesheetRegionDto,
   ParsedCvDto,
   TemplateChoiceList,
+  TimesheetLogArea,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -214,6 +219,14 @@ export interface Api {
   hrDeleteHolidayRange(from: string, to: string): Promise<TimesheetHolidayDto[]>;
   hrAllAbsences(year: number): Promise<AbsenceRowDto[]>;
   hrUpdateAbsence(employeeId: string, absenceId: string, input: AbsenceInput): Promise<TimesheetAbsenceDto[]>;
+  hrDepartments(): Promise<DepartmentDto[]>;
+  hrAddDepartment(input: DepartmentInput): Promise<DepartmentDto[]>;
+  hrUpdateDepartment(id: string, input: DepartmentInput): Promise<DepartmentDto[]>;
+  hrDeleteDepartment(id: string): Promise<DepartmentDto[]>;
+  hrStaffKinds(): Promise<StaffKindDto[]>;
+  hrAddStaffKind(input: StaffKindInput): Promise<StaffKindDto[]>;
+  hrUpdateStaffKind(id: string, input: StaffKindInput): Promise<StaffKindDto[]>;
+  hrDeleteStaffKind(id: string): Promise<StaffKindDto[]>;
   hrAbsenceKinds(): Promise<AbsenceKindDto[]>;
   hrApprovers(): Promise<ApproverDto[]>;
   hrAddApprover(name: string): Promise<ApproverDto[]>;
@@ -232,7 +245,7 @@ export interface Api {
   hrTimesheetRemoveAdjustment(periodId: string, adjustmentId: string): Promise<TimesheetDto>;
   hrTimesheetClose(periodId: string): Promise<TimesheetDto>;
   hrTimesheetReopen(periodId: string, reason: string): Promise<TimesheetDto>;
-  hrTimesheetLog(periodId: string): Promise<TimesheetLogDto[]>;
+  hrTimesheetLog(query: { area?: TimesheetLogArea; search?: string; offset: number }): Promise<TimesheetLogPageDto>;
   hrEmployees(): Promise<EmployeeDto[]>;
   hrCreateEmployee(input: EmployeeInput): Promise<EmployeeDto>;
   hrUpdateEmployee(id: string, input: EmployeeInput): Promise<EmployeeDto>;

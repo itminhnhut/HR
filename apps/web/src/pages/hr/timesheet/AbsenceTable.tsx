@@ -7,6 +7,7 @@ import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
 import { ErrorState } from '../../../ui/feedback';
 import { errorMessage } from '../parts';
 import { FitText } from './columns';
+import { CopyValue } from './CopyValue';
 import { ConfirmDialog } from './dialogs';
 import { KindMark } from './KindSelect';
 import { YearNav } from './months';
@@ -56,14 +57,14 @@ export function AbsenceTable({ editingId, isRemoving, removeError, onEdit, onRem
               {rows.map((r) => (
                 <tr key={r.id} className={`border-b ${r.id === editingId ? 'bg-blue-50' : 'hover:bg-slate-50'}`}>
                   <td className="p-2"><State row={r} /></td>
-                  <td className="max-w-48 p-2 font-medium"><FitText text={r.fullName} limit={22} /></td>
-                  <td className="max-w-56 p-2"><span className="flex items-center gap-2"><KindMark code={r.code} reason={r.reason} /><FitText text={r.label} limit={24} /></span></td>
+                  <td className="p-2 font-medium"><CopyValue text={r.fullName} label="họ tên"><span className="pr-7">{r.fullName}</span></CopyValue></td>
+                  <td className="p-2"><span className="flex items-center gap-2"><KindMark code={r.code} reason={r.reason} /><span>{r.label}</span></span></td>
                   <td className="p-2 tabular-nums">{show(r.from)}{r.to !== r.from ? ` – ${show(r.to)}` : ''}</td>
                   <td className="p-2"><span className="inline-flex h-5 items-center rounded-full bg-blue-50 px-2 text-xs font-semibold text-blue-800 tabular-nums">{String(r.days).replace('.', ',')} ngày</span></td>
                   <td className="p-2 text-slate-600">{r.code === 'M' ? 'Vẫn 1 công, đếm 1 lần' : ABSENCE_COUNTING[r.code as keyof typeof ABSENCE_COUNTING] ?? ''}</td>
-                  <td className="max-w-36 p-2"><FitText text={r.approvedBy ?? '-'} limit={16} /></td>
-                  <td className="max-w-44 p-2"><FitText text={r.handover || '-'} limit={20} /></td>
-                  <td className="max-w-52 p-2"><FitText text={r.note || '-'} limit={24} /></td>
+                  <td className="p-2"><span>{r.approvedBy ?? '-'}</span></td>
+                  <td className="max-w-80 p-2"><CopyValue text={r.handover} label="bàn giao"><FitText text={r.handover || '-'} limit={40} className="min-w-0 pr-7" /></CopyValue></td>
+                  <td className="max-w-80 p-2"><CopyValue text={r.note} label="ghi chú"><FitText text={r.note || '-'} limit={40} className="min-w-0 pr-7" /></CopyValue></td>
                   <td className={`sticky right-0 p-2 text-right ${r.id === editingId ? 'bg-blue-50' : 'bg-white'}`}>
                     <span className="inline-flex gap-1">
                       <button type="button" aria-label={`Sửa ${r.fullName} ${show(r.from)}`} onClick={() => onEdit(r)} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium hover:bg-slate-50 max-md:size-11 max-md:justify-center max-md:px-0"><Pencil className="size-3.5 text-blue-600" /><span className="max-md:sr-only">Sửa</span></button>

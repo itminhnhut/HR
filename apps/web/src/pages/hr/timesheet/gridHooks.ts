@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
-import { centeredScrollLeft, filterRows, fitGridHeight } from './gridLayout';
+import { centeredScrollLeft, filterRows, fitGridHeight, offeredDepartments, stillOffered } from './gridLayout';
+import { useDepartments } from './queries';
 import type { DayColumn, GridRow } from './timesheetModel';
 
 const QUICK_KEYS: Record<string, string> = { '1': '1', p: 'P', h: 'P/2', m: 'M', k: 'KL', l: 'NL', x: 'KP' };
@@ -19,12 +20,16 @@ export interface GridTable {
   getStartVisibleLeafColumns(): { getSize(): number }[];
 }
 
-export function useSheetFilters(rows: readonly GridRow[]) {
+export function useSheetFilters(rows: readonly GridRow[], regionIds: readonly string[]) {
   const [query, setQuery] = useState('');
-  const [regions, setRegions] = useState<string[]>([]);
-  const [depts, setDepts] = useState<string[]>([]);
+  const [pickedRegions, setRegions] = useState<string[]>([]);
+  const [pickedDepts, setDepts] = useState<string[]>([]);
+  const known = useDepartments();
+  const offered = useMemo(() => offeredDepartments((known.data ?? []).map((d) => d.name), rows), [known.data, rows]);
+  const regions = useMemo(() => stillOffered(pickedRegions, regionIds), [pickedRegions, regionIds]);
+  const depts = useMemo(() => stillOffered(pickedDepts, offered), [pickedDepts, offered]);
   const visible = useMemo(() => filterRows(rows, { query, regions, depts }), [rows, query, regions, depts]);
-  const deptItems = useMemo(() => [...new Set(rows.map((r) => String(r.bp)).filter(Boolean))].map((d) => ({ value: d, label: d })), [rows]);
+  const deptItems = useMemo(() => offered.map((d) => ({ value: d, label: d })), [offered]);
   const clear = useCallback(() => {
     setQuery('');
     setRegions([]);

@@ -1,6 +1,6 @@
 import { standardPeriod, type TimesheetDto } from '@careers/shared';
 import { useState } from 'react';
-import { AlertTriangle, Building2, CalendarCheck, CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, CloudOff, Download, FileSpreadsheet, History, Loader2, Lock, LockOpen, MapPin, Pencil, Search, SearchX, Sigma, Target, UserPlus, X, Zap } from 'lucide-react';
+import { AlertTriangle, Building2, CalendarCheck, CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, CloudOff, Download, FileSpreadsheet, Loader2, Lock, LockOpen, MapPin, Pencil, Search, SearchX, Sigma, Target, UserPlus, X, Zap } from 'lucide-react';
 import type { KeyboardEvent, ReactElement, ReactNode } from 'react';
 import { Link } from 'react-router';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
@@ -39,12 +39,11 @@ function PeriodPill({ dto, isFuture }: { dto: TimesheetDto; isFuture: boolean })
   return <span data-testid="period-status" className={`${PILL} border-green-300 bg-green-50 text-green-800`}><LockOpen className="size-3.5" />Đang mở</span>;
 }
 
-export function PageActions({ dto, problems, entered, hasPeople, onLog, onReview, onReopen }: {
+export function PageActions({ dto, problems, entered, hasPeople, onReview, onReopen }: {
   dto: TimesheetDto;
   problems: number;
   entered: number;
   hasPeople: boolean;
-  onLog: () => void;
   onReview: () => void;
   onReopen: () => void;
 }) {
@@ -63,7 +62,6 @@ export function PageActions({ dto, problems, entered, hasPeople, onLog, onReview
         </Tooltip>
       )}
       <span data-testid="entered" className={`${PILL} border-slate-300 bg-slate-50 text-slate-700`}><Pencil className="size-3.5" />Đã điền {entered} ô</span>
-      <button type="button" onClick={onLog} className={OUTLINE}><History className="size-4 text-slate-500" />Nhật ký</button>
       {canEdit && !isFuture && (
         <WithReason reason={hasPeople ? null : 'Chưa có nhân viên'}>
           <button type="button" disabled={!hasPeople} onClick={onReview} className="ts-field inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 text-sm font-medium whitespace-nowrap text-white hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50">

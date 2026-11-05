@@ -1,7 +1,11 @@
 import {
   daysOfHolidayBreak,
+  employmentOn,
   holidayRangeSchema,
+  staffKindOf,
+  todayInVietnam,
   saturdaysFor,
+  staffLabelOf,
   suggestedNorm,
   employeeInputSchema,
   fieldErrors,
@@ -11,10 +15,11 @@ import {
   type HrMe,
   type TimesheetHolidayDto,
   type TimesheetRegionDto,
+  type StaffKindDto,
 } from '@careers/shared';
-import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, lte, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
-import { employees, timesheetAbsences, timesheetAdjustments, timesheetEntries, timesheetHolidays, timesheetLeaveChanges, timesheetLog, timesheetPeriods, timesheetRegions, timesheetSnapshots } from '../db/schema.js';
+import { employees, timesheetAbsences, timesheetAdjustments, timesheetDepartments, timesheetEntries, timesheetHolidays, timesheetLeaveChanges, timesheetLog, timesheetPeriods, timesheetRegions, timesheetSnapshots, timesheetStaffKinds } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 
@@ -109,9 +114,10 @@ export async function updateRegion(db: Db, id: string, raw: unknown, hr: HrMe, n
   const parsed = regionInputSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại khu vực.', fieldErrors(parsed.error));
   const { saturdaysFrom, ...fields } = parsed.data;
+  const current = await db.query.timesheetRegions.findFirst({ where: eq(timesheetRegions.id, id) });
+  if (!current) throw notFound('Không tìm thấy khu vực.');
+  const saturdaysBefore = saturdaysFrom ? saturdaysFor(current, saturdaysFrom) : current.saturdays;
   try {
-    const current = await db.query.timesheetRegions.findFirst({ where: eq(timesheetRegions.id, id) });
-    if (!current) throw notFound('Không tìm thấy khu vực.');
     if (saturdaysFrom && fields.saturdays === saturdaysFor(current, saturdaysFrom)) {
       // Only a name or a colour changed: nothing planned for later months may move.
       await db.update(timesheetRegions).set({ name: fields.name, tone: fields.tone }).where(eq(timesheetRegions.id, id));
@@ -126,7 +132,13 @@ export async function updateRegion(db: Db, id: string, raw: unknown, hr: HrMe, n
     if (isUniqueViolation(error)) throw invalid('Đã có khu vực này.', { name: 'Đã có khu vực này.' });
     throw error;
   }
-  await logChange(db, hr, 'Sửa khu vực', parsed.data.name, now);
+  const from = saturdaysFrom ? ` từ T${Number(saturdaysFrom.slice(5))}/${saturdaysFrom.slice(0, 4)}` : '';
+  const changes = [
+    changeWords([['Tên', current.name, fields.name]]),
+    saturdaysBefore !== fields.saturdays ? `Thứ Bảy +${saturdaysBefore} → +${fields.saturdays}${from}` : '',
+    current.tone !== fields.tone ? 'Đổi màu' : '',
+  ].filter(Boolean);
+  if (changes.length > 0) await logChange(db, hr, 'Sửa khu vực', `${fields.name}: ${changes.join('; ')}`, now);
   return listRegions(db);
 }
 
@@ -149,6 +161,7 @@ const toEmployee = (e: typeof employees.$inferSelect): EmployeeDto => ({
   title: e.title,
   regionId: e.regionId,
   employment: e.employment,
+  staffKindId: e.staffKindId,
   joinedOn: e.joinedOn,
   officialOn: e.officialOn,
   leftOn: e.leftOn,
@@ -160,12 +173,61 @@ export async function listEmployees(db: Db): Promise<EmployeeDto[]> {
   return rows.map(toEmployee);
 }
 
+/** The two kinds of the sheet, added by the migration; tests add them again after clearing. */
+export const DEFAULT_STAFF_KINDS = [
+  { name: 'Chính thức', rule: 'official', isDefault: true },
+  { name: 'Thử việc', rule: 'probation', isDefault: true },
+] as const;
+
+export async function listStaffKinds(db: Db): Promise<StaffKindDto[]> {
+  const [rows, people] = await Promise.all([
+    db.select().from(timesheetStaffKinds).orderBy(desc(timesheetStaffKinds.isDefault), asc(timesheetStaffKinds.rule), asc(timesheetStaffKinds.name)),
+    db.select({ staffKindId: employees.staffKindId, employment: employees.employment, officialOn: employees.officialOn }).from(employees),
+  ]);
+  const today = todayInVietnam();
+  const shownAs = people.map((p) => staffKindOf(rows, p.staffKindId, employmentOn(p, today))?.id);
+  return rows.map((r) => ({ id: r.id, name: r.name, rule: r.rule, isDefault: r.isDefault, employees: shownAs.filter((id) => id === r.id).length }));
+}
+
 async function parseEmployee(db: Db, raw: unknown) {
   const parsed = employeeInputSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại thông tin nhân viên.', fieldErrors(parsed.error));
   const region = await db.query.timesheetRegions.findFirst({ where: eq(timesheetRegions.id, parsed.data.regionId) });
   if (!region) throw invalid('Chọn khu vực.', { regionId: 'Chọn khu vực.' });
-  return parsed.data;
+  if (!parsed.data.staffKindId) return parsed.data;
+  const kind = await db.query.timesheetStaffKinds.findFirst({ where: eq(timesheetStaffKinds.id, parsed.data.staffKindId) });
+  if (!kind) throw invalid('Chọn loại nhân viên.', { staffKindId: 'Chọn loại nhân viên.' });
+  return { ...parsed.data, employment: kind.rule };
+}
+
+/** A department typed on a person joins the list offered next time, and the log says so. */
+async function rememberDepartment(db: Db, hr: HrMe, name: string, now: Date) {
+  if (!name) return;
+  const added = await db.insert(timesheetDepartments).values({ name }).onConflictDoNothing().returning();
+  if (added.length > 0) await logChange(db, hr, 'Thêm bộ phận', name, now);
+}
+
+type Change = [what: string, before: string, after: string];
+const changeWords = (changes: readonly Change[]) => changes.filter(([, a, b]) => a !== b).map(([what, a, b]) => `${what} ${a || 'trống'} → ${b || 'trống'}`).join('; ');
+const fullDate = (iso: string | null) => (iso ? iso.split('-').reverse().join('/') : '');
+
+/** What a save changed on a person, in words HR reads. Empty when nothing did. */
+async function employeeChanges(db: Db, before: typeof employees.$inferSelect, after: typeof employees.$inferSelect): Promise<string> {
+  const [regions, kinds] = await Promise.all([listRegions(db), listStaffKinds(db)]);
+  const regionName = (id: string) => regions.find((r) => r.id === id)?.name ?? '';
+  const kindName = (e: typeof before) => staffLabelOf(kinds, e.staffKindId, e.employment);
+  return changeWords([
+    ['Mã', before.code, after.code],
+    ['Tên', before.fullName, after.fullName],
+    ['Bộ phận', before.department, after.department],
+    ['Chức danh', before.title, after.title],
+    ['Khu vực', regionName(before.regionId), regionName(after.regionId)],
+    ['Loại', kindName(before), kindName(after)],
+    ['Ngày vào', fullDate(before.joinedOn), fullDate(after.joinedOn)],
+    ['Ngày chính thức', fullDate(before.officialOn), fullDate(after.officialOn)],
+    ['Ngày nghỉ việc', fullDate(before.leftOn), fullDate(after.leftOn)],
+    ['Phép ban đầu', String(before.openingLeave), String(after.openingLeave)],
+  ]);
 }
 
 const duplicateCode = (code: string) => invalid(`Mã ${code} đã có người dùng.`, { code: `Mã ${code} đã có người dùng.` });
@@ -175,6 +237,7 @@ export async function createEmployee(db: Db, raw: unknown, hr: HrMe, now: Date):
   try {
     const [row] = await db.insert(employees).values(input).returning();
     if (!row) throw new Error('Insert returned nothing');
+    await rememberDepartment(db, hr, row.department, now);
     await logChange(db, hr, 'Thêm nhân viên', `${row.code} ${row.fullName}`, now, { from: row.joinedOn, to: row.leftOn });
     return toEmployee(row);
   } catch (error) {
@@ -222,7 +285,9 @@ export async function updateEmployee(db: Db, id: string, raw: unknown, hr: HrMe,
   try {
     const [row] = await db.update(employees).set({ ...input, updatedAt: now }).where(eq(employees.id, id)).returning();
     if (!row) throw notFound('Không tìm thấy nhân viên.');
-    await logChange(db, hr, 'Sửa nhân viên', `${row.code} ${row.fullName}`, now, { from: row.joinedOn, to: row.leftOn });
+    await rememberDepartment(db, hr, row.department, now);
+    const changes = current ? await employeeChanges(db, current, row) : '';
+    if (changes) await logChange(db, hr, 'Sửa nhân viên', `${row.code} ${row.fullName}: ${changes}`, now, { from: row.joinedOn, to: row.leftOn });
     const warning = startIgnored ? 'Đã có kỳ chốt nên Phép tồn ban đầu không còn tác dụng. Dùng Điều chỉnh phép trên bảng công.' : await leavingWarning(db, id, row.leftOn);
     return warning ? { ...toEmployee(row), warning } : toEmployee(row);
   } catch (error) {

@@ -1,5 +1,5 @@
 import { periodMonthOf, standardPeriod, todayInVietnam } from '@careers/shared';
-import { CalendarDays, CalendarOff, ChevronRight, Home, Settings, Users, type LucideIcon } from 'lucide-react';
+import { CalendarDays, CalendarOff, ChevronRight, History, Home, Settings, Users, type LucideIcon } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { Toaster } from 'sonner';
@@ -13,16 +13,18 @@ import { GridTab } from './GridTab';
 import { PeopleTab } from './PeopleTab';
 import { useTimesheet, type PeriodChoice } from './queries';
 import { LeaveTab } from './LeaveTab';
-import { SettingsTab } from './SettingsTab';
+import { ConfigTab, showWhenOffScreen } from './ConfigTab';
+import { LogTab } from './LogTab';
 import { SheetSkeleton } from './skeletons';
 import './timesheet.css';
 
 const BASE = '/hr/cham-cong';
-const TABS: { id: 'grid' | 'leave' | 'people' | 'settings'; label: string; icon: LucideIcon; path: string }[] = [
+const TABS: { id: 'grid' | 'leave' | 'people' | 'settings' | 'log'; label: string; icon: LucideIcon; path: string }[] = [
   { id: 'grid', label: 'Bảng công', icon: CalendarDays, path: BASE },
   { id: 'leave', label: 'Nghỉ, đi muộn', icon: CalendarOff, path: `${BASE}/nghi` },
   { id: 'people', label: 'Nhân viên', icon: Users, path: `${BASE}/nhan-vien` },
-  { id: 'settings', label: 'Cài đặt', icon: Settings, path: `${BASE}/cai-dat` },
+  { id: 'settings', label: 'Cấu hình', icon: Settings, path: `${BASE}/cau-hinh` },
+  { id: 'log', label: 'Nhật ký', icon: History, path: `${BASE}/nhat-ky` },
 ];
 
 function useChoice() {
@@ -85,7 +87,9 @@ export function TimesheetPage() {
   usePageMeta('Chấm công');
   const { pathname } = useLocation();
   const [slot, setSlot] = useState<HTMLElement | null>(null);
-  const tab = TABS.find((t) => t.path === pathname.replace(/\/$/, '')) ?? TABS[0];
+  // The old address of Cấu hình still opens it, for links already saved.
+  const path = pathname.replace(/\/$/, '').replace(/\/cai-dat$/, '/cau-hinh');
+  const tab = TABS.find((t) => t.path === path) ?? TABS[0];
   useLayoutEffect(() => {
     document.body.classList.add('hr-timesheet');
     return () => document.body.classList.remove('hr-timesheet');
@@ -100,7 +104,7 @@ export function TimesheetPage() {
             <h1 className="m-0 text-2xl font-bold whitespace-nowrap sm:text-[28px]">Chấm công</h1>
             <nav aria-label="Mục chấm công" className="max-w-full overflow-x-auto flex border-b">
               {TABS.map((t) => (
-                <Link key={t.id} to={t.path} aria-current={tab?.id === t.id ? 'page' : undefined} className={`-mb-px inline-flex shrink-0 whitespace-nowrap h-9 items-center gap-1.5 border-b-2 px-2.5 text-sm font-medium whitespace-nowrap no-underline ${tab?.id === t.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-600 hover:text-slate-900'}`}>
+                <Link key={t.id} ref={tab?.id === t.id ? showWhenOffScreen : undefined} to={t.path} aria-current={tab?.id === t.id ? 'page' : undefined} className={`-mb-px inline-flex shrink-0 whitespace-nowrap h-9 items-center gap-1.5 border-b-2 px-2.5 text-sm font-medium whitespace-nowrap no-underline ${tab?.id === t.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-600 hover:text-slate-900'}`}>
                   <t.icon className="size-4" />
                   {t.label}
                 </Link>
@@ -111,7 +115,8 @@ export function TimesheetPage() {
           {tab?.id === 'grid' && <SheetTab slot={slot} />}
           {tab?.id === 'leave' && <LeaveTab />}
           {tab?.id === 'people' && <PeopleTab />}
-          {tab?.id === 'settings' && <SettingsTab />}
+          {tab?.id === 'settings' && <ConfigTab />}
+          {tab?.id === 'log' && <LogTab />}
         </div>
       </div>
       <Toaster position="bottom-center" offset={{ bottom: 72 }} mobileOffset={{ bottom: 72 }} richColors duration={2500} />

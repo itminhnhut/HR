@@ -275,6 +275,8 @@ export const employeeInputSchema = z
     title: z.string().trim().max(80).default(''),
     regionId: z.string().uuid('Chọn khu vực.'),
     employment: z.enum(['official', 'probation']),
+    /** The kind HR chose; its rule decides `employment`. */
+    staffKindId: z.string().uuid().nullish(),
     joinedOn: optionalDay,
     officialOn: optionalDay,
     leftOn: optionalDay,
@@ -285,6 +287,49 @@ export const employeeInputSchema = z
     message: 'Ngày nghỉ phải sau ngày vào.',
   });
 export type EmployeeInput = z.input<typeof employeeInputSchema>;
+
+export const departmentInputSchema = z.object({ name: z.string().trim().min(1, 'Nhập tên bộ phận.').max(80) });
+export type DepartmentInput = z.input<typeof departmentInputSchema>;
+
+export interface DepartmentDto {
+  id: string;
+  name: string;
+  /** People in it now. */
+  employees: number;
+}
+
+export const staffKindInputSchema = z.object({
+  name: z.string().trim().min(1, 'Nhập tên loại.').max(40),
+  rule: z.enum(['official', 'probation'], { message: 'Chọn cách tính phép.' }),
+});
+export type StaffKindInput = z.input<typeof staffKindInputSchema>;
+
+export interface StaffKindDto {
+  id: string;
+  name: string;
+  /** Counts for leave as official staff, or as someone on probation. */
+  rule: StaffType;
+  /** One of the two kinds of the sheet: it can be renamed, not removed. */
+  isDefault: boolean;
+  employees: number;
+}
+
+/** Someone who became official by that day counts as official. */
+export function employmentOn(person: { employment: StaffType; officialOn: string | null }, day: string): StaffType {
+  if (!person.officialOn) return person.employment;
+  return person.officialOn <= day ? 'official' : 'probation';
+}
+
+/** The kind someone shows as: the one HR gave them while it fits how they count now, else the usual one for that. */
+export function staffKindOf<K extends Pick<StaffKindDto, 'id' | 'rule' | 'isDefault'>>(kinds: readonly K[], kindId: string | null | undefined, employment: StaffType): K | undefined {
+  const kind = kinds.find((k) => k.id === kindId);
+  if (kind?.rule === employment) return kind;
+  return kinds.find((k) => k.isDefault && k.rule === employment);
+}
+
+export function staffLabelOf(kinds: readonly StaffKindDto[], kindId: string | null | undefined, employment: StaffType): string {
+  return staffKindOf(kinds, kindId, employment)?.name ?? STAFF_TYPE_LABEL[employment];
+}
 
 export const REGION_TONES = ['blue', 'rose', 'emerald', 'amber', 'cyan', 'orange'] as const;
 export type RegionTone = (typeof REGION_TONES)[number];
@@ -454,6 +499,7 @@ export interface TimesheetRegionDto {
 }
 
 export interface EmployeeDto {
+  staffKindId: string | null;
   id: string;
   code: string;
   fullName: string;
@@ -498,6 +544,8 @@ export interface TimesheetRowDto {
   title: string;
   regionId: string;
   employment: StaffType;
+  /** What HR calls their kind of staff in this period. */
+  staffLabel?: string;
   joinedOn: string | null;
   /** Set while the date can still matter: a period with this date inside it has days at each pay level. */
   officialOn?: string | null;
@@ -559,10 +607,24 @@ export interface TimesheetDto {
   rows: TimesheetRowDto[];
 }
 
+/** The tab a line of the log came from. */
+export type TimesheetLogArea = 'bang-cong' | 'nghi' | 'nhan-vien' | 'cau-hinh';
+
 export interface TimesheetLogDto {
   id: string;
   actor: string;
   action: string;
   detail: string;
   at: string;
+}
+
+export interface TimesheetLogLineDto extends TimesheetLogDto {
+  area: TimesheetLogArea;
+  /** YYYY-MM, for a change on the sheet. */
+  periodMonth: string | null;
+}
+
+export interface TimesheetLogPageDto {
+  lines: TimesheetLogLineDto[];
+  hasMore: boolean;
 }

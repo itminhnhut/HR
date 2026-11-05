@@ -26,11 +26,14 @@ import {
   listEmployees,
   listHolidays,
   listRegions,
+  listStaffKinds,
   saveHoliday,
   saveHolidayRange,
   updateEmployee,
   updateRegion,
 } from '../services/timesheet-people.js';
+import { readLog } from '../services/timesheet-log.js';
+import { addDepartment, addStaffKind, listDepartments, removeDepartment, removeStaffKind, renameDepartment, updateStaffKind } from '../services/timesheet-config.js';
 import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, registerAbsence, removeAbsence, removeAbsenceKind, updateAbsence, updateAbsenceKind, withHolidaysApplied } from '../services/timesheet-absences.js';
 
 /** Chấm công (spec-cham-cong.md). Mounted at /api/hr/timesheet behind requireHr. */
@@ -41,6 +44,32 @@ hrTimesheetRoutes.get('/range', async (c) => {
   return c.json(await getTimesheetRange(db, c.req.query('from') ?? '', c.req.query('to') ?? '', now()));
 });
 
+hrTimesheetRoutes.get('/departments', async (c) => c.json(await listDepartments(c.get('deps').db)));
+hrTimesheetRoutes.post('/departments', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await addDepartment(db, await readJson(c), hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.patch('/departments/:id', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await renameDepartment(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
+});
+hrTimesheetRoutes.delete('/departments/:id', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await removeDepartment(db, c.req.param('id'), hrOf(c), now()));
+});
+hrTimesheetRoutes.get('/staff-kinds', async (c) => c.json(await listStaffKinds(c.get('deps').db)));
+hrTimesheetRoutes.post('/staff-kinds', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await addStaffKind(db, await readJson(c), hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.patch('/staff-kinds/:id', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await updateStaffKind(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
+});
+hrTimesheetRoutes.delete('/staff-kinds/:id', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await removeStaffKind(db, c.req.param('id'), hrOf(c), now()));
+});
 hrTimesheetRoutes.get('/employees', async (c) => c.json(await listEmployees(c.get('deps').db)));
 hrTimesheetRoutes.post('/employees', async (c) => {
   const { db, now } = c.get('deps');
@@ -52,8 +81,14 @@ hrTimesheetRoutes.delete('/employees/:id', async (c) => {
 });
 hrTimesheetRoutes.get('/absences', async (c) => c.json(await listAbsencesOfYear(c.get('deps').db, Number(c.req.query('year')))));
 hrTimesheetRoutes.get('/approvers', async (c) => c.json(await listApprovers(c.get('deps').db)));
-hrTimesheetRoutes.post('/approvers', async (c) => c.json(await addApprover(c.get('deps').db, await readJson(c)), 201));
-hrTimesheetRoutes.delete('/approvers/:id', async (c) => c.json(await removeApprover(c.get('deps').db, c.req.param('id'))));
+hrTimesheetRoutes.post('/approvers', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await addApprover(db, await readJson(c), hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.delete('/approvers/:id', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await removeApprover(db, c.req.param('id'), hrOf(c), now()));
+});
 hrTimesheetRoutes.get('/absence-kinds', async (c) => c.json(await listAbsenceKinds(c.get('deps').db)));
 hrTimesheetRoutes.post('/absence-kinds', async (c) => {
   const { db, now } = c.get('deps');
@@ -157,4 +192,5 @@ hrTimesheetRoutes.post('/:id/reopen', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await reopenPeriod(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
 });
+hrTimesheetRoutes.get('/log', async (c) => c.json(await readLog(c.get('deps').db, c.req.query())));
 hrTimesheetRoutes.get('/:id/log', async (c) => c.json(await periodLog(c.get('deps').db, c.req.param('id'))));

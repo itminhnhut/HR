@@ -1,4 +1,4 @@
-import { ATTENDANCE_LABEL, type AttendanceCode, type StaffType } from '@careers/shared';
+import { ATTENDANCE_LABEL, type AttendanceCode } from '@careers/shared';
 import type { Workbook, Worksheet } from 'exceljs';
 import logoUrl from '../../../assets/logo/top-flow-logo.png?url';
 import type { DayColumn, GridRow } from './timesheetModel';
@@ -60,8 +60,8 @@ export interface ExportArgs {
 
 const FIRST_DAY = 7;
 
-/** HR's wording in the sheet, which capitalises every word of a header value. */
-const STAFF_WORDS: Record<StaffType, string> = { official: 'Chính Thức', probation: 'Thử Việc' };
+/** HR's wording in the sheet, which capitalises every word: "Chính Thức". */
+const asSheetWords = (name: string) => name.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
 /** Where "Tháng 11.26" has each code: column I, N and R, from row 2 down. */
 const LEGEND: [code: AttendanceCode, column: number, row: number][] = [
@@ -162,7 +162,7 @@ function writePerson(sheet: Worksheet, person: GridRow, index: number, args: Exp
   const rowNo = 9 + index;
   const font = { name: SERIF };
   const regionName = regions.find((r) => r.id === String(person.regionId))?.name ?? '';
-  [index + 1, person.ma, person.ten, person.bp, regionName, STAFF_WORDS[person.loai as StaffType]].forEach((value, i) => {
+  [index + 1, person.ma, person.ten, person.bp, regionName, asSheetWords(String(person.loaiTen))].forEach((value, i) => {
     Object.assign(sheet.getCell(rowNo, i + 1), { value, border: BOX, font });
   });
   days.forEach((d, i) => {

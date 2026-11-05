@@ -230,6 +230,14 @@ export const httpApi: Api = {
   hrDeleteHolidayRange: (from, to) => request(`/hr/timesheet/holidays/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`, { method: 'DELETE' }),
   hrAllAbsences: (year) => request(`/hr/timesheet/absences?year=${year}`),
   hrUpdateAbsence: (id, absenceId, input) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}/absences/${encodeURIComponent(absenceId)}`, { method: 'PATCH', body: JSON.stringify(input) }),
+  hrDepartments: () => request('/hr/timesheet/departments'),
+  hrAddDepartment: (input) => request('/hr/timesheet/departments', { method: 'POST', body: JSON.stringify(input) }),
+  hrUpdateDepartment: (id, input) => request(`/hr/timesheet/departments/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(input) }),
+  hrDeleteDepartment: (id) => request(`/hr/timesheet/departments/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  hrStaffKinds: () => request('/hr/timesheet/staff-kinds'),
+  hrAddStaffKind: (input) => request('/hr/timesheet/staff-kinds', { method: 'POST', body: JSON.stringify(input) }),
+  hrUpdateStaffKind: (id, input) => request(`/hr/timesheet/staff-kinds/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(input) }),
+  hrDeleteStaffKind: (id) => request(`/hr/timesheet/staff-kinds/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrAbsenceKinds: () => request('/hr/timesheet/absence-kinds'),
   hrApprovers: () => request('/hr/timesheet/approvers'),
   hrAddApprover: (name) => request('/hr/timesheet/approvers', { method: 'POST', body: JSON.stringify({ name }) }),
@@ -250,7 +258,10 @@ export const httpApi: Api = {
     request(`/hr/timesheet/${encodeURIComponent(id)}/adjustments/${encodeURIComponent(adjustmentId)}`, { method: 'DELETE' }),
   hrTimesheetClose: (id) => request(`/hr/timesheet/${encodeURIComponent(id)}/close`, { method: 'POST' }),
   hrTimesheetReopen: (id, reason) => request(`/hr/timesheet/${encodeURIComponent(id)}/reopen`, json('POST', { reason })),
-  hrTimesheetLog: (id) => request(`/hr/timesheet/${encodeURIComponent(id)}/log`),
+  hrTimesheetLog: ({ area, search, offset }) => {
+    const query = new URLSearchParams({ tu: String(offset), ...(area ? { nhom: area } : {}), ...(search ? { tim: search } : {}) });
+    return request(`/hr/timesheet/log?${query}`);
+  },
   hrEmployees: () => request('/hr/timesheet/employees'),
   hrCreateEmployee: (input) => request('/hr/timesheet/employees', json('POST', input)),
   hrUpdateEmployee: (id, input) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}`, json('PATCH', input)),

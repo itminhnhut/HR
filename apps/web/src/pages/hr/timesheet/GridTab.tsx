@@ -8,9 +8,9 @@ import { DataGrid } from '../../../vendor/shadcn-grid/components/data-grid/data-
 import { useDataGrid } from '../../../vendor/shadcn-grid/hooks/use-data-grid';
 import { NotesContext } from '../../../vendor/shadcn-grid/lib/codes';
 import { apiMessage, errorMessage } from '../parts';
-import { EXTRA_COLUMN_KEYS, makeColumns } from './columns';
+import { EXTRA_COLUMN_KEYS, makeColumns, textWidthsOf } from './columns';
 import { LeaveChangeDialog } from './LeaveChangeDialog';
-import { AdjustDialog, LogDialog, ReopenDialog, ReviewDialog } from './dialogs';
+import { AdjustDialog, ReopenDialog, ReviewDialog } from './dialogs';
 import { exportTimesheet } from './exportExcel';
 import { scrollGridTo, useGridHeight, useOverLeaveWarning, useQuickCodes, useSheetFilters, type GridTable } from './gridHooks';
 import { describeFailedCells, pinnedColumns } from './gridLayout';
@@ -21,7 +21,7 @@ import { CodeLegend } from './toolbar';
 
 const PHONE_WIDTH = 640;
 
-type SheetDialog = 'review' | 'reopen' | 'log' | null;
+type SheetDialog = 'review' | 'reopen' | null;
 
 /** The sheet itself: columns, keys, saving what changes. */
 function useSheetGrid(input: { dto: TimesheetDto; days: readonly DayColumn[]; rows: readonly GridRow[]; visible: readonly GridRow[]; canEdit: boolean; save: (periodId: string, cells: Parameters<ReturnType<typeof useSaveCells>['save']>[1]) => void; onAdjust: (id: string) => void; onLeave: (id: string) => void }) {
@@ -31,9 +31,13 @@ function useSheetGrid(input: { dto: TimesheetDto; days: readonly DayColumn[]; ro
   const [pinned] = useState(() => pinnedColumns(window.innerWidth));
   const [isPhone] = useState(() => window.innerWidth < PHONE_WIDTH);
   const adjustmentWords = useMemo(() => adjustmentNotesOf(dto), [dto]);
+  // By the text itself, so that a key pressed in a day does not rebuild the columns.
+  const textKey = rows.map((r) => `${String(r.ma)}|${String(r.ten)}|${String(r.bp)}|${String(r.loaiTen)}`).join('\n');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const widths = useMemo(() => textWidthsOf(rows), [textKey]);
   const columns = useMemo(
-    () => makeColumns({ days, regions: dto.regions, today: dto.today, canAdjust: canEdit, onAdjust, adjustmentWords, pinned, holidays: dto.holidays, onLeave, extras: extraKey ? (extraKey.split(',') as typeof EXTRA_COLUMN_KEYS) : [] }),
-    [days, dto.regions, dto.today, canEdit, onAdjust, adjustmentWords, pinned, dto.holidays, onLeave, extraKey],
+    () => makeColumns({ days, regions: dto.regions, today: dto.today, canAdjust: canEdit, onAdjust, adjustmentWords, pinned, holidays: dto.holidays, onLeave, widths, extras: extraKey ? (extraKey.split(',') as typeof EXTRA_COLUMN_KEYS) : [] }),
+    [days, dto.regions, dto.today, canEdit, onAdjust, adjustmentWords, pinned, dto.holidays, onLeave, extraKey, widths],
   );
   const latest = useRef({ dto, days, rows, save });
   latest.current = { dto, days, rows, save };
@@ -161,7 +165,6 @@ function SheetDialogs({ dto, dialog, onDialog, adjustingId, onAdjusting, leaveId
         onAdd={(input) => leaveId && actions.addLeave.mutate({ employeeId: leaveId, ...input })}
         onRemove={(id) => actions.removeLeave.mutate(id)}
       />
-      <LogDialog periodId={dto.periodId} open={dialog === 'log'} onClose={close} />
     </>
   );
 }
@@ -217,7 +220,8 @@ export function GridTab({ dto, choice, onPeriod, actionsSlot }: Props) {
   const [notice, setNotice] = useState('');
   const saving = useSaveCells(choice);
   const actions = useSheetActions(choice, periodId);
-  const filters = useSheetFilters(rows);
+  const regionIds = useMemo(() => dto.regions.map((r) => r.id), [dto.regions]);
+  const filters = useSheetFilters(rows, regionIds);
   const leave = useOverLeaveWarning(rows);
   const { grid, table, todayKey, adjustmentWords, rowHeight } = useSheetGrid({ dto, days, rows, visible: filters.visible, canEdit, save: saving.save, onAdjust: setAdjustingId, onLeave: setLeaveId });
   const onQuickCode = useQuickCodes({ table, days, rows, canEdit });
@@ -240,7 +244,7 @@ export function GridTab({ dto, choice, onPeriod, actionsSlot }: Props) {
   const { failure, errors } = useSheetMessages(dto, saving, actions, notice, () => setNotice(''));
   return (
     <NotesContext.Provider value={noteApi}>
-      {actionsSlot && createPortal(<PageActions dto={dto} problems={problems.length} entered={entered} hasPeople={rows.length > 0} onLog={() => setDialog('log')} onReview={() => setDialog('review')} onReopen={() => setDialog('reopen')} />, actionsSlot)}
+      {actionsSlot && createPortal(<PageActions dto={dto} problems={problems.length} entered={entered} hasPeople={rows.length > 0} onReview={() => setDialog('review')} onReopen={() => setDialog('reopen')} />, actionsSlot)}
       <div className="contents max-md:order-3 max-md:flex max-md:flex-col max-md:gap-2.5">
         <PeriodStrip dto={dto} canEdit={canEdit} saveState={saving.state} onPeriod={onPeriod} onNorm={(regionId, norm) => saving.track(actions.norms.mutateAsync({ [regionId]: norm }))} onNormInvalid={() => setNotice('Định mức phải là số lớn hơn 0.')} />
         <CodeLegend rows={filters.visible} days={days} />

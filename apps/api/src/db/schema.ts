@@ -577,6 +577,30 @@ export const timesheetRegions = pgTable(
 );
 
 /** Nobody is ever deleted: someone who left keeps their old periods. */
+/** Kinds of staff: HR names them, and each counts for leave one of two ways. The first two are the sheet's own. */
+export const timesheetStaffKinds = pgTable(
+  'timesheet_staff_kinds',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    rule: text('rule').$type<StaffType>().notNull(),
+    isDefault: boolean('is_default').notNull().default(false),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_staff_kinds_name_idx').on(sql`lower(${t.name})`)],
+);
+
+/** Departments offered for people. A person's department stays a name, as on the sheet and in closed periods. */
+export const timesheetDepartments = pgTable(
+  'timesheet_departments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_departments_name_idx').on(sql`lower(${t.name})`)],
+);
+
 export const employees = pgTable(
   'employees',
   {
@@ -589,6 +613,7 @@ export const employees = pgTable(
       .notNull()
       .references(() => timesheetRegions.id),
     employment: text('employment').$type<StaffType>().notNull().default('probation'),
+    staffKindId: uuid('staff_kind_id').references(() => timesheetStaffKinds.id, { onDelete: 'set null' }),
     joinedOn: date('joined_on'),
     officialOn: date('official_on'),
     leftOn: date('left_on'),
@@ -743,6 +768,8 @@ export const timesheetSnapshots = pgTable(
     title: text('title').notNull(),
     regionId: uuid('region_id').notNull(),
     employment: text('employment').$type<StaffType>().notNull(),
+    /** The kind's name as it closed; empty on periods closed before kinds could be named. */
+    staffLabel: text('staff_label'),
     joinedOn: date('joined_on'),
     leftOn: date('left_on'),
     norm: real('norm').notNull(),

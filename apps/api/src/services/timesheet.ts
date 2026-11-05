@@ -24,6 +24,9 @@ import {
   saturdaysFor,
   monthStatus,
   type TimesheetLeaveChangeDto,
+  employmentOn,
+  staffLabelOf,
+  type StaffKindDto,
   type TimesheetLogDto,
   type TimesheetTotals,
   type TimesheetMonthDto,
@@ -43,7 +46,7 @@ import {
 } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
-import { actorOf, dayWords, listHolidays, listRegions } from './timesheet-people.js';
+import { actorOf, dayWords, listHolidays, listRegions, listStaffKinds } from './timesheet-people.js';
 
 /** Bảng chấm công (spec-cham-cong.md): reading, entering, closing. The arithmetic is in @careers/shared. */
 
@@ -56,12 +59,6 @@ type Snapshot = typeof timesheetSnapshots.$inferSelect;
 /** The log is read by HR: numbers as they appear in the Excel sheet. */
 const numberWords = (n: number) => String(n).replace('.', ',');
 const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
-
-/** Someone who became official by the last day counts as official for the whole period. */
-const employmentOn = (e: Pick<Employee, 'employment' | 'officialOn'>, lastDay: string): StaffType => {
-  if (!e.officialOn) return e.employment;
-  return e.officialOn <= lastDay ? 'official' : 'probation';
-};
 
 async function ensurePeriod(db: Db, year: number, month: number): Promise<Period> {
   const { from, to } = standardPeriod(year, month);
@@ -199,7 +196,8 @@ async function cellsFor(db: Db, ids: string[], from: string, to: string) {
 const workingInRange = (from: string, to: string) =>
   and(or(isNull(employees.joinedOn), lte(employees.joinedOn, to)), or(isNull(employees.leftOn), gte(employees.leftOn, from)));
 
-const personOf = (p: Employee, lastDay: string) => ({
+const personOf = (p: Employee, lastDay: string, kinds: readonly StaffKindDto[]) => ({
+  staffLabel: staffLabelOf(kinds, p.staffKindId, employmentOn(p, lastDay)),
   employeeId: p.id,
   code: p.code,
   fullName: p.fullName,
@@ -214,7 +212,8 @@ const personOf = (p: Employee, lastDay: string) => ({
 
 const datesOf = (live: { joinedOn: string | null; leftOn: string | null } | undefined) => (live ? { joinedOn: live.joinedOn, leftOn: live.leftOn } : {});
 
-const frozenPersonOf = (s: Snapshot) => ({
+const frozenPersonOf = (s: Snapshot, kinds: readonly StaffKindDto[]) => ({
+  staffLabel: s.staffLabel ?? staffLabelOf(kinds, null, s.employment),
   employeeId: s.employeeId,
   code: s.code,
   fullName: s.fullName,
@@ -241,11 +240,12 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
     ? []
     : (await db.select().from(employees).where(workingInRange(period.fromOn, period.toOn))).filter((p) => !frozenIds.has(p.id));
   const ids = [...frozenIds, ...people.map((p) => p.id)];
-  const [opening, cells, adjustments, leaveChanges] = await Promise.all([
+  const [opening, cells, adjustments, leaveChanges, kinds] = await Promise.all([
     carriedBalances(db, period, people, now),
     cellsFor(db, ids, period.fromOn, period.toOn),
     adjustmentsFor(db, ids, monthKey(period.year, period.month)),
     leaveChangesFor(db, period.id),
+    listStaffKinds(db),
   ]);
   const range = { from: period.fromOn, to: period.toOn };
   const key = monthKey(period.year, period.month);
@@ -256,7 +256,7 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
   const extras = (employeeId: string) => ({ cells: cells.get(employeeId) ?? {}, adjustments: adjustments.get(employeeId) ?? [], leaveChanges: leaveChanges.get(employeeId) ?? [] });
   return sortedRows([
     ...frozen.map((f) => ({
-      ...frozenPersonOf(f),
+      ...frozenPersonOf(f, kinds),
       ...datesOf(liveDates.find((l) => l.id === f.employeeId)),
       leaveOpening: f.leaveOpening,
       norm: period.norms[f.regionId] ?? f.norm,
@@ -264,7 +264,7 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
       ...extras(f.employeeId),
     })),
     ...people.map((p) => ({
-      ...personOf(p, period.toOn),
+      ...personOf(p, period.toOn, kinds),
       leaveOpening: opening.get(p.id) ?? p.openingLeave,
       norm: period.norms[p.regionId] ?? normOf(p.regionId),
       frozenTotals: null,
@@ -360,10 +360,11 @@ export async function getTimesheetRange(db: Db, from: string, to: string, now: D
     const sheet = await getTimesheet(db, year, month, now);
     return { ...sheet, periodId: null, status: 'open', closedAt: null, closedBy: null, canReopen: false };
   }
-  const [people, regions, holidays] = await Promise.all([
+  const [people, regions, holidays, kinds] = await Promise.all([
     db.select().from(employees).where(workingInRange(from, to)),
     listRegions(db),
     listHolidays(db),
+    listStaffKinds(db),
   ]);
   const ids = people.map((p) => p.id);
   const [cells, adjustments] = await Promise.all([cellsFor(db, ids, from, to), adjustmentsFor(db, ids, monthKey(year, month))]);
@@ -383,7 +384,7 @@ export async function getTimesheetRange(db: Db, from: string, to: string, now: D
     regions,
     holidays: holidaysInEffect(holidays).filter((h) => h.day >= from && h.day <= to),
     rows: sortedRows(people.map((p) => ({
-      ...personOf(p, to),
+      ...personOf(p, to, kinds),
       leaveOpening: 0,
       norm: suggestedNorm({ from, to }, saturdaysFor(regions.find((r) => r.id === p.regionId) ?? { saturdays: 0 }, monthKey(year, month))),
       cells: cells.get(p.id) ?? {},
@@ -456,7 +457,7 @@ export async function saveNorms(db: Db, periodId: string, raw: unknown, hr: HrMe
   const [row] = await db.update(timesheetPeriods).set({ norms }).where(eq(timesheetPeriods.id, periodId)).returning();
   if (!row) throw notFound('Không tìm thấy kỳ công.');
   const regions = await listRegions(db);
-  const words = Object.entries(parsed.data.norms).map(([id, n]) => `${regions.find((r) => r.id === id)?.name ?? id}: ${numberWords(n)}`).join(', ');
+  const words = Object.entries(parsed.data.norms).map(([id, n]) => `${regions.find((r) => r.id === id)?.name ?? id} ${numberWords(n)}`).join(', ');
   await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Sửa định mức', detail: words, at: now });
   return toDto(db, row, now);
 }
@@ -556,7 +557,7 @@ export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date)
       adjustment: row.adjustments.reduce((sum, a) => sum + a.amount, 0),
       leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
     });
-    return { periodId, employeeId: row.employeeId, code: row.code, fullName: row.fullName, department: row.department, title: row.title, regionId: row.regionId, employment: row.employment, joinedOn: row.joinedOn, leftOn: row.leftOn, norm: row.norm, leaveOpening: row.leaveOpening, leaveClosing: totals.leaveClosing, totals };
+    return { periodId, employeeId: row.employeeId, code: row.code, fullName: row.fullName, department: row.department, title: row.title, regionId: row.regionId, employment: row.employment, staffLabel: row.staffLabel, joinedOn: row.joinedOn, leftOn: row.leftOn, norm: row.norm, leaveOpening: row.leaveOpening, leaveClosing: totals.leaveClosing, totals };
   });
   const before = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
   const differences = closeDifferences(before, snapshots);
