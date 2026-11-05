@@ -121,3 +121,36 @@ body.hr-timesheet [data-slot='data-grid-cell'][data-selected]:not([data-editing]
     min-height: 44px;
   }
 }
+
+/*
+ * A scrollbar of its own size, always there. The system's floats over the last row on a Mac and takes a width that
+ * depends on the machine elsewhere, so the grid could not leave the right room for it. Size kept in gridLayout.ts.
+ */
+body.hr-timesheet [role='grid']::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body.hr-timesheet [role='grid']::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+body.hr-timesheet [role='grid']::-webkit-scrollbar-thumb {
+  border: 2px solid #f1f5f9;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+body.hr-timesheet [role='grid']::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+body.hr-timesheet [role='grid']::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body.hr-timesheet [role='grid'] {
+    scrollbar-color: #94a3b8 #f1f5f9;
+  }
+}

@@ -17,10 +17,13 @@ export function centeredScrollLeft(input: { columnStart: number; columnSize: num
   return Math.max(0, columnStart - (viewport - pinnedWidth - columnSize) / 2);
 }
 
+/** The scrollbar timesheet.css fixes at 10px, and the grid's two borders: the rows must end above them. */
+const BELOW_ROWS = 12;
+
 /** Tall enough for everyone, but never past the bottom of the window: no scrolling inside scrolling. */
 export function fitGridHeight(input: { rowCount: number; rowHeight: number; top: number; viewportHeight: number }): number {
   const { rowCount, rowHeight, top, viewportHeight } = input;
-  const needed = 104 + rowCount * rowHeight;
+  const needed = 104 + rowCount * rowHeight + BELOW_ROWS;
   return Math.min(needed, Math.max(320, viewportHeight - top - 12));
 }
 
