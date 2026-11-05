@@ -56,6 +56,24 @@ function restDayWork(dto: TimesheetDto, row: TimesheetRowDto, days: readonly Day
   };
 }
 
+const COUNTS_WHOLE: readonly (AttendanceCode | null)[] = ['1', 'M', 'P', 'P/2', 'CL', 'TS', 'OM'];
+
+/**
+ * Halfway through a period the new leave day is not earned yet, so leave can read as over the balance when it will not
+ * be. Telling HR so would suggest unpaid leave for someone who is about to be paid: wait while the day is still within reach.
+ */
+function mayStillCoverLeave(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[], totals: TimesheetTotals): boolean {
+  if (dto.today >= dto.to || row.employment === 'probation' || totals.leaveOverdrawn > dto.rule.perPeriod) return false;
+  const reachable = days.reduce((sum, d) => {
+    const code = codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null);
+    if (code === 'KL/2') return sum + 0.5;
+    if (COUNTS_WHOLE.includes(code)) return sum + 1;
+    const isStillAhead = code === null && d.iso > dto.today && !d.isWeekend && (!row.joinedOn || d.iso >= row.joinedOn) && (!row.leftOn || d.iso <= row.leftOn);
+    return isStillAhead ? sum + 1 : sum;
+  }, 0);
+  return reachable >= dto.rule.threshold;
+}
+
 export function rowTotals(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]): TimesheetTotals {
   if (row.frozenTotals) return row.frozenTotals;
   return timesheetTotals({
@@ -100,7 +118,7 @@ export function gridRows(dto: TimesheetDto, days: readonly DayColumn[]): GridRow
       ot: totals.overtime,
       tonDau: totals.leaveOpening,
       tonCuoi: totals.leaveClosing,
-      phepVuot: totals.leaveOverdrawn,
+      phepVuot: mayStillCoverLeave(dto, row, days, totals) ? 0 : totals.leaveOverdrawn,
     };
     for (const d of days) grid[d.key] = codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null) ?? '';
     return grid;

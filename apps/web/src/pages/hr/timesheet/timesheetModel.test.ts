@@ -226,3 +226,62 @@ describe('a fixed holiday nobody entered', () => {
     expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'missingHoliday')).toBe(false);
   });
 });
+
+describe('leave beyond the balance while the period is still running', () => {
+  // 05/11: half a day of leave, nothing in the balance, and enough days left to earn this period's new day.
+  const running = (over: Partial<TimesheetRowDto> = {}) => {
+    const dto = sheet([person({ leaveOpening: 0, cells: { '2026-10-30': { entered: 'P/2', note: null } }, ...over })]);
+    return { ...dto, today: '2026-11-05' };
+  };
+
+  it('should not raise it yet, because the day earned by the end of the period may cover it', () => {
+    // Arrange
+    const dto = running();
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+
+    // Assert
+    expect(rows[0]?.phepVuot).toBe(0);
+    expect(findProblems(dto, days, rows).some((p) => p.kind === 'leave')).toBe(false);
+  });
+
+  it('should raise it when the leave is more than the day that can still be earned', () => {
+    // Arrange
+    const cells = Object.fromEntries(['2026-10-26', '2026-10-27'].map((d) => [d, { entered: 'P' as const, note: null }]));
+    const dto = running({ cells });
+    const days = dayColumns(dto);
+
+    // Act + Assert: 2 days taken, at most 1 can be earned
+    expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'leave')).toBe(true);
+  });
+
+  it('should raise it when too few days are left to reach the threshold', () => {
+    // Arrange: leaves on 10/11, far short of 14
+    const dto = running({ leftOn: '2026-11-10' });
+    const days = dayColumns(dto);
+
+    // Act + Assert
+    expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'leave')).toBe(true);
+  });
+
+  it('should raise it once the period is over and the day was not earned', () => {
+    // Arrange: 20 days of unpaid leave leave too few to earn the day
+    const away = Object.fromEntries(dayColumns(sheet([person()])).filter((d) => !d.isWeekend && d.iso !== '2026-10-30').map((d) => [d.iso, { entered: 'KL' as const, note: null }]));
+    const dto = { ...sheet([person({ leaveOpening: 0, cells: { ...away, '2026-10-30': { entered: 'P/2', note: null } } })]), today: '2026-11-25' };
+    const days = dayColumns(dto);
+
+    // Act + Assert
+    expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'leave')).toBe(true);
+  });
+
+  it('should never hold it back for someone on probation, who earns no new day', () => {
+    // Arrange
+    const dto = running({ employment: 'probation' });
+    const days = dayColumns(dto);
+
+    // Act + Assert
+    expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'leave')).toBe(true);
+  });
+});
