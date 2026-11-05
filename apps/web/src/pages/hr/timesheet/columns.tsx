@@ -4,6 +4,8 @@ import { Baby, Ban, Banknote, Calculator, CalendarCheck, CalendarDays, Check, Ch
 import type { ReactNode } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../../vendor/shadcn-grid/components/ui/tooltip';
 import { CODES } from '../../../vendor/shadcn-grid/lib/codes';
+import { CopyValue } from './CopyValue';
+import { fitColumnWidth, textMeasurer } from './gridLayout';
 import { asNumber, type DayColumn, type GridRow } from './timesheetModel';
 
 export const REGION_TONE: Record<RegionTone, string> = {
@@ -25,12 +27,12 @@ export function RegionBadge({ regionId, regions }: { regionId: unknown; regions:
   );
 }
 
-export function StaffBadge({ type }: { type: unknown }) {
+export function StaffBadge({ type, label }: { type: unknown; label?: string }) {
   const isTrial = type === 'probation';
   return (
     <span className={`inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-medium whitespace-nowrap ${isTrial ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-green-300 bg-green-50 text-green-800'}`}>
       {isTrial ? <Hourglass className="size-3" /> : <ShieldCheck className="size-3" />}
-      {STAFF_TYPE_LABEL[type as StaffType]}
+      {label ?? STAFF_TYPE_LABEL[type as StaffType]}
     </span>
   );
 }
@@ -78,9 +80,16 @@ const info = (id: string, label: string, size: number, render: (value: unknown, 
   cell: ({ getValue, row }: CellArgs) => render(getValue(), row.original),
 });
 
+/** A number as Excel takes it: a dash on the sheet is a 0 when pasted. */
+const copyableNumber = (value: unknown) => String(value ?? 0).replace('.', ',');
+
 const total = (id: string, label: string, cellClass: string, Icon: LucideIcon, iconTone: string) => ({
   id, accessorKey: id, size: Math.max(96, label.length * 6.6 + 50), ...plain, header: head(label, Icon, iconTone), meta: { label, cellClass },
-  cell: ({ getValue }: CellArgs) => <span className="block text-right text-sm text-slate-800 tabular-nums">{asNumber(getValue())}</span>,
+  cell: ({ getValue }: CellArgs) => (
+    <CopyValue inGrid side="left" text={copyableNumber(getValue())} label={label.toLowerCase()}>
+      <span className="block w-full text-right text-sm text-slate-800 tabular-nums">{asNumber(getValue())}</span>
+    </CopyValue>
+  ),
 });
 
 // Column tints give way to the selection: `!` would otherwise hide it.
@@ -89,13 +98,40 @@ const LUONG = 'not-data-selected:bg-green-50!';
 const PHEP = 'not-data-selected:bg-yellow-50!';
 const REGION_FULL_NAME = 6;
 
-function infoColumns(regions: readonly TimesheetRegionDto[]) {
+export interface TextWidths {
+  ma: number;
+  ten: number;
+  bp: number;
+  loaiTen: number;
+}
+
+export const USUAL_WIDTHS: TextWidths = { ma: 72, ten: 176, bp: 120, loaiTen: 122 };
+const WIDEST_TEXT = 320;
+const NAME_FONT = '500 14px "Be Vietnam Pro", system-ui, sans-serif';
+const TEXT_FONT = '400 14px "Be Vietnam Pro", system-ui, sans-serif';
+
+/** The text columns as wide as what they hold, so a name or a department reads in full. */
+export function textWidthsOf(rows: readonly GridRow[]): TextWidths {
+  const name = textMeasurer(NAME_FONT);
+  const text = textMeasurer(TEXT_FONT);
+  const of = (key: keyof TextWidths, measure: (t: string) => number) =>
+    fitColumnWidth(rows.map((r) => String(r[key] ?? '')), { min: USUAL_WIDTHS[key], max: WIDEST_TEXT, measure });
+  return { ma: of('ma', text), ten: of('ten', name), bp: of('bp', text), loaiTen: of('loaiTen', text) };
+}
+
+const textCell = (label: string, className: string) => (value: unknown) => (
+  <CopyValue inGrid text={String(value ?? '')} label={label}>
+    <FitText text={String(value ?? '')} limit={WIDEST_TEXT / 8} className={`min-w-0 ${className}`} />
+  </CopyValue>
+);
+
+function infoColumns(regions: readonly TimesheetRegionDto[], widths: TextWidths) {
   const nameOf = (id: unknown) => regions.find((r) => r.id === id)?.name ?? '';
   return [
     info('stt', 'STT', 60, (v) => <span className="block text-center text-sm text-slate-600">{String(v)}</span>),
-    info('ma', 'Mã NV', 72, (v) => <FitText text={String(v)} limit={8} className="text-sm text-slate-600" />),
-    info('ten', 'Họ và tên', 176, (v) => <FitText text={String(v)} limit={22} className="text-sm font-medium" />),
-    info('bp', 'Bộ phận', 120, (v) => <FitText text={String(v)} limit={15} className="text-sm" />),
+    info('ma', 'Mã NV', widths.ma, textCell('mã NV', 'text-sm text-slate-600')),
+    info('ten', 'Họ và tên', widths.ten, textCell('họ tên', 'text-sm font-medium')),
+    info('bp', 'Bộ phận', widths.bp, textCell('bộ phận', 'text-sm')),
     info('regionId', 'Khu vực', 96, (v) => nameOf(v).length <= REGION_FULL_NAME ? <RegionBadge regionId={v} regions={regions} /> : (
       <Tooltip>
         <TooltipTrigger delay={200} render={<span className="flex min-w-0" />}><RegionBadge regionId={v} regions={regions} /></TooltipTrigger>
@@ -105,15 +141,15 @@ function infoColumns(regions: readonly TimesheetRegionDto[]) {
   ];
 }
 
-function peopleGroups(regions: readonly TimesheetRegionDto[], pinned: readonly string[]) {
-  const all = infoColumns(regions);
+function peopleGroups(regions: readonly TimesheetRegionDto[], pinned: readonly string[], widths: TextWidths) {
+  const all = infoColumns(regions, widths);
   const frozen = all.filter((c) => pinned.includes(c.id));
   const rest = all.filter((c) => !pinned.includes(c.id));
   return [
     { id: 'gInfo', enableSorting: false, header: band('THÔNG TIN NHÂN VIÊN', 'bg-red-600 text-white', Users), columns: frozen },
     {
       id: 'gMore', enableSorting: false, header: band(rest.length > 0 ? 'THÔNG TIN THÊM' : 'LOẠI', 'bg-slate-200 text-slate-700', rest.length > 0 ? Info : ShieldCheck),
-      columns: [...rest, info('loai', 'Loại NV', 122, (v) => <StaffBadge type={v} />)],
+      columns: [...rest, info('loai', 'Loại NV', widths.loaiTen, (v, row) => <StaffBadge type={v} label={String(row.loaiTen)} />)],
     },
   ];
 }
@@ -157,6 +193,7 @@ function paidColumn(canAdjust: boolean, onAdjust: (employeeId: string) => void, 
     cell: function Paid({ getValue, row }: CellArgs) {
       const words = adjustmentWords[row.original.id];
       return (
+        <CopyValue inGrid side="left" text={copyableNumber(getValue())} label="công hưởng lương">
         <Tooltip>
           <TooltipTrigger render={<button type="button" disabled={!canAdjust} aria-label={`Điều chỉnh công ${row.original.ten}`} onClick={() => onAdjust(row.original.id)} className="relative block w-full text-right text-sm font-bold text-red-600 tabular-nums enabled:cursor-pointer enabled:hover:underline" />}>
             {asNumber(getValue())}
@@ -164,6 +201,7 @@ function paidColumn(canAdjust: boolean, onAdjust: (employeeId: string) => void, 
           </TooltipTrigger>
           <TooltipContent>{words ?? (canAdjust ? 'Bấm để điều chỉnh công, có ghi lý do' : 'Công hưởng lương')}</TooltipContent>
         </Tooltip>
+        </CopyValue>
       );
     },
   };
@@ -175,6 +213,7 @@ function leaveColumn(canEdit: boolean, onLeave: (employeeId: string) => void) {
     cell: function Leave({ getValue, row }: CellArgs) {
       const changed = Number(row.original.doiPhep);
       return (
+        <CopyValue inGrid side="left" text={copyableNumber(getValue())} label="phép tồn cuối kỳ">
         <Tooltip>
           <TooltipTrigger render={<button type="button" disabled={!canEdit} aria-label={`Điều chỉnh phép ${row.original.ten}`} onClick={() => onLeave(row.original.id)} className="relative block w-full text-right text-sm text-slate-800 tabular-nums enabled:cursor-pointer enabled:hover:underline" />}>
             {asNumber(getValue())}
@@ -182,6 +221,7 @@ function leaveColumn(canEdit: boolean, onLeave: (employeeId: string) => void) {
           </TooltipTrigger>
           <TooltipContent>{changed !== 0 ? `Đã điều chỉnh ${String(changed).replace('.', ',')} ngày` : canEdit ? 'Bấm để điều chỉnh phép' : 'Phép tồn cuối kỳ'}</TooltipContent>
         </Tooltip>
+        </CopyValue>
       );
     },
   };
@@ -239,12 +279,13 @@ export function makeColumns(args: {
   holidays: readonly { day: string; name: string }[];
   onLeave: (employeeId: string) => void;
   extras: readonly (keyof typeof EXTRA_COLUMNS)[];
+  widths: TextWidths;
 }) {
-  const { days, regions, today, canAdjust, onAdjust, adjustmentWords, pinned, holidays, onLeave, extras } = args;
-  const pinnedWidth = infoColumns(regions).filter((c) => pinned.includes(c.id)).reduce((sum, c) => sum + c.size, 0);
+  const { days, regions, today, canAdjust, onAdjust, adjustmentWords, pinned, holidays, onLeave, extras, widths } = args;
+  const pinnedWidth = infoColumns(regions, widths).filter((c) => pinned.includes(c.id)).reduce((sum, c) => sum + c.size, 0);
   const stickyLeft = pinnedWidth + 8;
   return [
-    ...peopleGroups(regions, pinned),
+    ...peopleGroups(regions, pinned, widths),
     dayGroup(days, today, stickyLeft, holidays),
     ...totalGroups(paidColumn(canAdjust, onAdjust, adjustmentWords), leaveColumn(canAdjust, onLeave), stickyLeft, extras),
   ];

@@ -1,11 +1,10 @@
-import type { TimesheetLogDto, TimesheetRowDto } from '@careers/shared';
-import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, Flag, History, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
+import type { TimesheetRowDto } from '@careers/shared';
+import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, Flag, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../vendor/shadcn-grid/components/ui/dialog';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
 import { errorMessage } from '../parts';
 import type { TimesheetProblem } from './timesheetModel';
-import { useTimesheetLog } from './queries';
 
 type ProblemKind = TimesheetProblem['kind'];
 
@@ -247,41 +246,6 @@ export function AdjustDialog({ row, onClose, onAdd, onRemove, isBusy, error }: {
             <Check className="size-4" />
             Lưu
           </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-const WHEN = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', hour12: false });
-const when = (iso: string) => {
-  const part = Object.fromEntries(WHEN.formatToParts(new Date(iso)).map((p) => [p.type, p.value]));
-  return `${part.day}/${part.month} ${part.hour}:${part.minute}`;
-};
-
-export function LogDialog({ periodId, open, onClose }: { periodId: string | null; open: boolean; onClose: () => void }) {
-  const log = useTimesheetLog(periodId, open);
-  const lines: TimesheetLogDto[] = log.data ?? [];
-  return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader><DialogTitle className="flex items-center gap-2"><History className="size-5 text-blue-600" />Nhật ký kỳ công</DialogTitle></DialogHeader>
-        {log.isPending && <p className="m-0 text-sm text-slate-500">Đang tải…</p>}
-        {log.isError && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(log.error)}</p>}
-        {!log.isPending && !log.isError && lines.length === 0 && <p className="m-0 text-sm text-slate-500">Chưa có thay đổi nào.</p>}
-        {lines.length > 0 && (
-          <ol className="m-0 flex max-h-96 list-none flex-col overflow-y-auto p-0 text-sm">
-            {lines.map((line) => (
-              <li key={line.id} className="flex flex-col gap-0.5 border-b py-2 last:border-b-0">
-                <span className="font-medium">{line.action}</span>
-                <span className="text-slate-700">{line.detail}</span>
-                <span className="text-xs text-slate-500">{line.actor} · {when(line.at)}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-        <DialogFooter>
-          <button type="button" onClick={onClose} className={OUTLINE}>Đóng</button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

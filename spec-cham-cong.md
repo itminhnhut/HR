@@ -6,7 +6,9 @@ Thay file Excel chấm công của HR. HR chỉ nhập ngoại lệ, tải Excel
 
 - `/hr/cham-cong`: bảng công, `?ky=YYYY-MM` là kỳ chính thức, `?tu&den` là khoảng ngày tự chọn
 - `/hr/cham-cong/nhan-vien`: nhân viên
-- `/hr/cham-cong/cai-dat`: khu vực, ngày lễ
+- `/hr/cham-cong/nghi`: nghỉ, đi muộn
+- `/hr/cham-cong/nhat-ky`: nhật ký mọi thao tác
+- `/hr/cham-cong/cau-hinh?muc=bo-phan|loai-nv|khu-vuc|ngay-le|ly-do|nguoi-duyet`: cấu hình; địa chỉ cũ `/cai-dat` vẫn mở
 
 ## Quy tắc tính (`packages/shared/src/timesheet.ts`)
 
@@ -51,3 +53,24 @@ Thay file Excel chấm công của HR. HR chỉ nhập ngoại lệ, tải Excel
 ## Cần luật sư xác nhận
 
 Phép thử việc, ngưỡng 14 công, OT gộp phép và lễ, trừ 0,5 công, nội quy, kỳ 26–25.
+
+## Cấu hình và liên kết
+
+- Bộ phận, loại nhân viên, khu vực nằm trong database. Thêm hoặc sửa thì bộ lọc, form nhân viên và bảng công đổi ngay.
+- Đổi tên bộ phận, khu vực, loại: mọi người trong đó theo tên mới; kỳ đã chốt giữ tên lúc chốt.
+- Chỉ xoá được mục không còn ai. Hai loại mặc định (Chính thức, Thử việc) chỉ đổi tên, không xoá, không đổi cách tính phép.
+- Mỗi loại tính phép theo một trong hai cách của bảng công: như chính thức hoặc như thử việc.
+- Số người của mỗi loại đếm theo loại đang hiện hôm nay: người chưa chọn loại tính vào loại mặc định, người đã qua ngày chính thức tính vào Chính thức.
+- Mọi thay đổi ghi nhật ký.
+
+## Hiển thị
+
+- Cột chữ của bảng công rộng theo chữ dài nhất, không cắt.
+- Mã, tên, số tổng, phép và công hưởng lương có nút sao chép khi rê chuột.
+
+## Nhật ký
+
+- Một tab duy nhất `/hr/cham-cong/nhat-ky`, hiện thẳng trên trang. Lọc theo nơi thao tác `?nhom=bang-cong|nghi|nhan-vien|cau-hinh`, tìm `?tim=`, xem thêm từng 100 dòng.
+- Mọi thao tác thêm, sửa, xoá bên trong tab đều ghi: ai, lúc nào, làm gì. Bấm chuyển tab, mở màn hình, xuất Excel không ghi.
+- Lần sửa ghi cũ → mới từng trường. Lưu mà không đổi gì thì không ghi. Một thay đổi chạm nhiều kỳ chỉ hiện một dòng.
+- Bộ phận hoặc người duyệt gõ mới ngay trên form cũng được ghi.

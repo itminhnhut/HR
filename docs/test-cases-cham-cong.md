@@ -33,6 +33,9 @@ Công thức dòng 9 của T11, dùng làm chuẩn:
 | A-GOLD | `apps/api/src/routes/hr-timesheet-golden.test.ts` |
 | A-CHOT | `apps/api/src/routes/hr-timesheet-closing.test.ts` |
 | A-NV | `apps/api/src/routes/hr-timesheet-people.test.ts` |
+| A-CFG | `apps/api/src/routes/hr-timesheet-config.test.ts` |
+| A-LOG | `apps/api/src/routes/hr-timesheet-log.test.ts` |
+| WEB | `apps/web/src/pages/hr/timesheet/ConfigTab.test.tsx`, `CopyValue.test.tsx`, `gridLayout.test.ts`, `LogTab.test.tsx` |
 | XLSX | `apps/web/src/pages/hr/timesheet/exportExcel.test.ts` |
 
 Cột **Loại**: tên file ở trên là test tự động, **TC** là kiểm thủ công. **GHI NHẬN** là test chỉ ghi lại hành vi hiện tại vì chưa ai chốt, cần chủ dự án quyết.
@@ -360,3 +363,12 @@ Mở lại file bằng ExcelJS, so với mẫu của HR.
 | TC-DK-22 đến 28 | Đổi mặc định trên dòng, danh sách người duyệt | Đổi cách tính, số ngày; thêm người duyệt | Cách tính HR chọn thắng mặc định; tên gõ mới được nhớ, không trùng | Yêu cầu chủ dự án | A-NGHI |
 | TC-DK-29, 30 | Sửa lý do tự thêm | Mở Cấu hình, sửa | Đổi tên, cách tính, số ngày; dòng đã nhập giữ nguyên; lý do có sẵn không sửa được | Yêu cầu chủ dự án | A-NGHI |
 | RV-01 đến 11 | Lỗi từ code review | Trừ phép quá số có; mở lại kỳ sau khi biết ngày nghỉ; sửa tên khu vực; chấm tay trước khi đăng ký nghỉ; thêm lễ sau khi đã đăng ký; xoá người có dữ liệu; chốt tháng cũ chưa dùng | Phép không âm; ngày nghỉ áp dụng khi mở lại; kế hoạch thứ Bảy giữ nguyên; ô chấm tay giữ nguyên; ngày thành lễ không trừ phép; từ chối xoá; từ chối chốt | Review | A-CHOT, RULE |
+| TC-CH-01 đến 07 | Bộ phận | Cấu hình, thêm, sửa, xoá | Không trùng tên; đổi tên thì nhân viên và bộ lọc đổi theo; kỳ chốt giữ tên cũ; còn người thì không xoá được | Yêu cầu chủ dự án | A-CFG |
+| TC-CH-08 đến 15 | Loại nhân viên | Cấu hình, thêm, sửa, xoá | Loại mới chọn cách tính phép; loại mặc định chỉ đổi tên; số người đếm theo loại đang hiện, kể cả người chưa chọn loại | Yêu cầu chủ dự án | A-CFG |
+| WEB-CFG-01 đến 04 | Màn Cấu hình | Mở từng mục | Thêm xong đọc lại từ server; còn người thì nút xoá khoá; khu vực hiện số người và thứ Bảy sắp đổi; chỉ hỏi "Áp dụng từ" khi sửa | Thực tế | WEB |
+| WEB-COPY | Nút sao chép, cột đủ chữ | Rê chuột vào ô | Chép đúng giá trị; bấm nút không làm đổi ô đang chọn; cột rộng theo chữ dài nhất | Yêu cầu chủ dự án | WEB |
+| TC-LOG-01 đến 04 | Thao tác trong tab Nhân viên | Thêm, sửa, xoá | Ghi cũ → mới từng trường; lưu mà không đổi gì thì không ghi; bộ phận mới gõ trên form cũng được ghi | Yêu cầu chủ dự án | A-LOG |
+| TC-LOG-05 | Thao tác trong tab Nghỉ, đi muộn | Thêm, sửa, huỷ | Có đủ 3 thao tác, không lẫn thao tác của tab khác | Yêu cầu chủ dự án | A-LOG |
+| TC-LOG-06 đến 09 | Thao tác trong tab Cấu hình | Người duyệt, khu vực, loại nhân viên | Ghi cả người duyệt thêm, xoá, gõ mới khi nhập nghỉ; khu vực và loại ghi cũ → mới | Yêu cầu chủ dự án | A-LOG |
+| TC-LOG-10 đến 17 | Tab Nhật ký | Mở tab, lọc, tìm, xem thêm | Một thay đổi hiện một dòng dù nhiều kỳ mở; không có kỳ mở vẫn xem được; đủ 4 nơi, ghi tháng của bảng công; tìm theo mã, tên; đọc từng trang không sót | Thực tế | A-LOG |
+| WEB-LOG | Tab Nhật ký | Mở tab | Hiện thẳng trên trang theo ngày, có icon, ai, giờ VN; cũ → mới tách dòng; bộ lọc và ô tìm nằm trên địa chỉ | Yêu cầu chủ dự án | WEB |

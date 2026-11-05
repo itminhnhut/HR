@@ -85,10 +85,10 @@ export function KindsPanel({ kinds }: { kinds: readonly AbsenceKindDto[] }) {
   const law = kinds.filter((k) => !k.isOwn);
   return (
     <div className="flex flex-col gap-4">
-      <section aria-label={editingKey ? 'Sửa lý do' : 'Thêm lý do'} className={`flex flex-col gap-3 rounded-lg border bg-slate-50 p-3 ${editingKey ? 'ring-2 ring-blue-400' : ''}`}>
-        <Field label="Tên lý do" error={errors.name}><Input aria-label="Tên lý do" value={form.name} placeholder="vd: Nghỉ nhà có việc" onChange={(e) => form.setName(e.target.value)} className="bg-white" /></Field>
-        <Field label="Cách tính" error={errors.code}><CountingSelect value={form.code} label="Cách tính của lý do" onChange={form.setCode} /></Field>
-        <div className="grid items-end gap-2 grid-cols-[1fr_auto]">
+      <section aria-label={editingKey ? 'Sửa lý do' : 'Thêm lý do'} className={`@container flex flex-col gap-3 rounded-lg border bg-slate-50 p-3 ${editingKey ? 'ring-2 ring-blue-400' : ''}`}>
+        <div className="grid grid-cols-[1fr_auto] items-end gap-3 @3xl:grid-cols-[2fr_2fr_1fr_auto]">
+          <div className="col-span-2 @3xl:col-span-1"><Field label="Tên lý do" error={errors.name}><Input aria-label="Tên lý do" value={form.name} placeholder="vd: Nghỉ nhà có việc" onChange={(e) => form.setName(e.target.value)} className="bg-white" /></Field></div>
+          <div className="col-span-2 @3xl:col-span-1"><Field label="Cách tính" error={errors.code}><CountingSelect value={form.code} label="Cách tính của lý do" onChange={form.setCode} /></Field></div>
           <Field label="Số ngày mặc định" error={errors.days}><Input aria-label="Số ngày mặc định" inputMode="numeric" value={form.days} placeholder="1" onChange={(e) => form.setDays(e.target.value)} className="bg-white" /></Field>
           <span className="flex gap-2">
             {editingKey && <button type="button" aria-label="Huỷ sửa lý do" onClick={form.cancel} className="ts-field inline-flex items-center justify-center rounded-md border bg-white px-3 hover:bg-slate-50"><X className="size-4" /></button>}

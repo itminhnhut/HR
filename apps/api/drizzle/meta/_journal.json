@@ -204,6 +204,13 @@
       "when": 1793863449209,
       "tag": "0028_timesheet_approvers",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793871066388,
+      "tag": "0029_timesheet_config",
+      "breakpoints": true
     }
   ]
 }

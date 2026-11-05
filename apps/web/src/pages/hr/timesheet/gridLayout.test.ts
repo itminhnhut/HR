@@ -1,6 +1,6 @@
 import type { TimesheetRowDto } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
-import { centeredScrollLeft, describeFailedCells, filterRows, fitGridHeight, pinnedColumns } from './gridLayout';
+import { centeredScrollLeft, COLUMN_ROOM, describeFailedCells, filterRows, fitColumnWidth, fitGridHeight, offeredDepartments, pinnedColumns, stillOffered } from './gridLayout';
 import type { GridRow } from './timesheetModel';
 
 const row = (ten: string, ma: string, regionId: string, bp: string) => ({ id: ma, ten, ma, regionId, bp }) as unknown as GridRow;
@@ -83,5 +83,51 @@ describe('room for the scrollbar under the last row', () => {
 
     // Assert: the bar and the grid's borders both sit below the rows
     expect(height - content).toBe(12);
+  });
+});
+
+describe('a text column as wide as its longest value', () => {
+  const measure = (text: string) => text.length * 8;
+
+  it('should fit the longest value in full, with room for the cell padding and the copy button', () => {
+    // Act
+    const width = fitColumnWidth(['Kế Toán', 'Chứng Từ - Logistics'], { min: 120, max: 320, measure });
+
+    // Assert: 20 letters at 8px, and what surrounds the text
+    expect(width).toBe(160 + COLUMN_ROOM);
+  });
+
+  it('should stay at the usual width for short values', () => {
+    // Act + Assert
+    expect(fitColumnWidth(['HR'], { min: 120, max: 320, measure })).toBe(120);
+  });
+
+  it('should stop at the most a column may take, so one very long value cannot push the days off the screen', () => {
+    // Act + Assert
+    expect(fitColumnWidth(['x'.repeat(200)], { min: 120, max: 320, measure })).toBe(320);
+  });
+
+  it('should keep the usual width with nobody listed', () => {
+    // Act + Assert
+    expect(fitColumnWidth([], { min: 120, max: 320, measure })).toBe(120);
+  });
+});
+
+describe('the departments the filter offers', () => {
+  const row = (bp: string) => ({ bp }) as unknown as GridRow;
+
+  it('should offer what is set up in Cấu hình, even with nobody in it yet', () => {
+    // Act + Assert
+    expect(offeredDepartments(['Kế toán', 'Sales'], [row('Sales')])).toEqual(['Kế toán', 'Sales']);
+  });
+
+  it('should keep a name only a closed period still shows, so its people can be found', () => {
+    // Act + Assert
+    expect(offeredDepartments(['Kinh doanh'], [row('Sales')])).toEqual(['Kinh doanh', 'Sales']);
+  });
+
+  it('should drop a choice that no longer exists, instead of filtering everyone out', () => {
+    // Act + Assert
+    expect(stillOffered(['Sales', 'HR'], ['HR', 'Kế toán'])).toEqual(['HR']);
   });
 });

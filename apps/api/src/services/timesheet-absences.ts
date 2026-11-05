@@ -118,22 +118,26 @@ export async function listApprovers(db: Db): Promise<ApproverDto[]> {
   return rows.map((r) => ({ id: r.id, name: r.name }));
 }
 
-async function rememberApprover(db: Db, name: string | null) {
-  if (name) await db.insert(timesheetApprovers).values({ name }).onConflictDoNothing();
+/** A name new to the list joins it, and the log says so. */
+async function rememberApprover(db: Db, hr: HrMe, name: string | null, now: Date) {
+  if (!name) return;
+  const added = await db.insert(timesheetApprovers).values({ name }).onConflictDoNothing().returning();
+  if (added.length > 0) await logChange(db, hr, 'Thêm người duyệt', name, now);
 }
 
-export async function addApprover(db: Db, raw: unknown): Promise<ApproverDto[]> {
+export async function addApprover(db: Db, raw: unknown, hr: HrMe, now: Date): Promise<ApproverDto[]> {
   const parsed = approverSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại người duyệt.', fieldErrors(parsed.error));
-  await rememberApprover(db, parsed.data.name);
+  await rememberApprover(db, hr, parsed.data.name, now);
   return listApprovers(db);
 }
 
 /** Lines already approved keep the name they were approved under. */
-export async function removeApprover(db: Db, id: string): Promise<ApproverDto[]> {
+export async function removeApprover(db: Db, id: string, hr: HrMe, now: Date): Promise<ApproverDto[]> {
   if (!isUuid(id)) throw notFound('Không tìm thấy người duyệt.');
   const [row] = await db.delete(timesheetApprovers).where(eq(timesheetApprovers.id, id)).returning();
   if (!row) throw notFound('Không tìm thấy người duyệt.');
+  await logChange(db, hr, 'Xoá người duyệt', row.name, now);
   return listApprovers(db);
 }
 
@@ -271,7 +275,7 @@ export async function registerAbsence(db: Db, employeeId: string, raw: unknown, 
     await writeCells(tx, employeeId, resolved, actor, now);
     await tx.insert(timesheetAbsences).values({ employeeId, ...fieldsOf(resolved), createdBy: actor });
   });
-  await rememberApprover(db, resolved.approvedBy);
+  await rememberApprover(db, hr, resolved.approvedBy, now);
   const state = resolved.approvedBy ? `${resolved.approvedBy} duyệt` : resolved.code === NEEDS_NO_APPROVAL ? 'đã ghi' : 'chờ duyệt';
   await logChange(db, hr, 'Đăng ký nghỉ', `${person.code} ${person.fullName}: ${resolved.label}, ${rangeWords(from, to)}, ${String(resolved.days).replace('.', ',')} ngày, ${state}`, now, { from, to });
   return listAbsences(db, employeeId);
@@ -291,7 +295,7 @@ export async function updateAbsence(db: Db, employeeId: string, absenceId: strin
     await writeCells(tx, employeeId, resolved, actorOf(hr), now);
     await tx.update(timesheetAbsences).set(fields).where(eq(timesheetAbsences.id, absenceId));
   });
-  await rememberApprover(db, resolved.approvedBy);
+  await rememberApprover(db, hr, resolved.approvedBy, now);
   const span = { from: from < current.fromOn ? from : current.fromOn, to: to > current.toOn ? to : current.toOn };
   await logChange(db, hr, 'Sửa đăng ký nghỉ', `${person.code} ${person.fullName}: ${changesBetween(current, fields)}`, now, span);
   return listAbsences(db, employeeId);

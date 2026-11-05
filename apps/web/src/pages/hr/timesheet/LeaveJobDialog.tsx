@@ -14,6 +14,7 @@ export const inputOf = (p: EmployeeDto): EmployeeInput => ({
   title: p.title,
   regionId: p.regionId,
   employment: p.employment,
+  staffKindId: p.staffKindId,
   joinedOn: p.joinedOn,
   officialOn: p.officialOn,
   leftOn: p.leftOn,

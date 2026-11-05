@@ -27,6 +27,35 @@ export function fitGridHeight(input: { rowCount: number; rowHeight: number; top:
   return Math.min(needed, Math.max(320, viewportHeight - top - 12));
 }
 
+/** The cell's padding and border, and the copy button that shows over the end of the text. */
+export const COLUMN_ROOM = 48;
+
+/** As wide as the longest value, so it reads in full; a very long one stops here and its cell gives it on hover. */
+export function fitColumnWidth(texts: readonly string[], input: { min: number; max: number; measure: (text: string) => number }): number {
+  const { min, max, measure } = input;
+  const longest = texts.reduce((widest, text) => Math.max(widest, measure(text)), 0);
+  return Math.min(max, Math.max(min, Math.ceil(longest) + COLUMN_ROOM));
+}
+
+const AVERAGE_LETTER = 7.8;
+
+/** Text width in the grid's own font; a browser without a canvas gets a fair estimate. */
+export function textMeasurer(font: string): (text: string) => number {
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return (text) => text.length * AVERAGE_LETTER;
+  context.font = font;
+  return (text) => context.measureText(text).width;
+}
+
+/** What the filter offers: the departments set up in Cấu hình, and any name only an older period still shows. */
+export function offeredDepartments(known: readonly string[], rows: readonly GridRow[]): string[] {
+  const listed = rows.map((r) => String(r.bp ?? '')).filter(Boolean);
+  return [...new Set([...known, ...listed])].sort((a, b) => a.localeCompare(b));
+}
+
+/** A choice that was renamed or removed falls away, rather than filtering everyone out with no way to see why. */
+export const stillOffered = (picked: readonly string[], offered: readonly string[]) => picked.filter((p) => offered.includes(p));
+
 export interface SheetFilter {
   query: string;
   regions: readonly string[];
