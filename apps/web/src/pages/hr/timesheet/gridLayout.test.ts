@@ -40,7 +40,7 @@ describe('grid height', () => {
   });
 
   it('should hug a short list', () => {
-    expect(fitGridHeight({ rowCount: 2, rowHeight: 36, top: 300, viewportHeight: 1080 })).toBe(176);
+    expect(fitGridHeight({ rowCount: 2, rowHeight: 36, top: 300, viewportHeight: 1080 })).toBe(188);
   });
 
   it('should stay usable on a very short window', () => {
@@ -70,5 +70,18 @@ describe('describing a failed save', () => {
   it('should count the cells when several failed', () => {
     const cells = [{ employeeId: 'e1', day: '2026-11-04', code: 'P' as const }, { employeeId: 'e1', day: '2026-11-05', code: 'P' as const }];
     expect(describeFailedCells(cells, staff)).toBe('2 ô, từ Lê Văn Cường 04/11');
+  });
+});
+
+describe('room for the scrollbar under the last row', () => {
+  it('should keep the last row clear of the horizontal scrollbar when everyone fits', () => {
+    // Arrange: both header rows, then the rows
+    const content = 104 + 11 * 36;
+
+    // Act
+    const height = fitGridHeight({ rowCount: 11, rowHeight: 36, top: 290, viewportHeight: 1000 });
+
+    // Assert: the bar and the grid's borders both sit below the rows
+    expect(height - content).toBe(12);
   });
 });
