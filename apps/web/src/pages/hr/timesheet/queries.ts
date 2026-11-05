@@ -51,18 +51,21 @@ export function useSaveCells(choice: PeriodChoice) {
       pending.current -= 1;
       setError(e);
       setState('failed');
-      setFailed((old) => ({ periodId, cells: [...(old?.cells ?? []), ...cells] }));
+      setFailed({ periodId, cells });
       void qc.invalidateQueries({ queryKey: key });
     },
   });
   const save = (periodId: string, cells: Cells) => {
-    if (cells.length === 0) return;
+    if (cells.length === 0 && failed?.periodId !== periodId) return;
+    // What failed goes along with the next save, so a key pressed elsewhere cannot silently drop it.
+    const carried = failed?.periodId === periodId ? failed.cells.filter((c) => !cells.some((n) => n.employeeId === c.employeeId && n.day === c.day)) : [];
+    const batch = [...carried, ...cells];
     pending.current += 1;
     setState('saving');
     setError(null);
     setFailed(null);
-    qc.setQueryData<TimesheetDto>(key, (old) => (old ? withCells(old, cells) : old));
-    mutation.mutate({ periodId, cells });
+    qc.setQueryData<TimesheetDto>(key, (old) => (old ? withCells(old, batch) : old));
+    mutation.mutate({ periodId, cells: batch });
   };
   /** Another kind of save (the norms) answers through the same status. */
   const track = (work: Promise<unknown>) => {
@@ -79,7 +82,7 @@ export function useSaveCells(choice: PeriodChoice) {
     setError(null);
     setState('idle');
   };
-  return { state, error, failed, save, track, dismiss, retry: () => failed && save(failed.periodId, failed.cells) };
+  return { state, error, failed, save, track, dismiss, retry: () => failed && save(failed.periodId, []) };
 }
 
 /** Any action that answers with the whole sheet: norms, adjustments, closing, reopening. */

@@ -834,3 +834,139 @@ describe('removing someone added by mistake', () => {
     await flow.call('DELETE', `/employees/${person.id}`, undefined, 409);
   });
 });
+
+describe('fixes from the review', () => {
+  it('RV-01: should refuse taking leave from someone on probation below nothing, whatever the typed start says', async () => {
+    // Arrange: probation counts no balance, so −2 has nothing to come from
+    const person = await flow.addPerson({ code: 'A', employment: 'probation', openingLeave: 3 });
+    const november = await flow.period(2026, 11);
+
+    // Act + Assert
+    await flow.call('POST', `/${november.periodId}/leave-changes`, { employeeId: person.id, amount: -2, reason: 'Sai' }, 422);
+  });
+
+  it('RV-02: should refuse removing a change when the balance would go below nothing', async () => {
+    // Arrange: +3 then −3 on an empty balance
+    const person = await flow.addPerson({ code: 'A', openingLeave: 0 });
+    const november = await flow.period(2026, 11);
+    const path = `/${november.periodId}/leave-changes`;
+    const plus = await flow.call<TimesheetDto>('POST', path, { employeeId: person.id, amount: 3, reason: 'Cộng' }, 201);
+    await flow.call('POST', path, { employeeId: person.id, amount: -3, reason: 'Trừ' }, 201);
+
+    // Act + Assert
+    await flow.call('DELETE', `${path}/${rowOf(plus, 'A').leaveChanges[0]?.id}`, undefined, 422);
+  });
+
+  it('RV-03: should let a reopened period take the last day HR learned later, and enter the days after it fall away', async () => {
+    // Arrange: closed October, then told they left on 10/10
+    const person = await flow.addPerson({ code: 'A', openingLeave: 2 });
+    await flow.at('2026-10-26');
+    const closed = await flow.close(2026, 10);
+    await flow.updatePerson(person, { leftOn: '2026-10-10' });
+
+    // Act
+    const reopened = await flow.call<TimesheetDto>('POST', `/${closed.periodId}/reopen`, { reason: 'Nghỉ việc sớm hơn' });
+
+    // Assert: days worked stop at the last day, instead of 20
+    expect(rowOf(reopened, 'A').leftOn).toBe('2026-10-10');
+    expect(totalsOf(reopened, 'A').actual).toBeLessThan(20);
+  });
+
+  it('RV-04: should keep planned changes when a region is saved with the same number of Saturdays', async () => {
+    // Arrange: 3 Saturdays planned for March
+    await flow.at('2026-11-05');
+    await flow.call('PATCH', `/regions/${flow.hcm.id}`, { name: 'HCM', saturdays: 3, tone: 'blue', saturdaysFrom: '2027-03' });
+
+    // Act: only the colour changes, this month's count is sent as it stands
+    const regions = await flow.call<TimesheetRegionDto[]>('PATCH', `/regions/${flow.hcm.id}`, { name: 'HCM', saturdays: 2, tone: 'rose', saturdaysFrom: '2026-11' });
+
+    // Assert
+    expect(regions.find((r) => r.id === flow.hcm.id)?.saturdayChanges).toEqual([{ from: '2027-03', saturdays: 3 }]);
+    expect(regions.find((r) => r.id === flow.hcm.id)?.tone).toBe('rose');
+  });
+
+  it('RV-05: should keep a code HR entered by hand when an absence covers that day, and when the absence is cancelled', async () => {
+    // Arrange: Tuesday late, with a note
+    const person = await flow.addPerson({ code: 'A', openingLeave: 5 });
+    await flow.at('2026-11-05');
+    await flow.call('PATCH', `/${(await flow.period(2026, 11)).periodId}/cells`, { cells: [{ employeeId: person.id, day: '2026-11-03', code: 'M', note: 'Muộn' }] });
+
+    // Act: Mon–Wed of leave
+    const [absence] = await flow.call<{ id: string; days: number }[]>('POST', `/employees/${person.id}/absences`, { reason: 'annual', from: '2026-11-02', to: '2026-11-04', approvedBy: 'Sếp' }, 201);
+    const during = await flow.period(2026, 11);
+    await flow.call('DELETE', `/employees/${person.id}/absences/${absence?.id}`);
+    const after = await flow.period(2026, 11);
+
+    // Assert
+    expect(absence?.days).toBe(2);
+    expect(rowOf(during, 'A').cells['2026-11-03']).toMatchObject({ entered: 'M', note: 'Muộn' });
+    expect(rowOf(during, 'A').cells['2026-11-02']?.entered).toBe('P');
+    expect(rowOf(after, 'A').cells['2026-11-03']).toMatchObject({ entered: 'M', note: 'Muộn' });
+    expect(rowOf(after, 'A').cells['2026-11-02']).toBeUndefined();
+  });
+
+  it('RV-06: should not undo a day HR corrected when the absence is edited later', async () => {
+    // Arrange: Mon–Wed of leave, Wednesday corrected back to a day worked
+    const person = await flow.addPerson({ code: 'A', openingLeave: 5 });
+    await flow.at('2026-11-05');
+    const [absence] = await flow.call<{ id: string }[]>('POST', `/employees/${person.id}/absences`, { reason: 'annual', from: '2026-11-02', to: '2026-11-04', approvedBy: 'Sếp' }, 201);
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-04': '1' });
+
+    // Act: only the note changes
+    await flow.call('PATCH', `/employees/${person.id}/absences/${absence?.id}`, { reason: 'annual', from: '2026-11-02', to: '2026-11-04', approvedBy: 'Sếp', note: 'Có việc' });
+
+    // Assert
+    expect(rowOf(await flow.period(2026, 11), 'A').cells['2026-11-04']?.entered).toBe('1');
+  });
+
+  it('RV-07: should give back the leave when a holiday is added over an absence, and charge it when the holiday goes', async () => {
+    // Arrange: leave Mon–Wed, then Tuesday turns out to be a holiday
+    const person = await flow.addPerson({ code: 'A', openingLeave: 5 });
+    await flow.at('2026-11-26');
+    const [absence] = await flow.call<{ id: string }[]>('POST', `/employees/${person.id}/absences`, { reason: 'annual', from: '2026-11-02', to: '2026-11-04', approvedBy: 'Sếp' }, 201);
+
+    // Act
+    await flow.call('POST', '/holidays', { day: '2026-11-03', name: 'Lễ' });
+    const withHoliday = await flow.period(2026, 11);
+    const rows = await flow.call<{ id: string; days: number }[]>('GET', '/absences?year=2026');
+    await flow.call('DELETE', '/holidays/2026-11-03');
+    const without = await flow.period(2026, 11);
+
+    // Assert
+    expect(totalsOf(withHoliday, 'A')).toMatchObject({ leave: 2, holiday: 1 });
+    expect(rows.find((r) => r.id === absence?.id)?.days).toBe(2);
+    expect(totalsOf(without, 'A')).toMatchObject({ leave: 3, holiday: 0 });
+  });
+
+  it('RV-08: should refuse deleting someone with an adjustment, an absence or a change of balance, and answer 404 to a bad address', async () => {
+    // Arrange
+    const adjusted = await flow.addPerson({ code: 'A' });
+    const away = await flow.addPerson({ code: 'B' });
+    const changed = await flow.addPerson({ code: 'C' });
+    const november = await flow.period(2026, 11);
+    await flow.call('POST', `/${november.periodId}/adjustments`, { employeeId: adjusted.id, amount: -0.5, reason: 'Trừ', isRecurring: true });
+    await flow.call('POST', `/employees/${away.id}/absences`, { reason: 'sick', from: '2026-11-03', to: '2026-11-03' }, 201);
+    await flow.call('POST', `/${november.periodId}/leave-changes`, { employeeId: changed.id, amount: 1, reason: 'Cộng' }, 201);
+
+    // Act + Assert
+    for (const id of [adjusted.id, away.id, changed.id]) await flow.call('DELETE', `/employees/${id}`, undefined, 409);
+    await flow.call('DELETE', '/employees/khong-phai-id', undefined, 404);
+    await flow.call('DELETE', '/regions/khong-phai-id', undefined, 404);
+    await flow.call('DELETE', `/${november.periodId}/adjustments/khong-phai-id`, undefined, 404);
+    await flow.call('PATCH', '/employees/khong-phai-id', { code: 'Z', fullName: 'Z', department: '', title: '', regionId: flow.hcm.id, employment: 'official', joinedOn: null, officialOn: null, leftOn: null, openingLeave: 0 }, 404);
+    await flow.call('PATCH', '/regions/khong-phai-id', { name: 'Z', saturdays: 0, tone: 'blue' }, 404);
+  });
+
+  it('RV-09: should refuse closing an old month nobody used as the first close, which would force every month after it', async () => {
+    // Arrange: looking at January while it is November
+    await flow.addPerson({ code: 'A' });
+    await flow.at('2026-11-05');
+    const january = await flow.period(2026, 1);
+
+    // Act
+    const answer = await flow.attempt('POST', `/${january.periodId}/close`);
+
+    // Assert
+    expect(answer).toEqual({ status: 409, code: 'empty_month' });
+  });
+});

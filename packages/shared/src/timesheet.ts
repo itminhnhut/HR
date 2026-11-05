@@ -96,7 +96,7 @@ export const FIXED_HOLIDAYS: readonly { monthDay: string; name: string }[] = [
   { monthDay: '11-24', name: 'Ngày Văn hoá Việt Nam' },
 ];
 
-const nextDay = (day: string) => {
+export const nextDay = (day: string) => {
   const [y = 2000, m = 1, d = 1] = day.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
 };
@@ -237,8 +237,8 @@ export function timesheetTotals(args: {
   const insured = count('TS') + count('OM');
   // NĐ 145/2020 Điều 65 khoản 3, 6, 7: these count as time worked for annual leave.
   const leaveCounted = count('1') + count('M') + count('P') + count('P/2') + 0.5 * count('KL/2') + personalPaid + insured;
-  const available =
-    (employment === 'probation' ? 0 : leaveOpening + (leaveCounted >= rule.threshold ? rule.perPeriod : 0)) + leaveChange;
+  // Never below nothing: negative leave would otherwise come off the days worked.
+  const available = Math.max(0, (employment === 'probation' ? 0 : leaveOpening + (leaveCounted >= rule.threshold ? rule.perPeriod : 0)) + leaveChange);
   const leavePaid = Math.min(leave, available);
   const total = actual + leavePaid + holiday + personalPaid;
   const capped = Math.min(total, norm);

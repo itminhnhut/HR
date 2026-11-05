@@ -31,7 +31,7 @@ import {
   updateEmployee,
   updateRegion,
 } from '../services/timesheet-people.js';
-import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, registerAbsence, removeAbsence, removeAbsenceKind, updateAbsence, updateAbsenceKind } from '../services/timesheet-absences.js';
+import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, registerAbsence, removeAbsence, removeAbsenceKind, updateAbsence, updateAbsenceKind, withHolidaysApplied } from '../services/timesheet-absences.js';
 
 /** Chấm công (spec-cham-cong.md). Mounted at /api/hr/timesheet behind requireHr. */
 export const hrTimesheetRoutes = new Hono<Env>();
@@ -102,19 +102,19 @@ hrTimesheetRoutes.delete('/regions/:id', async (c) => {
 hrTimesheetRoutes.get('/holidays', async (c) => c.json(await listHolidays(c.get('deps').db)));
 hrTimesheetRoutes.post('/holidays/range', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await saveHolidayRange(db, await readJson(c), hrOf(c), now()));
+  return c.json(await withHolidaysApplied(db, hrOf(c), now(), async () => saveHolidayRange(db, await readJson(c), hrOf(c), now())));
 });
 hrTimesheetRoutes.delete('/holidays/range', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await deleteHolidayRange(db, c.req.query('from') ?? '', c.req.query('to') ?? '', hrOf(c), now()));
+  return c.json(await withHolidaysApplied(db, hrOf(c), now(), () => deleteHolidayRange(db, c.req.query('from') ?? '', c.req.query('to') ?? '', hrOf(c), now())));
 });
 hrTimesheetRoutes.post('/holidays', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await saveHoliday(db, await readJson(c), hrOf(c), now()));
+  return c.json(await withHolidaysApplied(db, hrOf(c), now(), async () => saveHoliday(db, await readJson(c), hrOf(c), now())));
 });
 hrTimesheetRoutes.delete('/holidays/:day', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await deleteHoliday(db, c.req.param('day'), hrOf(c), now()));
+  return c.json(await withHolidaysApplied(db, hrOf(c), now(), () => deleteHoliday(db, c.req.param('day'), hrOf(c), now())));
 });
 
 hrTimesheetRoutes.get('/years/:year', async (c) => {

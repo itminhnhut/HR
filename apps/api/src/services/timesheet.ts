@@ -42,7 +42,8 @@ import {
   timesheetSnapshots,
 } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
-import { listHolidays, listRegions } from './timesheet-people.js';
+import { isUuid } from '../lib/request.js';
+import { actorOf, dayWords, listHolidays, listRegions } from './timesheet-people.js';
 
 /** Bảng chấm công (spec-cham-cong.md): reading, entering, closing. The arithmetic is in @careers/shared. */
 
@@ -50,13 +51,10 @@ type Period = typeof timesheetPeriods.$inferSelect;
 type Employee = typeof employees.$inferSelect;
 type Snapshot = typeof timesheetSnapshots.$inferSelect;
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 
-/** The log is read by HR: dates and numbers as they appear in the Excel sheet. */
-const dayWords = (iso: string) => iso.slice(0, 10).split('-').reverse().slice(0, 2).join('/');
+/** The log is read by HR: numbers as they appear in the Excel sheet. */
 const numberWords = (n: number) => String(n).replace('.', ',');
-const actor = (hr: HrMe) => hr.name || hr.email;
 const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
 
 /** Someone who became official by the last day counts as official for the whole period. */
@@ -81,7 +79,7 @@ async function ensurePeriod(db: Db, year: number, month: number): Promise<Period
 }
 
 async function findPeriod(db: Db, id: string): Promise<Period> {
-  if (!UUID.test(id)) throw notFound('Không tìm thấy kỳ công.');
+  if (!isUuid(id)) throw notFound('Không tìm thấy kỳ công.');
   const period = await db.query.timesheetPeriods.findFirst({ where: eq(timesheetPeriods.id, id) });
   if (!period) throw notFound('Không tìm thấy kỳ công.');
   return period;
@@ -214,6 +212,8 @@ const personOf = (p: Employee, lastDay: string) => ({
   leftOn: p.leftOn,
 });
 
+const datesOf = (live: { joinedOn: string | null; leftOn: string | null } | undefined) => (live ? { joinedOn: live.joinedOn, leftOn: live.leftOn } : {});
+
 const frozenPersonOf = (s: Snapshot) => ({
   employeeId: s.employeeId,
   code: s.code,
@@ -233,6 +233,10 @@ const frozenPersonOf = (s: Snapshot) => ({
 async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegionDto[], now: Date): Promise<TimesheetRowDto[]> {
   const frozen = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, period.id));
   const frozenIds = new Set(frozen.map((f) => f.employeeId));
+  // A last or first day HR learned later is a fact, not what the period said: it is why the period was reopened.
+  const liveDates = period.status === 'closed' || frozen.length === 0
+    ? []
+    : await db.select({ id: employees.id, joinedOn: employees.joinedOn, leftOn: employees.leftOn }).from(employees).where(inArray(employees.id, [...frozenIds]));
   const people = period.status === 'closed'
     ? []
     : (await db.select().from(employees).where(workingInRange(period.fromOn, period.toOn))).filter((p) => !frozenIds.has(p.id));
@@ -253,6 +257,7 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
   return sortedRows([
     ...frozen.map((f) => ({
       ...frozenPersonOf(f),
+      ...datesOf(liveDates.find((l) => l.id === f.employeeId)),
       leaveOpening: f.leaveOpening,
       norm: period.norms[f.regionId] ?? f.norm,
       frozenTotals: period.status === 'closed' ? f.totals : null,
@@ -424,10 +429,10 @@ export async function saveCells(db: Db, periodId: string, raw: unknown, hr: HrMe
       else {
         await tx
           .insert(timesheetEntries)
-          .values({ employeeId: cell.employeeId, day: cell.day, code, note, updatedBy: actor(hr), updatedAt: now })
+          .values({ employeeId: cell.employeeId, day: cell.day, code, note, updatedBy: actorOf(hr), updatedAt: now })
           .onConflictDoUpdate({
             target: [timesheetEntries.employeeId, timesheetEntries.day],
-            set: { code, note, updatedBy: actor(hr), updatedAt: now },
+            set: { code, note, updatedBy: actorOf(hr), updatedAt: now },
           });
       }
       const person = byId.get(cell.employeeId);
@@ -435,7 +440,7 @@ export async function saveCells(db: Db, periodId: string, raw: unknown, hr: HrMe
         code !== (before?.code ?? null) ? `${describeCode(before?.code)} → ${describeCode(code)}` : null,
         note !== (before?.note ?? null) ? `ghi chú: ${note ?? 'đã xoá'}` : null,
       ].filter(Boolean);
-      lines.push({ periodId, actor: actor(hr), action: 'Chấm công', detail: `${person?.code} ${person?.fullName}, ${dayWords(cell.day)}: ${changes.join('; ')}`, at: now });
+      lines.push({ periodId, actor: actorOf(hr), action: 'Chấm công', detail: `${person?.code} ${person?.fullName}, ${dayWords(cell.day)}: ${changes.join('; ')}`, at: now });
     }
     if (lines.length > 0) await tx.insert(timesheetLog).values(lines);
   });
@@ -452,7 +457,7 @@ export async function saveNorms(db: Db, periodId: string, raw: unknown, hr: HrMe
   if (!row) throw notFound('Không tìm thấy kỳ công.');
   const regions = await listRegions(db);
   const words = Object.entries(parsed.data.norms).map(([id, n]) => `${regions.find((r) => r.id === id)?.name ?? id}: ${numberWords(n)}`).join(', ');
-  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Sửa định mức', detail: words, at: now });
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Sửa định mức', detail: words, at: now });
   return toDto(db, row, now);
 }
 
@@ -465,13 +470,14 @@ export async function addAdjustment(db: Db, periodId: string, raw: unknown, hr: 
   const person = await db.query.employees.findFirst({ where: eq(employees.id, employeeId) });
   if (!person) throw notFound('Không tìm thấy nhân viên.');
   const key = monthKey(period.year, period.month);
-  await db.insert(timesheetAdjustments).values({ employeeId, amount, reason, fromPeriod: key, toPeriod: isRecurring ? null : key, createdBy: actor(hr) });
-  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Điều chỉnh công', detail: `${person.code} ${person.fullName}: ${numberWords(amount)} công, ${isRecurring ? 'mỗi kỳ' : 'chỉ kỳ này'} (${reason})`, at: now });
+  await db.insert(timesheetAdjustments).values({ employeeId, amount, reason, fromPeriod: key, toPeriod: isRecurring ? null : key, createdBy: actorOf(hr) });
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Điều chỉnh công', detail: `${person.code} ${person.fullName}: ${numberWords(amount)} công, ${isRecurring ? 'mỗi kỳ' : 'chỉ kỳ này'} (${reason})`, at: now });
   return toDto(db, period, now);
 }
 
 /** A recurring one stops from this period; closed periods before it keep theirs. */
 export async function removeAdjustment(db: Db, periodId: string, adjustmentId: string, hr: HrMe, now: Date): Promise<TimesheetDto> {
+  if (!isUuid(adjustmentId)) throw notFound('Không tìm thấy điều chỉnh công.');
   const period = await findPeriod(db, periodId);
   requireOpen(period);
   const row = await db.query.timesheetAdjustments.findFirst({ where: eq(timesheetAdjustments.id, adjustmentId) });
@@ -482,7 +488,7 @@ export async function removeAdjustment(db: Db, periodId: string, adjustmentId: s
     const previous = period.month === 1 ? monthKey(period.year - 1, 12) : monthKey(period.year, period.month - 1);
     await db.update(timesheetAdjustments).set({ toPeriod: previous }).where(eq(timesheetAdjustments.id, adjustmentId));
   }
-  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Bỏ điều chỉnh công', detail: `${numberWords(row.amount)} công (${row.reason})`, at: now });
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Bỏ điều chỉnh công', detail: `${numberWords(row.amount)} công (${row.reason})`, at: now });
   return toDto(db, period, now);
 }
 
@@ -490,7 +496,7 @@ export async function removeAdjustment(db: Db, periodId: string, adjustmentId: s
  * Periods close one after another, or a period's leave is lost. Before the first close, only a month HR has entered
  * something in counts: a look at an older month does not make it the start of the timesheet.
  */
-async function requireNextToClose(db: Db, period: Period): Promise<void> {
+async function requireNextToClose(db: Db, period: Period, now: Date): Promise<void> {
   const latest = await latestClosed(db);
   const blockedBy = (year: number, month: number) =>
     new HttpError(409, `Chốt kỳ tháng ${month}/${year} trước, vì phép của kỳ này tính tiếp từ kỳ đó.`, {}, 'earlier_open');
@@ -505,6 +511,16 @@ async function requireNextToClose(db: Db, period: Period): Promise<void> {
     const owner = periodMonthOf(first.day);
     throw blockedBy(owner.year, owner.month);
   }
+  await requireInUse(db, period, now);
+}
+
+/** A first close on an old month nobody used would pay full automatic attendance and force every month after it. */
+async function requireInUse(db: Db, period: Period, now: Date) {
+  const { year, month } = periodMonthOf(todayInVietnam(now));
+  const previous = month === 1 ? { year: year - 1, month: 12 } : { year, month: month - 1 };
+  if (!isBefore(period, previous)) return;
+  const [entered] = await db.select({ day: timesheetEntries.day }).from(timesheetEntries).where(and(gte(timesheetEntries.day, period.fromOn), lte(timesheetEntries.day, period.toOn))).limit(1);
+  if (!entered) throw new HttpError(409, `Tháng ${period.month}/${period.year} chưa có dữ liệu. Chốt từ tháng đầu tiên HR dùng.`, {}, 'empty_month');
 }
 
 const COMPARED: [key: 'paid' | 'overtime' | 'leaveClosing', label: string][] = [['paid', 'Công hưởng lương'], ['overtime', 'OT'], ['leaveClosing', 'Phép cuối kỳ']];
@@ -524,7 +540,7 @@ function closeDifferences(before: readonly Snapshot[], after: readonly { employe
 export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date): Promise<TimesheetDto> {
   const period = await findPeriod(db, periodId);
   requireOpen(period);
-  await requireNextToClose(db, period);
+  await requireNextToClose(db, period, now);
   if (todayInVietnam(now) < period.toOn) throw new HttpError(409, `Kỳ chưa hết, chốt được từ ngày ${dayWords(period.toOn)}.`, {}, 'period_running');
   const dto = await toDto(db, period, now);
   const holidays = new Set(dto.holidays.map((h) => h.day));
@@ -547,9 +563,9 @@ export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date)
   const updated = await db.transaction(async (tx) => {
     await tx.delete(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
     if (snapshots.length > 0) await tx.insert(timesheetSnapshots).values(snapshots);
-    const [row] = await tx.update(timesheetPeriods).set({ status: 'closed', closedAt: now, closedBy: actor(hr), frozen: { holidays: dto.holidays, regions: dto.regions } }).where(eq(timesheetPeriods.id, periodId)).returning();
-    if (differences) await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Chênh lệch khi chốt lại', detail: differences, at: now });
-    await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Chốt kỳ', detail: `Tháng ${period.month}/${period.year}`, at: now });
+    const [row] = await tx.update(timesheetPeriods).set({ status: 'closed', closedAt: now, closedBy: actorOf(hr), frozen: { holidays: dto.holidays, regions: dto.regions } }).where(eq(timesheetPeriods.id, periodId)).returning();
+    if (differences) await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Chênh lệch khi chốt lại', detail: differences, at: now });
+    await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Chốt kỳ', detail: `Tháng ${period.month}/${period.year}`, at: now });
     return row;
   });
   if (!updated) throw notFound('Không tìm thấy kỳ công.');
@@ -566,12 +582,15 @@ export async function reopenPeriod(db: Db, periodId: string, raw: unknown, hr: H
   if (latest?.id !== period.id) throw new HttpError(409, 'Chỉ mở lại được kỳ chốt gần nhất. Sai ở kỳ cũ thì điều chỉnh ở kỳ hiện tại.', {}, 'not_latest');
   const updated = await db.transaction(async (tx) => {
     const [row] = await tx.update(timesheetPeriods).set({ status: 'open', closedAt: null, closedBy: null, frozen: null }).where(eq(timesheetPeriods.id, periodId)).returning();
-    await tx.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Mở lại kỳ', detail: parsed.data.reason, at: now });
+    await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Mở lại kỳ', detail: parsed.data.reason, at: now });
     return row;
   });
   if (!updated) throw notFound('Không tìm thấy kỳ công.');
   return toDto(db, updated, now);
 }
+
+/** What a change of balance stands on: someone on probation has no balance to take from, whatever was typed at the start. */
+const balanceBase = (row: Pick<TimesheetRowDto, 'employment' | 'leaveOpening'>) => (row.employment === 'probation' ? 0 : row.leaveOpening);
 
 export async function addLeaveChange(db: Db, periodId: string, raw: unknown, hr: HrMe, now: Date): Promise<TimesheetDto> {
   const period = await findPeriod(db, periodId);
@@ -583,19 +602,25 @@ export async function addLeaveChange(db: Db, periodId: string, raw: unknown, hr:
   const row = dto.rows.find((r) => r.employeeId === employeeId);
   if (!row) throw notFound('Không tìm thấy nhân viên trong kỳ này.');
   const already = row.leaveChanges.reduce((sum, c) => sum + c.amount, 0);
-  if (row.leaveOpening + already + amount < 0) throw invalid('Không trừ quá số phép đang có.', { amount: 'Không trừ quá số phép đang có.' });
-  await db.insert(timesheetLeaveChanges).values({ periodId, employeeId, amount, reason, createdBy: actor(hr) });
-  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Điều chỉnh phép', detail: `${row.code} ${row.fullName}: ${numberWords(amount)} ngày (${reason})`, at: now });
+  if (balanceBase(row) + already + amount < 0) throw invalid('Không trừ quá số phép đang có.', { amount: 'Không trừ quá số phép đang có.' });
+  await db.insert(timesheetLeaveChanges).values({ periodId, employeeId, amount, reason, createdBy: actorOf(hr) });
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Điều chỉnh phép', detail: `${row.code} ${row.fullName}: ${numberWords(amount)} ngày (${reason})`, at: now });
   return toDto(db, period, now);
 }
 
 export async function removeLeaveChange(db: Db, periodId: string, changeId: string, hr: HrMe, now: Date): Promise<TimesheetDto> {
   const period = await findPeriod(db, periodId);
   requireOpen(period);
-  if (!UUID.test(changeId)) throw notFound('Không tìm thấy điều chỉnh phép.');
-  const [row] = await db.delete(timesheetLeaveChanges).where(and(eq(timesheetLeaveChanges.id, changeId), eq(timesheetLeaveChanges.periodId, periodId))).returning();
+  if (!isUuid(changeId)) throw notFound('Không tìm thấy điều chỉnh phép.');
+  const dto = await toDto(db, period, now);
+  const person = dto.rows.find((r) => r.leaveChanges.some((c) => c.id === changeId));
+  const change = person?.leaveChanges.find((c) => c.id === changeId);
+  if (!person || !change) throw notFound('Không tìm thấy điều chỉnh phép.');
+  const left = person.leaveChanges.reduce((sum, c) => sum + c.amount, 0) - change.amount;
+  if (balanceBase(person) + left < 0) throw invalid('Bỏ điều chỉnh này thì phép bị âm. Bỏ khoản trừ trước.');
+  const [row] = await db.delete(timesheetLeaveChanges).where(eq(timesheetLeaveChanges.id, changeId)).returning();
   if (!row) throw notFound('Không tìm thấy điều chỉnh phép.');
-  await db.insert(timesheetLog).values({ periodId, actor: actor(hr), action: 'Bỏ điều chỉnh phép', detail: `${numberWords(row.amount)} ngày (${row.reason})`, at: now });
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Bỏ điều chỉnh phép', detail: `${numberWords(row.amount)} ngày (${row.reason})`, at: now });
   return toDto(db, period, now);
 }
 

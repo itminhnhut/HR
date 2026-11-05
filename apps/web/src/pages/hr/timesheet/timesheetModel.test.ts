@@ -285,3 +285,17 @@ describe('leave beyond the balance while the period is still running', () => {
     expect(findProblems(dto, days, gridRows(dto, days)).some((p) => p.kind === 'leave')).toBe(true);
   });
 });
+
+describe('leave over a day already earned', () => {
+  it('RV-11: should raise it at once, since no day still ahead can cover it', () => {
+    // Arrange: 2 days of leave, balance 0, and 14 days already counted by the 20th
+    const dto = { ...sheet([person({ leaveOpening: 0, cells: { '2026-10-26': { entered: 'P', note: null }, '2026-10-27': { entered: 'P', note: null } } })]), today: '2026-11-20' };
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+
+    // Assert
+    expect(rows[0]?.phepVuot).toBe(1);
+  });
+});

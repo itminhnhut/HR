@@ -1,9 +1,4 @@
-import { isWeekend } from '@careers/shared';
-
-const nextDay = (day: string) => {
-  const [y = 2000, m = 1, d = 1] = day.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-};
+import { isWeekend, nextDay } from '@careers/shared';
 
 /** The last of `count` weekdays from a day: what the law's 3 days come to on the calendar. */
 export function lastOfWeekdays(from: string, count: number): string {

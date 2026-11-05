@@ -7,6 +7,7 @@ import {
   holidaysInEffect,
   isWeekend,
   isWorkingOn,
+  nextDay,
   type AbsenceKindDto,
   type AbsenceRowDto,
   type ApproverDto,
@@ -14,10 +15,11 @@ import {
   type HrMe,
   type TimesheetAbsenceDto,
 } from '@careers/shared';
-import { and, asc, desc, eq, gte, lte, ne } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lte, ne, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { employees, timesheetAbsenceKinds, timesheetAbsences, timesheetApprovers, timesheetEntries, timesheetPeriods } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
+import { isUuid } from '../lib/request.js';
 import { actorOf, dayWords, listHolidays, logChange } from './timesheet-people.js';
 
 /**
@@ -29,15 +31,9 @@ type Absence = typeof timesheetAbsences.$inferSelect;
 type Person = typeof employees.$inferSelect;
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Being late is a fact, not a request: it goes on the sheet at once. */
 const NEEDS_NO_APPROVAL: AttendanceCode = 'M';
 const HALF_OF: Partial<Record<AttendanceCode, AttendanceCode>> = { P: 'P/2', KL: 'KL/2' };
-
-const nextDay = (day: string) => {
-  const [y = 2000, m = 1, d = 1] = day.split('-').map(Number);
-  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-};
 
 const toDto = (r: Absence): TimesheetAbsenceDto => ({
   id: r.id,
@@ -92,7 +88,7 @@ export async function addAbsenceKind(db: Db, raw: unknown, hr: HrMe, now: Date):
 }
 
 export async function updateAbsenceKind(db: Db, key: string, raw: unknown, hr: HrMe, now: Date): Promise<AbsenceKindDto[]> {
-  if (!UUID.test(key)) throw notFound('Không tìm thấy loại nghỉ.');
+  if (!isUuid(key)) throw notFound('Không tìm thấy loại nghỉ.');
   const parsed = absenceKindSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại loại nghỉ.', fieldErrors(parsed.error));
   const known = await listAbsenceKinds(db);
@@ -108,7 +104,7 @@ export async function updateAbsenceKind(db: Db, key: string, raw: unknown, hr: H
 
 /** Absences already written keep their name and way of counting, so removing a kind changes nothing behind it. */
 export async function removeAbsenceKind(db: Db, key: string, hr: HrMe, now: Date): Promise<AbsenceKindDto[]> {
-  if (!UUID.test(key)) throw notFound('Không tìm thấy loại nghỉ.');
+  if (!isUuid(key)) throw notFound('Không tìm thấy loại nghỉ.');
   const [row] = await db.delete(timesheetAbsenceKinds).where(eq(timesheetAbsenceKinds.id, key)).returning();
   if (!row) throw notFound('Không tìm thấy loại nghỉ.');
   await logChange(db, hr, 'Xoá loại nghỉ', row.name, now);
@@ -135,7 +131,7 @@ export async function addApprover(db: Db, raw: unknown): Promise<ApproverDto[]> 
 
 /** Lines already approved keep the name they were approved under. */
 export async function removeApprover(db: Db, id: string): Promise<ApproverDto[]> {
-  if (!UUID.test(id)) throw notFound('Không tìm thấy người duyệt.');
+  if (!isUuid(id)) throw notFound('Không tìm thấy người duyệt.');
   const [row] = await db.delete(timesheetApprovers).where(eq(timesheetApprovers.id, id)).returning();
   if (!row) throw notFound('Không tìm thấy người duyệt.');
   return listApprovers(db);
@@ -172,6 +168,15 @@ async function daysToFill(db: Db, person: Person, from: string, to: string, runs
   return days;
 }
 
+/** A day HR marked by hand stays HR's: an absence fills around it. What this absence wrote itself is not in the way. */
+async function daysFreeOfHandEntries(db: Db, employeeId: string, days: readonly string[], current?: Absence): Promise<string[]> {
+  if (days.length === 0) return [];
+  const taken = await db.select({ day: timesheetEntries.day, code: timesheetEntries.code }).from(timesheetEntries).where(and(eq(timesheetEntries.employeeId, employeeId), inArray(timesheetEntries.day, [...days])));
+  const isOwn = (e: { day: string; code: string | null }) => !!current && e.code === current.code && e.day >= current.fromOn && e.day <= current.toOn;
+  const hand = new Set(taken.filter((e) => e.code !== null && !isOwn(e)).map((e) => e.day));
+  return days.filter((d) => !hand.has(d));
+}
+
 /** What the input comes to: the reason's name and code, half a day applied, and the days it fills. */
 async function resolve(db: Db, person: Person, raw: unknown, current?: Absence) {
   const parsed = absenceInputSchema.safeParse(raw);
@@ -186,8 +191,8 @@ async function resolve(db: Db, person: Person, raw: unknown, current?: Absence) 
   const halfCode = HALF_OF[baseCode];
   if (input.isHalf && !halfCode) throw invalid('Loại này không nghỉ nửa ngày được.', { reason: 'Loại này không nghỉ nửa ngày được.' });
   const code = input.isHalf && halfCode ? halfCode : baseCode;
-  const fill = await daysToFill(db, person, input.from, input.to, code === 'TS');
-  if (fill.length === 0) throw invalid('Khoảng này không có ngày làm việc nào.', { to: 'Không có ngày làm việc nào.' });
+  const fill = await daysFreeOfHandEntries(db, person.id, await daysToFill(db, person, input.from, input.to, code === 'TS'), current);
+  if (fill.length === 0) throw invalid('Khoảng này không có ngày làm việc nào còn trống.', { to: 'Không có ngày làm việc nào còn trống.' });
   return { input, label, code, fill, days: input.isHalf ? 0.5 : fill.length, cellNote: input.note || label, approvedBy: input.approvedBy || null };
 }
 
@@ -195,19 +200,25 @@ type Resolved = Awaited<ReturnType<typeof resolve>>;
 
 async function writeCells(tx: Tx, employeeId: string, r: Resolved, actor: string, now: Date) {
   if (!r.approvedBy && r.code !== NEEDS_NO_APPROVAL) return;
-  const set = { code: r.code, note: r.cellNote, updatedBy: actor, updatedAt: now };
+  // A note already on a day stays with that day.
+  const noted = await tx.select({ day: timesheetEntries.day, note: timesheetEntries.note }).from(timesheetEntries).where(and(eq(timesheetEntries.employeeId, employeeId), inArray(timesheetEntries.day, r.fill)));
+  const noteOn = new Map(noted.map((n) => [n.day, n.note]));
   await tx
     .insert(timesheetEntries)
-    .values(r.fill.map((day) => ({ employeeId, day, ...set })))
-    .onConflictDoUpdate({ target: [timesheetEntries.employeeId, timesheetEntries.day], set });
+    .values(r.fill.map((day) => ({ employeeId, day, code: r.code, note: noteOn.get(day) ?? r.cellNote, updatedBy: actor, updatedAt: now })))
+    .onConflictDoUpdate({
+      target: [timesheetEntries.employeeId, timesheetEntries.day],
+      set: { code: sql`excluded.code`, note: sql`excluded.note`, updatedBy: actor, updatedAt: now },
+    });
 }
 
-/** Only the days still saying what the absence wrote: a day HR changed by hand stays. */
+/** Only the days still saying what the absence wrote: a day HR changed by hand stays, and so does a note of HR's own. */
 async function eraseCells(tx: Tx, absence: Absence) {
   if (!absence.approvedBy && absence.code !== NEEDS_NO_APPROVAL) return;
-  await tx
-    .delete(timesheetEntries)
-    .where(and(eq(timesheetEntries.employeeId, absence.employeeId), gte(timesheetEntries.day, absence.fromOn), lte(timesheetEntries.day, absence.toOn), eq(timesheetEntries.code, absence.code)));
+  const own = and(eq(timesheetEntries.employeeId, absence.employeeId), gte(timesheetEntries.day, absence.fromOn), lte(timesheetEntries.day, absence.toOn), eq(timesheetEntries.code, absence.code));
+  const written = absence.note || absence.label;
+  await tx.delete(timesheetEntries).where(and(own, eq(timesheetEntries.note, written)));
+  await tx.update(timesheetEntries).set({ code: null }).where(own);
 }
 
 const fieldsOf = (r: Resolved) => ({
@@ -238,13 +249,13 @@ function changesBetween(before: Absence, after: ReturnType<typeof fieldsOf>): st
 // Writing
 
 async function findPerson(db: Db, id: string): Promise<Person> {
-  const person = UUID.test(id) ? await db.query.employees.findFirst({ where: eq(employees.id, id) }) : undefined;
+  const person = isUuid(id) ? await db.query.employees.findFirst({ where: eq(employees.id, id) }) : undefined;
   if (!person) throw notFound('Không tìm thấy nhân viên.');
   return person;
 }
 
 async function findAbsence(db: Db, employeeId: string, id: string): Promise<Absence> {
-  const absence = UUID.test(id) ? await db.query.timesheetAbsences.findFirst({ where: and(eq(timesheetAbsences.id, id), eq(timesheetAbsences.employeeId, employeeId)) }) : undefined;
+  const absence = isUuid(id) ? await db.query.timesheetAbsences.findFirst({ where: and(eq(timesheetAbsences.id, id), eq(timesheetAbsences.employeeId, employeeId)) }) : undefined;
   if (!absence) throw notFound('Không tìm thấy đăng ký nghỉ.');
   return absence;
 }
@@ -295,4 +306,42 @@ export async function removeAbsence(db: Db, employeeId: string, absenceId: strin
   });
   await logChange(db, hr, 'Huỷ đăng ký nghỉ', `${absence.label}, ${rangeWords(absence.fromOn, absence.toOn)}`, now, { from: absence.fromOn, to: absence.toOn });
   return listAbsences(db, employeeId);
+}
+
+// Holidays
+
+/** What a change of holidays means for absences: a day that became a holiday is no longer charged, and the other way round. */
+export async function withHolidaysApplied<T>(db: Db, hr: HrMe, now: Date, change: () => Promise<T>): Promise<T> {
+  const before = new Set(holidaysInEffect(await listHolidays(db)).map((h) => h.day));
+  const result = await change();
+  const after = new Set(holidaysInEffect(await listHolidays(db)).map((h) => h.day));
+  const added = [...after].filter((d) => !before.has(d));
+  const removed = [...before].filter((d) => !after.has(d));
+  for (const day of [...added, ...removed]) await applyHolidayChange(db, day, after.has(day), hr, now);
+  return result;
+}
+
+async function applyHolidayChange(db: Db, day: string, isHoliday: boolean, hr: HrMe, now: Date) {
+  const closed = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.status, 'closed'), lte(timesheetPeriods.fromOn, day), gte(timesheetPeriods.toOn, day)) });
+  if (closed) return;
+  const covering = await db.select().from(timesheetAbsences).where(and(lte(timesheetAbsences.fromOn, day), gte(timesheetAbsences.toOn, day)));
+  for (const absence of covering.filter((a) => a.code !== 'TS' && a.code !== NEEDS_NO_APPROVAL)) {
+    const person = await findPerson(db, absence.employeeId);
+    if (isWeekend(day) || !isWorkingOn(person, day)) continue;
+    const isApproved = !!absence.approvedBy;
+    const moved = await db.transaction(async (tx) => {
+      const where = and(eq(timesheetEntries.employeeId, absence.employeeId), eq(timesheetEntries.day, day));
+      if (isHoliday) return isApproved ? (await tx.delete(timesheetEntries).where(and(where, eq(timesheetEntries.code, absence.code))).returning()).length > 0 : true;
+      if (!isApproved) return true;
+      const [existing] = await tx.select().from(timesheetEntries).where(where);
+      if (existing?.code) return false;
+      await tx.insert(timesheetEntries).values({ employeeId: absence.employeeId, day, code: absence.code, note: absence.note || absence.label, updatedBy: actorOf(hr), updatedAt: now })
+        .onConflictDoUpdate({ target: [timesheetEntries.employeeId, timesheetEntries.day], set: { code: absence.code, updatedBy: actorOf(hr), updatedAt: now } });
+      return true;
+    });
+    if (!moved) continue;
+    const days = Math.max(0, absence.days + (isHoliday ? -1 : 1) * (absence.code.endsWith('/2') ? 0.5 : 1));
+    await db.update(timesheetAbsences).set({ days }).where(eq(timesheetAbsences.id, absence.id));
+    await logChange(db, hr, 'Sửa đăng ký nghỉ', `${person.code} ${person.fullName}: ${absence.label}, ${dayWords(day)} ${isHoliday ? 'thành ngày lễ, không tính nghỉ' : 'không còn là ngày lễ, tính nghỉ lại'}`, now, { from: day, to: day });
+  }
 }

@@ -14,8 +14,9 @@ import {
 } from '@careers/shared';
 import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
-import { employees, timesheetEntries, timesheetHolidays, timesheetLog, timesheetPeriods, timesheetRegions, timesheetSnapshots } from '../db/schema.js';
+import { employees, timesheetAbsences, timesheetAdjustments, timesheetEntries, timesheetHolidays, timesheetLeaveChanges, timesheetLog, timesheetPeriods, timesheetRegions, timesheetSnapshots } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
+import { isUuid } from '../lib/request.js';
 
 /** The people, regions and holidays a timesheet is made from (spec-cham-cong.md). */
 
@@ -104,13 +105,17 @@ async function moveNorms(db: Db, region: typeof timesheetRegions.$inferSelect, f
 }
 
 export async function updateRegion(db: Db, id: string, raw: unknown, hr: HrMe, now: Date): Promise<TimesheetRegionDto[]> {
+  if (!isUuid(id)) throw notFound('Không tìm thấy khu vực.');
   const parsed = regionInputSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại khu vực.', fieldErrors(parsed.error));
   const { saturdaysFrom, ...fields } = parsed.data;
   try {
     const current = await db.query.timesheetRegions.findFirst({ where: eq(timesheetRegions.id, id) });
     if (!current) throw notFound('Không tìm thấy khu vực.');
-    if (saturdaysFrom) {
+    if (saturdaysFrom && fields.saturdays === saturdaysFor(current, saturdaysFrom)) {
+      // Only a name or a colour changed: nothing planned for later months may move.
+      await db.update(timesheetRegions).set({ name: fields.name, tone: fields.tone }).where(eq(timesheetRegions.id, id));
+    } else if (saturdaysFrom) {
       await moveNorms(db, current, saturdaysFrom, fields.saturdays);
       const saturdayChanges = [...current.saturdayChanges.filter((c) => c.from < saturdaysFrom), { from: saturdaysFrom, saturdays: fields.saturdays }];
       await db.update(timesheetRegions).set({ name: fields.name, tone: fields.tone, saturdayChanges }).where(eq(timesheetRegions.id, id));
@@ -127,6 +132,7 @@ export async function updateRegion(db: Db, id: string, raw: unknown, hr: HrMe, n
 
 /** A region somebody belongs to cannot go: their old periods still name it. */
 export async function deleteRegion(db: Db, id: string, hr: HrMe, now: Date): Promise<TimesheetRegionDto[]> {
+  if (!isUuid(id)) throw notFound('Không tìm thấy khu vực.');
   const inUse = await db.query.employees.findFirst({ where: eq(employees.regionId, id) });
   if (inUse) throw new HttpError(409, 'Khu vực này đang có nhân viên, không xoá được.');
   const [row] = await db.delete(timesheetRegions).where(eq(timesheetRegions.id, id)).returning();
@@ -192,19 +198,23 @@ async function leavingWarning(db: Db, employeeId: string, leftOn: string | null)
 }
 
 export async function deleteEmployee(db: Db, id: string, hr: HrMe, now: Date): Promise<EmployeeDto[]> {
-  const person = await db.query.employees.findFirst({ where: eq(employees.id, id) });
+  const person = isUuid(id) ? await db.query.employees.findFirst({ where: eq(employees.id, id) }) : undefined;
   if (!person) throw notFound('Không tìm thấy nhân viên.');
-  const [entered, closed] = await Promise.all([
+  const records = await Promise.all([
     db.query.timesheetEntries.findFirst({ where: eq(timesheetEntries.employeeId, id) }),
     db.query.timesheetSnapshots.findFirst({ where: eq(timesheetSnapshots.employeeId, id) }),
+    db.query.timesheetAdjustments.findFirst({ where: eq(timesheetAdjustments.employeeId, id) }),
+    db.query.timesheetAbsences.findFirst({ where: eq(timesheetAbsences.employeeId, id) }),
+    db.query.timesheetLeaveChanges.findFirst({ where: eq(timesheetLeaveChanges.employeeId, id) }),
   ]);
-  if (entered || closed) throw new HttpError(409, 'Người này đã có ngày công. Dùng Ngày nghỉ việc thay vì xoá.', {}, 'has_records');
+  if (records.some(Boolean)) throw new HttpError(409, 'Người này đã có dữ liệu chấm công. Dùng Ngày nghỉ việc thay vì xoá.', {}, 'has_records');
   await db.delete(employees).where(eq(employees.id, id));
   await logChange(db, hr, 'Xoá nhân viên', `${person.code} ${person.fullName}`, now);
   return listEmployees(db);
 }
 
 export async function updateEmployee(db: Db, id: string, raw: unknown, hr: HrMe, now: Date): Promise<EmployeeDto> {
+  if (!isUuid(id)) throw notFound('Không tìm thấy nhân viên.');
   const input = await parseEmployee(db, raw);
   const current = await db.query.employees.findFirst({ where: eq(employees.id, id) });
   const hasClosed = await db.query.timesheetSnapshots.findFirst({ where: eq(timesheetSnapshots.employeeId, id) });

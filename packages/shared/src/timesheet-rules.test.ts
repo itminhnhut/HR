@@ -405,3 +405,13 @@ describe('the reasons HR can choose', () => {
     expect(of('sick')).toMatchObject({ code: 'OM' });
   });
 });
+
+describe('a balance that has gone below nothing', () => {
+  it('RV-10: should pay no leave, and take no day worked, rather than count negative leave', () => {
+    // Act
+    const totals = timesheetTotals({ codes: ['1', '1', 'P'], norm: 22, leaveOpening: 0, employment: 'probation', leaveChange: -2 });
+
+    // Assert
+    expect(totals).toMatchObject({ actual: 2, paid: 2, leaveClosing: 0, leaveOverdrawn: 1 });
+  });
+});

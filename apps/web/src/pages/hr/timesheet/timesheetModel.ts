@@ -64,14 +64,12 @@ const COUNTS_WHOLE: readonly (AttendanceCode | null)[] = ['1', 'M', 'P', 'P/2', 
  */
 function mayStillCoverLeave(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[], totals: TimesheetTotals): boolean {
   if (dto.today >= dto.to || row.employment === 'probation' || totals.leaveOverdrawn > dto.rule.perPeriod) return false;
-  const reachable = days.reduce((sum, d) => {
-    const code = codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null);
-    if (code === 'KL/2') return sum + 0.5;
-    if (COUNTS_WHOLE.includes(code)) return sum + 1;
-    const isStillAhead = code === null && d.iso > dto.today && !d.isWeekend && (!row.joinedOn || d.iso >= row.joinedOn) && (!row.leftOn || d.iso <= row.leftOn);
-    return isStillAhead ? sum + 1 : sum;
-  }, 0);
-  return reachable >= dto.rule.threshold;
+  const codeOf = (d: DayColumn) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null);
+  const counted = days.reduce((sum, d) => sum + (codeOf(d) === 'KL/2' ? 0.5 : COUNTS_WHOLE.includes(codeOf(d)) ? 1 : 0), 0);
+  // Already earned: the balance includes it and the leave is still over, so no day ahead can help.
+  if (counted >= dto.rule.threshold) return false;
+  const ahead = days.filter((d) => codeOf(d) === null && d.iso > dto.today && !d.isWeekend && (!row.joinedOn || d.iso >= row.joinedOn) && (!row.leftOn || d.iso <= row.leftOn)).length;
+  return counted + ahead >= dto.rule.threshold;
 }
 
 export function rowTotals(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]): TimesheetTotals {
