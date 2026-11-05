@@ -1,14 +1,29 @@
 import { todayInVietnam } from '@careers/shared';
-import { useRef, useState, type CSSProperties, type RefObject } from 'react';
+import { useId, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import { Dialog } from '../../../ui/Dialog';
+import { FieldError } from '../../../ui/Field';
 import { Icon } from '../../../ui/icons';
 import { InterviewPicker } from './InterviewPicker';
 
+/** What the picker offers, and what a screen reader calls its hour and minute. */
+export interface TimeLimits {
+  hours: readonly string[];
+  /** The last slot of the day. */
+  lastTime: string;
+  /** How many days ahead can be chosen. */
+  maxDays: number;
+  timeLabel: string;
+}
+
 /** 07 … 20, each with the quarters: 20:00 is the last slot. */
-const HOURS = Array.from({ length: 14 }, (_, i) => String(7 + i).padStart(2, '0'));
+const INTERVIEW_LIMITS: TimeLimits = {
+  hours: Array.from({ length: 14 }, (_, i) => String(7 + i).padStart(2, '0')),
+  lastTime: '20:00',
+  maxDays: 90,
+  timeLabel: 'Giờ phỏng vấn',
+};
 const MINUTES = ['00', '15', '30', '45'];
 const DEFAULT_TIME = '09:00';
-const LAST_TIME = '20:00';
 
 const VN = 'Asia/Ho_Chi_Minh';
 const dayOf = (iso: string) => new Intl.DateTimeFormat('en-CA', { timeZone: VN }).format(new Date(iso));
@@ -52,6 +67,7 @@ function FieldButton({
   disabled,
   isOpen,
   fieldName,
+  errorId,
   onClick,
 }: {
   ref: RefObject<HTMLButtonElement | null>;
@@ -60,6 +76,8 @@ function FieldButton({
   disabled?: boolean;
   isOpen: boolean;
   fieldName: string;
+  /** The message under the field, when there is one. */
+  errorId?: string;
   onClick: () => void;
 }) {
   return (
@@ -70,8 +88,10 @@ function FieldButton({
       aria-haspopup="dialog"
       aria-expanded={isOpen}
       aria-label={`${fieldName}: ${text}`}
+      aria-invalid={errorId ? true : undefined}
+      aria-describedby={errorId}
       onClick={onClick}
-      className={`field-focus flex min-h-11 w-full items-center gap-2.5 rounded-control border border-field bg-white px-3.5 text-left text-sm disabled:opacity-60 ${hasValue ? 'font-medium text-navy' : 'text-placeholder'}`}
+      className={`field-focus flex min-h-11 w-full items-center gap-2.5 rounded-control border bg-white px-3.5 text-left text-sm disabled:opacity-60 ${errorId ? 'border-error' : 'border-field'} ${hasValue ? 'font-medium text-navy' : 'text-placeholder'}`}
     >
       <Icon name="calendar" size={16} className="shrink-0 text-slate" />
       <span className="min-w-0 flex-1 truncate">{text}</span>
@@ -80,10 +100,9 @@ function FieldButton({
   );
 }
 
-const isOnBoard = (time: string) => time <= LAST_TIME;
-
 /** The picker's choices, kept apart from the saved value until "Áp dụng". */
-function useDraft(value: string | null) {
+function useDraft(value: string | null, { hours, lastTime }: TimeLimits) {
+  const isOnBoard = (time: string) => time <= lastTime;
   const [day, setDay] = useState(value ? dayOf(value) : null);
   const [time, setTime] = useState(value ? timeOf(value) : DEFAULT_TIME);
   const today = todayInVietnam();
@@ -93,7 +112,7 @@ function useDraft(value: string | null) {
     const t = `${hour}:${minute}`;
     return isOnBoard(t) && (day !== today || t > nowTime);
   };
-  const nextOpen = () => HOURS.flatMap((h) => MINUTES.map((m) => `${h}:${m}`)).find((t) => isOnBoard(t) && t > nowTime);
+  const nextOpen = () => hours.flatMap((h) => MINUTES.map((m) => `${h}:${m}`)).find((t) => isOnBoard(t) && t > nowTime);
   const reset = () => {
     setDay(value ? dayOf(value) : null);
     setTime(value ? timeOf(value) : DEFAULT_TIME);
@@ -133,6 +152,7 @@ function PickerDialog({
   isOpen,
   place,
   draft,
+  limits,
   canClear,
   dialogLabel,
   finish,
@@ -140,6 +160,7 @@ function PickerDialog({
   isOpen: boolean;
   place: CSSProperties | undefined;
   draft: ReturnType<typeof useDraft>;
+  limits: TimeLimits;
   canClear: boolean;
   dialogLabel: string;
   finish: (next?: string | null) => void;
@@ -156,8 +177,10 @@ function PickerDialog({
         day={draft.day}
         hour={draft.hour}
         minute={draft.minute}
-        hours={HOURS}
+        hours={limits.hours}
         minutes={MINUTES}
+        maxDays={limits.maxDays}
+        timeLabel={limits.timeLabel}
         isTimeOpen={draft.isTimeOpen}
         summary={draft.iso ? fieldLabel(draft.iso) : ''}
         canApply={draft.canApply}
@@ -172,16 +195,30 @@ function PickerDialog({
   );
 }
 
-/** One field for the interview's day and time, Vietnam time; it opens the picker. Optional. */
-export function InterviewField({
-  value,
-  disabled,
-  showTitle = true,
-  fieldName = 'Giờ phỏng vấn',
-  placeholder = 'Chọn ngày giờ phỏng vấn',
-  isRequired = false,
-  onChange,
-}: {
+/** Where the picker opens, whether it is open, and its draft. */
+function usePicker(value: string | null, limits: TimeLimits, onChange: (iso: string | null) => void) {
+  const field = useRef<HTMLButtonElement>(null);
+  const [place, setPlace] = useState<CSSProperties | undefined>();
+  const [isOpen, setIsOpen] = useState(false);
+  const draft = useDraft(value, limits);
+  return {
+    field,
+    place,
+    isOpen,
+    draft,
+    open: () => {
+      draft.reset();
+      setPlace(pickerPlace(field.current));
+      setIsOpen(true);
+    },
+    finish: (next?: string | null) => {
+      setIsOpen(false);
+      if (next !== undefined) onChange(next);
+    },
+  };
+}
+
+interface InterviewFieldProps {
   value: string | null;
   disabled?: boolean;
   /** Off where the surrounding form already labels the field. */
@@ -190,41 +227,50 @@ export function InterviewField({
   placeholder?: string;
   /** No "Xoá giờ hẹn": the form cannot do without a time. */
   isRequired?: boolean;
+  /** For a moment that is not an interview. */
+  limits?: TimeLimits;
+  /** Why the value was refused. */
+  error?: string;
   onChange: (iso: string | null) => void;
-}) {
-  const field = useRef<HTMLButtonElement>(null);
-  const [place, setPlace] = useState<CSSProperties | undefined>();
-  const [isOpen, setIsOpen] = useState(false);
-  const draft = useDraft(value);
-  const finish = (next?: string | null) => {
-    setIsOpen(false);
-    if (next !== undefined) onChange(next);
-  };
+}
 
+/** One field for the interview's day and time, Vietnam time; it opens the picker. Optional. */
+export function InterviewField({
+  value,
+  disabled,
+  showTitle = true,
+  fieldName = 'Giờ phỏng vấn',
+  placeholder = 'Chọn ngày giờ phỏng vấn',
+  isRequired = false,
+  limits = INTERVIEW_LIMITS,
+  error,
+  onChange,
+}: InterviewFieldProps) {
+  const errorId = useId();
+  const picker = usePicker(value, limits, onChange);
   return (
     <div className="flex flex-col gap-1.5">
       {showTitle && <span className="text-sm font-medium text-navy">{fieldName}</span>}
       <FieldButton
-        ref={field}
+        ref={picker.field}
         text={value ? fieldLabel(value) : placeholder}
         hasValue={!!value}
         disabled={disabled}
-        isOpen={isOpen}
+        isOpen={picker.isOpen}
         fieldName={fieldName}
-        onClick={() => {
-          draft.reset();
-          setPlace(pickerPlace(field.current));
-          setIsOpen(true);
-        }}
+        errorId={error ? errorId : undefined}
+        onClick={picker.open}
       />
       <PickerDialog
-        isOpen={isOpen}
-        place={place}
-        draft={draft}
+        isOpen={picker.isOpen}
+        place={picker.place}
+        draft={picker.draft}
+        limits={limits}
         canClear={!!value && !isRequired}
         dialogLabel={placeholder}
-        finish={finish}
+        finish={picker.finish}
       />
+      <FieldError id={errorId}>{error}</FieldError>
     </div>
   );
 }

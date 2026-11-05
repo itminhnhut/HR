@@ -193,7 +193,7 @@ describe('HR news list', () => {
     await user.click(within(table).getByRole('checkbox', { name: 'Chọn bài Nháp thử A' }));
     await user.click(within(table).getByRole('checkbox', { name: 'Chọn bài Nháp thử B' }));
     await user.click(screen.getByRole('button', { name: 'Xoá 2 bản nháp' }));
-    const confirm = screen.getByRole('dialog', { name: 'Xoá 2 bản nháp?' });
+    const confirm = screen.getByRole('alertdialog', { name: 'Xoá 2 bản nháp?' });
     await user.click(within(confirm).getByRole('button', { name: 'Xoá 2 bài' }));
 
     // Assert
@@ -203,6 +203,31 @@ describe('HR news list', () => {
       expect(titles).not.toContain('Nháp thử B');
     });
     expect(await screen.findByText('Đã xoá 2 bản nháp.')).toBeTruthy();
+  });
+
+  it('should name the post when asking before deleting one row, and delete only after yes', async () => {
+    // Arrange
+    const user = userEvent.setup();
+    open('/hr/tin-tuc?tab=published');
+    const table = await screen.findByRole('table');
+    const title = '5 điều nên chuẩn bị trước buổi phỏng vấn tại TOP FLOW';
+    await within(table).findAllByText(title);
+    await user.click(within(table).getByRole('button', { name: `Xoá bài ${title}` }));
+
+    // Act: no first, then yes
+    const asked = screen.getByRole('alertdialog', { name: 'Xoá bài viết?' });
+    expect(asked.textContent).toContain(title);
+    expect(asked.textContent).toContain('gỡ khỏi trang tin tức');
+    await user.click(within(asked).getByRole('button', { name: 'Huỷ' }));
+    const keptAfterNo = (await mockApi.hrNews()).posts.some((p) => p.title === title);
+    await user.click(within(table).getByRole('button', { name: `Xoá bài ${title}` }));
+    await user.click(
+      within(screen.getByRole('alertdialog', { name: 'Xoá bài viết?' })).getByRole('button', { name: 'Xoá bài' }),
+    );
+
+    // Assert
+    expect(keptAfterNo).toBe(true);
+    await vi.waitFor(async () => expect((await mockApi.hrNews()).posts.some((p) => p.title === title)).toBe(false));
   });
 });
 

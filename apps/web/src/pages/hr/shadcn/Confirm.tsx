@@ -5,7 +5,7 @@ import { useTopLayer } from './topLayer';
 
 export interface ConfirmOptions {
   title: string;
-  description?: string;
+  description?: ReactNode;
   action: string;
   cancel?: string;
   isDanger?: boolean;

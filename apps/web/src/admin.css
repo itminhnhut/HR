@@ -142,9 +142,13 @@
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
 }
 
+/* A .field-focus names its own border colour (grey, yellow for a missing value, red); only the Select needs this one. */
+.hr-admin .ui-field {
+  border-color: var(--color-field);
+}
+
 .hr-admin .ui-field,
 .hr-admin .field-focus {
-  border-color: var(--color-field);
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
 }
 
@@ -168,9 +172,11 @@
   box-shadow: var(--admin-ring);
 }
 
-/* Over the border colour above when a field has an error. */
+/* Over the border colours above when a field has an error, focused or not. */
 .hr-admin .ui-field.border-error,
-.hr-admin .field-focus.border-error {
+.hr-admin .field-focus.border-error,
+.hr-admin .field-focus:has([aria-invalid='true']),
+.hr-admin .field-focus[aria-invalid='true'] {
   border-color: var(--color-error);
 }
 
@@ -181,16 +187,20 @@
   box-shadow: var(--admin-ring);
 }
 
-.hr-admin tbody tr {
+/* The admin's data tables only: calendars and tables in an article are tables too. */
+.hr-admin .ui-table tbody tr {
   transition: background-color 0.16s ease;
 }
 
-.hr-admin tbody tr:hover {
+.hr-admin .ui-table tbody tr:hover {
   background: var(--color-hover);
 }
 
-.hr-admin dialog::backdrop {
-  background: rgb(0 0 0 / 0.5);
+/* In a layer, so a dialog's own backdrop utility (the picker, the narrow drawer) still wins. */
+@layer base {
+  .hr-admin dialog::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
 }
 
 .hr-admin dialog:not(.rounded-none) {

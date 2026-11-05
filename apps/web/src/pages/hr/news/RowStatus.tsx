@@ -1,9 +1,9 @@
 import type { HrNewsRowDto, NewsStatus } from '@careers/shared';
-import { useState } from 'react';
 import { ApiError } from '../../../api';
 import { useNewsAction } from '../../../api/queries';
 import { errorMessage } from '../parts';
-import { HideConfirm } from './EditorStatus';
+import { useConfirm } from '../shadcn/Confirm';
+import { HIDE_QUESTION } from './EditorStatus';
 import { StatusMenu } from './StatusMenu';
 import { missingFields, transitionFor, wasPublished } from './statusRules';
 
@@ -32,7 +32,7 @@ function refusal(row: HrNewsRowDto, error: unknown): RowNotice {
 /** The status picker of one row in the HR list: same rules as the editor (statusRules). */
 export function RowStatus({ row, onNotice }: { row: HrNewsRowDto; onNotice: (notice: RowNotice | null) => void }) {
   const action = useNewsAction();
-  const [confirmHide, setConfirmHide] = useState(false);
+  const [confirm, dialog] = useConfirm();
   const run = (kind: 'publish' | 'unpublish') => {
     onNotice(null);
     action.mutate(
@@ -51,7 +51,11 @@ export function RowStatus({ row, onNotice }: { row: HrNewsRowDto; onNotice: (not
   const choose = (next: NewsStatus) => {
     const transition = transitionFor(row.status, next);
     if (transition === 'publish') run('publish');
-    if (transition === 'hide') setConfirmHide(true);
+    if (transition === 'hide') {
+      void confirm(HIDE_QUESTION).then((agreed) => {
+        if (agreed) run('unpublish');
+      });
+    }
   };
   return (
     <>
@@ -62,15 +66,7 @@ export function RowStatus({ row, onNotice }: { row: HrNewsRowDto; onNotice: (not
         onChoose={choose}
         postTitle={row.title}
       />
-      <HideConfirm
-        open={confirmHide}
-        busy={action.isPending}
-        onConfirm={() => {
-          setConfirmHide(false);
-          run('unpublish');
-        }}
-        onClose={() => setConfirmHide(false)}
-      />
+      {dialog}
     </>
   );
 }

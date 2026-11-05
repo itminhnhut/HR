@@ -1,14 +1,20 @@
 import type { NewsStatus } from '@careers/shared';
 import { Icon } from '../../../ui/icons';
-import { ConfirmDialog } from './parts';
+import type { ConfirmOptions } from '../shadcn/Confirm';
 import { StatusMenu } from './StatusMenu';
 import { missingFields, wasPublished } from './statusRules';
 import type { Autosave } from './useNewsAutosave';
 
 /**
- * The editor's status picker ("Trạng thái"), the confirm before hiding, and "Còn thiếu: …" with links to
- * the fields a refused publish named.
+ * The editor's status picker ("Trạng thái"), and "Còn thiếu: …" with links to the fields a refused publish named.
  */
+
+/** Asked before hiding, from the editor and from a row of the list. */
+export const HIDE_QUESTION: ConfirmOptions = {
+  title: 'Ẩn bài viết?',
+  description: 'Bài sẽ rời khỏi trang tin tức và Google. Đường dẫn được giữ nguyên, chọn "Đã đăng" để đăng lại.',
+  action: 'Ẩn bài',
+};
 
 const smooth = (): ScrollBehavior =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
@@ -52,32 +58,6 @@ export function StatusField({
       <span className="text-sm font-medium text-navy">Trạng thái</span>
       {menu}
     </div>
-  );
-}
-
-export function HideConfirm({
-  open,
-  busy,
-  onConfirm,
-  onClose,
-}: {
-  open: boolean;
-  busy: boolean;
-  onConfirm: () => void;
-  onClose: () => void;
-}) {
-  return (
-    <ConfirmDialog
-      open={open}
-      tone="neutral"
-      title="Ẩn bài viết?"
-      confirmLabel="Ẩn bài"
-      busy={busy}
-      onConfirm={onConfirm}
-      onClose={onClose}
-    >
-      Bài sẽ rời khỏi trang tin tức và Google. Đường dẫn được giữ nguyên, chọn &quot;Đã đăng&quot; để đăng lại.
-    </ConfirmDialog>
   );
 }
 

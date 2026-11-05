@@ -12,8 +12,9 @@ import { ApiError } from '../../../api';
 import { useDeleteNews, useNewsAction } from '../../../api/queries';
 import { Notice } from '../../../ui/feedback';
 import { errorMessage } from '../parts';
+import { useConfirm } from '../shadcn/Confirm';
 import { descriptionFor, minutesFor, toInput, type Draft } from './model';
-import { jumpToField } from './EditorStatus';
+import { HIDE_QUESTION, jumpToField } from './EditorStatus';
 import { missingFields, transitionFor } from './statusRules';
 import type { Autosave } from './useNewsAutosave';
 
@@ -54,25 +55,11 @@ function useDeletePost(autosave: Autosave, allowLeave: () => void, onError: (m: 
   return { deletePost, deleting: remove.isPending };
 }
 
-/** Publish, take down, delete; with the messages and field errors they bring back. */
-export function useEditorActions({
-  autosave,
-  draft,
-  allowLeave,
-}: {
-  autosave: Autosave;
-  draft: Draft;
-  allowLeave: () => void;
-}) {
+/** Saves what is waiting, then publishes or takes down; with the messages and field errors that brings back. */
+function useStatusChange(autosave: Autosave, draft: Draft) {
   const action = useNewsAction();
   const [message, setMessage] = useState<Message | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const { deletePost, deleting } = useDeletePost(autosave, allowLeave, setMessage);
-
-  const [confirmHide, setConfirmHide] = useState(false);
-  // Publishing (or showing again) always passes the confirm sheet with its checklist first.
-  const [confirmPublish, setConfirmPublish] = useState(false);
-
   const run = async (kind: 'publish' | 'unpublish') => {
     setMessage(null);
     setFieldErrors({});
@@ -93,25 +80,43 @@ export function useEditorActions({
       if (first) window.requestAnimationFrame(() => jumpToField(first.key));
     }
   };
+  return { run, message, setMessage, fieldErrors, isChanging: action.isPending };
+}
+
+/** Publish, take down, delete; with the messages and field errors they bring back. */
+export function useEditorActions({
+  autosave,
+  draft,
+  allowLeave,
+}: {
+  autosave: Autosave;
+  draft: Draft;
+  allowLeave: () => void;
+}) {
+  const { run, message, setMessage, fieldErrors, isChanging } = useStatusChange(autosave, draft);
+  const { deletePost, deleting } = useDeletePost(autosave, allowLeave, setMessage);
+  const [confirm, confirmDialog] = useConfirm();
+  // Publishing (or showing again) always passes the confirm sheet with its checklist first.
+  const [confirmPublish, setConfirmPublish] = useState(false);
+
+  const askHide = () =>
+    void confirm(HIDE_QUESTION).then((agreed) => {
+      if (agreed) void run('unpublish');
+    });
 
   /** The status picker: Đã đăng (publish or show again) and Đã ẩn both ask first. */
   const choose = (next: NewsStatus) => {
     const transition = transitionFor(autosave.post?.status ?? 'draft', next);
     if (transition === 'publish') setConfirmPublish(true);
-    if (transition === 'hide') setConfirmHide(true);
+    if (transition === 'hide') askHide();
   };
 
   return {
     message,
     fieldErrors,
-    busy: action.isPending || deleting,
+    busy: isChanging || deleting,
     choose,
-    confirmHide,
-    closeHide: () => setConfirmHide(false),
-    hide: () => {
-      setConfirmHide(false);
-      void run('unpublish');
-    },
+    confirmDialog,
     confirmPublish,
     askPublish: () => setConfirmPublish(true),
     closePublish: () => setConfirmPublish(false),

@@ -3,7 +3,9 @@ import { DEFAULT_MESSAGE_TEMPLATES, MAIL_COMPANY, type ApplicationDetailDto, typ
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useApplicationEdit } from '../../../api/queries';
 
 vi.hoisted(() => vi.stubEnv('VITE_API_URL', '/api'));
 import { ComposeMessage, ContactHistory, hrCalendarUrl } from './ComposeMessage';
@@ -635,6 +637,211 @@ describe('The CV in an interview invitation', () => {
 
     // Assert
     expect(screen.queryByRole('region', { name: 'CV trong thư' })).toBeNull();
+  });
+});
+
+describe('A CV replaced after the letter was composed', () => {
+  const OLD_URL = 'https://site.test/api/cv/a1.123.old';
+  const NEW_URL = 'https://site.test/api/cv/a1.123.new';
+  const SAME_NAME = { hasCv: true, cvLink: null, cvFileName: 'CV.pdf', status: 'interview' as const };
+  const preview = () => screen.getByTitle<HTMLIFrameElement>('Xem trước thư').getAttribute('srcdoc') ?? '';
+
+  let linkUrl: string;
+
+  beforeEach(() => {
+    linkUrl = OLD_URL;
+    const others = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.endsWith('/cv-link')) return reply(200, { url: linkUrl, expiresAt: '2026-12-05T00:00:00.000Z' });
+        if (url.endsWith('/cv') && init?.method === 'PUT') {
+          linkUrl = NEW_URL;
+          return reply(200, application(SAME_NAME));
+        }
+        return others(input, init);
+      }),
+    );
+  });
+
+  /** The detail's two neighbours: "Đổi CV" and "Soạn thư", on one app-wide cache as in the real page. */
+  function Detail() {
+    const [isReplaced, setIsReplaced] = useState(false);
+    const { replaceCv } = useApplicationEdit('a1');
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() =>
+            replaceCv.mutate({ file: new File(['x'], 'CV.pdf') }, { onSuccess: () => setIsReplaced(true) })
+          }
+        >
+          Đổi CV
+        </button>
+        {isReplaced && <p>Đã đổi</p>}
+        <ComposeMessage app={application(SAME_NAME)} />
+      </>
+    );
+  }
+
+  async function composeThenClose() {
+    const user = setup();
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <Detail />
+      </QueryClientProvider>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Soạn thư' }));
+    await waitFor(() => expect(preview()).toContain(OLD_URL));
+    await user.click(within(screen.getByRole('dialog', { name: 'Soạn thư' })).getByRole('button', { name: 'Đóng' }));
+    return user;
+  }
+
+  it('should put the new address into the letter after HR replaces the CV with a file of the same name', async () => {
+    // Arrange
+    const user = await composeThenClose();
+    await user.click(screen.getByRole('button', { name: 'Đổi CV' }));
+    await screen.findByText('Đã đổi');
+
+    // Act
+    await user.click(screen.getByRole('button', { name: 'Soạn thư' }));
+
+    // Assert
+    await waitFor(() => expect(preview()).toContain(NEW_URL));
+    expect(preview()).not.toContain(OLD_URL);
+  });
+
+  it('should put the new address into the letter after the candidate replaces the CV elsewhere', async () => {
+    // Arrange
+    const user = await composeThenClose();
+    linkUrl = NEW_URL;
+
+    // Act
+    await user.click(screen.getByRole('button', { name: 'Soạn thư' }));
+
+    // Assert
+    await waitFor(() => expect(preview()).toContain(NEW_URL));
+    expect(preview()).not.toContain(OLD_URL);
+  });
+});
+
+describe('Sending an invitation while the CV link is not in it', () => {
+  const invited = { status: 'interview' as const, hasCv: true, cvLink: null, interviewAt: INTERVIEW_AT };
+  const CV_URL = 'https://site.test/api/cv/a1.123.sig';
+  const copyPlain = () => screen.getByRole('button', { name: 'Sao chép' });
+  const gmail = () => screen.getByRole('link', { name: /Mở Gmail/ });
+
+  let linkReply: () => Promise<Response>;
+  let releaseLink: () => void;
+
+  const linkAnswer = () => reply(200, { url: CV_URL, expiresAt: '2026-12-05T00:00:00.000Z' });
+
+  beforeEach(() => {
+    linkReply = () => new Promise((resolve) => (releaseLink = () => resolve(linkAnswer())));
+    const others = globalThis.fetch;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) =>
+        String(input).endsWith('/cv-link') ? linkReply() : others(input, init),
+      ),
+    );
+  });
+
+  it('should hold every send action while the link is loading, and log nothing', async () => {
+    // Arrange
+    const user = await openCompose(application(invited));
+
+    // Act
+    await user.click(copyMail());
+    await user.click(copyPlain());
+    await user.click(gmail());
+
+    // Assert
+    expect(copyMail()).toHaveProperty('disabled', true);
+    expect(copyPlain()).toHaveProperty('disabled', true);
+    expect(gmail().getAttribute('href')).toBeNull();
+    expect(gmail().getAttribute('aria-disabled')).toBe('true');
+    expect(screen.getByText(/Chờ gắn link CV vào thư/)).toBeTruthy();
+    expect(clipboardItems).toEqual([]);
+    expect(logged).toEqual([]);
+  });
+
+  it('should free the send actions once the link arrives, with the CV in the letter', async () => {
+    // Arrange
+    const user = await openCompose(application(invited));
+
+    // Act
+    releaseLink();
+    await waitFor(() => expect(copyMail()).toHaveProperty('disabled', false));
+    await user.click(copyMail());
+
+    // Assert
+    await waitFor(() => expect(logged).toEqual([{ templateKey: 'interview_onsite', channel: 'copy_html' }]));
+    expect(await readBlob(clipboardItems[0]?.['text/html'] ?? new Blob())).toContain(CV_URL);
+    expect(new URL(gmail().getAttribute('href') ?? '').searchParams.get('body')).toContain(CV_URL);
+    expect(screen.queryByText(/Chờ gắn link CV vào thư/)).toBeNull();
+  });
+
+  it('should not hold a letter that carries no CV link', async () => {
+    // Arrange + Act
+    await openCompose(application({ status: 'rejected', hasCv: true, cvLink: null }));
+
+    // Assert
+    expect(copyMail()).toHaveProperty('disabled', false);
+    expect(copyPlain()).toHaveProperty('disabled', false);
+    expect(gmail().getAttribute('href')).toContain('mail.google.com');
+  });
+
+  describe('when the link could not be made', () => {
+    beforeEach(() => {
+      linkReply = async () => reply(500, { error: 'down' });
+    });
+
+    const footerAlert = async () => within(await screen.findByRole('alert')).findByText(/thư không có CV/);
+
+    it('should say at the buttons that the letter has no CV, and keep them held', async () => {
+      // Arrange + Act
+      const user = await openCompose(application(invited));
+      await footerAlert();
+      await user.click(copyMail());
+
+      // Assert
+      expect(copyMail()).toHaveProperty('disabled', true);
+      expect(gmail().getAttribute('href')).toBeNull();
+      expect(logged).toEqual([]);
+    });
+
+    it('should let HR send without the CV on purpose, and log it', async () => {
+      // Arrange
+      const user = await openCompose(application(invited));
+      await footerAlert();
+
+      // Act
+      await user.click(screen.getByRole('button', { name: 'Vẫn gửi không có CV' }));
+      await user.click(copyMail());
+
+      // Assert
+      await waitFor(() => expect(logged).toEqual([{ templateKey: 'interview_onsite', channel: 'copy_html' }]));
+      expect(await readBlob(clipboardItems[0]?.['text/html'] ?? new Blob())).not.toContain(CV_URL);
+      expect(gmail().getAttribute('href')).toContain('mail.google.com');
+      expect(screen.getByRole('alert').textContent).toContain('thư không có CV');
+    });
+
+    it('should put the CV into the letter when asking again works', async () => {
+      // Arrange
+      const user = await openCompose(application(invited));
+      await footerAlert();
+      linkReply = async () => linkAnswer();
+
+      // Act
+      await user.click(screen.getByRole('button', { name: 'Thử lại' }));
+
+      // Assert
+      await waitFor(() => expect(copyMail()).toHaveProperty('disabled', false));
+      expect(screen.queryByRole('alert')).toBeNull();
+      await waitFor(() => expect(screen.getByTitle('Xem trước thư').getAttribute('srcdoc')).toContain(CV_URL));
+    });
   });
 });
 

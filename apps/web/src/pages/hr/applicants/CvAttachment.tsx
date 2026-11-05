@@ -14,10 +14,20 @@ export const carriesCvLink = (app: ApplicationDetailDto, key: TemplateKey) =>
 
 type CvLink = UseQueryResult<{ url: string; expiresAt: string } | null>;
 
-function linkWords(app: ApplicationDetailDto, link: CvLink): string {
+/** Where this letter stands with the link: `none` when it never carries one. */
+export type CvLinkState = 'none' | 'loading' | 'failed' | 'ready';
+
+export function cvLinkState(app: ApplicationDetailDto, key: TemplateKey, link: CvLink): CvLinkState {
+  if (!carriesCvLink(app, key)) return 'none';
+  if (link.data) return 'ready';
+  if (link.isError) return 'failed';
+  return link.isPending ? 'loading' : 'none';
+}
+
+function linkWords(app: ApplicationDetailDto, state: CvLinkState, link: CvLink): string {
   if (app.cvLink) return 'CV là link nên thư không kèm CV.';
-  if (link.isPending) return 'Đang gắn link CV vào thư…';
-  if (link.isError) return 'Chưa gắn được link CV. Mở lại thư để thử lại.';
+  if (state === 'loading') return 'Đang gắn link CV vào thư…';
+  if (state === 'failed') return 'Chưa gắn được link CV.';
   return link.data ? `Đã có link mở CV trong thư, hạn đến ${formatDate(link.data.expiresAt)}.` : 'Thư chưa có link CV.';
 }
 
@@ -33,6 +43,7 @@ export function CvAttachment({
 }) {
   if (!INVITES.includes(templateKey) || !app.hasCv) return null;
   const file = app.cvLink ? null : api.hrCvUrl(app.id);
+  const state = cvLinkState(app, templateKey, link);
   return (
     <section
       aria-label="CV trong thư"
@@ -40,8 +51,8 @@ export function CvAttachment({
     >
       <span className="flex min-w-0 flex-1 basis-48 flex-col">
         <span className="text-sm font-medium text-navy">CV trong thư</span>
-        <span role="status" className={`text-xs ${link.isError ? 'text-error' : 'text-slate'}`}>
-          {linkWords(app, link)}
+        <span role="status" className={`text-xs ${state === 'failed' ? 'text-error' : 'text-slate'}`}>
+          {linkWords(app, state, link)}
         </span>
       </span>
       {file && (

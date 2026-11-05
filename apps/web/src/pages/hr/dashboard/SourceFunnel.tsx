@@ -37,7 +37,7 @@ export function SourceFunnel({ rows }: { rows: readonly SourceFunnelRow[] }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-sm">
+        <table className="ui-table w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr>
               <th scope="col" className={`${TABLE_HEAD_CELL} text-left`}>

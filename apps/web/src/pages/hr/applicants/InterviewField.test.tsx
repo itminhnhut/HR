@@ -44,6 +44,30 @@ beforeAll(() => {
 
 afterEach(cleanup);
 
+describe('The field with an error', () => {
+  it('should mark itself invalid, go red, and point at the message', () => {
+    // Act
+    render(<InterviewField value={SAVED} error="Tối đa 30 ngày." onChange={() => undefined} />);
+
+    // Assert
+    expect(field().getAttribute('aria-invalid')).toBe('true');
+    expect(field().className).toContain('border-error');
+    expect(field().className).not.toContain('border-field');
+    const message = document.getElementById(field().getAttribute('aria-describedby') ?? '');
+    expect(message?.textContent).toContain('Tối đa 30 ngày.');
+  });
+
+  it('should claim nothing while there is no error', () => {
+    // Act
+    render(<InterviewField value={SAVED} onChange={() => undefined} />);
+
+    // Assert
+    expect(field().getAttribute('aria-invalid')).toBeNull();
+    expect(field().getAttribute('aria-describedby')).toBeNull();
+    expect(field().className).toContain('border-field');
+  });
+});
+
 describe('The interview time field', () => {
   it('should be one field with a placeholder and nothing else while closed', () => {
     // Act

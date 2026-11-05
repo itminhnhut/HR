@@ -2,12 +2,21 @@ import { InterviewField } from '../applicants/InterviewField';
 import { useConfirm } from '../shadcn/Confirm';
 import { REVIEW_DECISION_LABEL, type ReviewBatchDto, type ReviewEventDto } from '@careers/shared';
 import { useState } from 'react';
+import { ApiError } from '../../../api';
 import { useReviewAction } from '../../../api/queries';
 import { copyText, useFlash } from '../../../lib/hooks';
 import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/icons';
 import { errorMessage } from '../parts';
-import { defaultRespondBy, fromLocalInput, reviewLink, shortTime, zaloMessage, toLocalInput } from './reviewModel';
+import {
+  defaultRespondBy,
+  fromLocalInput,
+  REPLY_LIMITS,
+  reviewLink,
+  shortTime,
+  zaloMessage,
+  toLocalInput,
+} from './reviewModel';
 
 function CopyAction({ text, label, done }: { text: string; label: string; done: string }) {
   const [copied, flash] = useFlash();
@@ -27,6 +36,7 @@ function CopyAction({ text, label, done }: { text: string; label: string; done: 
 function Extend({ batch, onDone }: { batch: ReviewBatchDto; onDone: () => void }) {
   const action = useReviewAction(batch.id);
   const [value, setValue] = useState(() => defaultRespondBy(new Date()));
+  const refusal = action.error instanceof ApiError ? action.error.fieldErrors.respondBy : undefined;
   return (
     <form
       onSubmit={(e) => {
@@ -39,10 +49,12 @@ function Extend({ batch, onDone }: { batch: ReviewBatchDto; onDone: () => void }
         fieldName="Hạn phản hồi mới"
         placeholder="Chọn hạn phản hồi"
         isRequired
+        limits={REPLY_LIMITS}
+        error={refusal}
         value={fromLocalInput(value) || null}
         onChange={(iso) => iso && setValue(toLocalInput(new Date(iso)))}
       />
-      {action.error && (
+      {action.error && !refusal && (
         <span role="alert" className="text-xs text-error">
           {errorMessage(action.error)}
         </span>
