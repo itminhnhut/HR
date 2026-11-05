@@ -67,6 +67,7 @@ Phép thử việc, ngưỡng 14 công, OT gộp phép và lễ, trừ 0,5 công
 
 - Cột chữ của bảng công rộng theo chữ dài nhất, không cắt.
 - Mã, tên, số tổng, phép và công hưởng lương có nút sao chép khi rê chuột.
+- Rê chuột vào dòng nào thì cả dòng sáng lên, kể cả cột tổng và cột đứng yên. Bấm vào thì dòng đó giữ viền xanh để dò ngang.
 
 ## Nhật ký
 

@@ -44,7 +44,7 @@ function HolidayList({ groups, isBusy, onDelete }: { groups: readonly Group[]; i
   return (
     <ul className="m-0 flex list-none flex-col p-0 text-sm">
       {groups.map((g) => (
-        <li key={g.from} className="flex min-h-12 items-center gap-2.5 border-b px-2 py-1.5 last:border-b-0">
+        <li key={g.from} className="flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 hover:bg-blue-100">
           <Flag className="size-3.5 shrink-0 text-teal-600" />
           <span className="whitespace-nowrap tabular-nums">{show(g.from)}{g.to !== g.from ? ` – ${show(g.to)}` : ''}</span>
           <span className="min-w-0 flex-1 truncate">{g.name}</span>

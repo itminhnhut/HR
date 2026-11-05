@@ -89,7 +89,7 @@ export function ApproversPanel() {
       {list.length === 0 && <p className="m-0 text-sm text-slate-500">Chưa có ai. Thêm trước ở đây, hoặc gõ tên khi nhập.</p>}
       <ul className="m-0 flex list-none flex-col p-0">
         {list.map((a) => (
-          <li key={a.id} className="flex min-h-12 items-center gap-2.5 border-b px-2 py-1.5 last:border-b-0">
+          <li key={a.id} className="flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 hover:bg-blue-100">
             <span aria-hidden="true" className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-700"><UserCheck className="size-3.5" /></span>
             <span className="min-w-0 flex-1 truncate text-sm font-medium">{a.name}</span>
             <button type="button" aria-label={`Xoá ${a.name}`} onClick={() => setRemoving(a)} className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border bg-white hover:bg-red-50 max-md:size-11"><Trash2 className="size-3.5 text-red-600" /></button>

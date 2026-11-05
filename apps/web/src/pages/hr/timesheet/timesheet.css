@@ -95,6 +95,27 @@ body.hr-timesheet [data-slot='data-grid-cell'][data-selected]:not([data-editing]
   box-shadow: inset 0 0 0 1px #60a5fa;
 }
 
+/* Rê chuột tới đâu, cả dòng sáng tới đó. Lớp phủ thắng cả màu riêng của từng cột và cột đứng yên. */
+@media (hover: hover) {
+  body.hr-timesheet [data-slot='data-grid-row']:hover [data-slot='data-grid-cell']:not([data-selected], [data-focused], [data-editing]),
+  body.hr-timesheet tbody tr:hover > td {
+    background-image: linear-gradient(#dbeafe, #dbeafe);
+  }
+}
+
+/* Dòng đang bấm: tô cả dòng ngang, kể cả cột tổng và cột đứng yên, để dò sang phải không lạc dòng. */
+body.hr-timesheet [data-slot='data-grid-row']:has([data-slot='data-grid-cell'][data-focused]) [data-slot='data-grid-cell']:not([data-selected], [data-focused], [data-editing]) {
+  /* Một lớp phủ, vì màu nền từng cột đều đang !important trong lớp tiện ích của Tailwind. */
+  background-image: linear-gradient(#dbeafe, #dbeafe);
+  box-shadow: inset 0 1px 0 #60a5fa, inset 0 -1px 0 #60a5fa;
+}
+
+body.hr-timesheet tr[data-picked] > td {
+  background-image: linear-gradient(#dbeafe, #dbeafe);
+  border-top: 1px solid #60a5fa;
+  border-bottom: 1px solid #60a5fa;
+}
+
 /* Điện thoại: vùng bấm ít nhất 44px. Ô lưới có chiều cao riêng. */
 @media (max-width: 639px) {
   body.hr-timesheet :is(a, button, input, textarea, [role='combobox'], [role='option']):not(.sr-only, [role='grid'] *) {

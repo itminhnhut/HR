@@ -33,6 +33,7 @@ export function AbsenceTable({ editingId, isRemoving, removeError, onEdit, onRem
   const [year, setYear] = useState(() => Number(todayInVietnam().slice(0, 4)));
   const [query, setQuery] = useState('');
   const [removing, setRemoving] = useState<AbsenceRowDto | null>(null);
+  const [pickedId, setPickedId] = useState<string | null>(null);
   const list = useQuery({ queryKey: ['hr', 'absences', year], queryFn: () => api.hrAllAbsences(year) });
   const rows = (list.data ?? []).filter((r) => matchesQuery(`${r.fullName} ${r.employeeCode} ${r.label} ${r.note} ${r.approvedBy ?? ''}`, query));
   const waiting = (list.data ?? []).filter((r) => !r.approvedBy && r.code !== 'M').length;
@@ -55,7 +56,7 @@ export function AbsenceTable({ editingId, isRemoving, removeError, onEdit, onRem
             <thead><tr className="border-b text-left">{HEADS.map((h) => <th key={h} className="h-10 px-2 font-medium">{h}</th>)}<th aria-label="Thao tác" className="sticky right-0 bg-white" /></tr></thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.id} className={`border-b ${r.id === editingId ? 'bg-blue-50' : 'hover:bg-slate-50'}`}>
+                <tr key={r.id} data-picked={r.id === pickedId ? '' : undefined} onClick={() => setPickedId(r.id)} className={`cursor-pointer border-b ${r.id === editingId ? 'bg-blue-50' : ''}`}>
                   <td className="p-2"><State row={r} /></td>
                   <td className="p-2 font-medium"><CopyValue text={r.fullName} label="họ tên"><span className="pr-7">{r.fullName}</span></CopyValue></td>
                   <td className="p-2"><span className="flex items-center gap-2"><KindMark code={r.code} reason={r.reason} /><span>{r.label}</span></span></td>
