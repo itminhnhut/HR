@@ -1,6 +1,6 @@
 import type { DashboardDto } from '@careers/shared';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, useLocation } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { calendarEvents, InterviewCalendar } from './InterviewCalendar';
 
@@ -34,6 +34,55 @@ afterEach(() => {
   window.innerWidth = 1024;
 });
 
+function Address() {
+  const { pathname, search } = useLocation();
+  return <output data-testid="address">{pathname + search}</output>;
+}
+
+describe('opening someone from the interview calendar', () => {
+  it('should land on the interview tab when their event is pressed', () => {
+    // Arrange
+    const interviews = [item('a', '2026-11-06T02:00:00.000Z')];
+    const data = { interviews, interviewCounts: { total: 1, noTime: 0 } } as DashboardDto;
+    const { container } = render(
+      <MemoryRouter initialEntries={['/hr']}>
+        <InterviewCalendar data={data} now={NOW} />
+        <Address />
+      </MemoryRouter>,
+    );
+    const event = container.querySelector('[data-interview="a"]');
+    if (!event) throw new Error('the event is not on the calendar');
+
+    // Act
+    fireEvent.click(event);
+
+    // Assert
+    expect(screen.getByTestId('address').textContent).toBe('/hr/ho-so?trang-thai=interview&id=a');
+  });
+
+  it('should land on the waiting-for-result tab when the interview is over', () => {
+    // Arrange
+    window.innerWidth = 390;
+
+    // Act
+    show([item('a', '2026-11-02T02:00:00.000Z')]);
+
+    // Assert
+    expect(screen.getByRole('link', { name: /Ứng viên a/ }).getAttribute('href')).toBe('/hr/ho-so?trang-thai=awaiting&id=a');
+  });
+
+  it('should land on the interview tab from the phone list', () => {
+    // Arrange
+    window.innerWidth = 390;
+
+    // Act
+    show([item('a', '2026-11-06T02:00:00.000Z')]);
+
+    // Assert
+    expect(screen.getByRole('link', { name: /Ứng viên a/ }).getAttribute('href')).toBe('/hr/ho-so?trang-thai=interview&id=a');
+  });
+});
+
 describe('calendarEvents', () => {
   it('should leave out those without a time, since they have no place on a calendar', () => {
     const events = calendarEvents([item('a', '2026-11-06T02:00:00.000Z'), item('b', null)], NOW);
@@ -65,7 +114,7 @@ describe('InterviewCalendar', () => {
     // Assert
     const list = within(screen.getByRole('region', { name: 'Chưa chọn giờ phỏng vấn' }));
     expect(list.getByRole('heading', { name: 'Chưa chọn giờ phỏng vấn (2)' })).toBeTruthy();
-    expect(list.getByRole('link', { name: 'Ứng viên b' }).getAttribute('href')).toBe('/hr/ho-so?id=b');
+    expect(list.getByRole('link', { name: 'Ứng viên b' }).getAttribute('href')).toBe('/hr/ho-so?trang-thai=interview&id=b');
     expect(list.getByRole('link', { name: 'Ứng viên c' })).toBeTruthy();
     expect(list.queryByText('Ứng viên a')).toBeNull();
   });
