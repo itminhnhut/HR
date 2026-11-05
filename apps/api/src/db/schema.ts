@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import type {
   ActivityKind,
   ApplicationStatus,
@@ -7,13 +8,21 @@ import type {
   JobTemplate,
   MatchItem,
   NewsImage,
+  RegionTone,
   RejectReason,
+  AttendanceCode,
+  SaturdayChange,
+  StaffType,
+  TimesheetHolidayDto,
+  TimesheetRegionDto,
+  TimesheetTotals,
   WorkMode,
 } from '@careers/shared';
 import {
   boolean,
   jsonb,
   date,
+  real,
   index,
   integer,
   pgEnum,
@@ -550,3 +559,211 @@ export const reviewEvents = pgTable(
 export type ReviewBatch = typeof reviewBatches.$inferSelect;
 export type ApplicationSourceRow = typeof applicationSources.$inferSelect;
 export type ReviewItem = typeof reviewItems.$inferSelect;
+
+/** Chấm công (spec-cham-cong.md). A region's Saturdays are what its norm counts on top of Mon–Fri. */
+export const timesheetRegions = pgTable(
+  'timesheet_regions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    saturdays: integer('saturdays').notNull().default(0),
+    /** Later numbers of Saturdays, each from its month on; months before the first keep `saturdays`. */
+    saturdayChanges: jsonb('saturday_changes').$type<SaturdayChange[]>().notNull().default([]),
+    tone: text('tone').$type<RegionTone>().notNull().default('blue'),
+    hidden: boolean('hidden').notNull().default(false),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_regions_name_idx').on(t.name)],
+);
+
+/** Nobody is ever deleted: someone who left keeps their old periods. */
+export const employees = pgTable(
+  'employees',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    code: text('code').notNull(),
+    fullName: text('full_name').notNull(),
+    department: text('department').notNull().default(''),
+    title: text('title').notNull().default(''),
+    regionId: uuid('region_id')
+      .notNull()
+      .references(() => timesheetRegions.id),
+    employment: text('employment').$type<StaffType>().notNull().default('probation'),
+    joinedOn: date('joined_on'),
+    officialOn: date('official_on'),
+    leftOn: date('left_on'),
+    openingLeave: real('opening_leave').notNull().default(0),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [uniqueIndex('employees_code_idx').on(t.code)],
+);
+
+/** One period per month; its norms and leave rule stay with it, so changing a setting never rewrites the past. */
+export const timesheetPeriods = pgTable(
+  'timesheet_periods',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    year: integer('year').notNull(),
+    month: integer('month').notNull(),
+    fromOn: date('from_on').notNull(),
+    toOn: date('to_on').notNull(),
+    status: text('status').$type<'open' | 'closed'>().notNull().default('open'),
+    norms: jsonb('norms').$type<Record<string, number>>().notNull().default({}),
+    leaveThreshold: real('leave_threshold').notNull().default(14),
+    leavePerPeriod: real('leave_per_period').notNull().default(1),
+    closedAt: tz('closed_at'),
+    closedBy: text('closed_by'),
+    /** What the sheet said about holidays and regions when it closed; empty while open. */
+    frozen: jsonb('frozen').$type<{ holidays: TimesheetHolidayDto[]; regions: TimesheetRegionDto[] }>(),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_periods_month_idx').on(t.year, t.month)],
+);
+
+/** Only what HR entered: a day with no row counts by the rules. */
+export const timesheetEntries = pgTable(
+  'timesheet_entries',
+  {
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id),
+    day: date('day').notNull(),
+    code: text('code'),
+    note: text('note'),
+    updatedBy: text('updated_by').notNull(),
+    updatedAt,
+  },
+  (t) => [primaryKey({ columns: [t.employeeId, t.day] }), index('timesheet_entries_day_idx').on(t.day)],
+);
+
+/** "YYYY-MM" periods it covers; toPeriod null means every period from then on. */
+export const timesheetAdjustments = pgTable(
+  'timesheet_adjustments',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id),
+    amount: real('amount').notNull(),
+    reason: text('reason').notNull(),
+    fromPeriod: text('from_period').notNull(),
+    toPeriod: text('to_period'),
+    createdBy: text('created_by').notNull(),
+    createdAt,
+  },
+  (t) => [index('timesheet_adjustments_employee_idx').on(t.employeeId)],
+);
+
+export const timesheetHolidays = pgTable('timesheet_holidays', {
+  day: date('day').primaryKey(),
+  name: text('name').notNull(),
+  createdBy: text('created_by').notNull(),
+  createdAt,
+});
+
+/** What a closed period said about each person: later edits to the person or settings leave it alone. */
+/** Days HR added to or took off a balance by hand, in the period where it applies. */
+export const timesheetLeaveChanges = pgTable(
+  'timesheet_leave_changes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    periodId: uuid('period_id')
+      .notNull()
+      .references(() => timesheetPeriods.id, { onDelete: 'cascade' }),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id, { onDelete: 'cascade' }),
+    amount: real('amount').notNull(),
+    reason: text('reason').notNull(),
+    createdBy: text('created_by').notNull(),
+    createdAt,
+  },
+  (t) => [index('timesheet_leave_changes_period_idx').on(t.periodId, t.employeeId)],
+);
+
+/** Who approves absences: HR adds them, and a name typed on a line is remembered. */
+export const timesheetApprovers = pgTable(
+  'timesheet_approvers',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_approvers_name_idx').on(sql`lower(${t.name})`)],
+);
+
+/** Kinds of absence HR added beside those in the law, each with the way it counts. */
+export const timesheetAbsenceKinds = pgTable('timesheet_absence_kinds', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  code: text('code').$type<AttendanceCode>().notNull(),
+  days: integer('days'),
+  createdBy: text('created_by').notNull(),
+  createdAt,
+});
+
+/** What HR registered on a person; the days themselves are in `timesheetEntries`, where HR can still change each. */
+export const timesheetAbsences = pgTable(
+  'timesheet_absences',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id, { onDelete: 'cascade' }),
+    reason: text('reason').notNull(),
+    code: text('code').notNull(),
+    fromOn: date('from_on').notNull(),
+    toOn: date('to_on').notNull(),
+    days: real('days').notNull(),
+    note: text('note').notNull(),
+    /** The kind's name then: the kind itself may be removed later. */
+    label: text('label').notNull().default(''),
+    /** Null while it waits: nothing is written to the sheet until someone has approved. */
+    approvedBy: text('approved_by'),
+    handover: text('handover').notNull().default(''),
+    createdBy: text('created_by').notNull(),
+    createdAt,
+  },
+  (t) => [index('timesheet_absences_employee_idx').on(t.employeeId, t.fromOn)],
+);
+
+export const timesheetSnapshots = pgTable(
+  'timesheet_snapshots',
+  {
+    periodId: uuid('period_id')
+      .notNull()
+      .references(() => timesheetPeriods.id, { onDelete: 'cascade' }),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id),
+    code: text('code').notNull(),
+    fullName: text('full_name').notNull(),
+    department: text('department').notNull(),
+    title: text('title').notNull(),
+    regionId: uuid('region_id').notNull(),
+    employment: text('employment').$type<StaffType>().notNull(),
+    joinedOn: date('joined_on'),
+    leftOn: date('left_on'),
+    norm: real('norm').notNull(),
+    leaveOpening: real('leave_opening').notNull(),
+    leaveClosing: real('leave_closing').notNull(),
+    /** All the totals as the period closed. */
+    totals: jsonb('totals').$type<TimesheetTotals>(),
+  },
+  (t) => [primaryKey({ columns: [t.periodId, t.employeeId] })],
+);
+
+/** Who changed what in a timesheet, in words. */
+export const timesheetLog = pgTable(
+  'timesheet_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    periodId: uuid('period_id').references(() => timesheetPeriods.id, { onDelete: 'set null' }),
+    actor: text('actor').notNull(),
+    action: text('action').notNull(),
+    detail: text('detail').notNull(),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('timesheet_log_period_idx').on(t.periodId, t.at)],
+);

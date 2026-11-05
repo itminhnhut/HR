@@ -1,6 +1,7 @@
 import { APPLICATION_STATUS_LABEL, formatTimestamp, type ApplicationDetailDto } from '@careers/shared';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { applicantLink } from './applicantLink';
 import { Icon, type IconName } from '../../../ui/icons';
 import { activityLines } from './activityLines';
 import { ContactHistory } from './ComposeMessage';
@@ -132,7 +133,7 @@ export function OtherApplicationsRow({ app }: { app: ApplicationDetailDto }) {
               key={o.id}
               className="flex min-h-11 flex-wrap items-center gap-x-2 border-b border-line-soft px-5 py-2 max-sm:px-4"
             >
-              <Link to={`/hr/ho-so?id=${o.id}`} className="inline-flex min-h-11 items-center font-medium">
+              <Link to={applicantLink(o.id, o.status)} className="inline-flex min-h-11 items-center font-medium">
                 {o.jobTitle}
               </Link>
               <span className="text-muted">

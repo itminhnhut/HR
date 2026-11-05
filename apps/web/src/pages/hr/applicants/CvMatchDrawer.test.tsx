@@ -606,7 +606,7 @@ describe('The other long blocks of the detail', () => {
 
     // Assert
     const dialog = screen.getByRole('dialog', { name: 'Vị trí khác đã nộp' });
-    expect(within(dialog).getByRole('link', { name: 'Trợ lý Giám đốc' }).getAttribute('href')).toBe('/hr/ho-so?id=a2');
+    expect(within(dialog).getByRole('link', { name: 'Trợ lý Giám đốc' }).getAttribute('href')).toBe('/hr/ho-so?trang-thai=seen&id=a2');
   });
 
   it('should keep "Xoá hồ sơ" as the last action of the detail', async () => {

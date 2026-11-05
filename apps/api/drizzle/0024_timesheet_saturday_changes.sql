@@ -1,0 +1,1 @@
+ALTER TABLE "timesheet_regions" ADD COLUMN "saturday_changes" jsonb DEFAULT '[]'::jsonb NOT NULL;

@@ -18,6 +18,7 @@ export const HR_SECTIONS: readonly HrSection[] = [
   { to: '/hr/tin', label: 'Tin tuyển dụng', icon: 'briefcase', tone: 'orange' },
   { to: '/hr/ho-so', label: 'Hồ sơ ứng viên', icon: 'inbox', tone: 'sky', badge: true },
   { to: '/hr/duyet', label: 'Sếp duyệt', icon: 'checkSquare', tone: 'green' },
+  { to: '/hr/cham-cong', label: 'Chấm công', icon: 'calendar', tone: 'red' },
   { to: '/hr/tin-tuc', label: 'Tin tức', icon: 'newspaper', tone: 'rose' },
   { to: '/hr/mau-tin', label: 'Mẫu tin', icon: 'fileText', tone: 'teal' },
   { to: '/hr/mau-thu', label: 'Mẫu thư', icon: 'mail', tone: 'amber' },

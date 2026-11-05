@@ -41,7 +41,7 @@ import { DEMO_CANDIDATE_EMAIL, DEMO_HR, randomPassword, type MockDb, type MockHr
 import { delay, fail, load, requireHr, save, uid } from './mock-store';
 import { newsMockApi } from './mock-news';
 import { relatedPostsForJob } from './mock-news-model';
-import type { Api } from './types';
+import { ApiError, type Api } from './types';
 
 const REPEAT_MS = 10 * 60_000; // same as the BE: an exact repeat this soon is a double click
 
@@ -231,6 +231,10 @@ function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDe
       })),
   };
 }
+
+const noTimesheet = async (): Promise<never> => {
+  throw new ApiError(404, 'Bản demo không có chấm công.');
+};
 
 export const mockApi: Api = {
   async listJobs() {
@@ -932,6 +936,43 @@ export const mockApi: Api = {
   hrReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   hrUpdateContact: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   candidateReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  // The demo site has no timesheet: it holds staff data and only exists with a real server.
+  hrTimesheet: noTimesheet,
+  hrTimesheetRange: noTimesheet,
+  hrTimesheetYear: noTimesheet,
+  hrSaveHolidayRange: noTimesheet,
+  hrDeleteHolidayRange: noTimesheet,
+  hrAllAbsences: noTimesheet,
+  hrUpdateAbsence: noTimesheet,
+  hrAbsenceKinds: noTimesheet,
+  hrApprovers: noTimesheet,
+  hrAddApprover: noTimesheet,
+  hrDeleteApprover: noTimesheet,
+  hrAddAbsenceKind: noTimesheet,
+  hrDeleteAbsenceKind: noTimesheet,
+  hrUpdateAbsenceKind: noTimesheet,
+  hrRegisterAbsence: noTimesheet,
+  hrRemoveAbsence: noTimesheet,
+  hrTimesheetAddLeaveChange: noTimesheet,
+  hrTimesheetRemoveLeaveChange: noTimesheet,
+  hrDeleteEmployee: noTimesheet,
+  hrTimesheetCells: noTimesheet,
+  hrTimesheetNorms: noTimesheet,
+  hrTimesheetAddAdjustment: noTimesheet,
+  hrTimesheetRemoveAdjustment: noTimesheet,
+  hrTimesheetClose: noTimesheet,
+  hrTimesheetReopen: noTimesheet,
+  hrTimesheetLog: noTimesheet,
+  hrEmployees: noTimesheet,
+  hrCreateEmployee: noTimesheet,
+  hrUpdateEmployee: noTimesheet,
+  hrRegions: noTimesheet,
+  hrCreateRegion: noTimesheet,
+  hrUpdateRegion: noTimesheet,
+  hrDeleteRegion: noTimesheet,
+  hrHolidays: noTimesheet,
+  hrSaveHoliday: noTimesheet,
+  hrDeleteHoliday: noTimesheet,
   hrSources: async () =>
     delay(
       DEMO_SOURCES.map(([key, name], i) => ({

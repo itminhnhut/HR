@@ -1,5 +1,6 @@
 import { sourceNameKey } from '@careers/shared';
 import { DEFAULT_SOURCES } from '../services/sources.js';
+import { DEFAULT_REGIONS } from '../services/timesheet-people.js';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { getTableName, is, sql } from 'drizzle-orm';
@@ -96,6 +97,8 @@ export async function createTestContext(): Promise<TestContext> {
       deps.verifyGoogleToken = fakeGoogle;
       deps.verifyCaptcha = null;
       await db.execute(sql.raw(`TRUNCATE ${TABLES} CASCADE`));
+      // Migration 0022 creates these.
+      await db.insert(schema.timesheetRegions).values([...DEFAULT_REGIONS]);
       // Migration 0016 creates these; applications need them (foreign key).
       await db
         .insert(schema.applicationSources)

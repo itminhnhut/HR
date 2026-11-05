@@ -6,7 +6,8 @@ import '@fullcalendar/react/skeleton.css';
 import formaTheme from '@fullcalendar/react/themes/forma';
 import '@fullcalendar/react/themes/forma/palettes/blue.css';
 import '@fullcalendar/react/themes/forma/theme.css';
-import type { DashboardDto } from '@careers/shared';
+import { isAwaitingResult, type DashboardDto } from '@careers/shared';
+import { applicantLink } from '../applicants/applicantLink';
 import { useId, useState, type SyntheticEvent } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Icon } from '../../../ui/icons';
@@ -46,12 +47,16 @@ export function calendarEvents(interviews: DashboardDto['interviews'], now: Date
   });
 }
 
+/** Everyone here is at "Hẹn phỏng vấn"; once the time has passed they are waiting for a result, as the profile says. */
+const profileLink = (person: Interview, now: Date) =>
+  applicantLink(person.id, isAwaitingResult({ status: 'interview', interviewAt: person.interviewAt }, now) ? 'awaiting' : 'interview');
+
 function PhoneRow({ item, now }: { item: Dated; now: Date }) {
   const isOver = new Date(item.interviewAt) < now;
   return (
     <li>
       <Link
-        to={`/hr/ho-so?id=${item.id}`}
+        to={profileLink(item, now)}
         className="flex items-center gap-3 rounded-control py-1.5 text-navy no-underline hover:bg-hover"
       >
         <span
@@ -103,7 +108,7 @@ function NoTimePerson({ person }: { person: Interview }) {
   return (
     <li className="group relative min-w-0" onPointerEnter={place} onFocus={place}>
       <Link
-        to={`/hr/ho-so?id=${person.id}`}
+        to={profileLink(person, new Date())}
         aria-describedby={id}
         className="block max-w-[260px] truncate rounded-full border border-amber-300 bg-white px-3 py-1 text-[13px] max-sm:py-2.5 font-medium text-amber-900 no-underline hover:border-amber-500 hover:bg-amber-100 hover:text-amber-950"
       >
@@ -185,7 +190,8 @@ function MonthCalendar({ interviews, now }: { interviews: DashboardDto['intervie
         }}
         eventClick={({ event, jsEvent }) => {
           jsEvent.preventDefault();
-          navigate(`/hr/ho-so?id=${event.id}`);
+          const person = interviews.find((i) => i.id === event.id);
+          if (person) navigate(profileLink(person, now));
         }}
       />
     </HoverCardArea>

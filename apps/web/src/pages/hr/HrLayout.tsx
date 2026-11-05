@@ -177,6 +177,18 @@ function Shell({ email }: { email: string }) {
   // Master-detail: from 1024px this page is exactly the window and nothing outside its panes can scroll.
   const isWindowSized = !!useMatch('/hr/ho-so');
   const { pathname } = useLocation();
+  // 31 cột ngày cần cả màn hình: trang này có thanh logo và đường dẫn riêng thay cho menu.
+  if (pathname.startsWith('/hr/cham-cong')) {
+    return (
+      <div data-clarity-mask="true" className="min-h-dvh bg-mist text-navy">
+        <SkipLink />
+        <main id="hr-noi-dung" className="min-w-0">
+          <Outlet />
+        </main>
+        <ScrollRestoration />
+      </div>
+    );
+  }
   return (
     // Masked in Clarity too, in case a recording ever reaches an HR screen.
     <div

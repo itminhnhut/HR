@@ -9,6 +9,7 @@ import {
 } from '@careers/shared';
 import { useState } from 'react';
 import { Link } from 'react-router';
+import { applicantLink } from '../applicants/applicantLink';
 import { useReviewAction } from '../../../api/queries';
 import { Button } from '../../../ui/Button';
 import { Icon } from '../../../ui/icons';
@@ -91,7 +92,7 @@ function ReplyForm({ batchId, item }: { batchId: string; item: ReviewItemHrDto }
 /** What HR does next with this application, from the reviewer's choice. */
 function NextStep({ batch, item }: { batch: ReviewBatchDto; item: ReviewItemHrDto }) {
   const action = useReviewAction(batch.id);
-  const open = `/hr/ho-so?id=${item.applicationId}`;
+  const open = applicantLink(item.applicationId, item.status);
   if (item.decision === 'approve') {
     return isInvited(item.status) ? (
       <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-ok">
@@ -133,7 +134,7 @@ export function ReviewItems({ batch }: { batch: ReviewBatchDto }) {
           className="grid gap-3 border-b border-line-soft px-5 py-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)_240px] md:items-start"
         >
           <span className="flex min-w-0 flex-col gap-0.5">
-            <Link to={`/hr/ho-so?id=${item.applicationId}`} className="font-semibold text-navy">
+            <Link to={applicantLink(item.applicationId, item.status)} className="font-semibold text-navy">
               {item.fullName}
             </Link>
             <span className="text-xs text-slate">
