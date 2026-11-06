@@ -182,6 +182,18 @@ describe('working on a day of rest', () => {
     expect(kinds).toEqual(expect.arrayContaining(['holidayWork', 'sundayWork']));
   });
 
+  it('RV2-08: should count rest-day work the way the close stores it, leaving out days after someone left', () => {
+    // Arrange: left on 05/11, yet a 1 sits on Sunday 08/11
+    const dto = sheet([person({ leftOn: '2026-11-05', cells: { '2026-11-08': { entered: '1', note: null } } })]);
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+
+    // Assert
+    expect(rows[0]).toMatchObject({ lamCN: 0 });
+  });
+
   it('should leave a holiday nobody worked out of it', () => {
     // Arrange
     const dto = holidaySheet({});
@@ -299,3 +311,20 @@ describe('leave over a day already earned', () => {
     expect(rows[0]?.phepVuot).toBe(1);
   });
 });
+
+describe('the review of someone who became official during the period', () => {
+  it('should split the paid days, leave and holidays included, so the parts add up to what is paid', () => {
+    // Arrange: official from 10/11, at the end of the period; a P on 3/11 and a holiday on 24/11
+    const dto = sheet([person({ officialOn: '2026-11-10', cells: { '2026-11-03': { entered: 'P', note: null } } })], { today: '2026-11-25', holidays: [{ day: '2026-11-24', name: 'Lễ' }] });
+    const days = dayColumns(dto);
+    const [grid] = gridRows(dto, days);
+
+    // Act
+    const text = findProblems(dto, days, gridRows(dto, days)).find((p) => p.kind === 'becameOfficial')?.text ?? '';
+
+    // Assert: 26/10–9/11 has 11 weekdays (the P paid), 10/11–25/11 has 12 (the holiday paid)
+    expect(grid?.huong).toBe(23);
+    expect(text).toContain('11 công thử việc, 12 công chính thức');
+  });
+});
+

@@ -5,6 +5,7 @@ import {
   approverSchema,
   fieldErrors,
   holidaysInEffect,
+  ATTENDANCE_LABEL,
   isWeekend,
   isWorkingOn,
   nextDay,
@@ -14,13 +15,14 @@ import {
   type AttendanceCode,
   type HrMe,
   type TimesheetAbsenceDto,
+  workingDayCheck,
 } from '@careers/shared';
 import { and, asc, desc, eq, gte, inArray, lte, ne, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { employees, timesheetAbsenceKinds, timesheetAbsences, timesheetApprovers, timesheetEntries, timesheetPeriods } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
-import { actorOf, dayWords, listHolidays, logChange } from './timesheet-people.js';
+import { actorOf, dayWords, listHolidays, listRegions, logChange } from './timesheet-people.js';
 
 /**
  * An absence HR writes down for a person. Once someone has approved it, it fills the weekdays it covers, across periods;
@@ -54,6 +56,54 @@ export async function listAbsences(db: Db, employeeId: string): Promise<Timeshee
   return rows.map(toDto);
 }
 
+const SHEET_LEAVE = ['P', 'P/2', 'KL', 'KL/2', 'KP', 'M', 'CL', 'TS', 'OM'] as const;
+
+/** Days in a row with the same code, a weekend between them included, read as one line. */
+function sheetLines(entries: readonly { employeeId: string; day: string; code: string; note: string | null; updatedBy: string }[]) {
+  const lines: { employeeId: string; code: string; from: string; to: string; days: number; notes: string[]; by: string }[] = [];
+  for (const e of [...entries].sort((a, b) => a.employeeId.localeCompare(b.employeeId) || a.day.localeCompare(b.day))) {
+    const last = lines.at(-1);
+    let next = last ? nextDay(last.to) : '';
+    while (last && next < e.day && isWeekend(next)) next = nextDay(next);
+    const half = e.code.endsWith('/2') ? 0.5 : 1;
+    if (last && last.employeeId === e.employeeId && last.code === e.code && next === e.day) {
+      lines[lines.length - 1] = { ...last, to: e.day, days: last.days + half, notes: e.note ? [...last.notes, e.note] : last.notes, by: e.updatedBy };
+    } else {
+      lines.push({ employeeId: e.employeeId, code: e.code, from: e.day, to: e.day, days: half, notes: e.note ? [e.note] : [], by: e.updatedBy });
+    }
+  }
+  return lines;
+}
+
+/** Leave typed straight into the sheet on days no absence covers, so the list holds every day away. */
+async function sheetLeaveOfYear(db: Db, year: number, absences: readonly AbsenceRowDto[]): Promise<AbsenceRowDto[]> {
+  const rows = await db
+    .select({ employeeId: timesheetEntries.employeeId, day: timesheetEntries.day, code: timesheetEntries.code, note: timesheetEntries.note, updatedBy: timesheetEntries.updatedBy, employeeCode: employees.code, fullName: employees.fullName })
+    .from(timesheetEntries)
+    .innerJoin(employees, eq(employees.id, timesheetEntries.employeeId))
+    .where(and(gte(timesheetEntries.day, `${year}-01-01`), lte(timesheetEntries.day, `${year}-12-31`), inArray(timesheetEntries.code, [...SHEET_LEAVE])));
+  const covered = (employeeId: string, day: string) => absences.some((a) => a.employeeId === employeeId && a.from <= day && day <= a.to);
+  const free = rows.flatMap((r) => (r.code && !covered(r.employeeId, r.day) ? [{ ...r, code: r.code }] : []));
+  const who = new Map(rows.map((r) => [r.employeeId, { employeeCode: r.employeeCode, fullName: r.fullName }]));
+  return sheetLines(free).map((l) => ({
+    id: `sheet-${l.employeeId}-${l.from}`,
+    source: 'sheet' as const,
+    reason: 'sheet',
+    code: l.code,
+    from: l.from,
+    to: l.to,
+    days: l.days,
+    note: l.notes.join('; '),
+    label: ATTENDANCE_LABEL[l.code as AttendanceCode] ?? l.code,
+    approvedBy: null,
+    handover: '',
+    createdBy: l.by,
+    employeeId: l.employeeId,
+    employeeCode: who.get(l.employeeId)?.employeeCode ?? '',
+    fullName: who.get(l.employeeId)?.fullName ?? '',
+  }));
+}
+
 export async function listAbsencesOfYear(db: Db, year: number): Promise<AbsenceRowDto[]> {
   if (!Number.isInteger(year) || year < 2020 || year > 2100) throw invalid('Năm không hợp lệ.');
   const rows = await db
@@ -62,7 +112,9 @@ export async function listAbsencesOfYear(db: Db, year: number): Promise<AbsenceR
     .innerJoin(employees, eq(employees.id, timesheetAbsences.employeeId))
     .where(and(lte(timesheetAbsences.fromOn, `${year}-12-31`), gte(timesheetAbsences.toOn, `${year}-01-01`)))
     .orderBy(desc(timesheetAbsences.fromOn));
-  return rows.map((r) => ({ ...toDto(r.absence), employeeId: r.absence.employeeId, employeeCode: r.employeeCode, fullName: r.fullName }));
+  const registered = rows.map((r): AbsenceRowDto => ({ ...toDto(r.absence), source: 'absence', employeeId: r.absence.employeeId, employeeCode: r.employeeCode, fullName: r.fullName }));
+  const typed = await sheetLeaveOfYear(db, year, registered);
+  return [...registered, ...typed].sort((a, b) => b.from.localeCompare(a.from));
 }
 
 // Kinds
@@ -162,12 +214,18 @@ async function requireNoOverlap(db: Db, employeeId: string, from: string, to: st
   if (other) throw new HttpError(409, `Trùng với ${other.label} ${dayWords(other.fromOn)}–${dayWords(other.toOn)}.`, {}, 'absence_overlap');
 }
 
-/** Weekdays only: Saturdays stay HR's. Holidays keep NL, except maternity leave, which runs through them. */
+/** The person's region's working days, the rule the absence form counts with too (workingDayCheck). */
+async function workedDayCheck(db: Db, person: Person) {
+  return workingDayCheck((await listRegions(db)).find((r) => r.id === person.regionId));
+}
+
+/** Working days only (see workedDayCheck). Holidays keep NL, except maternity leave, which runs through them. */
 async function daysToFill(db: Db, person: Person, from: string, to: string, runsThroughHolidays: boolean) {
   const holidays = new Set(holidaysInEffect(await listHolidays(db)).map((h) => h.day));
+  const isWorked = await workedDayCheck(db, person);
   const days: string[] = [];
   for (let day = from; day <= to; day = nextDay(day)) {
-    if (!isWeekend(day) && isWorkingOn(person, day) && (runsThroughHolidays || !holidays.has(day))) days.push(day);
+    if (isWorked(day) && isWorkingOn(person, day) && (runsThroughHolidays || !holidays.has(day))) days.push(day);
   }
   return days;
 }
@@ -331,7 +389,7 @@ async function applyHolidayChange(db: Db, day: string, isHoliday: boolean, hr: H
   const covering = await db.select().from(timesheetAbsences).where(and(lte(timesheetAbsences.fromOn, day), gte(timesheetAbsences.toOn, day)));
   for (const absence of covering.filter((a) => a.code !== 'TS' && a.code !== NEEDS_NO_APPROVAL)) {
     const person = await findPerson(db, absence.employeeId);
-    if (isWeekend(day) || !isWorkingOn(person, day)) continue;
+    if (!(await workedDayCheck(db, person))(day) || !isWorkingOn(person, day)) continue;
     const isApproved = !!absence.approvedBy;
     const moved = await db.transaction(async (tx) => {
       const where = and(eq(timesheetEntries.employeeId, absence.employeeId), eq(timesheetEntries.day, day));

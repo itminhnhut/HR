@@ -79,7 +79,7 @@ export function HolidaysCard() {
         <Field label="Tên đợt nghỉ"><Input aria-label="Tên đợt nghỉ" value={name} placeholder="vd: Tết Nguyên đán" onChange={(e) => setName(e.target.value)} className="bg-white" /></Field>
       </FormBox>
       {!!error && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(error)}</p>}
-      <p className="m-0 text-xs text-slate-500">Mọi người tự có NL trong kỳ đang mở. Ai đi làm thì HR sửa ô đó. Lễ rơi vào Chủ nhật tự nghỉ bù ngày kế tiếp. Tết, Giỗ Tổ và ngày liền kề 2/9: nhập theo thông báo của Chính phủ.</p>
+      <p className="m-0 text-xs text-slate-500">Mọi người tự có NL trong kỳ đang mở. Ai đi làm thì HR sửa ô đó. Lễ 1 ngày rơi vào Chủ nhật tự nghỉ bù ngày kế tiếp. Nghỉ nhiều ngày (Tết, 30/4–1/5, 2/9…): nhập đúng lịch Chính phủ thông báo, đã gồm ngày bù; Chủ nhật trong khoảng không tính.</p>
       <div className="flex flex-wrap items-center gap-3">
         <div className="min-w-64 flex-1"><YearNav year={year} onChange={setYear} /></div>
         <button type="button" disabled={fixed.isPending} onClick={() => fixed.mutate()} className="ts-field inline-flex items-center justify-center gap-2 rounded-md border bg-white px-3 text-sm font-medium hover:bg-slate-50 disabled:opacity-50 max-sm:w-full"><CalendarPlus className="size-4 text-teal-600" />Thêm lễ cố định năm {year}</button>

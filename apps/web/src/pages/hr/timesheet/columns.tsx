@@ -233,6 +233,8 @@ const EXTRA_COLUMNS = {
   bhxh: () => total('bhxh', 'Nghỉ BHXH', CONG, Baby, 'text-pink-600'),
   lamCN: () => total('lamCN', 'Làm Chủ nhật', CONG, Sun, 'text-amber-600'),
   lamLe: () => total('lamLe', 'Làm ngày lễ', CONG, Flag, 'text-teal-600'),
+  phepVuot: () => total('phepVuot', 'Nghỉ vượt phép (không lương)', PHEP, Plane, 'text-sky-600'),
+  phepCho: () => total('phepCho', 'Phép chờ (thử việc)', PHEP, Hourglass, 'text-amber-600'),
 };
 export const EXTRA_COLUMN_KEYS = Object.keys(EXTRA_COLUMNS) as (keyof typeof EXTRA_COLUMNS)[];
 

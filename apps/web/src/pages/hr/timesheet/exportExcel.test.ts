@@ -185,6 +185,15 @@ describe('the columns', () => {
     ]);
   });
 
+  it('TC-XL-09b: should add a column for leave taken beyond the balance, unpaid, in a month that has it', async () => {
+    // Act: October has 1,5 days over the balance for F and 0,5 for E in HR's sheet
+    const sheet = await openFile(OCTOBER());
+
+    // Assert
+    const row7 = (sheet.getRow(7).values as unknown[]).map(String);
+    expect(row7).toContain('Nghỉ vượt phép (không lương)');
+  });
+
   it('TC-XL-10: should say who each row is, numbered from 1', async () => {
     // Act
     const sheet = await openFile(NOVEMBER());

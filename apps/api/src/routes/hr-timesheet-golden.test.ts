@@ -18,7 +18,7 @@ beforeEach(async () => {
 function tableOf(dto: TimesheetDto, sheet: readonly GoldenPerson[]) {
   return Object.fromEntries(
     sheet.map((person) => {
-      const { leaveOverdrawn: _overdrawn, paidBeforeAdjustment: _before, ...totals } = totalsOf(dto, person.id);
+      const { leaveOverdrawn: _overdrawn, paidBeforeAdjustment: _before, maternity: _m, sick: _s, leavePendingClosing: _p, leaveCredited: _c, unpaidCounted: _u, sickCounted: _k, ...totals } = totalsOf(dto, person.id);
       return [person.id, totals];
     }),
   );
@@ -29,7 +29,8 @@ const expectedOf = (sheet: readonly GoldenPerson[]) => Object.fromEntries(sheet.
 async function typeOctober(): Promise<Map<string, EmployeeDto>> {
   await flow.at('2026-10-26');
   const people = new Map<string, EmployeeDto>();
-  const october = await flow.period(2026, 10);
+  // HR's sheets count leave their own way; "Như Excel cũ" is what reproduces them.
+  const october = await flow.call<TimesheetDto>('PUT', `/${(await flow.period(2026, 10)).periodId}/leave-mode`, { mode: 'excel' });
   for (const person of OCTOBER_SHEET) {
     const added = await flow.addPerson({
       code: person.id,

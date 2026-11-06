@@ -1,5 +1,5 @@
 import type { TimesheetRowDto } from '@careers/shared';
-import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, Flag, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, Flag, Hourglass, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../vendor/shadcn-grid/components/ui/dialog';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
@@ -15,6 +15,7 @@ const KINDS: { kind: ProblemKind; label: string; icon: LucideIcon; tone: string 
   { kind: 'adjustment', label: 'Có điều chỉnh công', icon: SlidersHorizontal, tone: 'text-red-600' },
   { kind: 'missingHoliday', label: 'Chưa nhập ngày lễ', icon: Flag, tone: 'text-red-600' },
   { kind: 'holidayWork', label: 'Đi làm ngày lễ', icon: Flag, tone: 'text-teal-600' },
+  { kind: 'probationLeave', label: 'Cộng phép thời gian thử việc', icon: Hourglass, tone: 'text-amber-600' },
   { kind: 'sundayWork', label: 'Làm Chủ nhật', icon: Sun, tone: 'text-amber-600' },
   { kind: 'holidayOvertime', label: 'OT có thể chỉ do ngày lễ', icon: Flag, tone: 'text-blue-600' },
   { kind: 'becameOfficial', label: 'Lên chính thức trong kỳ', icon: ShieldCheck, tone: 'text-green-600' },
@@ -100,8 +101,10 @@ function ProblemList({ problems, onJump }: { problems: readonly TimesheetProblem
   );
 }
 
-export function ReviewDialog({ open, onClose, problems, onJump, onLock, isBusy, error, closableFrom }: {
+export function ReviewDialog({ open, onClose, problems, onJump, onLock, isBusy, error, closableFrom, isClosed = false }: {
   open: boolean;
+  /** A closed period: read what it found, nothing left to close. */
+  isClosed?: boolean;
   /** The period's last day while it is still running: days after today have no attendance yet. */
   closableFrom: string | null;
   onClose: () => void;
@@ -115,11 +118,16 @@ export function ReviewDialog({ open, onClose, problems, onJump, onLock, isBusy, 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent initialFocus={later} className="sm:max-w-2xl">
-        <DialogHeader><DialogTitle>Rà soát trước khi chốt kỳ</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{isClosed ? 'Rà soát kỳ đã chốt' : 'Rà soát trước khi chốt kỳ'}</DialogTitle></DialogHeader>
         {problems.length === 0
           ? <p className="m-0 flex items-center gap-2 text-sm text-green-700"><CheckCircle2 className="size-4" />Không có gì cần xem.</p>
           : <ProblemList problems={problems} onJump={onJump} />}
-        {closableFrom ? (
+        {isClosed ? (
+          <p className="m-0 flex items-start gap-2 rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-700">
+            <Lock className="mt-0.5 size-4 shrink-0" />
+            Kỳ đã chốt, chỉ xem. Muốn sửa thì Mở lại kỳ.
+          </p>
+        ) : closableFrom ? (
           <p data-testid="close-wait" className="m-0 flex items-start gap-2 rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-900">
             <CalendarDays className="mt-0.5 size-4 shrink-0" />
             Kỳ chưa hết. Chốt được từ {closableFrom}.
@@ -132,11 +140,11 @@ export function ReviewDialog({ open, onClose, problems, onJump, onLock, isBusy, 
         )}
         {!!error && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(error)}</p>}
         <DialogFooter>
-          <button ref={later} type="button" onClick={onClose} className={OUTLINE}>Để sau</button>
-          <button type="button" disabled={isBusy || !!closableFrom} onClick={onLock} className="ts-field inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-4 text-sm font-medium text-white disabled:opacity-50">
+          <button ref={later} type="button" onClick={onClose} className={OUTLINE}>{isClosed ? 'Đóng' : 'Để sau'}</button>
+          {!isClosed && <button type="button" disabled={isBusy || !!closableFrom} onClick={onLock} className="ts-field inline-flex items-center justify-center gap-2 rounded-md bg-red-600 px-4 text-sm font-medium text-white disabled:opacity-50">
             <Lock className="size-4" />
             {isBusy ? 'Đang chốt…' : 'Chốt kỳ'}
-          </button>
+          </button>}
         </DialogFooter>
       </DialogContent>
     </Dialog>

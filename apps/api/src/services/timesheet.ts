@@ -16,10 +16,13 @@ import {
   TIMESHEET_MAX_DAYS,
   todayInVietnam,
   type AttendanceCode,
+  type LeaveRule,
+  LEAVE_MODES,
   type StaffType,
   type HrMe,
   type TimesheetDto,
   holidaysInEffect,
+  restDayWork,
   leaveChangeSchema,
   saturdaysFor,
   monthStatus,
@@ -34,6 +37,7 @@ import {
   type TimesheetRowDto,
 } from '@careers/shared';
 import { and, asc, desc, eq, gte, inArray, isNull, lt, lte, or } from 'drizzle-orm';
+import { z } from 'zod';
 import type { Db } from '../db/index.js';
 import {
   employees,
@@ -60,13 +64,18 @@ type Snapshot = typeof timesheetSnapshots.$inferSelect;
 const numberWords = (n: number) => String(n).replace('.', ',');
 const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
 
+/** The stored period just before a day: a new one carries on its way of counting leave. */
+const periodBefore = (db: Db, from: string) =>
+  db.query.timesheetPeriods.findFirst({ where: lt(timesheetPeriods.fromOn, from), orderBy: desc(timesheetPeriods.fromOn) });
+
 async function ensurePeriod(db: Db, year: number, month: number): Promise<Period> {
   const { from, to } = standardPeriod(year, month);
   const regions = await listRegions(db);
   const norms = Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, saturdaysFor(r, monthKey(year, month)))]));
+  const previous = await periodBefore(db, from);
   await db
     .insert(timesheetPeriods)
-    .values({ year, month, fromOn: from, toOn: to, norms })
+    .values({ year, month, fromOn: from, toOn: to, norms, ...(previous ? { leaveMode: previous.leaveMode } : {}) })
     .onConflictDoNothing();
   const period = await db.query.timesheetPeriods.findFirst({
     where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)),
@@ -102,12 +111,64 @@ async function firstMonthInUse(db: Db, now: Date) {
 
 const MAX_MONTHS_CARRIED = 36;
 
+/** Where a person's leave stands when a period opens: the balance, leave held from probation, and the yearly counts. */
+export interface LeaveState {
+  balance: number;
+  pending: number;
+  unpaidCounted: number;
+  sickCounted: number;
+  year: number;
+}
+
+const soFarOf = (state: LeaveState | undefined, year: number) => ({
+  leavePending: state?.pending ?? 0,
+  // The caps of Điều 65 are a year's: a new year starts them again.
+  unpaidCountedBefore: state && state.year === year ? state.unpaidCounted : 0,
+  sickCountedBefore: state && state.year === year ? state.sickCounted : 0,
+});
+
+/** The next state after a period's totals. */
+const nextState = (state: LeaveState | undefined, year: number, totals: Pick<TimesheetTotals, 'leaveClosing' | 'leavePendingClosing' | 'unpaidCounted' | 'sickCounted'>): LeaveState => {
+  const before = soFarOf(state, year);
+  return { balance: totals.leaveClosing, pending: totals.leavePendingClosing, unpaidCounted: before.unpaidCountedBefore + totals.unpaidCounted, sickCounted: before.sickCountedBefore + totals.sickCounted, year };
+};
+
 /**
- * The balance a period opens with. Months since the last closed one count as they stand, so a month not closed yet,
- * or reopened, does not make the next one read short: the sheet this replaces looks up last month's closing figure.
+ * A close made before these fields were stored: work them out from its totals. What counted for leave is days worked
+ * and paid leave, family days, insured days, holidays and approved unpaid leave, as the period's rule says.
  */
-async function carriedBalances(db: Db, period: Period, people: readonly Employee[], now: Date): Promise<Map<string, number>> {
-  const balances = await openingBalances(db, period.fromOn);
+function storedOrDerived(s: { employment: StaffType; leaveClosing: number; totals: TimesheetTotals | null }, rule: LeaveRule, state: LeaveState | undefined, year: number) {
+  const t = s.totals;
+  if (t && t.leavePendingClosing !== undefined) return t;
+  const before = soFarOf(state, year);
+  const law = rule.mode === 'law';
+  const unpaidCounted = law && t ? Math.min(t.unpaidLeave, Math.max(0, t.norm - before.unpaidCountedBefore)) : 0;
+  const counted = t ? t.actual + t.leave + t.personalPaid + t.insured + (law ? t.holiday + unpaidCounted : 0) : 0;
+  const earned = counted >= rule.threshold ? rule.perPeriod : 0;
+  return { leaveClosing: s.leaveClosing, leavePendingClosing: law && s.employment === 'probation' ? before.leavePending + earned : 0, unpaidCounted, sickCounted: 0 };
+}
+
+async function openingStates(db: Db, fromOn: string): Promise<Map<string, LeaveState>> {
+  const rows = await db
+    .select({ employeeId: timesheetSnapshots.employeeId, employment: timesheetSnapshots.employment, leaveClosing: timesheetSnapshots.leaveClosing, totals: timesheetSnapshots.totals, year: timesheetPeriods.year, threshold: timesheetPeriods.leaveThreshold, perPeriod: timesheetPeriods.leavePerPeriod, mode: timesheetPeriods.leaveMode })
+    .from(timesheetSnapshots)
+    .innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetSnapshots.periodId))
+    .where(and(lt(timesheetPeriods.toOn, fromOn), eq(timesheetPeriods.status, 'closed')))
+    .orderBy(asc(timesheetPeriods.toOn));
+  const states = new Map<string, LeaveState>();
+  for (const r of rows) {
+    const state = states.get(r.employeeId);
+    states.set(r.employeeId, nextState(state, r.year, storedOrDerived(r, { threshold: r.threshold, perPeriod: r.perPeriod, mode: r.mode }, state, r.year)));
+  }
+  return states;
+}
+
+/**
+ * Where leave stands when a period opens. Months since the last closed one count as they stand, so a month not closed
+ * yet, or reopened, does not make the next one read short: the sheet this replaces looks up last month's closing figure.
+ */
+async function carriedStates(db: Db, period: Period, people: readonly Employee[], now: Date): Promise<Map<string, LeaveState>> {
+  const states = await openingStates(db, period.fromOn);
   const latest = await db.query.timesheetPeriods.findFirst({
     where: and(eq(timesheetPeriods.status, 'closed'), lt(timesheetPeriods.toOn, period.fromOn)),
     orderBy: desc(timesheetPeriods.toOn),
@@ -115,45 +176,48 @@ async function carriedBalances(db: Db, period: Period, people: readonly Employee
   const months: { year: number; month: number }[] = [];
   for (let m = latest ? nextMonth(latest) : await firstMonthInUse(db, now); isBefore(m, period) && months.length <= MAX_MONTHS_CARRIED; m = nextMonth(m)) months.push(m);
   const [firstMonth] = months;
-  if (!firstMonth || people.length === 0 || months.length > MAX_MONTHS_CARRIED) return balances;
+  if (!firstMonth || people.length === 0 || months.length > MAX_MONTHS_CARRIED) return states;
   const ids = people.map((p) => p.id);
-  const [cells, holidays, changes] = await Promise.all([
+  const [cells, holidays, changes, rows, regions] = await Promise.all([
     cellsFor(db, ids, standardPeriod(firstMonth.year, firstMonth.month).from, period.fromOn),
     listHolidays(db),
     db.select({ year: timesheetPeriods.year, month: timesheetPeriods.month, employeeId: timesheetLeaveChanges.employeeId, amount: timesheetLeaveChanges.amount })
       .from(timesheetLeaveChanges).innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetLeaveChanges.periodId)),
+    db.select().from(timesheetPeriods).where(gte(timesheetPeriods.fromOn, standardPeriod(firstMonth.year, firstMonth.month).from)),
+    listRegions(db),
   ]);
   const holidayDays = new Set(holidaysInEffect(holidays).map((h) => h.day));
   const today = todayInVietnam(now);
   for (const m of months) {
     const range = standardPeriod(m.year, m.month);
     const days = periodDays(range);
+    // A month not opened yet counts by the rule the next one will get.
+    const own = rows.find((r) => r.year === m.year && r.month === m.month);
+    const rule: LeaveRule = own ? ruleOf(own) : ruleOf(period);
+    // A month never stored, or a region added after it was: the norm it would have been opened with.
+    const usualNorm = (regionId: string) => {
+      const region = regions.find((r) => r.id === regionId);
+      return region ? suggestedNorm(range, saturdaysFor(region, monthKey(m.year, m.month))) : 0;
+    };
     for (const p of people) {
       const codes = days.map((day) => dayCode({ day, entered: cells.get(p.id)?.[day]?.entered ?? null, isHoliday: holidayDays.has(day), today, joinedOn: p.joinedOn, leftOn: p.leftOn }));
       const leaveChange = changes.filter((c) => c.employeeId === p.id && c.year === m.year && c.month === m.month).reduce((sum, c) => sum + c.amount, 0);
-      const { leaveClosing } = timesheetTotals({ codes, norm: 0, leaveOpening: balances.get(p.id) ?? p.openingLeave, employment: employmentOn(p, range.to), leaveChange });
-      balances.set(p.id, leaveClosing);
+      const state = states.get(p.id) ?? { balance: p.openingLeave, pending: 0, unpaidCounted: 0, sickCounted: 0, year: m.year };
+      const norm = own?.norms[p.regionId] ?? usualNorm(p.regionId);
+      const totals = timesheetTotals({ codes, norm, leaveOpening: state.balance, employment: employmentOn(p, range.to), leaveChange, rule, ...soFarOf(state, m.year) });
+      states.set(p.id, nextState(state, m.year, totals));
     }
   }
-  return balances;
+  return states;
 }
+
+const ruleOf = (p: Pick<Period, 'leaveThreshold' | 'leavePerPeriod' | 'leaveMode'>): LeaveRule => ({ threshold: p.leaveThreshold, perPeriod: p.leavePerPeriod, mode: p.leaveMode });
 
 async function leaveChangesFor(db: Db, periodId: string) {
   const rows = await db.select().from(timesheetLeaveChanges).where(eq(timesheetLeaveChanges.periodId, periodId)).orderBy(asc(timesheetLeaveChanges.createdAt));
   const out = new Map<string, TimesheetLeaveChangeDto[]>();
   for (const r of rows) out.set(r.employeeId, [...(out.get(r.employeeId) ?? []), { id: r.id, amount: r.amount, reason: r.reason, createdBy: r.createdBy }]);
   return out;
-}
-
-/** Each person's balance: what the last closed period before this one ended with, else what HR entered at the start. */
-async function openingBalances(db: Db, fromOn: string): Promise<Map<string, number>> {
-  const rows = await db
-    .select({ employeeId: timesheetSnapshots.employeeId, closing: timesheetSnapshots.leaveClosing })
-    .from(timesheetSnapshots)
-    .innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetSnapshots.periodId))
-    .where(and(lt(timesheetPeriods.toOn, fromOn), eq(timesheetPeriods.status, 'closed')))
-    .orderBy(asc(timesheetPeriods.toOn));
-  return new Map(rows.map((r) => [r.employeeId, r.closing]));
 }
 
 async function adjustmentsFor(db: Db, ids: string[], key: string) {
@@ -241,7 +305,7 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
     : (await db.select().from(employees).where(workingInRange(period.fromOn, period.toOn))).filter((p) => !frozenIds.has(p.id));
   const ids = [...frozenIds, ...people.map((p) => p.id)];
   const [opening, cells, adjustments, leaveChanges, kinds] = await Promise.all([
-    carriedBalances(db, period, people, now),
+    carriedStates(db, period, people, now),
     cellsFor(db, ids, period.fromOn, period.toOn),
     adjustmentsFor(db, ids, monthKey(period.year, period.month)),
     leaveChangesFor(db, period.id),
@@ -259,13 +323,15 @@ async function sheetRows(db: Db, period: Period, regions: readonly TimesheetRegi
       ...frozenPersonOf(f, kinds),
       ...datesOf(liveDates.find((l) => l.id === f.employeeId)),
       leaveOpening: f.leaveOpening,
+      leaveSoFar: soFarOf(opening.get(f.employeeId), period.year),
       norm: period.norms[f.regionId] ?? f.norm,
       frozenTotals: period.status === 'closed' ? f.totals : null,
       ...extras(f.employeeId),
     })),
     ...people.map((p) => ({
       ...personOf(p, period.toOn, kinds),
-      leaveOpening: opening.get(p.id) ?? p.openingLeave,
+      leaveOpening: opening.get(p.id)?.balance ?? p.openingLeave,
+      leaveSoFar: soFarOf(opening.get(p.id), period.year),
       norm: period.norms[p.regionId] ?? normOf(p.regionId),
       frozenTotals: null,
       ...extras(p.id),
@@ -307,7 +373,7 @@ async function toDto(db: Db, period: Period, now: Date): Promise<TimesheetDto> {
     closedBy: period.closedBy,
     canReopen: period.status === 'closed' && latest?.id === period.id,
     norms: { ...suggested, ...period.norms },
-    rule: { threshold: period.leaveThreshold, perPeriod: period.leavePerPeriod },
+    rule: ruleOf(period),
     today: todayInVietnam(now),
     regions,
     holidays: frozen?.holidays ?? holidaysInEffect(liveHolidays).filter((h) => h.day >= period.fromOn && h.day <= period.toOn),
@@ -319,7 +385,23 @@ export async function getTimesheet(db: Db, year: number, month: number, now: Dat
   if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12 || year < 2020 || year > 2100) {
     throw invalid('Tháng không hợp lệ.');
   }
+  // A month not started yet is only to look at: storing it would make empty periods that every change is then logged
+  // into. Leave planned ahead goes through the Nghỉ tab, which writes the days without a period.
+  if (standardPeriod(year, month).from > todayInVietnam(now)) {
+    const stored = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
+    if (stored) return toDto(db, stored, now);
+    return { ...(await toDto(db, await periodHolding(db, standardPeriod(year, month).from), now)), periodId: null };
+  }
   return toDto(db, await ensurePeriod(db, year, month), now);
+}
+
+/** A month not started yet, opened so HR can type in it ahead: set its norm, plan its days. */
+export async function openPeriodAhead(db: Db, year: number, month: number, hr: HrMe, now: Date): Promise<TimesheetDto> {
+  if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12 || year < 2020 || year > 2100) throw invalid('Tháng không hợp lệ.');
+  const existed = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
+  const period = existed ?? (await ensurePeriod(db, year, month));
+  if (!existed && period.fromOn > todayInVietnam(now)) await db.insert(timesheetLog).values({ periodId: period.id, actor: actorOf(hr), action: 'Mở kỳ để nhập trước', detail: `Tháng ${month}/${year}`, at: now });
+  return toDto(db, period, now);
 }
 
 /** The twelve months of a year, for choosing one to read or several to download. Reading this creates nothing. */
@@ -349,6 +431,22 @@ export async function listYear(db: Db, year: number, now: Date): Promise<Timeshe
 }
 
 /** Any days up to a month: to read and download. Entering and closing belong to the 26–25 periods. */
+/** The id of a period not stored: nothing has it, so reading by it finds nothing. */
+const NO_PERIOD = '00000000-0000-0000-0000-000000000000';
+
+/** The period a day falls in, as stored, or as it would be opened, without opening it. */
+async function periodHolding(db: Db, day: string): Promise<Period> {
+  const { year, month } = periodMonthOf(day);
+  const own = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
+  if (own) return own;
+  const { from, to } = standardPeriod(year, month);
+  const previous = await periodBefore(db, from);
+  return {
+    id: NO_PERIOD, year, month, fromOn: from, toOn: to, status: 'open', norms: {}, leaveThreshold: DEFAULT_LEAVE_RULE.threshold, leavePerPeriod: DEFAULT_LEAVE_RULE.perPeriod,
+    leaveMode: previous?.leaveMode ?? 'law', closedAt: null, closedBy: null, frozen: null, createdAt: new Date(0),
+  };
+}
+
 export async function getTimesheetRange(db: Db, from: string, to: string, now: Date): Promise<TimesheetDto> {
   const isDay = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d);
   if (!isDay(from) || !isDay(to) || from > to) throw invalid('Khoảng ngày không hợp lệ.');
@@ -367,7 +465,9 @@ export async function getTimesheetRange(db: Db, from: string, to: string, now: D
     listStaffKinds(db),
   ]);
   const ids = people.map((p) => p.id);
-  const [cells, adjustments] = await Promise.all([cellsFor(db, ids, from, to), adjustmentsFor(db, ids, monthKey(year, month))]);
+  // Leave starts where it stood when the period holding the first day opened, and counts by that period's rule.
+  const start = await periodHolding(db, from);
+  const [cells, adjustments, states] = await Promise.all([cellsFor(db, ids, from, to), adjustmentsFor(db, ids, monthKey(year, month)), carriedStates(db, start, people, now)]);
   return {
     periodId: null,
     year,
@@ -379,13 +479,14 @@ export async function getTimesheetRange(db: Db, from: string, to: string, now: D
     closedBy: null,
     canReopen: false,
     norms: Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, saturdaysFor(r, monthKey(year, month)))])),
-    rule: DEFAULT_LEAVE_RULE,
+    rule: ruleOf(start),
     today: todayInVietnam(now),
     regions,
     holidays: holidaysInEffect(holidays).filter((h) => h.day >= from && h.day <= to),
     rows: sortedRows(people.map((p) => ({
       ...personOf(p, to, kinds),
-      leaveOpening: 0,
+      leaveOpening: states.get(p.id)?.balance ?? p.openingLeave,
+      leaveSoFar: soFarOf(states.get(p.id), start.year),
       norm: suggestedNorm({ from, to }, saturdaysFor(regions.find((r) => r.id === p.regionId) ?? { saturdays: 0 }, monthKey(year, month))),
       cells: cells.get(p.id) ?? {},
       adjustments: adjustments.get(p.id) ?? [],
@@ -556,7 +657,10 @@ export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date)
       rule: dto.rule,
       adjustment: row.adjustments.reduce((sum, a) => sum + a.amount, 0),
       leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
+      ...row.leaveSoFar,
     });
+    // What payroll pays at its own rate, kept with the close so later edits of the cells do not change it.
+    Object.assign(totals, restDayWork(days, codes, holidays));
     return { periodId, employeeId: row.employeeId, code: row.code, fullName: row.fullName, department: row.department, title: row.title, regionId: row.regionId, employment: row.employment, staffLabel: row.staffLabel, joinedOn: row.joinedOn, leftOn: row.leftOn, norm: row.norm, leaveOpening: row.leaveOpening, leaveClosing: totals.leaveClosing, totals };
   });
   const before = await db.select().from(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
@@ -590,8 +694,24 @@ export async function reopenPeriod(db: Db, periodId: string, raw: unknown, hr: H
   return toDto(db, updated, now);
 }
 
+const leaveModeSchema = z.object({ mode: z.enum(LEAVE_MODES) });
+const LEAVE_MODE_WORDS = { law: 'Theo luật (NĐ 145)', excel: 'Như Excel cũ' } as const;
+
+/** How leave counts, for this open period and the open ones after it. Closed periods keep what they closed with. */
+export async function setLeaveMode(db: Db, periodId: string, raw: unknown, hr: HrMe, now: Date): Promise<TimesheetDto> {
+  const period = await findPeriod(db, periodId);
+  requireOpen(period);
+  const parsed = leaveModeSchema.safeParse(raw);
+  if (!parsed.success) throw invalid('Chọn cách tính phép.', fieldErrors(parsed.error));
+  const { mode } = parsed.data;
+  if (mode === period.leaveMode) return toDto(db, period, now);
+  await db.update(timesheetPeriods).set({ leaveMode: mode }).where(and(eq(timesheetPeriods.status, 'open'), gte(timesheetPeriods.fromOn, period.fromOn)));
+  await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Đổi cách tính phép', detail: `${LEAVE_MODE_WORDS[period.leaveMode]} → ${LEAVE_MODE_WORDS[mode]}, từ tháng ${period.month}/${period.year}`, at: now });
+  return toDto(db, await findPeriod(db, periodId), now);
+}
+
 /** What a change of balance stands on: someone on probation has no balance to take from, whatever was typed at the start. */
-const balanceBase = (row: Pick<TimesheetRowDto, 'employment' | 'leaveOpening'>) => (row.employment === 'probation' ? 0 : row.leaveOpening);
+const balanceBase = (row: Pick<TimesheetRowDto, 'employment' | 'leaveOpening'>, rule: LeaveRule) => (row.employment === 'probation' && rule.mode !== 'law' ? 0 : row.leaveOpening);
 
 export async function addLeaveChange(db: Db, periodId: string, raw: unknown, hr: HrMe, now: Date): Promise<TimesheetDto> {
   const period = await findPeriod(db, periodId);
@@ -603,7 +723,7 @@ export async function addLeaveChange(db: Db, periodId: string, raw: unknown, hr:
   const row = dto.rows.find((r) => r.employeeId === employeeId);
   if (!row) throw notFound('Không tìm thấy nhân viên trong kỳ này.');
   const already = row.leaveChanges.reduce((sum, c) => sum + c.amount, 0);
-  if (balanceBase(row) + already + amount < 0) throw invalid('Không trừ quá số phép đang có.', { amount: 'Không trừ quá số phép đang có.' });
+  if (balanceBase(row, dto.rule) + already + amount < 0) throw invalid('Không trừ quá số phép đang có.', { amount: 'Không trừ quá số phép đang có.' });
   await db.insert(timesheetLeaveChanges).values({ periodId, employeeId, amount, reason, createdBy: actorOf(hr) });
   await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Điều chỉnh phép', detail: `${row.code} ${row.fullName}: ${numberWords(amount)} ngày (${reason})`, at: now });
   return toDto(db, period, now);
@@ -618,7 +738,7 @@ export async function removeLeaveChange(db: Db, periodId: string, changeId: stri
   const change = person?.leaveChanges.find((c) => c.id === changeId);
   if (!person || !change) throw notFound('Không tìm thấy điều chỉnh phép.');
   const left = person.leaveChanges.reduce((sum, c) => sum + c.amount, 0) - change.amount;
-  if (balanceBase(person) + left < 0) throw invalid('Bỏ điều chỉnh này thì phép bị âm. Bỏ khoản trừ trước.');
+  if (balanceBase(person, dto.rule) + left < 0) throw invalid('Bỏ điều chỉnh này thì phép bị âm. Bỏ khoản trừ trước.');
   const [row] = await db.delete(timesheetLeaveChanges).where(eq(timesheetLeaveChanges.id, changeId)).returning();
   if (!row) throw notFound('Không tìm thấy điều chỉnh phép.');
   await db.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Bỏ điều chỉnh phép', detail: `${numberWords(row.amount)} ngày (${row.reason})`, at: now });

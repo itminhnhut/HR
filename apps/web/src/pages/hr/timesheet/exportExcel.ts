@@ -37,11 +37,17 @@ const EXTRA_TOTALS: typeof TOTALS = [
   ['lamCN', 'Làm Chủ nhật', 'FFFCE4D6'],
   ['lamLe', 'Làm ngày lễ', 'FFFCE4D6'],
 ];
+
+/** Leave figures HR's sheet has no column for: after its last one, so AK–AU stay where HR has them. */
+const TRAILING_TOTALS: typeof TOTALS = [
+  ['phepVuot', 'Nghỉ vượt phép (không lương)', 'FFFFF2CC'],
+  ['phepCho', 'Phép chờ (thử việc)', 'FFFFF2CC'],
+];
 const FIRST_PAY_TOTAL = 6;
 
 function totalsFor(rows: readonly GridRow[]): typeof TOTALS {
-  const extras = EXTRA_TOTALS.filter(([key]) => rows.some((r) => Number(r[key]) > 0));
-  return [...TOTALS.slice(0, FIRST_PAY_TOTAL), ...extras, ...TOTALS.slice(FIRST_PAY_TOTAL)];
+  const used = (list: typeof TOTALS) => list.filter(([key]) => rows.some((r) => Number(r[key]) > 0));
+  return [...TOTALS.slice(0, FIRST_PAY_TOTAL), ...used(EXTRA_TOTALS), ...TOTALS.slice(FIRST_PAY_TOTAL), ...used(TRAILING_TOTALS)];
 }
 
 export interface ExportArgs {

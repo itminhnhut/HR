@@ -13,6 +13,8 @@ import {
   periodLog,
   removeAdjustment,
   reopenPeriod,
+  setLeaveMode,
+  openPeriodAhead,
   saveCells,
   saveNorms,
 } from '../services/timesheet.js';
@@ -187,6 +189,14 @@ hrTimesheetRoutes.delete('/:id/adjustments/:adjustmentId', async (c) => {
 hrTimesheetRoutes.post('/:id/close', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await closePeriod(db, c.req.param('id'), hrOf(c), now()));
+});
+hrTimesheetRoutes.post('/periods/:year/:month', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await openPeriodAhead(db, Number(c.req.param('year')), Number(c.req.param('month')), hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.put('/:id/leave-mode', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await setLeaveMode(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
 });
 hrTimesheetRoutes.post('/:id/reopen', async (c) => {
   const { db, now } = c.get('deps');

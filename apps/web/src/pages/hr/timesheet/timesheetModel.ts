@@ -1,5 +1,8 @@
 import {
   dayCode,
+  paidBySegment,
+  restDayWork,
+  leaveCountOf,
   FIXED_HOLIDAYS,
   isWeekend,
   periodDays,
@@ -45,19 +48,15 @@ function codeOn(dto: TimesheetDto, row: TimesheetRowDto, day: string, entered: A
   return dayCode({ day, entered, isHoliday: dto.holidays.some((h) => h.day === day), today: dto.today, joinedOn: row.joinedOn, leftOn: row.leftOn });
 }
 
-const WORKED: readonly (AttendanceCode | null)[] = ['1', 'M'];
-
 /** Days worked on a holiday or a Sunday: they pay at a different rate, which the sheet leaves to payroll (Đ.98). */
-function restDayWork(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]) {
-  const worked = days.filter((d) => WORKED.includes(row.cells[d.iso]?.entered ?? null));
-  const isHoliday = (d: DayColumn) => dto.holidays.some((h) => h.day === d.iso);
-  return {
-    lamLe: worked.filter(isHoliday).length,
-    lamCN: worked.filter((d) => d.weekday === 'CN' && !isHoliday(d)).length,
-  };
+function restDayWorkOf(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]) {
+  // A closed period shows what its close kept; otherwise the same day codes the close would use.
+  const kept = row.frozenTotals;
+  if (kept?.sundayWorked !== undefined && kept.holidayWorked !== undefined) return { lamLe: kept.holidayWorked, lamCN: kept.sundayWorked };
+  const codes = days.map((d) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null));
+  const { sundayWorked, holidayWorked } = restDayWork(days.map((d) => d.iso), codes, new Set(dto.holidays.map((h) => h.day)));
+  return { lamLe: holidayWorked, lamCN: sundayWorked };
 }
-
-const COUNTS_WHOLE: readonly (AttendanceCode | null)[] = ['1', 'M', 'P', 'P/2', 'CL', 'TS', 'OM'];
 
 /**
  * Halfway through a period the new leave day is not earned yet, so leave can read as over the balance when it will not
@@ -66,7 +65,7 @@ const COUNTS_WHOLE: readonly (AttendanceCode | null)[] = ['1', 'M', 'P', 'P/2', 
 function mayStillCoverLeave(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[], totals: TimesheetTotals): boolean {
   if (dto.today >= dto.to || row.employment === 'probation' || totals.leaveOverdrawn > dto.rule.perPeriod) return false;
   const codeOf = (d: DayColumn) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null);
-  const counted = days.reduce((sum, d) => sum + (codeOf(d) === 'KL/2' ? 0.5 : COUNTS_WHOLE.includes(codeOf(d)) ? 1 : 0), 0);
+  const counted = leaveCountOf(days.map(codeOf), row.norm, dto.rule, row.leaveSoFar);
   // Already earned: the balance includes it and the leave is still over, so no day ahead can help.
   if (counted >= dto.rule.threshold) return false;
   const ahead = days.filter((d) => codeOf(d) === null && d.iso > dto.today && !d.isWeekend && (!row.joinedOn || d.iso >= row.joinedOn) && (!row.leftOn || d.iso <= row.leftOn)).length;
@@ -83,6 +82,7 @@ export function rowTotals(dto: TimesheetDto, row: TimesheetRowDto, days: readonl
     adjustment: adjustmentOf(row),
     leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
     rule: dto.rule,
+    ...row.leaveSoFar,
   });
 }
 
@@ -110,7 +110,7 @@ export function gridRows(dto: TimesheetDto, days: readonly DayColumn[]): GridRow
       le: totals.holiday,
       coLuong: totals.personalPaid,
       bhxh: totals.insured,
-      ...restDayWork(dto, row, days),
+      ...restDayWorkOf(dto, row, days),
       doiPhep: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
       chuan: totals.norm,
       huong: totals.paid,
@@ -119,6 +119,8 @@ export function gridRows(dto: TimesheetDto, days: readonly DayColumn[]): GridRow
       tonDau: totals.leaveOpening,
       tonCuoi: totals.leaveClosing,
       phepVuot: mayStillCoverLeave(dto, row, days, totals) ? 0 : totals.leaveOverdrawn,
+      phepCho: totals.leavePendingClosing ?? 0,
+      phepCong: totals.leaveCredited ?? 0,
     };
     for (const d of days) grid[d.key] = codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null) ?? '';
     return grid;
@@ -199,7 +201,7 @@ export function withCells(dto: TimesheetDto, cells: TimesheetCellsInput['cells']
 export interface TimesheetProblem {
   id: string;
   group: 'Cần xử lý' | 'Cần xem';
-  kind: 'saturday' | 'leave' | 'left' | 'adjustment' | 'missingHoliday' | 'holidayWork' | 'sundayWork' | 'holidayOvertime' | 'becameOfficial';
+  kind: 'saturday' | 'leave' | 'left' | 'adjustment' | 'missingHoliday' | 'holidayWork' | 'probationLeave' | 'sundayWork' | 'holidayOvertime' | 'becameOfficial';
   employeeId: string;
   columnId: string;
   text: string;
@@ -226,6 +228,9 @@ function restDayProblems(name: string, employeeId: string, grid: GridRow): Times
   const base = { employeeId, group: 'Cần xem' as const };
   if (Number(grid.lamLe) > 0) {
     out.push({ ...base, id: `h${employeeId}`, kind: 'holidayWork', columnId: 'lamLe', text: `${name}: đi làm ${balance(grid.lamLe)} ngày lễ, lương làm lễ tính riêng` });
+  }
+  if (Number(grid.phepCong) > 0) {
+    out.push({ ...base, id: `t${employeeId}`, kind: 'probationLeave', columnId: 'tonCuoi', text: `${name}: lên chính thức, cộng ${balance(grid.phepCong)} ngày phép của thời gian thử việc` });
   }
   if (Number(grid.lamCN) > 0) {
     out.push({ ...base, id: `c${employeeId}`, kind: 'sundayWork', columnId: 'lamCN', text: `${name}: làm ${balance(grid.lamCN)} ngày Chủ nhật, lương tính riêng` });
@@ -263,9 +268,10 @@ export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows
     }
     out.push(...restDayProblems(row.fullName, row.employeeId, grid));
     if (row.officialOn && row.officialOn > dto.from && row.officialOn <= dto.to) {
-      const isCounted = (d: DayColumn) => WORKED.includes(String(grid[d.key]) as AttendanceCode);
-      const before = days.filter((d) => isCounted(d) && d.iso < String(row.officialOn)).length;
-      const after = days.filter((d) => isCounted(d) && d.iso >= String(row.officialOn)).length;
+      const totals = rowTotals(dto, row, days);
+      const codes = days.map((d) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null));
+      const leavePaid = totals.leave - totals.leaveOverdrawn;
+      const { before, after } = paidBySegment({ days: days.map((d) => d.iso), codes, splitOn: row.officialOn, leavePaid, paid: totals.paid });
       out.push({ ...base, id: `o${row.employeeId}`, group: 'Cần xem', kind: 'becameOfficial', columnId: 'loai', text: `${row.fullName}: lên chính thức ${dayMonth(row.officialOn)}, ${before} công thử việc, ${after} công chính thức` });
     }
     for (const a of row.adjustments) {

@@ -160,7 +160,7 @@ describe('from probation to official', () => {
     expect(totalsOf(october, 'A').leaveClosing).toBe(0);
   });
 
-  it('TC-TV-05: should carry leave through the change: nothing from probation, then one day a period', async () => {
+  it('TC-TV-05: should carry leave through the change: October held on probation, added in November with November\'s own day', async () => {
     // Arrange
     await flow.addPerson({ code: 'A', employment: 'probation', officialOn: '2026-11-20' });
     await flow.at('2026-10-26');
@@ -171,8 +171,8 @@ describe('from probation to official', () => {
     // Act
     const december = await flow.period(2026, 12);
 
-    // Assert
-    expect(rowOf(december, 'A').leaveOpening).toBe(1);
+    // Assert: 1 held from October + 1 earned in November (NĐ 145 Điều 65 khoản 2)
+    expect(rowOf(december, 'A').leaveOpening).toBe(2);
   });
 
   it('TC-TV-06: should pay no leave taken before the period of the change', async () => {

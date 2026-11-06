@@ -16,8 +16,9 @@ beforeEach(async () => {
 
 describe('leave carried from period to period', () => {
   it('TC-CK-01: should carry a balance through six periods, past the new year and February, by the formula of AV9', async () => {
-    // Arrange: opening 2, HCM, nothing but what is typed below
+    // Arrange: opening 2, HCM, nothing but what is typed below, counted as the workbook does
     const person = await flow.addPerson({ code: 'A', openingLeave: 2 });
+    await flow.call('PUT', `/${(await flow.period(2026, 10)).periodId}/leave-mode`, { mode: 'excel' });
     const closings: Record<string, { opening: number; closing: number; paid: number; overdrawn: number }> = {};
     const closeOn = async (day: string, year: number, month: number) => {
       await flow.at(day);
@@ -238,7 +239,8 @@ describe('a closed period', () => {
       fullName: 'Tên Cũ', department: 'Kế toán', regionId: flow.hcm.id, employment: 'probation',
       joinedOn: null, leftOn: null, norm: 22, leaveOpening: 2,
     });
-    expect(totalsOf(after, 'A')).toMatchObject({ actual: 20, paid: 20, leaveClosing: 0 });
+    // Probation keeps the balance it had and holds its leave for later (NĐ 145 Điều 65 khoản 2)
+    expect(totalsOf(after, 'A')).toMatchObject({ actual: 20, paid: 20, leaveClosing: 2, leavePendingClosing: 1 });
   });
 
   it('TC-SC-03: should carry its closing balance on, whatever HR then types as opening leave', async () => {
@@ -357,8 +359,8 @@ describe('changing the norm of a region from a month on', () => {
   });
 
   it('TC-DM-02: should keep a month HR set by hand', async () => {
-    // Arrange
-    const december = await flow.period(2026, 12);
+    // Arrange: December has not started, so HR opens it to set its norm ahead
+    const december = await flow.call<TimesheetDto>('POST', '/periods/2026/12', undefined, 201);
     await flow.call('PATCH', `/${december.periodId}/norms`, { norms: { [flow.hcm.id]: 20 } });
 
     // Act
@@ -691,7 +693,8 @@ describe('what a closed period remembers', () => {
 
     // Assert
     const row = rowOf(closed, 'A');
-    expect(row.frozenTotals).toEqual(totalsOf(closed, 'A'));
+    // The close keeps every total, and adds what payroll needs on top: Sunday and holiday work
+    expect(row.frozenTotals).toEqual({ ...totalsOf(closed, 'A'), sundayWorked: 0, holidayWorked: 0 });
     expect(row.frozenTotals?.paid).toBe(20);
   });
 
@@ -836,10 +839,20 @@ describe('removing someone added by mistake', () => {
 });
 
 describe('fixes from the review', () => {
-  it('RV-01: should refuse taking leave from someone on probation below nothing, whatever the typed start says', async () => {
-    // Arrange: probation counts no balance, so −2 has nothing to come from
+  it('RV-01: should refuse taking leave from someone on probation below what they have', async () => {
+    // Arrange: probation keeps the balance of 3 (NĐ 145 Điều 65 khoản 2)
     const person = await flow.addPerson({ code: 'A', employment: 'probation', openingLeave: 3 });
     const november = await flow.period(2026, 11);
+
+    // Act + Assert
+    await flow.call('POST', `/${november.periodId}/leave-changes`, { employeeId: person.id, amount: -4, reason: 'Sai' }, 422);
+    await flow.call('POST', `/${november.periodId}/leave-changes`, { employeeId: person.id, amount: -2, reason: 'Sai' }, 201);
+  });
+
+  it('RV-01b: should refuse any cut on probation when HR counts as the workbook did', async () => {
+    // Arrange: the workbook counts no balance on probation, so −2 has nothing to come from
+    const person = await flow.addPerson({ code: 'A', employment: 'probation', openingLeave: 3 });
+    const november = await flow.call<TimesheetDto>('PUT', `/${(await flow.period(2026, 11)).periodId}/leave-mode`, { mode: 'excel' });
 
     // Act + Assert
     await flow.call('POST', `/${november.periodId}/leave-changes`, { employeeId: person.id, amount: -2, reason: 'Sai' }, 422);

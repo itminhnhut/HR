@@ -1,5 +1,5 @@
-import type { TimesheetDto } from '@careers/shared';
-import { CalendarCheck, Lock } from 'lucide-react';
+import { standardPeriod, type TimesheetDto } from '@careers/shared';
+import { CalendarCheck, CalendarClock, CalendarPlus, Lock } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
@@ -87,6 +87,7 @@ function useSheetActions(choice: PeriodChoice, periodId: string | null) {
     removeAdjust: useSheetAction<string>(choice, (adjustmentId) => api.hrTimesheetRemoveAdjustment(id, adjustmentId)),
     addLeave: useSheetAction<{ employeeId: string; amount: number; reason: string }>(choice, (input) => api.hrTimesheetAddLeaveChange(id, input)),
     removeLeave: useSheetAction<string>(choice, (changeId) => api.hrTimesheetRemoveLeaveChange(id, changeId)),
+    openAhead: useSheetAction<void>(choice, () => (choice.kind === 'month' ? api.hrOpenPeriodAhead(choice.year, choice.month) : Promise.reject(new Error('Không phải một kỳ')))),
   };
 }
 
@@ -100,9 +101,23 @@ function useOpenOnToday(todayKey: string | undefined, scrollTo: (columnId: strin
   }, []);
 }
 
-function PeriodBanners({ dto }: { dto: TimesheetDto }) {
+/** A month whose period has not started and is not stored: only to look at until HR opens it. */
+const isAhead = (dto: TimesheetDto) => {
+  const standard = standardPeriod(dto.year, dto.month);
+  return !dto.periodId && dto.from === standard.from && dto.to === standard.to && dto.from > dto.today;
+};
+
+export function PeriodBanners({ dto, onOpenAhead, isOpening }: { dto: TimesheetDto; onOpenAhead: () => void; isOpening: boolean }) {
+  if (isAhead(dto)) {
+    return (
+      <Banner tone="border-slate-200 bg-slate-50 text-slate-800" icon={<CalendarClock className="size-4 shrink-0" />}>
+        Kỳ T{dto.month}/{dto.year} chưa bắt đầu, đang chỉ xem. Cần ghi trước (vd nghỉ đã duyệt) thì mở kỳ.
+        <button type="button" disabled={isOpening} onClick={onOpenAhead} className="ml-auto inline-flex h-8 items-center gap-1.5 rounded-md bg-blue-600 px-3 text-xs font-medium text-white disabled:opacity-50"><CalendarPlus className="size-3.5" />Mở kỳ để nhập trước</button>
+      </Banner>
+    );
+  }
   if (!dto.periodId) {
-    return <Banner tone="border-blue-200 bg-blue-50 text-blue-900" icon={<CalendarCheck className="size-4 shrink-0" />}>Khoảng tự chọn: chỉ xem và tải. Phép năm không tính.</Banner>;
+    return <Banner tone="border-blue-200 bg-blue-50 text-blue-900" icon={<CalendarCheck className="size-4 shrink-0" />}>Khoảng tự chọn: chỉ xem và tải. Phép đầu kỳ lấy từ kỳ có ngày đầu tiên.</Banner>;
   }
   if (dto.status !== 'closed') return null;
   return <Banner tone="border-red-200 bg-red-50 text-red-800" icon={<Lock className="size-4 shrink-0" />}>Kỳ đã chốt, chỉ xem.{dto.canReopen ? ' Muốn sửa bấm Mở lại kỳ.' : ' Sai ở kỳ này thì điều chỉnh công ở kỳ hiện tại.'}</Banner>;
@@ -147,7 +162,7 @@ function SheetDialogs({ dto, dialog, onDialog, adjustingId, onAdjusting, leaveId
   const close = () => onDialog(null);
   return (
     <>
-      <ReviewDialog open={dialog === 'review'} onClose={close} closableFrom={closableFrom} problems={problems} onJump={onJump} isBusy={actions.close.isPending} error={actions.close.error} onLock={() => actions.close.mutate(undefined, { onSuccess: close })} />
+      <ReviewDialog open={dialog === 'review'} isClosed={dto.status === 'closed'} onClose={close} closableFrom={closableFrom} problems={problems} onJump={onJump} isBusy={actions.close.isPending} error={actions.close.error} onLock={() => actions.close.mutate(undefined, { onSuccess: close })} />
       <ReopenDialog open={dialog === 'reopen'} onClose={close} isBusy={actions.reopen.isPending} error={actions.reopen.error} onReopen={(reason) => actions.reopen.mutate(reason, { onSuccess: close })} />
       <AdjustDialog
         row={dto.rows.find((r) => r.employeeId === adjustingId) ?? null}
@@ -250,7 +265,7 @@ export function GridTab({ dto, choice, onPeriod, actionsSlot }: Props) {
         <CodeLegend rows={filters.visible} days={days} />
       </div>
       <SheetFilterBar dto={dto} rows={rows} filters={filters} table={table} days={days} todayKey={todayKey} onScroll={scrollTo} onDownload={download} />
-      <PeriodBanners dto={dto} />
+      <PeriodBanners dto={dto} onOpenAhead={() => actions.openAhead.mutate()} isOpening={actions.openAhead.isPending} />
       <SheetNotices failure={failure} onRetry={saving.retry} onDismissFailure={saving.dismiss} warning={leave.warning} onDismissWarning={leave.dismiss} errors={errors} saveState={saving.state} />
       {rows.length === 0 ? <NoPeople /> : filters.visible.length === 0 ? <NoMatch onClear={filters.clear} /> : (
         <div ref={host} className="max-md:order-2" onKeyDownCapture={onQuickCode}><DataGrid {...grid} height={height} /></div>

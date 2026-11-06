@@ -1,4 +1,4 @@
-import { todayInVietnam, type AbsenceInput, type AbsenceKindDto, type AbsenceRowDto, type EmployeeDto } from '@careers/shared';
+import { holidaysInEffect, todayInVietnam, workingDayCheck, type AbsenceInput, type AbsenceKindDto, type AbsenceRowDto, type EmployeeDto } from '@careers/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, CalendarPlus, Check, CheckCircle2, Clock, Pencil, Settings2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -14,9 +14,9 @@ import { LeaveConfigDrawer } from './LeaveConfigDrawer';
 import { AbsenceTable } from './AbsenceTable';
 import { DateField } from './DateField';
 import { Field } from './dialogs';
-import { defaultEnd, lastOfWeekdays, weekdaysBetween } from './leaveDates';
+import { defaultEnd, lastOfWorkdays, workdaysBetween, type IsWorked } from './leaveDates';
 import { PersonField } from './PersonField';
-import { useEmployees } from './queries';
+import { useEmployees, useHolidays, useRegions } from './queries';
 import { TabSkeleton } from './skeletons';
 
 interface Form {
@@ -34,29 +34,29 @@ interface Form {
 }
 
 /** Everything a reason suggests. HR can change any of it on the line. */
-function withReason(form: Form, kind: AbsenceKindDto | undefined): Form {
+function withReason(form: Form, kind: AbsenceKindDto | undefined, isWorked: IsWorked): Form {
   const days = kind?.days ?? 1;
-  const to = form.from ? defaultEnd(form.from, kind?.key, days) : '';
+  const to = form.from ? defaultEnd(form.from, kind?.key, days, isWorked) : '';
   return {
     ...form,
     reason: kind?.key ?? form.reason,
     code: (kind?.code ?? form.code) as Counting,
     isHalf: false,
     to,
-    days: form.from ? String(weekdaysBetween(form.from, to)) : String(days),
+    days: form.from ? String(workdaysBetween(form.from, to, isWorked)) : String(days),
   };
 }
 
-const emptyForm = (kind: AbsenceKindDto | undefined): Form =>
-  withReason({ personId: '', reason: 'annual', code: 'P', from: todayInVietnam(), to: '', days: '1', isHalf: false, approvedBy: '', handover: '', note: '' }, kind);
+const emptyForm = (kind: AbsenceKindDto | undefined, isWorked: IsWorked): Form =>
+  withReason({ personId: '', reason: 'annual', code: 'P', from: todayInVietnam(), to: '', days: '1', isHalf: false, approvedBy: '', handover: '', note: '' }, kind, isWorked);
 
-const formOf = (a: AbsenceRowDto): Form => ({
+const formOf = (a: AbsenceRowDto, isWorked: IsWorked): Form => ({
   personId: a.employeeId,
   reason: a.reason,
   code: a.code.replace('/2', '') as Counting,
   from: a.from,
   to: a.to,
-  days: a.code.endsWith('/2') ? '1' : String(weekdaysBetween(a.from, a.to)),
+  days: a.code.endsWith('/2') ? '1' : String(workdaysBetween(a.from, a.to, isWorked)),
   isHalf: a.code.endsWith('/2'),
   approvedBy: a.approvedBy ?? '',
   handover: a.handover,
@@ -89,8 +89,10 @@ function useLeaveActions(onDone: () => void) {
   return { save, remove };
 }
 
-function AbsenceForm({ form, set, onReason, onConfig, kinds, people, editingId, onSave, onCancel, isBusy, error }: {
+function AbsenceForm({ form, set, onReason, onConfig, kinds, people, isWorked, editingId, onSave, onCancel, isBusy, error }: {
   onConfig: () => void;
+  /** The working days of the chosen person's region, as the sheet will fill them. */
+  isWorked: IsWorked;
   form: Form;
   set: (patch: Partial<Form>) => void;
   onReason: (key: string) => void;
@@ -105,14 +107,14 @@ function AbsenceForm({ form, set, onReason, onConfig, kinds, people, editingId, 
   const kind = kinds.find((k) => k.key === form.reason);
   const errors = error instanceof ApiError ? error.fieldErrors : {};
   const canHalve = form.code === 'P' || form.code === 'KL';
-  const isOver = !!kind?.days && form.code === kind.code && !!form.from && !form.isHalf && weekdaysBetween(form.from, form.to || form.from) > kind.days;
+  const isOver = !!kind?.days && form.code === kind.code && !!form.from && !form.isHalf && workdaysBetween(form.from, form.to || form.from, isWorked) > kind.days;
   const isLate = form.code === 'M';
   const lengthNow = Number(form.days) || 1;
-  const pickFrom = (from: string) => set(from ? { from, to: defaultEnd(from, kind?.key, lengthNow) } : { from, to: '' });
-  const pickTo = (to: string) => set(to && form.from ? { to, days: String(weekdaysBetween(form.from, to)) } : { to });
+  const pickFrom = (from: string) => set(from ? { from, to: defaultEnd(from, kind?.key, lengthNow, isWorked) } : { from, to: '' });
+  const pickTo = (to: string) => set(to && form.from ? { to, days: String(workdaysBetween(form.from, to, isWorked)) } : { to });
   const typeDays = (days: string) => {
     const n = Number(days);
-    set(Number.isInteger(n) && n >= 1 && form.from ? { days, to: lastOfWeekdays(form.from, n) } : { days });
+    set(Number.isInteger(n) && n >= 1 && form.from ? { days, to: lastOfWorkdays(form.from, n, isWorked) } : { days });
   };
   return (
     <section aria-label={editingId ? 'Sửa' : 'Thêm mới'} className={`ts-card flex flex-col gap-3 p-4 ${editingId ? 'ring-2 ring-blue-400' : ''}`}>
@@ -159,11 +161,17 @@ function AbsenceForm({ form, set, onReason, onConfig, kinds, people, editingId, 
 export function LeaveTab() {
   const people = useEmployees();
   const kinds = useQuery({ queryKey: ['hr', 'absence-kinds'], queryFn: () => api.hrAbsenceKinds() });
+  const regions = useRegions();
+  const holidays = useHolidays();
+  const holidayDays = new Set(holidaysInEffect(holidays.data ?? []).map((h) => h.day));
+  /** As the sheet fills it: maternity leave (TS) runs through holidays, everything else leaves them NL. */
+  const isWorkedFor = (personId: string, code: string) =>
+    workingDayCheck(regions.data?.find((r) => r.id === people.data?.find((p) => p.id === personId)?.regionId), code === 'TS' ? new Set() : holidayDays);
   const [params, setParams] = useSearchParams();
   const [form, setForm] = useState<Form | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const firstKind = kinds.data?.[0];
-  const current = form ?? emptyForm(firstKind);
+  const current = form ?? emptyForm(firstKind, isWorkedFor('', 'P'));
   const reset = () => {
     setForm(null);
     setEditingId(null);
@@ -176,16 +184,29 @@ export function LeaveTab() {
     setPrefilled(wanted);
     setParams({}, { replace: true });
   }, [wanted, setParams]);
-  if (people.isPending || kinds.isPending) return <TabSkeleton />;
+  if (people.isPending || kinds.isPending || regions.isPending || holidays.isPending) return <TabSkeleton />;
+  if (regions.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => regions.refetch()} message={errorMessage(regions.error)} /></div>;
+  if (holidays.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => holidays.refetch()} message={errorMessage(holidays.error)} /></div>;
   if (people.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => people.refetch()} message={errorMessage(people.error)} /></div>;
   if (kinds.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => kinds.refetch()} message={errorMessage(kinds.error)} /></div>;
   const shown = form ?? { ...current, personId: prefilled };
+  const isWorked = isWorkedFor(shown.personId, shown.code);
+  /** Another person may work other Saturdays: the same number of days can end on another date. */
+  const pickPerson = (personId: string) => {
+    const n = Number(shown.days);
+    const keepsLength = !!shown.from && !shown.isHalf && Number.isInteger(n) && n >= 1 && shown.reason !== 'maternity';
+    setForm({ ...shown, personId, ...(keepsLength ? { to: lastOfWorkdays(shown.from, n, isWorkedFor(personId, shown.code)) } : {}) });
+  };
   return (
     <div className="flex flex-col gap-3">
       <AbsenceForm
         form={shown}
-        set={(patch) => setForm({ ...shown, ...patch })}
-        onReason={(key) => setForm(withReason(shown, kinds.data.find((k) => k.key === key)))}
+        set={(patch) => (patch.personId !== undefined && patch.personId !== shown.personId ? pickPerson(patch.personId) : setForm({ ...shown, ...patch }))}
+        onReason={(key) => {
+          const kind = kinds.data.find((k) => k.key === key);
+          setForm(withReason(shown, kind, isWorkedFor(shown.personId, kind?.code ?? shown.code)));
+        }}
+        isWorked={isWorked}
         onConfig={() => setParams({ [CONFIG_PARAM]: '1' })}
         kinds={kinds.data}
         people={people.data}
@@ -203,7 +224,7 @@ export function LeaveTab() {
         onEdit={(a) => {
           save.reset();
           setEditingId(a.id);
-          setForm(formOf(a));
+          setForm(formOf(a, isWorkedFor(a.employeeId, a.code.replace('/2', ''))));
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

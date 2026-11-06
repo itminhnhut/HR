@@ -970,6 +970,8 @@ export const mockApi: Api = {
   hrTimesheetRemoveAdjustment: noTimesheet,
   hrTimesheetClose: noTimesheet,
   hrTimesheetReopen: noTimesheet,
+  hrSetLeaveMode: noTimesheet,
+  hrOpenPeriodAhead: noTimesheet,
   hrTimesheetLog: noTimesheet,
   hrEmployees: noTimesheet,
   hrCreateEmployee: noTimesheet,
