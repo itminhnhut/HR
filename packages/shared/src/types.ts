@@ -22,7 +22,8 @@ export interface JobExtraFields {
   openings: number | null;
   workMode: WorkMode | null;
 }
-export type ApplicationStatus = 'new' | 'seen' | 'interview' | 'passed' | 'hired' | 'rejected';
+/** `scheduling`: called, still agreeing a time for the interview ("Chờ xếp lịch"). */
+export type ApplicationStatus = 'new' | 'seen' | 'scheduling' | 'interview' | 'passed' | 'hired' | 'rejected';
 
 /** What the candidate sees about their own application (BA board: "HR thấy / ứng viên thấy"). */
 export type CandidateStage = 'sent' | 'seen' | 'interview' | 'hired' | 'closed';

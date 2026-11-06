@@ -403,3 +403,27 @@ describe('migration 0030: how annual leave counts in each period', SLOW, () => {
     expect(modes.rows).toEqual([{ month: 10, leave_mode: 'excel' }, { month: 11, leave_mode: 'law' }]);
   });
 });
+
+describe('migration 0031: "Chờ xếp lịch"', SLOW, () => {
+  it('TC-XL-06: should keep every application\'s status, and take the new one after', async () => {
+    // Arrange: one invited, one seen, before 0031
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(31) });
+    await pg.exec(`
+      insert into jobs (id, slug, title, department, employment_type, deadline)
+        values ('11111111-1111-1111-1111-111111111111', 'a', 'A', 'Kỹ thuật', 'full_time', '2026-12-01');
+      insert into applications (job_id, full_name, phone, status, consent_at, policy_version) values
+        ('11111111-1111-1111-1111-111111111111', 'Đã hẹn', '0912000001', 'interview', now(), 'v'),
+        ('11111111-1111-1111-1111-111111111111', 'Đã xem', '0912000002', 'seen', now(), 'v');
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    await pg.exec(`update applications set status = 'scheduling' where full_name = 'Đã xem'`);
+
+    // Assert
+    const rows = await pg.query<{ full_name: string; status: string }>(`select full_name, status from applications order by full_name`);
+    expect(rows.rows).toEqual([{ full_name: 'Đã hẹn', status: 'interview' }, { full_name: 'Đã xem', status: 'scheduling' }]);
+  });
+});

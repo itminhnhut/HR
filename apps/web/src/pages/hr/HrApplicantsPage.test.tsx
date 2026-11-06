@@ -55,6 +55,7 @@ function listReply() {
       all: rows.length,
       new: count('new'),
       seen: count('seen'),
+      scheduling: count('scheduling'),
       interview: count('interview'),
       rejected: count('rejected'),
     },
@@ -723,6 +724,23 @@ describe('The status tabs', () => {
   });
 });
 
+describe('The "Chờ xếp lịch" tab', () => {
+  it('TC-XL-11: should list only the profiles waiting for a time, with its icon, word and count', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen'), row('a2', 'Bình Trần', 'scheduling')];
+
+    // Act
+    show('?trang-thai=scheduling');
+    await screen.findByRole('list', { name: 'Danh sách hồ sơ' });
+    const button = await screen.findByRole('button', { name: 'Chờ xếp lịch 1', pressed: true });
+
+    // Assert
+    expect(button.querySelector('svg')).not.toBeNull();
+    expect(rowOf('Bình Trần')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^An Nguyễn/ })).toBeNull();
+  });
+});
+
 describe('The note on a row', () => {
   it('should stand on its own line with the whole text as a tooltip', async () => {
     // Arrange
@@ -813,6 +831,36 @@ describe('The status control in the header', () => {
     await waitFor(() => expect(pressedOnes()).toEqual(['Nhận việc']));
   });
 
+  it('TC-XL-09: should move a profile to "Chờ xếp lịch" with one press, sending no interview time', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen')];
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await userEvent.click(segment('Chờ xếp lịch'));
+
+    // Assert
+    await waitFor(() => expect(patches.at(-1)?.body).toMatchObject({ status: 'scheduling' }));
+    expect(patches.at(-1)?.body.interviewAt).toBeUndefined();
+    await waitFor(() => expect(pressedOnes()).toEqual(['Chờ xếp lịch']));
+  });
+
+  it('TC-XL-10: should place "Chờ xếp lịch" between "Đã xem" and "Hẹn phỏng vấn"', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen')];
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    const names = block().getAllByRole('button').map((b) => b.textContent ?? '');
+
+    // Assert
+    const at = (word: string) => names.findIndex((n) => n.startsWith(word));
+    expect(at('Đã xem')).toBeLessThan(at('Chờ xếp lịch'));
+    expect(at('Chờ xếp lịch')).toBeLessThan(at('Hẹn phỏng vấn'));
+  });
+
   it('should say why "Đạt" cannot be pressed with no interview time', async () => {
     // Arrange
     rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: null })];
@@ -876,7 +924,7 @@ describe('The status control in the header', () => {
       block()
         .getAllByRole('button')
         .map((button) => button.textContent),
-    ).toEqual(['Mới', 'Đã xem', 'Hẹn phỏng vấn', 'Chờ kết quả', 'Đạt', 'Nhận việc', 'Chưa phù hợp']);
+    ).toEqual(['Mới', 'Đã xem', 'Chờ xếp lịch', 'Hẹn phỏng vấn', 'Chờ kết quả', 'Đạt', 'Nhận việc', 'Chưa phù hợp']);
   });
 
   it.each([

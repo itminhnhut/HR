@@ -428,7 +428,7 @@ describe('how many stand at each status', () => {
     const { statusCounts } = await json<DashboardDto>(await hr('GET', '/dashboard?from=2020-01-01&to=2020-01-02'));
 
     // Assert
-    expect(statusCounts).toEqual({ new: 1, seen: 1, interview: 1, passed: 2, hired: 1, rejected: 1 });
+    expect(statusCounts).toEqual({ new: 1, seen: 1, scheduling: 0, interview: 1, passed: 2, hired: 1, rejected: 1 });
   });
 });
 

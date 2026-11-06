@@ -512,6 +512,7 @@ export const mockApi: Api = {
       statusCounts: {
         new: fresh.length,
         seen: db.applications.filter((a) => a.status === 'seen').length,
+        scheduling: db.applications.filter((a) => a.status === 'scheduling').length,
         interview: db.applications.filter((a) => a.status === 'interview').length,
         passed: db.applications.filter((a) => a.status === 'passed').length,
         hired: db.applications.filter((a) => a.status === 'hired').length,
@@ -718,7 +719,7 @@ export const mockApi: Api = {
       .filter((a) => matchesQuery(`${a.fullName} ${a.phone}`, q) || (digits.length >= 3 && a.phone.includes(digits)))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .map((a) => appRow(db, a));
-    const counts = { all: all.length, new: 0, seen: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
+    const counts = { all: all.length, new: 0, seen: 0, scheduling: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
     for (const a of all) counts[a.status]++;
     const jobIds = [...new Set(db.applications.map((a) => a.jobId))];
     const jobs = db.jobs.filter((j) => jobIds.includes(j.id)).map((j) => ({ id: j.id, title: j.title }));

@@ -126,6 +126,13 @@ const PATHS = {
       <path d="M16 3v4M8 3v4M3 10h18" />
     </>
   ),
+  calendarClock: (
+    <>
+      <path d="M21 7.5V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4.5M16 3v4M8 3v4M3 10h6" />
+      <circle cx="16.5" cy="16.5" r="5" />
+      <path d="M16.5 14.5v2l1.5 1" />
+    </>
+  ),
   money: (
     <>
       <rect x="2" y="6" width="20" height="12" rx="2" />

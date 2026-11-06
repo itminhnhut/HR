@@ -36,14 +36,14 @@ export function isAwaitingResult(a: { status: string; interviewAt: string | null
   return a.status === 'interview' && a.interviewAt !== null && new Date(a.interviewAt) <= now;
 }
 
-type Status = 'new' | 'seen' | 'interview' | 'passed' | 'hired' | 'rejected';
+type Status = 'new' | 'seen' | 'scheduling' | 'interview' | 'passed' | 'hired' | 'rejected';
 
 /** The candidate has been invited, whatever came of it: from here a reviewer's decision no longer changes anything. */
 export const isInvited = (status: Status) => status === 'interview' || status === 'passed' || status === 'hired';
 
 /**
- * The flow of an application, in one place for the screen and the server. Forward: Mới, Đã xem (opening it), Hẹn phỏng
- * vấn, Chờ kết quả (the time passing), Đạt, Nhận việc; "Chưa phù hợp" from anywhere. Back only one step at a time, to
+ * The flow of an application, in one place for the screen and the server. Forward: Mới, Đã xem (opening it), Chờ xếp
+ * lịch (called, no time agreed yet), Hẹn phỏng vấn, Chờ kết quả (the time passing), Đạt, Nhận việc; "Chưa phù hợp" from anywhere. Back only one step at a time, to
  * correct a mistake. Returns why a change is not allowed, or null.
  */
 export function statusChangeProblem(
@@ -57,6 +57,7 @@ export function statusChangeProblem(
     case 'new':
       return app.status === 'seen' ? null : 'Chỉ đánh dấu chưa xem khi hồ sơ đang ở "Đã xem".';
     case 'seen':
+    case 'scheduling':
       return hasResult ? 'Hồ sơ đã có kết quả, về "Hẹn phỏng vấn" trước.' : null;
     case 'interview':
       return app.status === 'hired' ? 'Về "Đạt" trước.' : null;

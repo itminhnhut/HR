@@ -23,7 +23,7 @@ import { suggestedTemplate } from './useMailDraft';
 type Segment = ApplicationStatus | 'awaiting';
 
 /** Every step in the order an application moves through them. */
-const SEGMENTS: readonly Segment[] = ['new', 'seen', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
+const SEGMENTS: readonly Segment[] = ['new', 'seen', 'scheduling', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
 
 const lookOf = (segment: Segment) => (segment === 'awaiting' ? AWAITING_LOOK : STATUS_STYLE[segment]);
 

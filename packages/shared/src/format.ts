@@ -18,6 +18,7 @@ export const openingsLabel = (openings: number) => `${openings} người`;
 export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
   new: 'Mới',
   seen: 'Đã xem',
+  scheduling: 'Chờ xếp lịch',
   interview: 'Hẹn phỏng vấn',
   passed: 'Đạt',
   hired: 'Nhận việc',
@@ -146,7 +147,8 @@ export function candidateStage(status: ApplicationStatus, jobClosed: boolean): i
   // "Đạt" stays HR's to say on the phone first.
   if (status === 'interview' || status === 'passed') return 'interview';
   if (jobClosed) return 'closed';
-  return status === 'seen' ? 'seen' : 'sent';
+  // Still agreeing a time: the candidate is told HR has seen it, and nothing is promised yet.
+  return status === 'seen' || status === 'scheduling' ? 'seen' : 'sent';
 }
 
 /** Lowercase, strip Vietnamese tones, đ → d. Used for accent-insensitive search. */
