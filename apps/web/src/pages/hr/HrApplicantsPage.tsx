@@ -19,7 +19,7 @@ import { canSendForReview, PickBar, usePicking } from './reviews/PickForReview';
 import { SendReviewDialog } from './reviews/SendReviewDialog';
 import { ManageSourcesDialog } from './sources/ManageSourcesDialog';
 
-const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
+const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'scheduling', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
 
 const isTab = (v: string | null): v is TabKey => TAB_KEYS.some((k) => k === v);
 

@@ -62,7 +62,7 @@ async function countByStatus(db: Db): Promise<DashboardDto['statusCounts']> {
     .select({ status: applications.status, total: count() })
     .from(applications)
     .groupBy(applications.status);
-  const counts = { new: 0, seen: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
+  const counts = { new: 0, seen: 0, scheduling: 0, interview: 0, passed: 0, hired: 0, rejected: 0 };
   for (const row of rows) counts[row.status] = row.total;
   return counts;
 }

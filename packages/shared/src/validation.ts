@@ -196,7 +196,7 @@ const httpUrl = z
   .max(500, 'Link tối đa 500 ký tự.');
 
 export const applicationUpdateSchema = z.object({
-  status: z.enum(['new', 'seen', 'interview', 'passed', 'hired', 'rejected']).optional(),
+  status: z.enum(['new', 'seen', 'scheduling', 'interview', 'passed', 'hired', 'rejected']).optional(),
   /** Required when an application becomes "Chưa phù hợp" (spec-hiring-outcomes.md). */
   rejectReason: z.enum(REJECT_REASON_KEYS).optional(),
   rejectNote: z.string().trim().max(REJECT_NOTE_MAX, `Ghi chú tối đa ${REJECT_NOTE_MAX} ký tự.`).nullable().optional(),

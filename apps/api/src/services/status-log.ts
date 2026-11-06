@@ -9,8 +9,8 @@ interface LoggedApplication {
   source: string;
 }
 
-/** "Mới" and "Đã xem" say nothing of how far it went, and HR can go back and forth between them. */
-export const isReportedStep = (status: ApplicationStatus) => status !== 'new' && status !== 'seen';
+/** "Mới", "Đã xem" and "Chờ xếp lịch" say nothing of how far it went, and HR can go back and forth between them. */
+export const isReportedStep = (status: ApplicationStatus) => status !== 'new' && status !== 'seen' && status !== 'scheduling';
 
 /** Writes down a step the application reached. The first one, "new", says when and from where it came in. */
 export async function logStatus(

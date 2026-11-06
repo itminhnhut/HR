@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { candidateStage, foldVietnamese, matchesQuery } from './format.js';
+import { APPLICATION_STATUS_LABEL, candidateStage, foldVietnamese, matchesQuery } from './format.js';
 
 describe('search', () => {
   it('folds tones and đ', () => {
@@ -19,5 +19,15 @@ describe('candidateStage', () => {
   it('closes unprocessed applications when the job closes', () => {
     expect(candidateStage('new', true)).toBe('closed');
     expect(candidateStage('interview', true)).toBe('interview');
+  });
+  it('TC-XL-05: shows "HR đã xem" while HR is still agreeing a time, promising no interview yet', () => {
+    expect(candidateStage('scheduling', false)).toBe('seen');
+    expect(candidateStage('scheduling', true)).toBe('closed');
+  });
+});
+
+describe('the status label', () => {
+  it('TC-XL-08: names the new status "Chờ xếp lịch"', () => {
+    expect(APPLICATION_STATUS_LABEL.scheduling).toBe('Chờ xếp lịch');
   });
 });

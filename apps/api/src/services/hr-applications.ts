@@ -28,7 +28,7 @@ import { expiredApplicationsWhere } from './hr-jobs.js';
 import { activityOf, actorOf, logActivity, logNoteEdit } from './activity.js';
 import { dropLastStatus, isReportedStep, logStatus, rewindSteps } from './status-log.js';
 
-const STATUSES: ApplicationStatus[] = ['new', 'seen', 'interview', 'passed', 'hired', 'rejected'];
+const STATUSES: ApplicationStatus[] = ['new', 'seen', 'scheduling', 'interview', 'passed', 'hired', 'rejected'];
 
 type ApplicationWithJob = Application & {
   jobTitle: string;

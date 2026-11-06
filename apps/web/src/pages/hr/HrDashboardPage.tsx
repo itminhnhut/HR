@@ -169,7 +169,8 @@ function StatusCards({ data }: { data: DashboardDto }) {
     />
   );
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:gap-4">
+    // Nine cards: three rows of three from tablet up.
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:gap-4">
       {card(
         STATUS_STYLE.new,
         counts.new,
@@ -177,6 +178,7 @@ function StatusCards({ data }: { data: DashboardDto }) {
         waitingOver3Days > 0 ? `${waitingOver3Days} hồ sơ chờ hơn 3 ngày` : undefined,
       )}
       {card(STATUS_STYLE.seen, counts.seen, 'seen')}
+      {card(STATUS_STYLE.scheduling, counts.scheduling, 'scheduling')}
       {card(STATUS_STYLE.interview, counts.interview, 'interview')}
       {card(AWAITING_LOOK, awaitingResults, 'awaiting')}
       {card(STATUS_STYLE.passed, counts.passed, 'passed')}

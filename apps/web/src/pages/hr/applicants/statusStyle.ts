@@ -37,6 +37,15 @@ export const STATUS_STYLE: Record<ApplicationStatus, StatusStyle> = {
     soft: 'border-status-seen/30 bg-status-seen-soft text-status-seen-text',
     hover: 'hover:border-status-seen/30 hover:bg-status-seen-soft hover:text-status-seen-text',
   },
+  /** Called, no time agreed yet. Blue: no other status uses it; white on blue-700 is 6.7:1. */
+  scheduling: {
+    label: APPLICATION_STATUS_LABEL.scheduling,
+    icon: 'calendarClock',
+    tone: 'blue',
+    filled: 'border-blue-700 bg-blue-700 text-white',
+    soft: 'border-blue-300 bg-blue-50 text-blue-800',
+    hover: 'hover:border-blue-300 hover:bg-blue-50 hover:text-blue-800',
+  },
   interview: {
     label: APPLICATION_STATUS_LABEL.interview,
     icon: 'calendar',

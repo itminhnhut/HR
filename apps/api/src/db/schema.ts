@@ -56,6 +56,8 @@ export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'cop
 export const applicationStatus = pgEnum('application_status', [
   'new',
   'seen',
+  /** "Chờ xếp lịch": called, no interview time agreed yet. */
+  'scheduling',
   'interview',
   'rejected',
   'passed',

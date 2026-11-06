@@ -67,7 +67,7 @@ describe('GET /api/hr/applications', () => {
       cvBirth: null,
       isExpired: false,
     });
-    expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, interview: 1, passed: 0, hired: 0, rejected: 0 });
+    expect(body.counts).toEqual({ all: 2, new: 1, seen: 0, scheduling: 0, interview: 1, passed: 0, hired: 0, rejected: 0 });
     expect(body.jobs).toEqual([
       { id: a.id, title: 'A' },
       { id: b.id, title: 'B' },
@@ -125,7 +125,7 @@ describe('GET /api/hr/applications', () => {
 
     const body = await json<ApplicationsResponse>(await hr('GET', '/applications?q=hoa'));
 
-    expect(body.counts).toEqual({ all: 1, new: 0, seen: 1, interview: 0, passed: 0, hired: 0, rejected: 0 });
+    expect(body.counts).toEqual({ all: 1, new: 0, seen: 1, scheduling: 0, interview: 0, passed: 0, hired: 0, rejected: 0 });
   });
 
   it('returns an empty list for a malformed job filter', async () => {
