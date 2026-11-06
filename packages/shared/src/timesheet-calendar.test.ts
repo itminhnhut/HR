@@ -202,3 +202,32 @@ describe('a long break such as Tết', () => {
     ]);
   });
 });
+
+describe('a fixed holiday on a Sunday inside a range (Điều 111 khoản 3)', () => {
+  it('TC-LE-11: should give the same day in lieu whether 30/4–1/5/2028 is entered as a range or day by day', () => {
+    // Arrange: 30/4/2028 is a Sunday
+    const asRange = daysOfHolidayBreak('2028-04-30', '2028-05-01').map((day) => ({ day, name: 'Lễ 30/4 – 1/5' }));
+    const oneByOne = [{ day: '2028-04-30', name: 'Ngày Chiến thắng' }, { day: '2028-05-01', name: 'Quốc tế Lao động' }];
+
+    // Act
+    const days = (list: { day: string; name: string }[]) => holidaysInEffect(list).map((h) => h.day);
+
+    // Assert: 1/5 and the day in lieu 2/5, both ways
+    expect(days(asRange)).toEqual(['2028-05-01', '2028-05-02']);
+    expect(days(oneByOne)).toEqual(['2028-05-01', '2028-05-02']);
+  });
+
+  it('TC-LE-12: should keep 2/9/2029, a Sunday, inside a range so that it moves to Monday', () => {
+    // Act
+    const days = holidaysInEffect(daysOfHolidayBreak('2029-09-01', '2029-09-03').map((day) => ({ day, name: 'Quốc khánh' }))).map((h) => h.day);
+
+    // Assert: 1/9 (Saturday), 3/9 and 4/9 in lieu of the Sunday
+    expect(days).toEqual(['2029-09-01', '2029-09-03', '2029-09-04']);
+  });
+
+  it('TC-LE-13: should still leave out a Sunday of Tết, which the announced schedule already counts', () => {
+    // Act + Assert: 22/2/2026 is a Sunday inside the Tết break
+    expect(daysOfHolidayBreak('2026-02-14', '2026-02-22')).not.toContain('2026-02-22');
+  });
+});
+

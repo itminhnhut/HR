@@ -71,6 +71,13 @@ export function PageActions({ dto, problems, entered, hasPeople, onReview, onReo
           </button>
         </WithReason>
       )}
+      {isClosed && (
+        <button type="button" onClick={onReview} className={OUTLINE}>
+          <CheckCircle2 className="size-4 text-blue-600" />
+          Rà soát
+          {problems > 0 && <span className="rounded-full bg-blue-100 px-1.5 text-xs font-semibold text-blue-800">{problems}</span>}
+        </button>
+      )}
       {isClosed && dto.canReopen && <button type="button" onClick={onReopen} className={OUTLINE}><LockOpen className="size-4 text-blue-600" />Mở lại kỳ</button>}
     </>
   );
@@ -127,7 +134,7 @@ export function PeriodStrip({ dto, canEdit, saveState, onPeriod, onNorm, onNormI
         {/* It floats in the free space beside the title, so nothing moves when it shows or hides. */}
         <span className="relative hidden md:block"><span className="absolute top-1/2 right-0 -translate-y-1/2"><SaveStatus state={saveState} /></span></span>
         <h2 className="m-0 text-base font-bold tracking-wide whitespace-nowrap text-red-600">
-          {dto.periodId ? `BẢNG CHẤM CÔNG THÁNG ${dto.month}` : `BẢNG CHẤM CÔNG ${dayMonth(dto.from)} – ${dayMonth(dto.to)}`}
+          {dto.periodId || (dto.from === standardPeriod(dto.year, dto.month).from && dto.to === standardPeriod(dto.year, dto.month).to) ? `BẢNG CHẤM CÔNG THÁNG ${dto.month}` : `BẢNG CHẤM CÔNG ${dayMonth(dto.from)} – ${dayMonth(dto.to)}`}
         </h2>
       </div>
     </section>

@@ -36,7 +36,7 @@ describe('sheet "Tháng 10.26" (TC-BT-01)', () => {
     const { totals } = worked(person, 2026, 10, '2026-10-25');
 
     // Assert
-    expect(totals).toEqual(person.expected);
+    expect(totals).toMatchObject(person.expected);
   });
 
   it.each(OCTOBER_SHEET)('should fill the day cells of person $id exactly as HR did, from the exceptions alone', (person) => {
@@ -71,7 +71,7 @@ describe('sheet "Tháng 11.26" on the day HR saved it (TC-BT-02)', () => {
     const { totals } = worked(person, 2026, 11, '2026-11-05');
 
     // Assert
-    expect(totals).toEqual(person.expected);
+    expect(totals).toMatchObject(person.expected);
   });
 
   it.each(NOVEMBER_SHEET)('should fill the day cells of person $id exactly as HR did, up to today', (person) => {

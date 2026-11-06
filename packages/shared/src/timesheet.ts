@@ -118,15 +118,18 @@ export function holidaysInEffect<T extends { day: string; name: string }>(holida
   return moved.sort((a, b) => a.day.localeCompare(b.day));
 }
 
+const isFixedHoliday = (day: string) => FIXED_HOLIDAYS.some((h) => day.slice(5) === h.monthDay);
+
 /**
  * The days of a long break such as Tết. Sundays in it are left out: the announced schedule already counts them as
- * rest, so they earn no day and no day in lieu. One day on its own stays, Sunday or not.
+ * rest, so they earn no day and no day in lieu. One day on its own stays, Sunday or not, and so does a fixed holiday
+ * (30/4, 2/9…) that falls on a Sunday: Điều 111 khoản 3 gives it a day in lieu however HR typed it.
  */
 export function daysOfHolidayBreak(from: string, to: string): string[] {
   if (from === to) return [from];
   const days: string[] = [];
   for (let day = from; day <= to; day = nextDay(day)) {
-    if (weekdayOf(day) !== SUNDAY) days.push(day);
+    if (weekdayOf(day) !== SUNDAY || isFixedHoliday(day)) days.push(day);
   }
   return days;
 }
@@ -185,9 +188,17 @@ export function dayCode(
   return !isWeekend(day) && day <= today ? '1' : null;
 }
 
+/**
+ * `law`: annual leave as NĐ 145/2020 Điều 65, 66 count it. `excel`: as HR's workbook did, which leaves holidays and
+ * approved unpaid leave out of the count and gives nothing for, and keeps nothing through, a probation period.
+ */
+export const LEAVE_MODES = ['law', 'excel'] as const;
+export type LeaveMode = (typeof LEAVE_MODES)[number];
+
 export interface LeaveRule {
   threshold: number;
   perPeriod: number;
+  mode?: LeaveMode;
 }
 
 export const DEFAULT_LEAVE_RULE: LeaveRule = { threshold: LEAVE_THRESHOLD_DEFAULT, perPeriod: LEAVE_PER_PERIOD_DEFAULT };
@@ -210,8 +221,101 @@ export interface TimesheetTotals {
   personalPaid: number;
   /** Days on maternity or sick leave: insurance pays them, not this sheet. */
   insured: number;
+  maternity: number;
+  sick: number;
+  /** Leave earned during probation, held until the person becomes official (Điều 65 khoản 2). */
+  leavePendingClosing: number;
+  /** Held probation leave added to the balance in this period. */
+  leaveCredited: number;
+  /** Approved unpaid days and sick days that counted toward leave here, for the yearly caps. */
+  unpaidCounted: number;
+  sickCounted: number;
+  /** Stored when a period closes, for payroll: days worked on a Sunday and on a holiday. */
+  sundayWorked?: number;
+  holidayWorked?: number;
   /** Paid before an adjustment, so the screen can say "tính ra 21,5, điều chỉnh −0,5". */
   paidBeforeAdjustment: number;
+}
+
+export interface LeaveYearSoFar {
+  /** Leave held from probation periods before this one. */
+  leavePending?: number;
+  /** Approved unpaid and sick days already counted toward leave earlier this year. */
+  unpaidCountedBefore?: number;
+  sickCountedBefore?: number;
+}
+
+/**
+ * What counts as time worked for leave. Điều 65 khoản 4: approved unpaid leave up to one month a year; khoản 6: sickness
+ * up to two months a year; khoản 7: maternity; Điều 66: public holidays. "A month" is taken as the period's norm.
+ */
+function leaveCount(count: (code: AttendanceCode) => number, norm: number, mode: LeaveMode, before: LeaveYearSoFar) {
+  const base = count('1') + count('M') + count('P') + count('P/2') + 0.5 * count('KL/2') + count('CL') + count('TS');
+  if (mode === 'excel') return { counted: base + count('OM'), unpaidCounted: 0, sickCounted: 0 };
+  const room = (cap: number, used = 0) => Math.max(0, cap - used);
+  const unpaidCounted = Math.min(count('KL') + 0.5 * count('KL/2'), room(norm, before.unpaidCountedBefore));
+  const sickCounted = Math.min(count('OM'), room(2 * norm, before.sickCountedBefore));
+  return { counted: base + count('NL') + unpaidCounted + sickCounted, unpaidCounted, sickCounted };
+}
+
+/** Days worked on a Sunday and on a public holiday: payroll pays them at their own rate (BLLĐ Điều 98). */
+export function restDayWork(days: readonly string[], codes: readonly (AttendanceCode | null)[], holidays: ReadonlySet<string>) {
+  let sundayWorked = 0;
+  let holidayWorked = 0;
+  days.forEach((day, i) => {
+    if (codes[i] !== '1' && codes[i] !== 'M') return;
+    if (holidays.has(day)) holidayWorked += 1;
+    else if (weekdayOf(day) === SUNDAY) sundayWorked += 1;
+  });
+  return { sundayWorked, holidayWorked };
+}
+
+/** What one day brings to the paid total: days worked, holidays, family days, and the leave part still covered. */
+function dayPaid(code: AttendanceCode | null, leaveLeft: number) {
+  const leaveOf = (want: number) => Math.min(want, leaveLeft);
+  if (code === '1' || code === 'M' || code === 'NL' || code === 'CL') return { paid: 1, leave: 0 };
+  if (code === 'KL/2') return { paid: 0.5, leave: 0 };
+  if (code === 'P/2') return { paid: 0.5 + leaveOf(0.5), leave: leaveOf(0.5) };
+  if (code === 'P') return { paid: leaveOf(1), leave: leaveOf(1) };
+  return { paid: 0, leave: 0 };
+}
+
+/**
+ * Paid days before and from the day someone became official. Leave is paid in date order until what was paid runs
+ * out, days past the paid total (above the norm) are not paid, and an adjustment falls on the later part.
+ */
+export function paidBySegment(args: { days: readonly string[]; codes: readonly (AttendanceCode | null)[]; splitOn: string; leavePaid: number; paid: number }) {
+  let leaveLeft = args.leavePaid;
+  let room = args.paid;
+  let before = 0;
+  let after = 0;
+  args.days.forEach((day, i) => {
+    const { paid, leave } = dayPaid(args.codes[i] ?? null, leaveLeft);
+    leaveLeft -= leave;
+    const counted = Math.max(0, Math.min(paid, room));
+    room -= counted;
+    if (day < args.splitOn) before += counted;
+    else after += counted;
+  });
+  return { before, after: after + Math.max(0, room) };
+}
+
+/** How many days count toward the leave threshold, for a screen that has to predict it. */
+export function leaveCountOf(codes: readonly (AttendanceCode | null)[], norm: number, rule: LeaveRule, before: LeaveYearSoFar = {}): number {
+  const count = (code: AttendanceCode) => codes.filter((c) => c === code).length;
+  return leaveCount(count, norm, rule.mode ?? 'excel', before).counted;
+}
+
+/** Leave the person may use this period, and leave held for later while on probation. */
+function leaveBalance(args: { employment: StaffType; leaveOpening: number; leaveChange: number; earned: number; mode: LeaveMode; leavePending: number }) {
+  const { employment, leaveOpening, leaveChange, earned, mode, leavePending } = args;
+  if (employment === 'probation') {
+    if (mode === 'excel') return { available: Math.max(0, leaveChange), pendingClosing: 0, credited: 0 };
+    return { available: Math.max(0, leaveOpening + leaveChange), pendingClosing: leavePending + earned, credited: 0 };
+  }
+  const credited = mode === 'law' ? leavePending : 0;
+  // Never below nothing: negative leave would otherwise come off the days worked.
+  return { available: Math.max(0, leaveOpening + earned + credited + leaveChange), pendingClosing: 0, credited };
 }
 
 /**
@@ -227,18 +331,17 @@ export function timesheetTotals(args: {
   /** Days HR added to or took off the balance by hand in this period. */
   leaveChange?: number;
   rule?: LeaveRule;
-}): TimesheetTotals {
+} & LeaveYearSoFar): TimesheetTotals {
   const { codes, norm, leaveOpening, employment, adjustment = 0, leaveChange = 0, rule = DEFAULT_LEAVE_RULE } = args;
+  const mode = rule.mode ?? 'excel';
   const count = (code: AttendanceCode) => codes.filter((c) => c === code).length;
   const actual = count('1') + count('M') + 0.5 * (count('P/2') + count('KL/2'));
   const leave = count('P') + 0.5 * count('P/2');
   const holiday = count('NL');
   const personalPaid = count('CL');
-  const insured = count('TS') + count('OM');
-  // NĐ 145/2020 Điều 65 khoản 3, 6, 7: these count as time worked for annual leave.
-  const leaveCounted = count('1') + count('M') + count('P') + count('P/2') + 0.5 * count('KL/2') + personalPaid + insured;
-  // Never below nothing: negative leave would otherwise come off the days worked.
-  const available = Math.max(0, (employment === 'probation' ? 0 : leaveOpening + (leaveCounted >= rule.threshold ? rule.perPeriod : 0)) + leaveChange);
+  const { counted, unpaidCounted, sickCounted } = leaveCount(count, norm, mode, args);
+  const earned = counted >= rule.threshold ? rule.perPeriod : 0;
+  const { available, pendingClosing, credited } = leaveBalance({ employment, leaveOpening, leaveChange, earned, mode, leavePending: args.leavePending ?? 0 });
   const leavePaid = Math.min(leave, available);
   const total = actual + leavePaid + holiday + personalPaid;
   const capped = Math.min(total, norm);
@@ -257,7 +360,13 @@ export function timesheetTotals(args: {
     leaveClosing: available - leavePaid,
     leaveOverdrawn: Math.max(0, leave - available),
     personalPaid,
-    insured,
+    insured: count('TS') + count('OM'),
+    maternity: count('TS'),
+    sick: count('OM'),
+    leavePendingClosing: pendingClosing,
+    leaveCredited: credited,
+    unpaidCounted,
+    sickCounted,
   };
 }
 
@@ -463,6 +572,8 @@ export interface TimesheetAbsenceDto {
 }
 
 export interface AbsenceRowDto extends TimesheetAbsenceDto {
+  /** `sheet`: typed straight into the sheet, not registered; read here, changed in the sheet. */
+  source?: 'absence' | 'sheet';
   employeeId: string;
   employeeCode: string;
   fullName: string;
@@ -551,6 +662,8 @@ export interface TimesheetRowDto {
   officialOn?: string | null;
   leftOn: string | null;
   leaveOpening: number;
+  /** Held probation leave and the yearly counts so far, which the leave count of this period starts from. */
+  leaveSoFar?: LeaveYearSoFar;
   norm: number;
   cells: Record<string, TimesheetCellDto>;
   adjustments: TimesheetAdjustmentDto[];

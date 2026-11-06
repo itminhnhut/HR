@@ -258,6 +258,8 @@ export const httpApi: Api = {
     request(`/hr/timesheet/${encodeURIComponent(id)}/adjustments/${encodeURIComponent(adjustmentId)}`, { method: 'DELETE' }),
   hrTimesheetClose: (id) => request(`/hr/timesheet/${encodeURIComponent(id)}/close`, { method: 'POST' }),
   hrTimesheetReopen: (id, reason) => request(`/hr/timesheet/${encodeURIComponent(id)}/reopen`, json('POST', { reason })),
+  hrOpenPeriodAhead: (year, month) => request(`/hr/timesheet/periods/${year}/${month}`, { method: 'POST' }),
+  hrSetLeaveMode: (id, mode) => request(`/hr/timesheet/${encodeURIComponent(id)}/leave-mode`, json('PUT', { mode })),
   hrTimesheetLog: ({ area, search, offset }) => {
     const query = new URLSearchParams({ tu: String(offset), ...(area ? { nhom: area } : {}), ...(search ? { tim: search } : {}) });
     return request(`/hr/timesheet/log?${query}`);

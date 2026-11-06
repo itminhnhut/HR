@@ -299,3 +299,20 @@ describe('leave over a day already earned', () => {
     expect(rows[0]?.phepVuot).toBe(1);
   });
 });
+
+describe('the review of someone who became official during the period', () => {
+  it('should split the paid days, leave and holidays included, so the parts add up to what is paid', () => {
+    // Arrange: official from 10/11, at the end of the period; a P on 3/11 and a holiday on 24/11
+    const dto = sheet([person({ officialOn: '2026-11-10', cells: { '2026-11-03': { entered: 'P', note: null } } })], { today: '2026-11-25', holidays: [{ day: '2026-11-24', name: 'Lễ' }] });
+    const days = dayColumns(dto);
+    const [grid] = gridRows(dto, days);
+
+    // Act
+    const text = findProblems(dto, days, gridRows(dto, days)).find((p) => p.kind === 'becameOfficial')?.text ?? '';
+
+    // Assert: 26/10–9/11 has 11 weekdays (the P paid), 10/11–25/11 has 12 (the holiday paid)
+    expect(grid?.huong).toBe(23);
+    expect(text).toContain('11 công thử việc, 12 công chính thức');
+  });
+});
+

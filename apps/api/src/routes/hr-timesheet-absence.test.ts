@@ -376,6 +376,64 @@ describe('what HR can change on a line', () => {
   });
 });
 
+describe('Saturdays of a region that works all of them', () => {
+  it('TC-DK-42: should fill the Saturday too for someone in HN, where every Saturday of the period is worked', async () => {
+    // Arrange: HN counts 4 Saturdays, and the November period has exactly 4
+    const person = await flow.addPerson({ code: 'A', regionId: flow.hn.id });
+
+    // Act: Monday 9/11 to Saturday 14/11
+    const [absence] = await register(person.id, { reason: 'annual', from: '2026-11-09', to: '2026-11-14' });
+
+    // Assert
+    expect(absence?.days).toBe(6);
+    expect(rowOf(await flow.period(2026, 11), 'A').cells['2026-11-14']?.entered).toBe('P');
+  });
+
+  it('TC-DK-43: should leave the Saturday alone in HCM, where only some Saturdays are worked and the sheet cannot tell which', async () => {
+    // Arrange
+    const person = await flow.addPerson({ code: 'A' });
+
+    // Act
+    const [absence] = await register(person.id, { reason: 'annual', from: '2026-11-09', to: '2026-11-14' });
+
+    // Assert
+    expect(absence?.days).toBe(5);
+    expect(rowOf(await flow.period(2026, 11), 'A').cells['2026-11-14']).toBeUndefined();
+  });
+});
+
+describe('leave typed straight into the sheet', () => {
+  it('TC-DK-40: should list leave typed into the sheet, one line for days in a row, across a weekend', async () => {
+    // Arrange: P on Thursday 5/11 and Friday 6/11 and Monday 9/11, KL/2 on 12/11, M on 13/11
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-05': 'P', '2026-11-06': 'P', '2026-11-09': 'P', '2026-11-12': 'KL/2', '2026-11-13': 'M' });
+
+    // Act
+    const list = await flow.call<AbsenceRowDto[]>('GET', '/absences?year=2026');
+
+    // Assert
+    const typed = list.filter((r) => r.source === 'sheet').map((r) => [r.code, r.from, r.to, r.days]);
+    expect(typed).toEqual([
+      ['M', '2026-11-13', '2026-11-13', 1],
+      ['KL/2', '2026-11-12', '2026-11-12', 0.5],
+      ['P', '2026-11-05', '2026-11-09', 3],
+    ]);
+  });
+
+  it('TC-DK-41: should not list twice a day an absence already wrote, nor a day worked', async () => {
+    // Arrange: an approved absence on 10/11, a 1 typed on Saturday 7/11
+    const person = await flow.addPerson({ code: 'A' });
+    await register(person.id, { reason: 'annual', from: '2026-11-10', to: '2026-11-10' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-07': '1' });
+
+    // Act
+    const list = await flow.call<AbsenceRowDto[]>('GET', '/absences?year=2026');
+
+    // Assert
+    expect(list.map((r) => [r.source ?? 'absence', r.from])).toEqual([['absence', '2026-11-10']]);
+  });
+});
+
 describe('the list of approvers', () => {
   it('TC-DK-26: should let HR add a person, once, and remove them', async () => {
     // Act

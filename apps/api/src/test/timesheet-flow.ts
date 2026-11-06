@@ -144,6 +144,7 @@ export function totalsOf(dto: TimesheetDto, code: string): TimesheetTotals {
     adjustment: row.adjustments.reduce((sum, a) => sum + a.amount, 0),
     leaveChange: row.leaveChanges.reduce((sum, c) => sum + c.amount, 0),
     rule: dto.rule,
+    ...row.leaveSoFar,
   });
 }
 

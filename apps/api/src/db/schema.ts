@@ -11,6 +11,7 @@ import type {
   RegionTone,
   RejectReason,
   AttendanceCode,
+  LeaveMode,
   SaturdayChange,
   StaffType,
   TimesheetHolidayDto,
@@ -637,6 +638,8 @@ export const timesheetPeriods = pgTable(
     norms: jsonb('norms').$type<Record<string, number>>().notNull().default({}),
     leaveThreshold: real('leave_threshold').notNull().default(14),
     leavePerPeriod: real('leave_per_period').notNull().default(1),
+    /** How annual leave counts in this period: NĐ 145 (law) or as HR's workbook did (excel). */
+    leaveMode: text('leave_mode').$type<LeaveMode>().notNull().default('law'),
     closedAt: tz('closed_at'),
     closedBy: text('closed_by'),
     /** What the sheet said about holidays and regions when it closed; empty while open. */

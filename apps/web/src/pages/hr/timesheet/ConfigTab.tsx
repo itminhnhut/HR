@@ -1,15 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { Building2, BadgeCheck, Flag, MapPin, Tags, UserCheck, type LucideIcon } from 'lucide-react';
+import { Building2, BadgeCheck, Flag, MapPin, Plane, Tags, UserCheck, type LucideIcon } from 'lucide-react';
 import { useSearchParams } from 'react-router';
 import { api } from '../../../api';
 import { KindsPanel } from './AbsenceKinds';
 import { ApproversPanel, useApprovers } from './ApproverField';
 import { HolidaysCard } from './HolidaysCard';
+import { LeaveModePanel } from './LeaveModePanel';
 import { DepartmentsPanel, StaffKindsPanel } from './MasterPanels';
 import { useDepartments, useRegions, useStaffKinds } from './queries';
 import { RegionsPanel } from './SettingsTab';
 
-type SectionId = 'bo-phan' | 'loai-nv' | 'khu-vuc' | 'ngay-le' | 'ly-do' | 'nguoi-duyet';
+type SectionId = 'bo-phan' | 'loai-nv' | 'khu-vuc' | 'ngay-le' | 'ly-do' | 'nguoi-duyet' | 'phep';
 
 /** On a phone the list scrolls sideways: the open one must not hide past the edge. */
 export const showWhenOffScreen = (el: HTMLElement | null) => el?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
@@ -40,6 +41,7 @@ export function ConfigTab() {
     { id: 'ngay-le', icon: Flag, tone: 'text-teal-600', label: 'Ngày lễ, Tết' },
     { id: 'ly-do', icon: Tags, tone: 'text-indigo-600', label: 'Lý do nghỉ', count: reasons.data?.length },
     { id: 'nguoi-duyet', icon: UserCheck, tone: 'text-emerald-600', label: 'Người duyệt', count: approvers.data?.length },
+    { id: 'phep', icon: Plane, tone: 'text-sky-600', label: 'Cách tính phép' },
   ];
   return (
     <div className="grid items-start gap-3 lg:grid-cols-[240px_1fr]">
@@ -53,6 +55,7 @@ export function ConfigTab() {
         {current === 'ngay-le' && <HolidaysCard />}
         {current === 'ly-do' && <div className="ts-card p-4"><KindsPanel kinds={reasons.data ?? []} /></div>}
         {current === 'nguoi-duyet' && <div className="ts-card p-4"><ApproversPanel /></div>}
+        {current === 'phep' && <LeaveModePanel />}
       </div>
     </div>
   );

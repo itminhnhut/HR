@@ -67,6 +67,7 @@ import type {
   ParsedCvDto,
   TemplateChoiceList,
   TimesheetLogArea,
+  LeaveMode,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -245,6 +246,8 @@ export interface Api {
   hrTimesheetRemoveAdjustment(periodId: string, adjustmentId: string): Promise<TimesheetDto>;
   hrTimesheetClose(periodId: string): Promise<TimesheetDto>;
   hrTimesheetReopen(periodId: string, reason: string): Promise<TimesheetDto>;
+  hrSetLeaveMode(periodId: string, mode: LeaveMode): Promise<TimesheetDto>;
+  hrOpenPeriodAhead(year: number, month: number): Promise<TimesheetDto>;
   hrTimesheetLog(query: { area?: TimesheetLogArea; search?: string; offset: number }): Promise<TimesheetLogPageDto>;
   hrEmployees(): Promise<EmployeeDto[]>;
   hrCreateEmployee(input: EmployeeInput): Promise<EmployeeDto>;

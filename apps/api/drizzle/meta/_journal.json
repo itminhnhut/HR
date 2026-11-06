@@ -211,6 +211,13 @@
       "when": 1793871066388,
       "tag": "0029_timesheet_config",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793951591552,
+      "tag": "0030_timesheet_leave_mode",
+      "breakpoints": true
     }
   ]
 }

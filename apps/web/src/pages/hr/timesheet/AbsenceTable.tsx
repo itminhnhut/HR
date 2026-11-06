@@ -1,6 +1,7 @@
-import { ABSENCE_COUNTING, matchesQuery, todayInVietnam, type AbsenceRowDto } from '@careers/shared';
+import { ABSENCE_COUNTING, matchesQuery, periodMonthOf, todayInVietnam, type AbsenceRowDto } from '@careers/shared';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle2, Clock, ListChecks, Pencil, Search, Trash2 } from 'lucide-react';
+import { CheckCircle2, Clock, Grid3x3, ListChecks, Pencil, Search, Trash2 } from 'lucide-react';
+import { Link } from 'react-router';
 import { useState } from 'react';
 import { api } from '../../../api';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
@@ -12,10 +13,16 @@ import { ConfirmDialog } from './dialogs';
 import { KindMark } from './KindSelect';
 import { YearNav } from './months';
 
+/** The sheet a day is on: YYYY-MM of its period. */
+const sheetMonthOf = (day: string) => {
+  const { year, month } = periodMonthOf(day);
+  return `${year}-${String(month).padStart(2, '0')}`;
+};
 const show = (iso: string) => iso.split('-').reverse().slice(0, 2).join('/');
 const HEADS = ['Trạng thái', 'Nhân viên', 'Lý do', 'Thời gian', 'Số ngày', 'Tính công', 'Người duyệt', 'Bàn giao', 'Ghi chú'];
 
 function State({ row }: { row: AbsenceRowDto }) {
+  if (row.source === 'sheet') return <span className="inline-flex h-6 items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2 text-xs font-medium whitespace-nowrap text-blue-800"><Grid3x3 className="size-3" />Gõ trên bảng công</span>;
   if (row.code === 'M') return <span className="inline-flex h-6 items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 text-xs font-medium whitespace-nowrap text-amber-800"><Clock className="size-3" />Đã ghi</span>;
   return row.approvedBy
     ? <span className="inline-flex h-6 items-center gap-1 rounded-full border border-green-300 bg-green-50 px-2 text-xs font-medium whitespace-nowrap text-green-800"><CheckCircle2 className="size-3" />Đã duyệt</span>
@@ -36,7 +43,7 @@ export function AbsenceTable({ editingId, isRemoving, removeError, onEdit, onRem
   const [pickedId, setPickedId] = useState<string | null>(null);
   const list = useQuery({ queryKey: ['hr', 'absences', year], queryFn: () => api.hrAllAbsences(year) });
   const rows = (list.data ?? []).filter((r) => matchesQuery(`${r.fullName} ${r.employeeCode} ${r.label} ${r.note} ${r.approvedBy ?? ''}`, query));
-  const waiting = (list.data ?? []).filter((r) => !r.approvedBy && r.code !== 'M').length;
+  const waiting = (list.data ?? []).filter((r) => r.source !== 'sheet' && !r.approvedBy && r.code !== 'M').length;
   return (
     <section className="ts-card flex flex-col gap-3 p-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -67,10 +74,14 @@ export function AbsenceTable({ editingId, isRemoving, removeError, onEdit, onRem
                   <td className="max-w-80 p-2"><CopyValue text={r.handover} label="bàn giao"><FitText text={r.handover || '-'} limit={40} className="min-w-0 pr-7" /></CopyValue></td>
                   <td className="max-w-80 p-2"><CopyValue text={r.note} label="ghi chú"><FitText text={r.note || '-'} limit={40} className="min-w-0 pr-7" /></CopyValue></td>
                   <td className={`sticky right-0 p-2 text-right ${r.id === editingId ? 'bg-blue-50' : 'bg-white'}`}>
+                    {r.source === 'sheet' ? (
+                      <Link to={`/hr/cham-cong?ky=${sheetMonthOf(r.from)}`} aria-label={`Mở bảng công ${r.fullName} ${show(r.from)}`} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium text-slate-800 no-underline hover:bg-slate-50"><Grid3x3 className="size-3.5 text-blue-600" />Mở bảng công</Link>
+                    ) : (
                     <span className="inline-flex gap-1">
-                      <button type="button" aria-label={`Sửa ${r.fullName} ${show(r.from)}`} onClick={() => onEdit(r)} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium hover:bg-slate-50 max-md:size-11 max-md:justify-center max-md:px-0"><Pencil className="size-3.5 text-blue-600" /><span className="max-md:sr-only">Sửa</span></button>
-                      <button type="button" aria-label={`Huỷ ${r.fullName} ${show(r.from)}`} disabled={isRemoving} onClick={() => setRemoving(r)} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium hover:bg-red-50 max-md:size-11 max-md:justify-center max-md:px-0"><Trash2 className="size-3.5 text-red-600" /><span className="max-md:sr-only">Huỷ</span></button>
-                    </span>
+                        <button type="button" aria-label={`Sửa ${r.fullName} ${show(r.from)}`} onClick={() => onEdit(r)} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium hover:bg-slate-50 max-md:size-11 max-md:justify-center max-md:px-0"><Pencil className="size-3.5 text-blue-600" /><span className="max-md:sr-only">Sửa</span></button>
+                        <button type="button" aria-label={`Huỷ ${r.fullName} ${show(r.from)}`} disabled={isRemoving} onClick={() => setRemoving(r)} className="inline-flex h-8 items-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium hover:bg-red-50 max-md:size-11 max-md:justify-center max-md:px-0"><Trash2 className="size-3.5 text-red-600" /><span className="max-md:sr-only">Huỷ</span></button>
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
