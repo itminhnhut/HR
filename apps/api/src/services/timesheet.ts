@@ -64,11 +64,15 @@ type Snapshot = typeof timesheetSnapshots.$inferSelect;
 const numberWords = (n: number) => String(n).replace('.', ',');
 const monthKey = (year: number, month: number) => `${year}-${String(month).padStart(2, '0')}`;
 
+/** The stored period just before a day: a new one carries on its way of counting leave. */
+const periodBefore = (db: Db, from: string) =>
+  db.query.timesheetPeriods.findFirst({ where: lt(timesheetPeriods.fromOn, from), orderBy: desc(timesheetPeriods.fromOn) });
+
 async function ensurePeriod(db: Db, year: number, month: number): Promise<Period> {
   const { from, to } = standardPeriod(year, month);
   const regions = await listRegions(db);
   const norms = Object.fromEntries(regions.map((r) => [r.id, suggestedNorm({ from, to }, saturdaysFor(r, monthKey(year, month)))]));
-  const previous = await db.query.timesheetPeriods.findFirst({ orderBy: desc(timesheetPeriods.fromOn) });
+  const previous = await periodBefore(db, from);
   await db
     .insert(timesheetPeriods)
     .values({ year, month, fromOn: from, toOn: to, norms, ...(previous ? { leaveMode: previous.leaveMode } : {}) })
@@ -174,12 +178,13 @@ async function carriedStates(db: Db, period: Period, people: readonly Employee[]
   const [firstMonth] = months;
   if (!firstMonth || people.length === 0 || months.length > MAX_MONTHS_CARRIED) return states;
   const ids = people.map((p) => p.id);
-  const [cells, holidays, changes, rows] = await Promise.all([
+  const [cells, holidays, changes, rows, regions] = await Promise.all([
     cellsFor(db, ids, standardPeriod(firstMonth.year, firstMonth.month).from, period.fromOn),
     listHolidays(db),
     db.select({ year: timesheetPeriods.year, month: timesheetPeriods.month, employeeId: timesheetLeaveChanges.employeeId, amount: timesheetLeaveChanges.amount })
       .from(timesheetLeaveChanges).innerJoin(timesheetPeriods, eq(timesheetPeriods.id, timesheetLeaveChanges.periodId)),
     db.select().from(timesheetPeriods).where(gte(timesheetPeriods.fromOn, standardPeriod(firstMonth.year, firstMonth.month).from)),
+    listRegions(db),
   ]);
   const holidayDays = new Set(holidaysInEffect(holidays).map((h) => h.day));
   const today = todayInVietnam(now);
@@ -189,11 +194,16 @@ async function carriedStates(db: Db, period: Period, people: readonly Employee[]
     // A month not opened yet counts by the rule the next one will get.
     const own = rows.find((r) => r.year === m.year && r.month === m.month);
     const rule: LeaveRule = own ? ruleOf(own) : ruleOf(period);
+    // A month never stored, or a region added after it was: the norm it would have been opened with.
+    const usualNorm = (regionId: string) => {
+      const region = regions.find((r) => r.id === regionId);
+      return region ? suggestedNorm(range, saturdaysFor(region, monthKey(m.year, m.month))) : 0;
+    };
     for (const p of people) {
       const codes = days.map((day) => dayCode({ day, entered: cells.get(p.id)?.[day]?.entered ?? null, isHoliday: holidayDays.has(day), today, joinedOn: p.joinedOn, leftOn: p.leftOn }));
       const leaveChange = changes.filter((c) => c.employeeId === p.id && c.year === m.year && c.month === m.month).reduce((sum, c) => sum + c.amount, 0);
       const state = states.get(p.id) ?? { balance: p.openingLeave, pending: 0, unpaidCounted: 0, sickCounted: 0, year: m.year };
-      const norm = own?.norms[p.regionId] ?? 0;
+      const norm = own?.norms[p.regionId] ?? usualNorm(p.regionId);
       const totals = timesheetTotals({ codes, norm, leaveOpening: state.balance, employment: employmentOn(p, range.to), leaveChange, rule, ...soFarOf(state, m.year) });
       states.set(p.id, nextState(state, m.year, totals));
     }
@@ -390,7 +400,7 @@ export async function openPeriodAhead(db: Db, year: number, month: number, hr: H
   if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12 || year < 2020 || year > 2100) throw invalid('Tháng không hợp lệ.');
   const existed = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
   const period = existed ?? (await ensurePeriod(db, year, month));
-  if (!existed) await db.insert(timesheetLog).values({ periodId: period.id, actor: actorOf(hr), action: 'Mở kỳ để nhập trước', detail: `Tháng ${month}/${year}`, at: now });
+  if (!existed && period.fromOn > todayInVietnam(now)) await db.insert(timesheetLog).values({ periodId: period.id, actor: actorOf(hr), action: 'Mở kỳ để nhập trước', detail: `Tháng ${month}/${year}`, at: now });
   return toDto(db, period, now);
 }
 
@@ -429,8 +439,8 @@ async function periodHolding(db: Db, day: string): Promise<Period> {
   const { year, month } = periodMonthOf(day);
   const own = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
   if (own) return own;
-  const previous = await db.query.timesheetPeriods.findFirst({ orderBy: desc(timesheetPeriods.fromOn) });
   const { from, to } = standardPeriod(year, month);
+  const previous = await periodBefore(db, from);
   return {
     id: NO_PERIOD, year, month, fromOn: from, toOn: to, status: 'open', norms: {}, leaveThreshold: DEFAULT_LEAVE_RULE.threshold, leavePerPeriod: DEFAULT_LEAVE_RULE.perPeriod,
     leaveMode: previous?.leaveMode ?? 'law', closedAt: null, closedBy: null, frozen: null, createdAt: new Date(0),

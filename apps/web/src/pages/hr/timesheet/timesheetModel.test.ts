@@ -182,6 +182,18 @@ describe('working on a day of rest', () => {
     expect(kinds).toEqual(expect.arrayContaining(['holidayWork', 'sundayWork']));
   });
 
+  it('RV2-08: should count rest-day work the way the close stores it, leaving out days after someone left', () => {
+    // Arrange: left on 05/11, yet a 1 sits on Sunday 08/11
+    const dto = sheet([person({ leftOn: '2026-11-05', cells: { '2026-11-08': { entered: '1', note: null } } })]);
+    const days = dayColumns(dto);
+
+    // Act
+    const rows = gridRows(dto, days);
+
+    // Assert
+    expect(rows[0]).toMatchObject({ lamCN: 0 });
+  });
+
   it('should leave a holiday nobody worked out of it', () => {
     // Arrange
     const dto = holidaySheet({});

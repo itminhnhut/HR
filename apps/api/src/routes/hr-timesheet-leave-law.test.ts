@@ -1,4 +1,4 @@
-import { timesheetPeriods, timesheetSnapshots } from '../db/schema.js';
+import { timesheetEntries, timesheetPeriods, timesheetSnapshots } from '../db/schema.js';
 import type { TimesheetDto } from '@careers/shared';
 import { eq } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -230,5 +230,45 @@ describe('looking at a month that has not started', () => {
     expect(march.periodId).not.toBeNull();
     expect(again.periodId).toBe(march.periodId);
     expect((await flow.log(march)).filter((l) => l.action === 'Mở kỳ để nhập trước')).toHaveLength(1);
+  });
+});
+
+describe('review fixes (RV2)', () => {
+  it('RV2-03: should count approved unpaid days of a month never stored against its usual norm, not against 0', async () => {
+    // Arrange: January opened ahead while December is still not stored
+    const person = await flow.addPerson({ code: 'A' });
+    const december = await flow.period(2026, 12);
+    const before = rowOf(await flow.call<TimesheetDto>('POST', '/periods/2027/1', undefined, 201), 'A').leaveOpening;
+
+    // Act: approved unpaid leave on every December weekday
+    await flow.t.db.insert(timesheetEntries).values(weekdaysOf(december).map((day) => ({ employeeId: person.id, day, code: 'KL' as const, updatedBy: 'hr' })));
+    const january = await flow.period(2027, 1);
+
+    // Assert: December reaches the threshold on its approved unpaid days, so January opens with 1 more day
+    expect(rowOf(december, 'A').norm).toBeGreaterThan(0);
+    expect(rowOf(january, 'A').leaveOpening).toBe(before + 1);
+  });
+
+  it('RV2-04: should give a new period the way of counting of the period before it, not of a later one opened ahead', async () => {
+    // Arrange: November by the law; January opened ahead and set to the workbook's way
+    await flow.period(2026, 11);
+    const january = await flow.call<TimesheetDto>('POST', '/periods/2027/1', undefined, 201);
+    await flow.call('PUT', `/${january.periodId}/leave-mode`, { mode: 'excel' });
+
+    // Act: December starts
+    await flow.at('2026-11-26');
+    const december = await flow.period(2026, 12);
+
+    // Assert
+    expect(december.rule.mode).toBe('law');
+  });
+
+  it('RV2-05: should not log opening ahead for a month that has already started', async () => {
+    // Act
+    const november = await flow.call<TimesheetDto>('POST', '/periods/2026/11', undefined, 201);
+
+    // Assert
+    expect(november.periodId).not.toBeNull();
+    expect((await flow.log(november)).filter((l) => l.action === 'Mở kỳ để nhập trước')).toHaveLength(0);
   });
 });

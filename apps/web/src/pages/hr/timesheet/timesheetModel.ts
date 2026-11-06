@@ -50,8 +50,11 @@ function codeOn(dto: TimesheetDto, row: TimesheetRowDto, day: string, entered: A
 
 /** Days worked on a holiday or a Sunday: they pay at a different rate, which the sheet leaves to payroll (Đ.98). */
 function restDayWorkOf(dto: TimesheetDto, row: TimesheetRowDto, days: readonly DayColumn[]) {
-  const entered = days.map((d) => row.cells[d.iso]?.entered ?? null);
-  const { sundayWorked, holidayWorked } = restDayWork(days.map((d) => d.iso), entered, new Set(dto.holidays.map((h) => h.day)));
+  // A closed period shows what its close kept; otherwise the same day codes the close would use.
+  const kept = row.frozenTotals;
+  if (kept?.sundayWorked !== undefined && kept.holidayWorked !== undefined) return { lamLe: kept.holidayWorked, lamCN: kept.sundayWorked };
+  const codes = days.map((d) => codeOn(dto, row, d.iso, row.cells[d.iso]?.entered ?? null));
+  const { sundayWorked, holidayWorked } = restDayWork(days.map((d) => d.iso), codes, new Set(dto.holidays.map((h) => h.day)));
   return { lamLe: holidayWorked, lamCN: sundayWorked };
 }
 

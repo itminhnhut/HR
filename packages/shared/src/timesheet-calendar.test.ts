@@ -204,7 +204,7 @@ describe('a long break such as Tết', () => {
 });
 
 describe('a fixed holiday on a Sunday inside a range (Điều 111 khoản 3)', () => {
-  it('TC-LE-11: should give the same day in lieu whether 30/4–1/5/2028 is entered as a range or day by day', () => {
+  it('TC-LE-11: should move a fixed holiday typed on its own on a Sunday, but not one inside a typed break', () => {
     // Arrange: 30/4/2028 is a Sunday
     const asRange = daysOfHolidayBreak('2028-04-30', '2028-05-01').map((day) => ({ day, name: 'Lễ 30/4 – 1/5' }));
     const oneByOne = [{ day: '2028-04-30', name: 'Ngày Chiến thắng' }, { day: '2028-05-01', name: 'Quốc tế Lao động' }];
@@ -212,16 +212,24 @@ describe('a fixed holiday on a Sunday inside a range (Điều 111 khoản 3)', (
     // Act
     const days = (list: { day: string; name: string }[]) => holidaysInEffect(list).map((h) => h.day);
 
-    // Assert: 1/5 and the day in lieu 2/5, both ways
-    expect(days(asRange)).toEqual(['2028-05-01', '2028-05-02']);
+    // Assert: a typed break is the announced schedule; days typed one by one get the day in lieu
+    expect(days(asRange)).toEqual(['2028-05-01']);
     expect(days(oneByOne)).toEqual(['2028-05-01', '2028-05-02']);
   });
 
-  it('TC-LE-12: should keep 2/9/2029, a Sunday, inside a range so that it moves to Monday', () => {
-    // Act
-    const days = holidaysInEffect(daysOfHolidayBreak('2029-09-01', '2029-09-03').map((day) => ({ day, name: 'Quốc khánh' }))).map((h) => h.day);
+  it('RV2-02: should give one day in lieu, not two, for New Year 2023 typed as announced, 31/12–2/1', () => {
+    // Act: 1/1/2023 is a Sunday and 2/1 is its day in lieu, already in the announced break
+    const days = holidaysInEffect(daysOfHolidayBreak('2022-12-31', '2023-01-02').map((day) => ({ day, name: 'Tết Dương lịch' }))).map((h) => h.day);
 
-    // Assert: 1/9 (Saturday), 3/9 and 4/9 in lieu of the Sunday
+    // Assert
+    expect(days).toEqual(['2022-12-31', '2023-01-02']);
+  });
+
+  it('TC-LE-12: should add nothing to Quốc khánh 2029 typed as a break, 1/9–4/9', () => {
+    // Act: 2/9/2029 is a Sunday; the break as announced holds its day in lieu
+    const days = holidaysInEffect(daysOfHolidayBreak('2029-09-01', '2029-09-04').map((day) => ({ day, name: 'Quốc khánh' }))).map((h) => h.day);
+
+    // Assert
     expect(days).toEqual(['2029-09-01', '2029-09-03', '2029-09-04']);
   });
 

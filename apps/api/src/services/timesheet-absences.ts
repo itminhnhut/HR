@@ -7,11 +7,6 @@ import {
   holidaysInEffect,
   ATTENDANCE_LABEL,
   isWeekend,
-  periodDays,
-  periodMonthOf,
-  saturdaysFor,
-  standardPeriod,
-  weekdayOf,
   isWorkingOn,
   nextDay,
   type AbsenceKindDto,
@@ -20,6 +15,7 @@ import {
   type AttendanceCode,
   type HrMe,
   type TimesheetAbsenceDto,
+  workingDayCheck,
 } from '@careers/shared';
 import { and, asc, desc, eq, gte, inArray, lte, ne, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
@@ -218,20 +214,9 @@ async function requireNoOverlap(db: Db, employeeId: string, from: string, to: st
   if (other) throw new HttpError(409, `Trùng với ${other.label} ${dayWords(other.fromOn)}–${dayWords(other.toOn)}.`, {}, 'absence_overlap');
 }
 
-/**
- * Whether a day is a working day for the person's region. Mon–Fri are; Sundays are not; a Saturday is only when the
- * region works every Saturday of that period, since otherwise the sheet cannot tell which ones it works.
- */
+/** The person's region's working days, the rule the absence form counts with too (workingDayCheck). */
 async function workedDayCheck(db: Db, person: Person) {
-  const region = (await listRegions(db)).find((r) => r.id === person.regionId);
-  return (day: string) => {
-    if (weekdayOf(day) === 0) return false;
-    if (!isWeekend(day)) return true;
-    if (!region) return false;
-    const { year, month } = periodMonthOf(day);
-    const saturdays = periodDays(standardPeriod(year, month)).filter((d) => weekdayOf(d) === 6).length;
-    return saturdaysFor(region, `${year}-${String(month).padStart(2, '0')}`) >= saturdays;
-  };
+  return workingDayCheck((await listRegions(db)).find((r) => r.id === person.regionId));
 }
 
 /** Working days only (see workedDayCheck). Holidays keep NL, except maternity leave, which runs through them. */

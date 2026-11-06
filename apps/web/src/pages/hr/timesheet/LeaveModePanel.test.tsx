@@ -44,6 +44,23 @@ describe('the leave counting choice', () => {
     await waitFor(() => expect(set).toHaveBeenCalledWith('p11', 'excel'));
   });
 
+  it('RV2-07: should warn before the workbook way drops the leave people on probation are holding', async () => {
+    // Arrange: one person holds 2 days earned on probation
+    const rows = [{ employeeId: 'a', leaveSoFar: { leavePending: 2 } }, { employeeId: 'b', leaveSoFar: { leavePending: 0 } }] as TimesheetDto['rows'];
+    vi.spyOn(api, 'hrTimesheet').mockResolvedValue(period({ rows }));
+    const set = vi.spyOn(api, 'hrSetLeaveMode').mockResolvedValue(period({ rule: { threshold: 14, perPeriod: 1, mode: 'excel' } }));
+    open();
+
+    // Act
+    await userEvent.click(await screen.findByRole('radio', { name: /Như Excel cũ/ }));
+
+    // Assert: nothing changes until HR confirms
+    expect(await screen.findByText(/1 người đang giữ 2 ngày phép chờ/)).toBeTruthy();
+    expect(set).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /Vẫn đổi/ }));
+    await waitFor(() => expect(set).toHaveBeenCalledWith('p11', 'excel'));
+  });
+
   it('should not let a closed period change', async () => {
     // Arrange
     vi.spyOn(api, 'hrTimesheet').mockResolvedValue(period({ status: 'closed' }));

@@ -83,6 +83,7 @@ export function weekdayOf(day: string): number {
 export const isWeekend = (day: string) => [0, 6].includes(weekdayOf(day));
 
 const SUNDAY = 0;
+const SATURDAY = 6;
 
 /**
  * The holidays that fall on the same date every year: Đ.112 BLLĐ 2019 and NQ 28/2026/QH16. Tết and Giỗ Tổ follow the
@@ -118,18 +119,16 @@ export function holidaysInEffect<T extends { day: string; name: string }>(holida
   return moved.sort((a, b) => a.day.localeCompare(b.day));
 }
 
-const isFixedHoliday = (day: string) => FIXED_HOLIDAYS.some((h) => day.slice(5) === h.monthDay);
-
 /**
- * The days of a long break such as Tết. Sundays in it are left out: the announced schedule already counts them as
- * rest, so they earn no day and no day in lieu. One day on its own stays, Sunday or not, and so does a fixed holiday
- * (30/4, 2/9…) that falls on a Sunday: Điều 111 khoản 3 gives it a day in lieu however HR typed it.
+ * The days of a long break such as Tết, typed as announced: the announced schedule already holds any day in lieu,
+ * so the Sundays in it are left out and earn nothing more. One day on its own stays, Sunday or not, so that
+ * holidaysInEffect moves it to the next working day (Điều 111 khoản 3).
  */
 export function daysOfHolidayBreak(from: string, to: string): string[] {
   if (from === to) return [from];
   const days: string[] = [];
   for (let day = from; day <= to; day = nextDay(day)) {
-    if (weekdayOf(day) !== SUNDAY || isFixedHoliday(day)) days.push(day);
+    if (weekdayOf(day) !== SUNDAY) days.push(day);
   }
   return days;
 }
@@ -597,6 +596,21 @@ export interface SaturdayChange {
 export function saturdaysFor(region: { saturdays: number; saturdayChanges?: readonly SaturdayChange[] }, monthKey: string): number {
   const started = (region.saturdayChanges ?? []).filter((c) => c.from <= monthKey);
   return started.at(-1)?.saturdays ?? region.saturdays;
+}
+
+/**
+ * The days an absence fills for someone in a region: Mon–Fri; a Saturday only when the region works every Saturday
+ * of that period, since otherwise the sheet cannot tell which ones it works; never Sunday, nor a day in `holidays`.
+ */
+export function workingDayCheck(region: { saturdays: number; saturdayChanges?: readonly SaturdayChange[] } | undefined, holidays: ReadonlySet<string> = new Set()) {
+  return (day: string): boolean => {
+    if (holidays.has(day) || weekdayOf(day) === SUNDAY) return false;
+    if (!isWeekend(day)) return true;
+    if (!region) return false;
+    const { year, month } = periodMonthOf(day);
+    const saturdays = periodDays(standardPeriod(year, month)).filter((d) => weekdayOf(d) === SATURDAY).length;
+    return saturdaysFor(region, `${year}-${String(month).padStart(2, '0')}`) >= saturdays;
+  };
 }
 
 export interface TimesheetRegionDto {

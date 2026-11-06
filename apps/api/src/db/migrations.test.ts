@@ -382,3 +382,24 @@ describe('migration 0018: mail templates', SLOW, () => {
     expect(template).toMatchObject({ note: '', calloutTitle: '', callout: '', closing: '' });
   });
 });
+
+describe('migration 0030: how annual leave counts in each period', SLOW, () => {
+  it('RV2-01: should mark periods closed before it as counted the workbook way, and open ones by the law', async () => {
+    // Arrange: October closed, November open, as on 06/11/2026
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(30) });
+    await pg.exec(`
+      insert into timesheet_periods (year, month, from_on, to_on, status) values
+        (2026, 10, '2026-09-26', '2026-10-25', 'closed'),
+        (2026, 11, '2026-10-26', '2026-11-25', 'open');
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const modes = await pg.query<{ month: number; leave_mode: string }>(`select month, leave_mode from timesheet_periods order by month`);
+    expect(modes.rows).toEqual([{ month: 10, leave_mode: 'excel' }, { month: 11, leave_mode: 'law' }]);
+  });
+});
