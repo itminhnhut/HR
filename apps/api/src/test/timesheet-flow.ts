@@ -34,6 +34,8 @@ export interface Flow {
   enter(dto: TimesheetDto, employeeId: string, cells: Record<string, AttendanceCode>): Promise<TimesheetDto>;
   close(year: number, month: number): Promise<TimesheetDto>;
   log(dto: TimesheetDto): Promise<TimesheetLogDto[]>;
+  /** Any body, such as a file upload, with the session and the CSRF header unless `signedIn` is false. */
+  raw(method: string, path: string, init?: { body?: BodyInit; signedIn?: boolean }): Promise<Response>;
   reset(): Promise<void>;
 }
 
@@ -104,6 +106,10 @@ export async function createFlow(): Promise<Flow> {
     },
     log(dto) {
       return call<TimesheetLogDto[]>('GET', `/${dto.periodId}/log`);
+    },
+    raw(method, path, init = {}) {
+      const headers: Record<string, string> = { 'x-requested-with': 'careers-web', ...(init.signedIn === false ? {} : { cookie }) };
+      return t.request(`/api/hr/timesheet${path}`, { method, headers, body: init.body });
     },
     async reset() {
       await t.reset();

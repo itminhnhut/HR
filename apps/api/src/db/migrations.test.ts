@@ -427,3 +427,184 @@ describe('migration 0031: "Chờ xếp lịch"', SLOW, () => {
     expect(rows.rows).toEqual([{ full_name: 'Đã hẹn', status: 'interview' }, { full_name: 'Đã xem', status: 'scheduling' }]);
   });
 });
+
+describe('migration 0035: papers kept with an absence', SLOW, () => {
+  /** A database at 0034 with one person, one kind HR added and one absence. */
+  async function databaseBefore0031() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(35) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('22222222-2222-2222-2222-222222222222', 'Vùng thử');
+      insert into employees (id, code, full_name, region_id) values ('33333333-3333-3333-3333-333333333333', 'A01', 'Người thử', '22222222-2222-2222-2222-222222222222');
+      insert into timesheet_absence_kinds (name, code, created_by) values ('Khám thai', 'CL', 'hr');
+      insert into timesheet_absences (id, employee_id, reason, code, from_on, to_on, days, note, created_by)
+        values ('44444444-4444-4444-4444-444444444444', '33333333-3333-3333-3333-333333333333', 'sick', 'OM', '2026-11-02', '2026-11-03', 2, '', 'hr');
+    `);
+    return { pg, db };
+  }
+
+  it('TC-GT-30: should ask for no papers on a kind HR added before', async () => {
+    // Arrange
+    const { db } = await databaseBefore0031();
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [kind] = await db.select().from(schema.timesheetAbsenceKinds);
+    expect(kind).toMatchObject({ name: 'Khám thai', needsPaper: false });
+    expect(await db.select().from(schema.timesheetReasonSettings)).toEqual([]);
+  });
+
+  it('TC-GT-31: should keep files with their absence, and remove them with it', async () => {
+    // Arrange
+    const { db } = await databaseBefore0031();
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    const absenceId = '44444444-4444-4444-4444-444444444444';
+    await db.insert(schema.timesheetAbsenceFiles).values([
+      { absenceId, pathname: 'absence/a/1.jpg', name: 'giay-om-1.jpg', contentType: 'image/jpeg', size: 812_000, createdBy: 'hr' },
+      { absenceId, pathname: 'absence/a/2.pdf', name: 'ra-vien.pdf', contentType: 'application/pdf', size: 95_000, createdBy: 'hr' },
+    ]);
+
+    // Act
+    const kept = await db.select().from(schema.timesheetAbsenceFiles);
+    await db.delete(schema.timesheetAbsences);
+
+    // Assert
+    expect(kept).toHaveLength(2);
+    expect(await db.select().from(schema.timesheetAbsenceFiles)).toEqual([]);
+  });
+
+  it('TC-GT-32: should keep one setting a reason in the law', async () => {
+    // Arrange
+    const { db } = await databaseBefore0031();
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    await db.insert(schema.timesheetReasonSettings).values({ reasonKey: 'sick', needsPaper: false, updatedBy: 'hr' });
+
+    // Act
+    const again = db.insert(schema.timesheetReasonSettings).values({ reasonKey: 'sick', needsPaper: true, updatedBy: 'hr' });
+
+    // Assert
+    await expect(again).rejects.toThrow();
+  });
+});
+
+describe('migration 0037: notes become a timeline', SLOW, () => {
+  it('should copy each old note into a first entry, word for word, with its time and author', async () => {
+    // Arrange: before 0036, four applications: a note with its author, an old note with neither, a blank one, none
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(36) });
+    await pg.exec(`
+      insert into jobs (id, slug, title, department, employment_type, deadline)
+        values ('11111111-1111-1111-1111-111111111111', 'a', 'A', 'Kỹ thuật', 'full_time', '2026-12-01');
+      insert into applications
+        (id, job_id, full_name, phone, consent_at, policy_version, note, note_updated_at, note_updated_by, updated_at)
+      values
+        ('22222222-2222-2222-2222-222222222221', '11111111-1111-1111-1111-111111111111', 'Có ghi chú', '0912000001',
+          now(), 'v', E'T7 gọi chưa được\\nT2 gọi lại', '2026-10-01T02:00:00Z', 'Chị Mẫu', '2026-10-05T02:00:00Z'),
+        ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 'Ghi chú cũ', '0912000002',
+          now(), 'v', 'Hẹn PV', null, null, '2026-09-01T02:00:00Z'),
+        ('22222222-2222-2222-2222-222222222223', '11111111-1111-1111-1111-111111111111', 'Trống', '0912000003',
+          now(), 'v', '   ', '2026-10-01T02:00:00Z', 'Chị Mẫu', now()),
+        ('22222222-2222-2222-2222-222222222224', '11111111-1111-1111-1111-111111111111', 'Không có', '0912000004',
+          now(), 'v', null, null, null, now());
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const notes = await pg.query<{ application_id: string; body: string; created_by: string | null; created_at: Date; updated_at: Date }>(
+      `select application_id, body, created_by, created_at, updated_at from application_notes order by application_id`,
+    );
+    expect(notes.rows).toEqual([
+      {
+        application_id: '22222222-2222-2222-2222-222222222221',
+        body: 'T7 gọi chưa được\nT2 gọi lại',
+        created_by: 'Chị Mẫu',
+        created_at: new Date('2026-10-01T02:00:00Z'),
+        updated_at: new Date('2026-10-01T02:00:00Z'),
+      },
+      {
+        application_id: '22222222-2222-2222-2222-222222222222',
+        body: 'Hẹn PV',
+        created_by: null,
+        created_at: new Date('2026-09-01T02:00:00Z'),
+        updated_at: new Date('2026-09-01T02:00:00Z'),
+      },
+    ]);
+    const kept = await pg.query<{ note: string | null }>(`select note from applications order by phone`);
+    expect(kept.rows.map((r) => r.note)).toEqual(['T7 gọi chưa được\nT2 gọi lại', 'Hẹn PV', '   ', null]);
+  });
+
+  it('should take the notes away with their application', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    await pg.exec(`
+      insert into jobs (id, slug, title, department, employment_type, deadline)
+        values ('11111111-1111-1111-1111-111111111111', 'a', 'A', 'Kỹ thuật', 'full_time', '2026-12-01');
+      insert into applications (id, job_id, full_name, phone, consent_at, policy_version)
+        values ('22222222-2222-2222-2222-222222222221', '11111111-1111-1111-1111-111111111111', 'Mẫu', '0912000001', now(), 'v');
+      insert into application_notes (application_id, body, created_by)
+        values ('22222222-2222-2222-2222-222222222221', 'Gọi lại', 'Chị Mẫu');
+    `);
+
+    // Act
+    await pg.exec(`delete from applications`);
+
+    // Assert
+    expect((await pg.query(`select * from application_notes`)).rows).toEqual([]);
+  });
+});
+
+describe('migration 0038: company days off (Nghỉ công ty)', SLOW, () => {
+  /** A database at 0037 with one fake person and one absence of their own. */
+  async function databaseBefore0038() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(38) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('22222222-2222-2222-2222-222222222222', 'Vùng thử');
+      insert into employees (id, code, full_name, region_id) values ('33333333-3333-3333-3333-333333333333', 'T01', 'Người thử', '22222222-2222-2222-2222-222222222222');
+      insert into timesheet_absences (id, employee_id, reason, code, from_on, to_on, days, note, created_by)
+        values ('44444444-4444-4444-4444-444444444444', '33333333-3333-3333-3333-333333333333', 'annual', 'P', '2026-11-02', '2026-11-03', 2, '', 'hr');
+    `);
+    return { pg, db };
+  }
+
+  it('TC-NCT-30: should keep every absence there was, belonging to no batch', async () => {
+    // Arrange
+    const { db } = await databaseBefore0038();
+
+    // Act
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+
+    // Assert
+    const [absence] = await db.select().from(schema.timesheetAbsences);
+    expect(absence).toMatchObject({ id: '44444444-4444-4444-4444-444444444444', batchId: null, days: 2 });
+    expect(await db.select().from(schema.timesheetAbsenceBatches)).toEqual([]);
+  });
+
+  it('TC-NCT-31: should link an absence to its batch, starting at version 1, and keep a batch that still has absences', async () => {
+    // Arrange
+    const { db } = await databaseBefore0038();
+    await migrate(db, { migrationsFolder: MIGRATIONS });
+    const [batch] = await db
+      .insert(schema.timesheetAbsenceBatches)
+      .values({ name: 'Nghỉ thử', reason: 'other-paid', label: 'Nghỉ có lương khác', code: 'CL', fromOn: '2026-11-09', toOn: '2026-11-09', audience: { kind: 'all' }, employeeIds: ['33333333-3333-3333-3333-333333333333'], createdBy: 'hr' })
+      .returning();
+    await db.insert(schema.timesheetAbsences).values({ employeeId: '33333333-3333-3333-3333-333333333333', reason: 'other-paid', code: 'CL', fromOn: '2026-11-09', toOn: '2026-11-09', days: 1, note: 'Nghỉ thử', batchId: batch?.id, createdBy: 'hr' });
+
+    // Act
+    const removing = db.delete(schema.timesheetAbsenceBatches);
+
+    // Assert
+    expect(batch).toMatchObject({ version: 1, note: '', approvedBy: null });
+    await expect(removing).rejects.toThrow();
+    expect(await db.select().from(schema.timesheetAbsences)).toHaveLength(2);
+  });
+});

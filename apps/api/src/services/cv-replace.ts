@@ -5,6 +5,7 @@ import { applications, cvChanges, cvScores, type Application } from '../db/schem
 import { CV_PROBLEM_MESSAGE, checkCvFile, cvFileName, deleteFilesQuietly } from '../lib/cv-store.js';
 import { invalid } from '../lib/http-error.js';
 import type { MultipartBody } from '../lib/request.js';
+import { logRecruitment } from './recruitment-log.js';
 
 /**
  * Replacing an application's CV (spec-cv-intake.md), for HR and for the candidate: only the newest CV is kept,
@@ -57,6 +58,15 @@ export async function replaceCv(deps: Deps, app: Application, cv: NewCv, by: CvC
         })
         .where(eq(applications.id, app.id));
       await tx.insert(cvChanges).values({ applicationId: app.id, changedBy, previous: describe(app), at });
+      await logRecruitment(tx, {
+        applicationId: app.id,
+        group: 'ho-so',
+        action: describe(app) ? 'Đổi CV' : 'Thêm CV',
+        actor: by === 'candidate' ? 'Ứng viên' : by.hr,
+        from: describe(app),
+        to: cv.kind === 'file' ? fileName : cv.link,
+        at,
+      });
       // The score belongs to the old CV; the background scorer picks the application up again.
       await tx.delete(cvScores).where(eq(cvScores.applicationId, app.id));
     });

@@ -160,7 +160,7 @@ describe('HR adds or replaces a CV', () => {
     expect((await json<ApplicationDetailDto>(link)).cvLink).toBe('https://drive.test/cv');
   });
 
-  it('should let HR fix the contact of an application they added, never one the candidate sent', async () => {
+  it('should let HR fix the contact of an application they added, and never the source of one the candidate sent', async () => {
     // Arrange
     const { id } = await json<{ id: string }>(await addApplication());
     const [own] = await t.db

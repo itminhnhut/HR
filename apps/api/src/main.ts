@@ -2,6 +2,7 @@ import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { createGaRealtimeReader, gaRealtimeConfig, type RealtimeReader } from './lib/ga-realtime.js';
 import { vercelBlobCvStore, type CvStore } from './lib/cv-store.js';
+import { vercelBlobPaperStore, type PaperStore } from './lib/paper-store.js';
 import { turnstileVerifier, type CaptchaVerifier } from './lib/captcha.js';
 import { googleVerifier, type GoogleVerifier } from './lib/google.js';
 import { vercelBlobImageStore, type ImageStore } from './lib/image-store.js';
@@ -80,6 +81,7 @@ function realtimeReader(now: () => Date): RealtimeReader {
 export interface LocalOverrides {
   db?: Db;
   cvStore?: CvStore;
+  paperStore?: PaperStore;
   imageStore?: ImageStore;
 }
 
@@ -98,6 +100,7 @@ export function createProductionApp(local: LocalOverrides = {}) {
       indexNowKey: indexNowKey(isProduction),
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
+    paperStore: useLocal.paperStore ?? vercelBlobPaperStore,
     imageStore: useLocal.imageStore ?? newsImageStore(),
     verifyGoogleToken: googleSignIn(),
     verifyCaptcha: captcha(),

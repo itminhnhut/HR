@@ -1,6 +1,6 @@
 import { sourceNameKey } from '@careers/shared';
 import { DEFAULT_SOURCES } from '../services/sources.js';
-import { DEFAULT_REGIONS, DEFAULT_STAFF_KINDS } from '../services/timesheet-people.js';
+import { DEFAULT_APPROVERS, DEFAULT_REGIONS, DEFAULT_STAFF_KINDS } from '../services/timesheet-people.js';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { getTableName, is, sql } from 'drizzle-orm';
@@ -11,7 +11,7 @@ import { createApp } from '../app.js';
 import type { Db } from '../db/index.js';
 import * as schema from '../db/schema.js';
 import type { Deps } from '../deps.js';
-import { fakeGoogle, MemoryCvStore, MemoryImageStore, RecordingFetch } from './fakes.js';
+import { fakeGoogle, MemoryCvStore, MemoryImageStore, MemoryPaperStore, RecordingFetch } from './fakes.js';
 
 const MIGRATIONS = fileURLToPath(new URL('../../drizzle', import.meta.url));
 const TABLES = Object.values(schema)
@@ -29,6 +29,7 @@ export interface TestContext {
   db: Db;
   clock: { now: Date };
   cvStore: MemoryCvStore;
+  paperStore: MemoryPaperStore;
   imageStore: MemoryImageStore;
   /** Outgoing HTTP calls (IndexNow). */
   outbound: RecordingFetch;
@@ -47,6 +48,7 @@ export async function createTestContext(): Promise<TestContext> {
 
   const clock = { now: DEFAULT_NOW };
   const cvStore = new MemoryCvStore();
+  const paperStore = new MemoryPaperStore();
   const imageStore = new MemoryImageStore();
   const outbound = new RecordingFetch();
   const deps: Deps = {
@@ -60,6 +62,7 @@ export async function createTestContext(): Promise<TestContext> {
       indexNowKey: TEST_INDEXNOW_KEY,
     },
     cvStore,
+    paperStore,
     imageStore,
     verifyGoogleToken: fakeGoogle,
     verifyCaptcha: null,
@@ -74,6 +77,7 @@ export async function createTestContext(): Promise<TestContext> {
     db,
     clock,
     cvStore,
+    paperStore,
     imageStore,
     outbound,
     deps,
@@ -88,6 +92,8 @@ export async function createTestContext(): Promise<TestContext> {
       clock.now = DEFAULT_NOW;
       cvStore.clear();
       deps.cvStore = cvStore;
+      paperStore.clear();
+      deps.paperStore = paperStore;
       imageStore.clear();
       deps.imageStore = imageStore;
       outbound.clear();
@@ -100,6 +106,8 @@ export async function createTestContext(): Promise<TestContext> {
       // Migration 0022 creates these.
       await db.insert(schema.timesheetRegions).values([...DEFAULT_REGIONS]);
       await db.insert(schema.timesheetStaffKinds).values([...DEFAULT_STAFF_KINDS]);
+      // Migration 0033 creates it.
+      await db.insert(schema.timesheetApprovers).values([...DEFAULT_APPROVERS]);
       // Migration 0016 creates these; applications need them (foreign key).
       await db
         .insert(schema.applicationSources)

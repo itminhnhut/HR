@@ -1,5 +1,5 @@
-import type { TimesheetCellsInput, TimesheetDto, TimesheetLogArea } from '@careers/shared';
-import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AbsenceRowDto, TimesheetCellsInput, TimesheetDto, TimesheetLogArea } from '@careers/shared';
+import { keepPreviousData, useInfiniteQuery, useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../../../api';
 import { withCells } from './timesheetModel';
@@ -125,3 +125,11 @@ export function useConfigRefresh() {
 
 export const useRegions = () => useQuery({ queryKey: ['hr', 'regions'], queryFn: () => api.hrRegions() });
 export const useHolidays = () => useQuery({ queryKey: ['hr', 'holidays'], queryFn: () => api.hrHolidays() });
+
+const allRows = (results: readonly { data?: AbsenceRowDto[] }[]) => results.flatMap((r) => r.data ?? []);
+
+/** The absence lists of every year a span touches (the Nghỉ tab's lists, shared). One across New Year is in both. */
+export function useAbsencesBetween(from: string, to: string, isOn: boolean) {
+  const years = [...new Set([from.slice(0, 4), to.slice(0, 4)])].map(Number);
+  return useQueries({ queries: years.map((year) => ({ queryKey: ['hr', 'absences', year], queryFn: () => api.hrAllAbsences(year), enabled: isOn })), combine: allRows });
+}

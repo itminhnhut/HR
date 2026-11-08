@@ -57,6 +57,7 @@ import type {
   AbsenceKindDto,
   AbsenceKindInput,
   AbsenceRowDto,
+  AbsenceFileDto,
   ApproverDto,
   HolidayRangeInput,
   LeaveChangeInput,
@@ -68,6 +69,8 @@ import type {
   TemplateChoiceList,
   TimesheetLogArea,
   LeaveMode,
+  RecruitmentLogGroup,
+  RecruitmentLogPageDto,
 } from '@careers/shared';
 
 export class ApiError extends Error {
@@ -235,8 +238,16 @@ export interface Api {
   hrAddAbsenceKind(input: AbsenceKindInput): Promise<AbsenceKindDto[]>;
   hrDeleteAbsenceKind(key: string): Promise<AbsenceKindDto[]>;
   hrUpdateAbsenceKind(key: string, input: AbsenceKindInput): Promise<AbsenceKindDto[]>;
+  hrSetNeedsPaper(key: string, needsPaper: boolean): Promise<AbsenceKindDto[]>;
   hrRegisterAbsence(employeeId: string, input: AbsenceInput): Promise<TimesheetAbsenceDto[]>;
   hrRemoveAbsence(employeeId: string, absenceId: string): Promise<TimesheetAbsenceDto[]>;
+  /** Clears the days of a line typed straight into the sheet. */
+  hrRemoveSheetLeave(employeeId: string, line: { code: string; from: string; to: string }): Promise<{ removed: number }>;
+  /** One paper a request (multipart "file"), with how far it has gone (0–100). Returns the absence's papers, oldest first. */
+  hrUploadAbsenceFile(absenceId: string, file: File, onProgress?: (percent: number) => void): Promise<AbsenceFileDto[]>;
+  hrRemoveAbsenceFile(fileId: string): Promise<AbsenceFileDto[]>;
+  /** Where a paper is read, signed in; null in the demo, which keeps no files. */
+  hrAbsenceFileUrl(fileId: string): string | null;
   hrTimesheetAddLeaveChange(periodId: string, input: LeaveChangeInput): Promise<TimesheetDto>;
   hrTimesheetRemoveLeaveChange(periodId: string, changeId: string): Promise<TimesheetDto>;
   hrDeleteEmployee(id: string): Promise<EmployeeDto[]>;
@@ -268,8 +279,16 @@ export interface Api {
   hrDeleteSource(key: string): Promise<SourceDto[]>;
   /** Phone, email, source of an application HR added (409 for one the candidate sent). */
   hrUpdateContact(id: string, input: HrContactInput): Promise<ApplicationDetailDto>;
+  /** Notes a press on "Gọi" or "Zalo" in the log; the phone's own app does the rest. */
+  hrLogReach(id: string, via: 'call' | 'zalo'): Promise<void>;
   hrApplication(id: string): Promise<ApplicationDetailDto>;
+  /** "Nhật ký tuyển dụng": 100 lines a page, newest first. */
+  hrRecruitmentLog(query: { group?: RecruitmentLogGroup; search?: string; offset: number }): Promise<RecruitmentLogPageDto>;
   hrUpdateApplication(id: string, patch: ApplicationPatch): Promise<ApplicationDetailDto>;
+  /** "Ghi chú nội bộ": add, edit or delete one entry; each answers with the application's detail. */
+  hrAddNote(id: string, body: string): Promise<ApplicationDetailDto>;
+  hrEditNote(id: string, noteId: string, body: string): Promise<ApplicationDetailDto>;
+  hrDeleteNote(id: string, noteId: string): Promise<ApplicationDetailDto>;
   hrDeleteApplication(id: string): Promise<{ ok: true }>;
   /** "Chấm CV": scores the CV against the job's requirements (reuses the stored result when unchanged). */
   hrScoreCv(id: string): Promise<ApplicationDetailDto>;

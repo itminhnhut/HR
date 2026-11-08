@@ -1,6 +1,6 @@
 import type { DashboardDto } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { applications, type Job, type NewApplication } from '../db/schema.js';
+import { applicationNotes, applications, type Job, type NewApplication } from '../db/schema.js';
 import { insertJob, json, loginHr } from '../test/fixtures.js';
 import { logStatus } from '../services/status-log.js';
 import { createTestContext, type TestContext } from '../test/harness.js';
@@ -170,7 +170,8 @@ describe('GET /api/hr/dashboard', () => {
       status: 'interview',
       interviewAt: new Date('2026-10-23T02:00:00.000Z'),
     });
-    const noTime = await insertApplication(job, { status: 'interview', note: 'Chờ chốt lịch\nGọi lại' });
+    const noTime = await insertApplication(job, { status: 'interview' });
+    await t.db.insert(applicationNotes).values({ applicationId: noTime.id, body: 'Chờ chốt lịch\nGọi lại' });
     const sooner = await insertApplication(job, {
       status: 'interview',
       interviewAt: new Date('2026-10-21T02:00:00.000Z'),

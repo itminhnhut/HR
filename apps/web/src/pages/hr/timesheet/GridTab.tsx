@@ -2,6 +2,7 @@ import { standardPeriod, type TimesheetDto } from '@careers/shared';
 import { CalendarCheck, CalendarClock, CalendarPlus, Lock } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import { api } from '../../../api';
 import { DataGrid } from '../../../vendor/shadcn-grid/components/data-grid/data-grid';
@@ -9,13 +10,15 @@ import { useDataGrid } from '../../../vendor/shadcn-grid/hooks/use-data-grid';
 import { NotesContext } from '../../../vendor/shadcn-grid/lib/codes';
 import { apiMessage, errorMessage } from '../parts';
 import { EXTRA_COLUMN_KEYS, makeColumns, textWidthsOf } from './columns';
+import { papersLink } from './AbsencePapers';
 import { LeaveChangeDialog } from './LeaveChangeDialog';
+import { dayToOpen } from './openDay';
 import { AdjustDialog, ReopenDialog, ReviewDialog } from './dialogs';
 import { exportTimesheet } from './exportExcel';
 import { scrollGridTo, useGridHeight, useOverLeaveWarning, useQuickCodes, useSheetFilters, type GridTable } from './gridHooks';
 import { describeFailedCells, pinnedColumns } from './gridLayout';
 import { Banner, FilterBar, NoMatch, NoPeople, PageActions, PeriodStrip, SheetNotices } from './gridParts';
-import { useSaveCells, useSheetAction, type PeriodChoice } from './queries';
+import { useAbsencesBetween, useSaveCells, useSheetAction, type PeriodChoice } from './queries';
 import { adjustmentNotesOf, changedCells, dayColumns, dayMonth, findProblems, gridRows, notesOf, type DayColumn, type GridRow, type TimesheetProblem } from './timesheetModel';
 import { CodeLegend } from './toolbar';
 
@@ -92,10 +95,14 @@ function useSheetActions(choice: PeriodChoice, periodId: string | null) {
 }
 
 /** Only on opening a period: later edits must not move the table under HR's hands. */
-function useOpenOnToday(todayKey: string | undefined, scrollTo: (columnId: string) => void) {
+/** Opens on today, or on the day and person a link asks for (`?ngay=…&nv=…`, from the leave list). */
+function useOpenOnDay(dayKey: string | undefined, scrollTo: (columnId: string) => void, focus: (columnId: string) => void) {
   useEffect(() => {
-    if (!todayKey) return undefined;
-    const timer = window.setTimeout(() => scrollTo(todayKey), 300);
+    if (!dayKey) return undefined;
+    const timer = window.setTimeout(() => {
+      scrollTo(dayKey);
+      focus(dayKey);
+    }, 300);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -244,11 +251,22 @@ export function GridTab({ dto, choice, onPeriod, actionsSlot }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const height = useGridHeight(host, filters.visible.length, rowHeight);
   const scrollTo = (columnId: string, side?: 'center' | 'start') => scrollGridTo(table, host.current?.querySelector<HTMLElement>('[role="grid"]'), columnId, side);
-  useOpenOnToday(todayKey, scrollTo);
-  const problems = useMemo(() => (periodId ? findProblems(dto, days, rows) : []), [dto, days, rows, periodId]);
+  const [params] = useSearchParams();
+  const askedPerson = params.get('nv');
+  useOpenOnDay(dayToOpen(days, params.get('ngay'), todayKey), scrollTo, (columnId) => {
+    if (askedPerson && dto.rows.some((r) => r.employeeId === askedPerson)) table.setFocusedCell(askedPerson, columnId);
+  });
+  const absences = useAbsencesBetween(dto.from, dto.to, !!periodId);
+  const problems = useMemo(() => (periodId ? findProblems(dto, days, rows, absences) : []), [dto, days, rows, periodId, absences]);
+  const navigate = useNavigate();
   const entered = dto.rows.reduce((n, r) => n + Object.values(r.cells).filter((c) => c.entered).length, 0);
   const jump = (p: TimesheetProblem) => {
     setDialog(null);
+    // Papers are kept on the Nghỉ tab: open that absence's Giấy tờ there.
+    if (p.absence) {
+      void navigate(papersLink(p.absence));
+      return;
+    }
     filters.clear();
     window.setTimeout(() => {
       table.setFocusedCell(p.employeeId, p.columnId);

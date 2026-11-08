@@ -1,6 +1,6 @@
 import type { ApplicationDetailDto, ApplicationsResponse, HrJobsResponse, SubscriberDto } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { applications, jobs, subscribers, type Job } from '../db/schema.js';
+import { applicationNotes, applications, jobs, subscribers, type Job } from '../db/schema.js';
 import { upsertHrUser } from '../services/hr-accounts.js';
 import { pdfFile } from '../test/fakes.js';
 import { HR_PASSWORD, insertJob, json, loginHr } from '../test/fixtures.js';
@@ -64,6 +64,7 @@ describe('GET /api/hr/applications', () => {
       matchPercent: null,
       matchBonus: 0,
       cvGender: null,
+      hrGender: null,
       cvBirth: null,
       isExpired: false,
     });
@@ -87,12 +88,12 @@ describe('GET /api/hr/applications', () => {
 
   it('shows whether there is a CV, the first line of the note and the interview time', async () => {
     const job = await insertJob(t);
-    await insertApplication(job, {
+    const app = await insertApplication(job, {
       cvLink: 'https://drive.google.com/x',
-      note: '\n  Gọi lại thứ 5  \nChi tiết thêm',
       status: 'interview',
       interviewAt: new Date('2026-10-22T02:00:00.000Z'),
     });
+    await t.db.insert(applicationNotes).values({ applicationId: app.id, body: '\n  Gọi lại thứ 5  \nChi tiết thêm' });
 
     const [row] = (await json<ApplicationsResponse>(await hr('GET', '/applications'))).applications;
 
@@ -232,11 +233,10 @@ describe('PATCH /api/hr/applications/:id', () => {
 
   it('keeps the note author when the note did not change', async () => {
     const earlier = new Date('2026-10-01T00:00:00.000Z');
-    const app = await insertApplication(await insertJob(t), {
-      note: 'Gọi lại',
-      noteUpdatedAt: earlier,
-      noteUpdatedBy: 'Chị Lan',
-    });
+    const app = await insertApplication(await insertJob(t));
+    await t.db
+      .insert(applicationNotes)
+      .values({ applicationId: app.id, body: 'Gọi lại', createdBy: 'Chị Lan', createdAt: earlier, updatedAt: earlier });
 
     const body = await json<ApplicationDetailDto>(
       await hr('PATCH', `/applications/${app.id}`, { status: 'seen', note: ' Gọi lại ' }),
@@ -328,11 +328,12 @@ describe('PATCH /api/hr/applications/:id', () => {
     expect(body).toMatchObject({ status: 'interview', interviewAt: null });
   });
 
-  it('clears the note with an empty string or null', async () => {
-    const app = await insertApplication(await insertJob(t), { note: 'cũ' });
+  it('keeps the notes when an older screen sends an empty note', async () => {
+    const app = await insertApplication(await insertJob(t));
+    await t.db.insert(applicationNotes).values({ applicationId: app.id, body: 'cũ' });
     expect(
       (await json<ApplicationDetailDto>(await hr('PATCH', `/applications/${app.id}`, { note: '' }))).note,
-    ).toBeNull();
+    ).toBe('cũ');
   });
 
   it('rejects unknown and removed statuses', async () => {

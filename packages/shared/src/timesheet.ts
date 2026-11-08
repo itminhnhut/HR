@@ -1,3 +1,4 @@
+import type { AbsenceFileDto } from './absence-files.js';
 import { z } from 'zod';
 
 /**
@@ -454,6 +455,17 @@ export type RegionInput = z.input<typeof regionInputSchema>;
 const ABSENCE_MAX_DAYS = 366;
 
 const COUNTABLE_CODES = ['CL', 'P', 'KL', 'M', 'TS', 'OM'] as const;
+/** Who approved leave HR typed straight into the sheet: HR itself. Migration 0033 puts it in the approvers list. */
+export const SHEET_APPROVER = 'HR';
+
+/** Codes typed on the sheet that the leave list shows as a line of their own. */
+export const SHEET_LEAVE_CODES = ['P', 'P/2', 'KL', 'KL/2', 'KP', 'M', 'CL', 'TS', 'OM'] as const;
+
+/** A line typed on the sheet: its code and days. */
+export const sheetLeaveSchema = z
+  .object({ code: z.enum(SHEET_LEAVE_CODES, { message: 'Mã không hợp lệ.' }), from: isoDay, to: isoDay })
+  .refine((a) => a.from <= a.to, { path: ['to'], message: 'Ngày kết thúc phải sau ngày bắt đầu.' })
+  .refine((a) => a.from > a.to || daysBetweenInclusive(a.from, a.to) <= ABSENCE_MAX_DAYS, { path: ['to'], message: 'Tối đa 1 năm.' });
 
 export const absenceInputSchema = z
   .object({
@@ -467,6 +479,8 @@ export const absenceInputSchema = z
     approvedBy: z.string().trim().max(80).optional(),
     handover: z.string().trim().max(300).optional(),
     isHalf: z.boolean().optional(),
+    /** A line typed on the sheet this absence takes over: its days of that code become the absence's. */
+    replacesSheet: sheetLeaveSchema.optional(),
   })
   .refine((a) => !a.isHalf || a.from === a.to, { path: ['to'], message: 'Nửa ngày thì chọn một ngày.' })
   .refine((a) => a.from <= a.to, { path: ['to'], message: 'Ngày kết thúc phải sau ngày bắt đầu.' })
@@ -568,6 +582,10 @@ export interface TimesheetAbsenceDto {
   approvedBy: string | null;
   handover: string;
   createdBy: string;
+  /** Papers kept with it, oldest first; none for a line typed on the sheet. */
+  files: AbsenceFileDto[];
+  /** Its reason asks for papers (Cấu hình); with no files that reads "Thiếu giấy". */
+  needsPaper: boolean;
 }
 
 export interface AbsenceRowDto extends TimesheetAbsenceDto {
@@ -576,6 +594,8 @@ export interface AbsenceRowDto extends TimesheetAbsenceDto {
   employeeId: string;
   employeeCode: string;
   fullName: string;
+  /** Registered by a company day off (tab Nghỉ công ty): changed there, not line by line. */
+  batch?: { id: string; name: string } | null;
 }
 
 export interface AbsenceKindDto {
@@ -585,6 +605,8 @@ export interface AbsenceKindDto {
   days: number | null;
   /** Added by HR, so HR can remove it; the ones in the law stay. */
   isOwn: boolean;
+  /** Whether an absence for this reason should have papers kept with it. */
+  needsPaper: boolean;
 }
 
 export interface SaturdayChange {

@@ -19,6 +19,9 @@ import { actorOf, logActivity } from './activity.js';
 import { logStatus } from './status-log.js';
 import { newCvFrom, replaceCv } from './cv-replace.js';
 import { checkUsableSource } from './sources.js';
+import { sourceName } from './activity-words.js';
+import { logRecruitment } from './recruitment-log.js';
+import { insertNote } from './application-notes.js';
 
 /** HR's side of "Thêm và cập nhật CV" (spec-cv-intake.md). */
 
@@ -67,9 +70,6 @@ function newApplication(
     cvPathname: file.pathname,
     cvFileName: file.name,
     cvLink: file.pathname ? null : input.cvLink,
-    note: input.note,
-    noteUpdatedAt: input.note ? at : null,
-    noteUpdatedBy: input.note ? hrName(hr) : null,
     status: 'seen',
     source: input.source,
     referrer: input.source === REFERRAL_SOURCE ? input.referrer : null,
@@ -110,6 +110,16 @@ export async function addApplication(deps: Deps, body: MultipartBody, hr: HrMe):
         .values(newApplication(input, file, hr, at))
         .returning();
       await logStatus(tx, row, 'new', null, at);
+      const source = await sourceName(tx, input.source);
+      await logRecruitment(tx, {
+        applicationId: row.id,
+        group: 'ho-so',
+        action: 'Thêm hồ sơ',
+        actor: hrName(hr),
+        detail: `Nguồn: ${source}`,
+        at,
+      });
+      if (input.note?.trim()) await insertNote(tx, row.id, input.note.trim(), hrName(hr), at);
       return { id: row.id };
     });
   } catch (error) {
@@ -134,15 +144,22 @@ export async function hrReplaceCv(deps: Deps, id: string, body: MultipartBody, h
 }
 
 /** Contact details and source of an application HR added; the candidate's own applications keep what they sent. */
+/**
+ * HR fixes the name, phone, email and gender of any application; the log keeps what was there before. The source of
+ * one the candidate sent is the website's own record and stays.
+ */
 export async function updateContact(deps: Deps, id: string, raw: unknown, hr: HrMe): Promise<void> {
   const app = await findApplication(deps, id);
-  if (!app.addedBy) {
-    throw new HttpError(409, 'Hồ sơ ứng viên tự nộp giữ nguyên thông tin ứng viên gửi.', {}, 'candidate_sent');
-  }
   const parsed = hrContactSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Kiểm tra lại các ô được đánh dấu.', fieldErrors(parsed.error));
-  const { phone, email, source, referrer } = parsed.data;
-  await checkUsableSource(deps.db, source, app.source);
+  const { phone, email, fullName = app.fullName, gender = app.hrGender } = parsed.data;
+  const source = parsed.data.source ?? app.source;
+  const referrer = parsed.data.source === undefined ? app.referrer : parsed.data.referrer;
+  if (!app.addedBy && (source !== app.source || referrer !== app.referrer)) {
+    throw new HttpError(409, 'Nguồn của hồ sơ ứng viên tự nộp do web ghi, không đổi được.', {}, 'candidate_sent');
+  }
+  if (source !== app.source) await checkUsableSource(deps.db, source, app.source);
+  const at = deps.now();
   await deps.db.transaction(async (tx) => {
     // Same lock as adding one: two edits at once cannot both take a phone that is free when each looks.
     if (phone !== app.phone) {
@@ -152,15 +169,17 @@ export async function updateContact(deps: Deps, id: string, raw: unknown, hr: Hr
     }
     await tx
       .update(applications)
-      .set({ phone, email, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
+      .set({ fullName, phone, email, hrGender: gender, source, referrer: source === REFERRAL_SOURCE ? referrer : null })
       .where(eq(applications.id, app.id));
     for (const [field, from, to] of [
+      ['fullName', app.fullName, fullName],
       ['phone', app.phone, phone],
+      ['gender', app.hrGender, gender],
       ['email', app.email, email ?? null],
       ['source', app.source, source],
     ] as const) {
       if (from !== to) {
-        await logActivity(tx, { applicationId: app.id, kind: 'contact', actor: actorOf(hr), from, to, detail: field });
+        await logActivity(tx, { applicationId: app.id, kind: 'contact', actor: actorOf(hr), from, to, detail: field, at });
       }
     }
   });

@@ -11,6 +11,7 @@ import { sampleCvPdf } from './db/sample-cv.js';
 import { seedDemoData } from './db/seed.js';
 import { findHrUser, upsertHrUser } from './services/hr-accounts.js';
 import type { CvStore } from './lib/cv-store.js';
+import type { PaperStore } from './lib/paper-store.js';
 import { localImageStore } from './lib/image-store.js';
 import { rewriteLocalImageUrls } from './lib/local-image-urls.js';
 import { generatePassword } from './lib/password.js';
@@ -95,6 +96,29 @@ function localCvStore(): CvStore {
   };
 }
 
+/** Papers in apps/api/.data/files/absence, next to the local CVs. */
+function localPaperStore(): PaperStore {
+  const root = join(DATA_DIR, 'files');
+  const full = (pathname: string) => join(root, pathname);
+  return {
+    async put(pathname, bytes) {
+      await mkdir(dirname(full(pathname)), { recursive: true });
+      await writeFile(full(pathname), bytes);
+    },
+    async get(pathname) {
+      try {
+        return new Blob([await readFile(full(pathname))]).stream();
+      } catch (error) {
+        console.warn('Local paper missing', pathname, error instanceof Error ? error.message : error);
+        return null;
+      }
+    },
+    async delete(pathnames) {
+      await Promise.all(pathnames.map((p) => rm(full(p), { force: true })));
+    },
+  };
+}
+
 /** Uses the local stand-ins only for what is not configured in apps/api/.env. */
 export async function localDevOverrides(): Promise<LocalOverrides> {
   const cvStore = process.env.BLOB_READ_WRITE_TOKEN ? undefined : localCvStore();
@@ -104,7 +128,7 @@ export async function localDevOverrides(): Promise<LocalOverrides> {
     : localImageStore(join(DATA_DIR, 'news-images'));
   return {
     ...(process.env.DATABASE_URL ? {} : { db: await localDb(cvStore) }),
-    ...(cvStore ? { cvStore } : {}),
+    ...(cvStore ? { cvStore, paperStore: localPaperStore() } : {}),
     ...(imageStore ? { imageStore } : {}),
   };
 }

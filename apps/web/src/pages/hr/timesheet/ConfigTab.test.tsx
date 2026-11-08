@@ -1,3 +1,4 @@
+import { todayInVietnam } from '@careers/shared';
 import type { DepartmentDto, StaffKindDto, TimesheetRegionDto } from '@careers/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
@@ -87,3 +88,25 @@ describe('the Cấu hình tab', () => {
     expect((screen.getByPlaceholderText('vd: Đà Nẵng') as HTMLInputElement).value).toBe('HCM');
   });
 });
+
+describe('the holiday section count (TC-CH-01)', () => {
+  it('should count this year\'s holidays as the list shows them, a long break once', async () => {
+    // Arrange: Tết over three days and one single day this year, one day last year
+    const year = Number(todayInVietnam().slice(0, 4));
+    vi.spyOn(api, 'hrHolidays').mockResolvedValue([
+      { day: `${year}-02-16`, name: 'Tết' },
+      { day: `${year}-02-17`, name: 'Tết' },
+      { day: `${year}-02-18`, name: 'Tết' },
+      { day: `${year}-09-02`, name: 'Quốc khánh' },
+      { day: `${year - 1}-09-02`, name: 'Quốc khánh' },
+    ]);
+
+    // Act
+    open('bo-phan');
+
+    // Assert
+    const link = await screen.findByRole('button', { name: /Ngày lễ, Tết/ });
+    await waitFor(() => expect(link.textContent).toContain('2'));
+  });
+});
+

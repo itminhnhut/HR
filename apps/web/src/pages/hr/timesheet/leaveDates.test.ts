@@ -1,6 +1,6 @@
 import { workingDayCheck } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
-import { defaultEnd, lastOfWorkdays, workdaysBetween } from './leaveDates';
+import { defaultEnd, lastOfWorkdays, typedDaysWithin, typedNotice, workdaysBetween } from './leaveDates';
 
 const WEEKDAYS = workingDayCheck(undefined);
 /** A region working every Saturday of the period, as Hà Nội does (4 of 4 in T11/2026). */
@@ -51,5 +51,49 @@ describe('the same working days the sheet fills (RV2-06)', () => {
 
     // Act + Assert: Thursday, Monday, Tuesday
     expect(lastOfWorkdays('2026-11-05', 3, isWorked)).toBe('2026-11-10');
+  });
+});
+
+describe('days HR typed on the sheet inside the dates of a new absence (B3)', () => {
+  const typed = (code: string, from: string, to: string, over: { employeeId?: string; source?: 'absence' | 'sheet' } = {}) => ({ source: 'sheet' as const, employeeId: 'e1', code, from, to, ...over });
+
+  it('should find the days of the person\'s typed lines inside the dates, and none of a registered absence or another person', () => {
+    // Arrange: KL typed Thursday 5/11 to Monday 9/11, over a weekend; a registered absence and someone else on the same days
+    const lines = [typed('KL', '2026-11-05', '2026-11-09'), typed('P', '2026-11-04', '2026-11-04', { source: 'absence' }), typed('P', '2026-11-04', '2026-11-04', { employeeId: 'e2' })];
+
+    // Act
+    const days = typedDaysWithin(lines, 'e1', '2026-11-03', '2026-11-06');
+
+    // Assert
+    expect(days).toEqual([{ day: '2026-11-05', code: 'KL' }, { day: '2026-11-06', code: 'KL' }]);
+  });
+
+  it('should leave out the typed line the form is taking over', () => {
+    // Arrange
+    const line = typed('P', '2026-11-05', '2026-11-06');
+
+    // Act + Assert
+    expect(typedDaysWithin([line], 'e1', '2026-11-03', '2026-11-06', { code: 'P', from: '2026-11-05', to: '2026-11-06' })).toEqual([]);
+  });
+
+  it('should say how many days saving will count when it fills around days typed with another code', () => {
+    // Act: P over 3–5/11, KL typed on 4/11
+    const notice = typedNotice([{ day: '2026-11-04', code: 'KL' }], 'P', 3, WEEKDAYS);
+
+    // Assert
+    expect(notice).toBe('04/11 đã chấm trên bảng công (KL): giữ nguyên, không tính. Lưu sẽ tính 2 ngày.');
+  });
+
+  it('should warn that saving is refused over a day typed with the same code', () => {
+    // Act
+    const notice = typedNotice([{ day: '2026-11-04', code: 'P' }], 'P', 3, WEEKDAYS);
+
+    // Assert
+    expect(notice).toBe('04/11 đã chấm P trên bảng công: lưu sẽ bị từ chối. Bấm "Sửa" trên dòng đó để gộp vào, hoặc chọn ngày khác.');
+  });
+
+  it('should say nothing when no typed day is in the way', () => {
+    // Act + Assert
+    expect(typedNotice([], 'P', 3, WEEKDAYS)).toBeNull();
   });
 });

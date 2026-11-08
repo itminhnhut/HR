@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import { Button } from '../../../ui/Button';
 import { SelectField } from '../shadcn/Select';
 import { Icon } from '../../../ui/icons';
@@ -95,6 +96,7 @@ export interface ToolbarActions {
 }
 
 function Actions({ onAdd, onPickForReview, onManageSources }: ToolbarActions) {
+  const navigate = useNavigate();
   return (
     <span className="ml-auto flex items-center gap-2">
       {/* No icon where the row is tight: phones, and small laptops with the sidebar. */}
@@ -128,6 +130,15 @@ function Actions({ onAdd, onPickForReview, onManageSources }: ToolbarActions) {
             >
               <Icon name="pencil" size={16} />
               Quản lý nguồn
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                close();
+                navigate('/hr/ho-so/nhat-ky');
+              }}
+            >
+              <Icon name="clock" size={16} />
+              Nhật ký tuyển dụng
             </MenuItem>
           </>
         )}

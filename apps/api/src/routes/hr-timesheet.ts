@@ -1,7 +1,10 @@
 import { Hono } from 'hono';
 import type { Env } from '../app.js';
 import { hrOf } from '../lib/hr-auth.js';
-import { readJson } from '../lib/request.js';
+import { readJson, readMultipart } from '../lib/request.js';
+import { deletePapersQuietly } from '../lib/paper-store.js';
+import { createAbsenceBatch, listAbsenceBatches, removeAbsenceBatch, updateAbsenceBatch } from '../services/timesheet-absence-batches.js';
+import { addAbsenceFile, papersToClear, readAbsenceFile, removeAbsenceFile } from '../services/timesheet-absence-files.js';
 import {
   addAdjustment,
   addLeaveChange,
@@ -36,7 +39,7 @@ import {
 } from '../services/timesheet-people.js';
 import { readLog } from '../services/timesheet-log.js';
 import { addDepartment, addStaffKind, listDepartments, removeDepartment, removeStaffKind, renameDepartment, updateStaffKind } from '../services/timesheet-config.js';
-import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, registerAbsence, removeAbsence, removeAbsenceKind, updateAbsence, updateAbsenceKind, withHolidaysApplied } from '../services/timesheet-absences.js';
+import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, leaveBalanceFor, registerAbsence, removeAbsence, removeAbsenceKind, removeSheetLeave, updateAbsence, updateAbsenceKind, withHolidaysApplied, setNeedsPaper } from '../services/timesheet-absences.js';
 
 /** Chấm công (spec-cham-cong.md). Mounted at /api/hr/timesheet behind requireHr. */
 export const hrTimesheetRoutes = new Hono<Env>();
@@ -82,6 +85,27 @@ hrTimesheetRoutes.delete('/employees/:id', async (c) => {
   return c.json(await deleteEmployee(db, c.req.param('id'), hrOf(c), now()));
 });
 hrTimesheetRoutes.get('/absences', async (c) => c.json(await listAbsencesOfYear(c.get('deps').db, Number(c.req.query('year')))));
+hrTimesheetRoutes.get('/absence-batches', async (c) => c.json(await listAbsenceBatches(c.get('deps').db, Number(c.req.query('year')))));
+hrTimesheetRoutes.post('/absence-batches', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await createAbsenceBatch(db, await readJson(c), hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.patch('/absence-batches/:id', async (c) => {
+  const { db, paperStore, now } = c.get('deps');
+  const { batch, papers } = await updateAbsenceBatch(db, c.req.param('id'), await readJson(c), hrOf(c), now());
+  await deletePapersQuietly(paperStore, papers);
+  return c.json(batch);
+});
+hrTimesheetRoutes.delete('/absence-batches/:id', async (c) => {
+  const { db, paperStore, now } = c.get('deps');
+  const { removed, papers } = await removeAbsenceBatch(db, c.req.param('id'), hrOf(c), now());
+  await deletePapersQuietly(paperStore, papers);
+  return c.json({ removed });
+});
+hrTimesheetRoutes.get('/employees/:id/leave-balance', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await leaveBalanceFor(db, c.req.param('id'), c.req.query(), now()));
+});
 hrTimesheetRoutes.get('/approvers', async (c) => c.json(await listApprovers(c.get('deps').db)));
 hrTimesheetRoutes.post('/approvers', async (c) => {
   const { db, now } = c.get('deps');
@@ -100,6 +124,10 @@ hrTimesheetRoutes.patch('/absence-kinds/:key', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await updateAbsenceKind(db, c.req.param('key'), await readJson(c), hrOf(c), now()));
 });
+hrTimesheetRoutes.put('/absence-kinds/:key/needs-paper', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await setNeedsPaper(db, c.req.param('key'), await readJson(c), hrOf(c), now()));
+});
 hrTimesheetRoutes.delete('/absence-kinds/:key', async (c) => {
   const { db, now } = c.get('deps');
   return c.json(await removeAbsenceKind(db, c.req.param('key'), hrOf(c), now()));
@@ -114,8 +142,30 @@ hrTimesheetRoutes.post('/employees/:id/absences', async (c) => {
   return c.json(await registerAbsence(db, c.req.param('id'), await readJson(c), hrOf(c), now()), 201);
 });
 hrTimesheetRoutes.delete('/employees/:id/absences/:absenceId', async (c) => {
+  const { db, paperStore, now } = c.get('deps');
+  const clearPapers = await papersToClear(db, paperStore, c.req.param('absenceId'), hrOf(c), now());
+  const left = await removeAbsence(db, c.req.param('id'), c.req.param('absenceId'), hrOf(c), now());
+  await clearPapers();
+  return c.json(left);
+});
+
+// Papers kept with an absence: one file a request, private, read only here.
+hrTimesheetRoutes.post('/absences/:id/files', async (c) => {
+  const { db, paperStore, now } = c.get('deps');
+  const { file } = await readMultipart(c, 'file');
+  return c.json(await addAbsenceFile(db, paperStore, c.req.param('id'), file, hrOf(c), now()), 201);
+});
+hrTimesheetRoutes.get('/absence-files/:id', async (c) => {
+  const { db, paperStore } = c.get('deps');
+  return readAbsenceFile(db, paperStore, c.req.param('id'));
+});
+hrTimesheetRoutes.delete('/absence-files/:id', async (c) => {
+  const { db, paperStore, now } = c.get('deps');
+  return c.json(await removeAbsenceFile(db, paperStore, c.req.param('id'), hrOf(c), now()));
+});
+hrTimesheetRoutes.post('/employees/:id/sheet-leave/remove', async (c) => {
   const { db, now } = c.get('deps');
-  return c.json(await removeAbsence(db, c.req.param('id'), c.req.param('absenceId'), hrOf(c), now()));
+  return c.json(await removeSheetLeave(db, c.req.param('id'), await readJson(c), hrOf(c), now()));
 });
 hrTimesheetRoutes.patch('/employees/:id', async (c) => {
   const { db, now } = c.get('deps');

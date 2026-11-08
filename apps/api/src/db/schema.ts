@@ -9,8 +9,12 @@ import type {
   MatchItem,
   NewsImage,
   RegionTone,
+  RecruitmentLogGroup,
   RejectReason,
+  AbsenceFileContentType,
+  AbsenceReasonKey,
   AttendanceCode,
+  BatchAudience,
   LeaveMode,
   SaturdayChange,
   StaffType,
@@ -164,6 +168,8 @@ export const applications = pgTable(
     cvChangedBy: text('cv_changed_by'),
     /** False after the candidate replaced the CV, until an HR opens the application. */
     cvChangeSeen: boolean('cv_change_seen').notNull().default(true),
+    /** Gender HR set over what the CV says; null keeps the CV's. */
+    hrGender: text('hr_gender').$type<CvGender>(),
     /** Why it became "Chưa phù hợp": a key of REJECT_REASONS, internal only; null for older ones. */
     rejectReason: text('reject_reason').$type<RejectReason>(),
     rejectNote: text('reject_note'),
@@ -329,6 +335,51 @@ export const applicationActivity = pgTable(
     createdAt,
   },
   (t) => [index('application_activity_application_idx').on(t.applicationId)],
+);
+
+/**
+ * "Nhật ký tuyển dụng" (spec-nhat-ky-ho-so.md): everything done in the applicants area, in words. A line outlives its
+ * application: deleting one drops the link and the candidate's name, the job title stays ("Ứng viên đã xoá (vị trí X)").
+ */
+export const recruitmentLog = pgTable(
+  'recruitment_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id').references(() => applications.id, { onDelete: 'set null' }),
+    candidateName: text('candidate_name'),
+    jobTitle: text('job_title'),
+    actor: text('actor').notNull(),
+    action: text('action').notNull(),
+    group: text('group').notNull().$type<RecruitmentLogGroup>(),
+    detail: text('detail'),
+    fromValue: text('from_value'),
+    toValue: text('to_value'),
+    at: tz('at').notNull(),
+  },
+  (t) => [
+    index('recruitment_log_at_idx').on(t.at),
+    index('recruitment_log_application_idx').on(t.applicationId),
+  ],
+);
+
+/**
+ * "Ghi chú nội bộ" as a timeline (spec-nhat-ky-ho-so.md): any HR may add, edit or delete an entry, the recruitment log
+ * keeps the old words. Goes with the application. `applications.note` is kept, no longer read.
+ */
+export const applicationNotes = pgTable(
+  'application_notes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    applicationId: uuid('application_id')
+      .notNull()
+      .references(() => applications.id, { onDelete: 'cascade' }),
+    body: text('body').notNull(),
+    /** Null for an old note whose author was never written down. */
+    createdBy: text('created_by'),
+    createdAt: tz('created_at').notNull().defaultNow(),
+    updatedAt: tz('updated_at').notNull().defaultNow(),
+  },
+  (t) => [index('application_notes_application_idx').on(t.applicationId, t.createdAt)],
 );
 
 /** Last automatic CV check of an application against its job's requirements (spec-cv-match.md). */
@@ -729,11 +780,47 @@ export const timesheetAbsenceKinds = pgTable('timesheet_absence_kinds', {
   name: text('name').notNull(),
   code: text('code').$type<AttendanceCode>().notNull(),
   days: integer('days'),
+  /** Whether an absence of this kind should have papers kept with it (spec-giay-to-nghi.md). */
+  needsPaper: boolean('needs_paper').notNull().default(false),
   createdBy: text('created_by').notNull(),
   createdAt,
 });
 
+/** HR's choice for a reason in the law; a reason without a row keeps PAPER_REASONS_DEFAULT. */
+export const timesheetReasonSettings = pgTable('timesheet_reason_settings', {
+  reasonKey: text('reason_key').$type<AbsenceReasonKey>().primaryKey(),
+  needsPaper: boolean('needs_paper').notNull(),
+  updatedBy: text('updated_by').notNull(),
+  updatedAt: tz('updated_at').notNull().defaultNow(),
+});
+
 /** What HR registered on a person; the days themselves are in `timesheetEntries`, where HR can still change each. */
+/**
+ * A company day off (tab Nghỉ công ty): one record, one absence per person it came to. `audience` is how HR chose the
+ * people, `employeeIds` who they came to. `version` goes up on each change, so two saves at once cannot both apply.
+ */
+export const timesheetAbsenceBatches = pgTable(
+  'timesheet_absence_batches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    reason: text('reason').notNull(),
+    label: text('label').notNull(),
+    code: text('code').notNull(),
+    fromOn: date('from_on').notNull(),
+    toOn: date('to_on').notNull(),
+    approvedBy: text('approved_by'),
+    note: text('note').notNull().default(''),
+    audience: jsonb('audience').$type<BatchAudience>().notNull(),
+    employeeIds: jsonb('employee_ids').$type<string[]>().notNull().default([]),
+    version: integer('version').notNull().default(1),
+    createdBy: text('created_by').notNull(),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [index('timesheet_absence_batches_from_idx').on(t.fromOn)],
+);
+
 export const timesheetAbsences = pgTable(
   'timesheet_absences',
   {
@@ -752,10 +839,31 @@ export const timesheetAbsences = pgTable(
     /** Null while it waits: nothing is written to the sheet until someone has approved. */
     approvedBy: text('approved_by'),
     handover: text('handover').notNull().default(''),
+    /** The company day off it belongs to; cancelled with it, never on its own. */
+    batchId: uuid('batch_id').references(() => timesheetAbsenceBatches.id),
     createdBy: text('created_by').notNull(),
     createdAt,
   },
-  (t) => [index('timesheet_absences_employee_idx').on(t.employeeId, t.fromOn)],
+  (t) => [index('timesheet_absences_employee_idx').on(t.employeeId, t.fromOn), index('timesheet_absences_batch_idx').on(t.batchId)],
+);
+
+/** Papers kept with an absence: photos and PDFs in the private Blob store, read only through the API. */
+export const timesheetAbsenceFiles = pgTable(
+  'timesheet_absence_files',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    absenceId: uuid('absence_id')
+      .notNull()
+      .references(() => timesheetAbsences.id, { onDelete: 'cascade' }),
+    /** Where the file is in the store; never shown to anyone. */
+    pathname: text('pathname').notNull(),
+    name: text('name').notNull(),
+    contentType: text('content_type').$type<AbsenceFileContentType>().notNull(),
+    size: integer('size').notNull(),
+    createdBy: text('created_by').notNull(),
+    createdAt,
+  },
+  (t) => [index('timesheet_absence_files_absence_idx').on(t.absenceId, t.createdAt)],
 );
 
 export const timesheetSnapshots = pgTable(

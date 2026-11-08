@@ -1,5 +1,5 @@
 import { periodMonthOf, standardPeriod, todayInVietnam } from '@careers/shared';
-import { CalendarDays, CalendarOff, ChevronRight, History, Home, Settings, Users, type LucideIcon } from 'lucide-react';
+import { Building2, CalendarDays, CalendarOff, ChevronRight, History, Home, Settings, Users, type LucideIcon } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router';
 import { Toaster } from 'sonner';
@@ -13,15 +13,17 @@ import { GridTab } from './GridTab';
 import { PeopleTab } from './PeopleTab';
 import { useTimesheet, type PeriodChoice } from './queries';
 import { LeaveTab } from './LeaveTab';
+import { CompanyLeaveTab } from './CompanyLeaveTab';
 import { ConfigTab, showWhenOffScreen } from './ConfigTab';
 import { LogTab } from './LogTab';
 import { SheetSkeleton } from './skeletons';
 import './timesheet.css';
 
 const BASE = '/hr/cham-cong';
-const TABS: { id: 'grid' | 'leave' | 'people' | 'settings' | 'log'; label: string; icon: LucideIcon; path: string }[] = [
+const TABS: { id: 'grid' | 'leave' | 'company-leave' | 'people' | 'settings' | 'log'; label: string; icon: LucideIcon; path: string }[] = [
   { id: 'grid', label: 'Bảng công', icon: CalendarDays, path: BASE },
   { id: 'leave', label: 'Nghỉ, đi muộn', icon: CalendarOff, path: `${BASE}/nghi` },
+  { id: 'company-leave', label: 'Nghỉ công ty', icon: Building2, path: `${BASE}/nghi-cong-ty` },
   { id: 'people', label: 'Nhân viên', icon: Users, path: `${BASE}/nhan-vien` },
   { id: 'settings', label: 'Cấu hình', icon: Settings, path: `${BASE}/cau-hinh` },
   { id: 'log', label: 'Nhật ký', icon: History, path: `${BASE}/nhat-ky` },
@@ -114,6 +116,7 @@ export function TimesheetPage() {
           </div>
           {tab?.id === 'grid' && <SheetTab slot={slot} />}
           {tab?.id === 'leave' && <LeaveTab />}
+          {tab?.id === 'company-leave' && <CompanyLeaveTab />}
           {tab?.id === 'people' && <PeopleTab />}
           {tab?.id === 'settings' && <ConfigTab />}
           {tab?.id === 'log' && <LogTab />}

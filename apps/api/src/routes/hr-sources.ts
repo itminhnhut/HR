@@ -12,7 +12,7 @@ hrSourceRoutes.get('/', async (c) => c.json(await listSources(c.get('deps').db))
 hrSourceRoutes.post('/', async (c) => c.json(await createSource(c.get('deps').db, await readJson(c), hrOf(c)), 201));
 
 hrSourceRoutes.patch('/:key', async (c) =>
-  c.json(await updateSource(c.get('deps').db, c.req.param('key'), await readJson(c))),
+  c.json(await updateSource(c.get('deps').db, c.req.param('key'), await readJson(c), hrOf(c))),
 );
 
-hrSourceRoutes.delete('/:key', async (c) => c.json(await deleteSource(c.get('deps').db, c.req.param('key'))));
+hrSourceRoutes.delete('/:key', async (c) => c.json(await deleteSource(c.get('deps').db, c.req.param('key'), hrOf(c))));

@@ -28,6 +28,7 @@ const row = (id: string, fullName: string, status: ApplicationStatus, over: Part
   matchPercent: 80,
   matchBonus: 0,
   cvGender: null,
+  hrGender: null,
   cvBirth: null,
   noteLine: null,
   interviewAt: null,
@@ -116,7 +117,23 @@ const statusTab = (name: string) =>
     name: new RegExp(`^${name}`),
   });
 const rowOf = (name: string) => screen.getByRole('button', { name: new RegExp(`^${name}`) });
-const statusButton = (name: string) => screen.getByRole('button', { name, pressed: false });
+const block = () => within(screen.getByRole('group', { name: 'Cập nhật trạng thái' }));
+/** The status now, as its menu button says it: "Trạng thái: Đạt". */
+const pressedOnes = () => [
+  block()
+    .getByRole('button', { name: /^Trạng thái: / })
+    .getAttribute('aria-label')
+    ?.replace('Trạng thái: ', ''),
+];
+/** The status menu, opened if it is not. */
+const statusMenu = async () => {
+  if (!screen.queryByRole('menu', { name: 'Chọn trạng thái' })) {
+    await userEvent.click(block().getByRole('button', { name: /^Trạng thái: / }));
+  }
+  return within(screen.getByRole('menu', { name: 'Chọn trạng thái' }));
+};
+const step = async (name: string) => (await statusMenu()).getByRole('menuitemradio', { name });
+const choose = async (name: string) => userEvent.click(await step(name));
 
 beforeAll(() => {
   // jsdom has no <dialog> methods.
@@ -169,7 +186,7 @@ describe('The "Thêm" menu', () => {
     return screen.findByRole('menu');
   };
 
-  it('should keep "Gửi sếp duyệt" and "Quản lý nguồn" in the menu, and "Thêm hồ sơ" outside it', async () => {
+  it('should keep "Gửi sếp duyệt", "Quản lý nguồn" and "Nhật ký tuyển dụng" in the menu, and "Thêm hồ sơ" outside it', async () => {
     // Arrange
     show('?trang-thai=all');
     await screen.findByText('An Nguyễn');
@@ -187,7 +204,7 @@ describe('The "Thêm" menu', () => {
       within(menu)
         .getAllByRole('menuitem')
         .map((item) => item.textContent),
-    ).toEqual(['Gửi sếp duyệt', 'Quản lý nguồn']);
+    ).toEqual(['Gửi sếp duyệt', 'Quản lý nguồn', 'Nhật ký tuyển dụng']);
   });
 
   it('should say on the button whether the menu is open', async () => {
@@ -209,7 +226,7 @@ describe('The "Thêm" menu', () => {
     // Arrange
     show('?trang-thai=all');
     const menu = await openMenu();
-    const [first, second] = within(menu).getAllByRole('menuitem');
+    const [first, second, last] = within(menu).getAllByRole('menuitem');
 
     // Assert
     expect(document.activeElement).toBe(first);
@@ -218,9 +235,11 @@ describe('The "Thêm" menu', () => {
     await userEvent.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(second);
     await userEvent.keyboard('{ArrowDown}');
+    expect(document.activeElement).toBe(last);
+    await userEvent.keyboard('{ArrowDown}');
     expect(document.activeElement).toBe(first);
     await userEvent.keyboard('{End}');
-    expect(document.activeElement).toBe(second);
+    expect(document.activeElement).toBe(last);
     await userEvent.keyboard('{Home}');
     expect(document.activeElement).toBe(first);
   });
@@ -624,7 +643,7 @@ describe('The list', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(statusButton('Chưa phù hợp'));
+    await choose('Chưa phù hợp');
     await chooseRejectReason();
 
     // Assert
@@ -773,7 +792,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(statusButton('Chưa phù hợp'));
+    await choose('Chưa phù hợp');
     await chooseRejectReason();
     await userEvent.click(await screen.findByRole('button', { name: 'Hoàn tác' }));
 
@@ -787,20 +806,13 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(statusButton('Chưa phù hợp'));
+    await choose('Chưa phù hợp');
     await chooseRejectReason();
     await userEvent.click(await screen.findByRole('button', { name: 'Soạn thư cảm ơn' }));
 
     // Assert
     expect(await screen.findByLabelText('Mẫu thư')).toBeTruthy();
   });
-
-  const block = () => within(screen.getByRole('group', { name: 'Cập nhật trạng thái' }));
-  const segment = (name: string) => block().getByRole('button', { name });
-  const pressedOnes = () =>
-    block()
-      .getAllByRole('button', { pressed: true })
-      .map((button) => button.textContent);
 
   const pastTime = '2026-01-05T02:00:00.000Z';
 
@@ -823,11 +835,11 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Đạt'));
+    await choose('Đạt');
 
     // Assert
     await waitFor(() => expect(pressedOnes()).toEqual(['Đạt']));
-    await userEvent.click(segment('Nhận việc'));
+    await choose('Nhận việc');
     await waitFor(() => expect(pressedOnes()).toEqual(['Nhận việc']));
   });
 
@@ -838,7 +850,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(segment('Chờ xếp lịch'));
+    await choose('Chờ xếp lịch');
 
     // Assert
     await waitFor(() => expect(patches.at(-1)?.body).toMatchObject({ status: 'scheduling' }));
@@ -853,7 +865,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    const names = block().getAllByRole('button').map((b) => b.textContent ?? '');
+    const names = (await statusMenu()).getAllByRole('menuitemradio').map((b) => b.textContent ?? '');
 
     // Assert
     const at = (word: string) => names.findIndex((n) => n.startsWith(word));
@@ -868,7 +880,7 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Đạt'));
+    await choose('Đạt');
 
     // Assert
     expect(screen.getByText('Chọn giờ phỏng vấn trước khi ghi kết quả.')).toBeTruthy();
@@ -882,7 +894,7 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Đạt'));
+    await choose('Đạt');
 
     // Assert
     expect(screen.getByText(/Chưa tới giờ phỏng vấn/)).toBeTruthy();
@@ -896,7 +908,7 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Nhận việc'));
+    await choose('Nhận việc');
 
     // Assert
     expect(screen.getByText(/Ghi "Đạt" trước/)).toBeTruthy();
@@ -908,7 +920,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(segment('Chờ kết quả'));
+    await choose('Chờ kết quả');
 
     // Assert
     expect(screen.getByText(/Tự chuyển sang "Chờ kết quả"/)).toBeTruthy();
@@ -920,11 +932,16 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Assert
-    expect(
-      block()
-        .getAllByRole('button')
-        .map((button) => button.textContent),
-    ).toEqual(['Mới', 'Đã xem', 'Chờ xếp lịch', 'Hẹn phỏng vấn', 'Chờ kết quả', 'Đạt', 'Nhận việc', 'Chưa phù hợp']);
+    expect((await statusMenu()).getAllByRole('menuitemradio').map((item) => item.textContent)).toEqual([
+      'Mới',
+      'Đã xem',
+      'Chờ xếp lịch',
+      'Hẹn phỏng vấn',
+      'Chờ kết quả',
+      'Đạt',
+      'Nhận việc',
+      'Chưa phù hợp',
+    ]);
   });
 
   it.each([
@@ -938,7 +955,8 @@ describe('The status control in the header', () => {
 
     // Assert
     expect(pressedOnes()).toEqual([label]);
-    expect(segment(label).querySelector('svg')).not.toBeNull();
+    expect((await step(label)).getAttribute('aria-checked')).toBe('true');
+    expect((await step(label)).querySelector('svg')).not.toBeNull();
   });
 
   it('should move the active mark as soon as the status changes', async () => {
@@ -947,7 +965,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(segment('Chưa phù hợp'));
+    await choose('Chưa phù hợp');
     await chooseRejectReason();
 
     // Assert
@@ -960,7 +978,7 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Hẹn phỏng vấn'));
+    await choose('Hẹn phỏng vấn');
 
     // Assert
     expect(patches).toEqual([]);
@@ -973,11 +991,12 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    const seen = segment('Đã xem');
+    const seen = await step('Đã xem');
+    const isLocked = seen.getAttribute('aria-disabled');
     await userEvent.click(seen);
 
     // Assert
-    expect(seen.getAttribute('aria-disabled')).toBe('true');
+    expect(isLocked).toBe('true');
     expect(screen.getByText(/về "Hẹn phỏng vấn" trước/)).toBeTruthy();
     expect(pressedOnes()).toEqual(['Đạt']);
   });
@@ -989,7 +1008,7 @@ describe('The status control in the header', () => {
     await heading('Chi Lê');
 
     // Act
-    await userEvent.click(segment('Đã xem'));
+    await choose('Đã xem');
 
     // Assert
     await waitFor(() => expect(pressedOnes()).toEqual(['Đã xem']));
@@ -999,10 +1018,9 @@ describe('The status control in the header', () => {
     // Arrange
     show('?trang-thai=all&id=a1');
     await heading('An Nguyễn');
-    expect(segment('Mới').getAttribute('title')).toBe('Đánh dấu chưa xem');
 
     // Act
-    await userEvent.click(segment('Mới'));
+    await choose('Mới');
 
     // Assert
     await waitFor(() => expect(patches.at(-1)?.body.status).toBe('new'));
@@ -1014,7 +1032,7 @@ describe('The status control in the header', () => {
     await heading('An Nguyễn');
 
     // Act
-    await userEvent.click(segment('Hẹn phỏng vấn'));
+    await choose('Hẹn phỏng vấn');
     await userEvent.click(await screen.findByRole('button', { name: 'Hoàn tác' }));
 
     // Assert
@@ -1029,7 +1047,7 @@ describe('The status control in the header', () => {
     expect(screen.queryByRole('group', { name: 'Hình thức phỏng vấn' })).toBeNull();
 
     // Act
-    await userEvent.click(segment('Hẹn phỏng vấn'));
+    await choose('Hẹn phỏng vấn');
 
     // Assert
     expect(await screen.findByRole('group', { name: 'Hình thức phỏng vấn' })).toBeTruthy();
@@ -1058,7 +1076,7 @@ describe('The status control in the header', () => {
       await heading('An Nguyễn');
 
       // Act
-      await userEvent.click(statusButton('Hẹn phỏng vấn'));
+      await choose('Hẹn phỏng vấn');
 
       // Assert
       expect(screen.getByLabelText('Lý do vẫn hẹn phỏng vấn')).toBeTruthy();
@@ -1069,7 +1087,7 @@ describe('The status control in the header', () => {
       // Arrange
       show('?trang-thai=all&id=a1');
       await heading('An Nguyễn');
-      await userEvent.click(statusButton('Hẹn phỏng vấn'));
+      await choose('Hẹn phỏng vấn');
       await userEvent.type(screen.getByLabelText('Lý do vẫn hẹn phỏng vấn'), 'Ứng viên chỉ rảnh chiều nay');
 
       // Act
@@ -1214,5 +1232,156 @@ describe('On a phone', () => {
     // Assert
     await heading('Bình Trần');
     expect(counter().textContent).toBe('2/4');
+  });
+});
+
+describe('The statuses in three groups', () => {
+  const PAST = '2026-01-05T02:00:00.000Z';
+  const texts = (groupName: string) =>
+    within(screen.getByRole('group', { name: groupName }))
+      .getAllByRole('button')
+      .map((b) => b.textContent);
+  const withMore = () => {
+    rows = [...rows, row('a5', 'Én Vũ', 'scheduling'), row('a6', 'Gia Hồ', 'interview', { interviewAt: PAST })];
+  };
+
+  it('TC-NH-01: should show "Tất cả" and the three groups, each counting its applications once', async () => {
+    // Arrange
+    withMore();
+
+    // Act
+    show('?trang-thai=all');
+    await screen.findByRole('list', { name: 'Danh sách hồ sơ' });
+
+    // Assert: "Chờ kết quả" is part of "Hẹn phỏng vấn", so Phỏng vấn is 1 + 2
+    expect(texts('Nhóm trạng thái')).toEqual(['Tất cả 6', 'Tiếp nhận 2', 'Phỏng vấn 3', 'Kết quả 1']);
+    expect(screen.queryByRole('group', { name: 'Trạng thái trong nhóm' })).toBeNull();
+  });
+
+  it("TC-NH-02: should list only a group's applications once picked, with its statuses below", async () => {
+    // Arrange
+    withMore();
+    show('?trang-thai=all');
+    await screen.findByRole('list', { name: 'Danh sách hồ sơ' });
+
+    // Act
+    await userEvent.click(screen.getByRole('button', { name: 'Phỏng vấn 3' }));
+
+    // Assert
+    expect(texts('Trạng thái trong nhóm')).toEqual(['Cả nhóm 3', 'Chờ xếp lịch 1', 'Hẹn phỏng vấn 2', 'Chờ kết quả 1']);
+    expect(rowOf('Én Vũ')).toBeTruthy();
+    expect(rowOf('Gia Hồ')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /^An Nguyễn/ })).toBeNull();
+  });
+
+  it('TC-NH-03: should mark the group and the status a link opens on', async () => {
+    // Act
+    show('?trang-thai=seen');
+    await screen.findByRole('list', { name: 'Danh sách hồ sơ' });
+
+    // Assert
+    expect(screen.getByRole('button', { name: 'Tiếp nhận 2' }).getAttribute('aria-pressed')).toBe('true');
+    expect(
+      within(screen.getByRole('group', { name: 'Trạng thái trong nhóm' }))
+        .getByRole('button', { name: 'Đã xem 2' })
+        .getAttribute('aria-pressed'),
+    ).toBe('true');
+  });
+
+  it('TC-NH-04: should show the status block in the same three named groups', async () => {
+    // Act
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+    const menu = await statusMenu();
+    const inBlock = (name: string) =>
+      within(menu.getByRole('group', { name }))
+        .getAllByRole('menuitemradio')
+        .map((b) => b.textContent);
+
+    // Assert
+    expect(inBlock('Tiếp nhận')).toEqual(['Mới', 'Đã xem']);
+    expect(inBlock('Phỏng vấn')).toEqual(['Chờ xếp lịch', 'Hẹn phỏng vấn', 'Chờ kết quả']);
+    expect(inBlock('Kết quả')).toEqual(['Đạt', 'Nhận việc', 'Chưa phù hợp']);
+  });
+});
+
+describe('The status line: menu, next step and "Loại"', () => {
+  const FUTURE = '2099-01-05T02:00:00.000Z';
+
+  it('TC-TT-01: should take the usual next step with one press', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen')];
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await userEvent.click(screen.getByRole('button', { name: /^Bước tiếp: Chờ xếp lịch/ }));
+
+    // Assert
+    await waitFor(() => expect(patches.at(-1)?.body).toMatchObject({ status: 'scheduling' }));
+  });
+
+  it('TC-TT-02: should offer no next step while the interview is still to come', async () => {
+    // Act
+    rows = [row('a3', 'Chi Lê', 'interview', { interviewAt: FUTURE })];
+    show('?trang-thai=all&id=a3');
+    await heading('Chi Lê');
+
+    // Assert
+    expect(screen.queryByRole('button', { name: /^Bước tiếp/ })).toBeNull();
+  });
+
+  it('TC-TT-03: should ask the reason on "Loại", and offer no "Loại" once rejected', async () => {
+    // Arrange
+    rows = [row('a1', 'An Nguyễn', 'seen'), row('a4', 'Dũng Phạm', 'rejected')];
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Act
+    await userEvent.click(screen.getByRole('button', { name: 'Loại' }));
+    await chooseRejectReason();
+
+    // Assert
+    await waitFor(() => expect(patches.at(-1)?.body).toMatchObject({ status: 'rejected' }));
+  });
+});
+
+describe('Gọi and Zalo are written to the log (TC-LH-03)', () => {
+  it('should note a press on Gọi and on Zalo, and still open the app', async () => {
+    // Arrange
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+    const sent = () =>
+      vi
+        .mocked(fetch)
+        .mock.calls.filter(([url]) => String(url).endsWith('/hr/applications/a1/reach'))
+        .map(([, init]) => JSON.parse(String(init?.body)) as { via: string });
+
+    // Act
+    const call = screen.getAllByRole('link', { name: /Gọi/ })[0];
+    call?.addEventListener('click', (e) => e.preventDefault());
+    if (call) await userEvent.click(call);
+    const zalo = screen.getAllByRole('link', { name: /Zalo/ })[0];
+    zalo?.addEventListener('click', (e) => e.preventDefault());
+    if (zalo) await userEvent.click(zalo);
+
+    // Assert
+    await waitFor(() => expect(sent()).toEqual([{ via: 'call' }, { via: 'zalo' }]));
+    expect(call?.getAttribute('href')).toMatch(/^tel:/);
+  });
+
+  it('should let a long email wrap only after the @', async () => {
+    // Arrange
+    details = { a1: { email: 'mot.dia.chi.rat.dai@congty-rat-dai.example.vn' } };
+
+    // Act
+    show('?trang-thai=all&id=a1');
+    await heading('An Nguyễn');
+
+    // Assert
+    const email = screen.getByText(
+      (_, el) => el?.tagName === 'DD' && (el.textContent ?? '').includes('mot.dia.chi.rat.dai@'),
+    );
+    expect(email.querySelector('wbr')).not.toBeNull();
   });
 });

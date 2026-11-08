@@ -13,6 +13,7 @@ import type {
   ReviewDecisionInput,
   TemplateKey,
   TemplateChoiceList,
+  RecruitmentLogGroup,
 } from '@careers/shared';
 import { useEffect, useState } from 'react';
 import { keepPreviousData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -227,12 +228,47 @@ export function useUpdateApplication() {
   });
 }
 
+/** "Ghi chú nội bộ": add, edit or delete an entry; the answer is the whole detail, the list shows the newest. */
+export function useNoteChange() {
+  const qc = useQueryClient();
+  const onSuccess = (detail: ApplicationDetailDto) => {
+    qc.setQueryData(keys.hrApp(detail.id), detail);
+    qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
+    qc.invalidateQueries({ queryKey: keys.hrDashboard });
+  };
+  return {
+    add: useMutation({ mutationFn: ({ id, body }: { id: string; body: string }) => api.hrAddNote(id, body), onSuccess }),
+    edit: useMutation({
+      mutationFn: ({ id, noteId, body }: { id: string; noteId: string; body: string }) =>
+        api.hrEditNote(id, noteId, body),
+      onSuccess,
+    }),
+    remove: useMutation({
+      mutationFn: ({ id, noteId }: { id: string; noteId: string }) => api.hrDeleteNote(id, noteId),
+      onSuccess,
+    }),
+  };
+}
+
 /** Everything that shows application counts. */
 function refreshApplications(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: ['hr', 'apps'] });
   qc.invalidateQueries({ queryKey: keys.hrJobs });
   qc.invalidateQueries({ queryKey: keys.hrDashboard });
 }
+
+const LOG_PAGE_SIZE = 100;
+
+/** "Nhật ký tuyển dụng", page after page on "Xem thêm". */
+export const useRecruitmentLog = (group: RecruitmentLogGroup | undefined, search: string) =>
+  useInfiniteQuery({
+    queryKey: ['hr', 'recruitment-log', group ?? 'all', search],
+    queryFn: ({ pageParam }) => api.hrRecruitmentLog({ group, search, offset: pageParam }),
+    initialPageParam: 0,
+    getNextPageParam: (last, _all, offset) => (last.hasMore ? offset + LOG_PAGE_SIZE : undefined),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+  });
 
 export function useDeleteApplication() {
   const qc = useQueryClient();

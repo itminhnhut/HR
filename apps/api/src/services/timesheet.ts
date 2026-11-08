@@ -99,7 +99,7 @@ const nextMonth = (m: { year: number; month: number }) => (m.month === 12 ? { ye
 const isBefore = (a: { year: number; month: number }, b: { year: number; month: number }) => monthKey(a.year, a.month) < monthKey(b.year, b.month);
 
 /** Where HR began: the first month closed or entered, else this month. Before it, the balance is what HR typed. */
-async function firstMonthInUse(db: Db, now: Date) {
+export async function firstMonthInUse(db: Db, now: Date) {
   const [[first], [closed]] = await Promise.all([
     db.select({ day: timesheetEntries.day }).from(timesheetEntries).orderBy(asc(timesheetEntries.day)).limit(1),
     db.select({ year: timesheetPeriods.year, month: timesheetPeriods.month }).from(timesheetSnapshots)
@@ -387,12 +387,15 @@ export async function getTimesheet(db: Db, year: number, month: number, now: Dat
   }
   // A month not started yet is only to look at: storing it would make empty periods that every change is then logged
   // into. Leave planned ahead goes through the Nghỉ tab, which writes the days without a period.
-  if (standardPeriod(year, month).from > todayInVietnam(now)) {
-    const stored = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
-    if (stored) return toDto(db, stored, now);
-    return { ...(await toDto(db, await periodHolding(db, standardPeriod(year, month).from), now)), periodId: null };
-  }
+  if (standardPeriod(year, month).from > todayInVietnam(now)) return readTimesheet(db, year, month, now);
   return toDto(db, await ensurePeriod(db, year, month), now);
+}
+
+/** A period as the sheet shows it, without storing one nobody opened: what a report reads. */
+export async function readTimesheet(db: Db, year: number, month: number, now: Date): Promise<TimesheetDto> {
+  const stored = await db.query.timesheetPeriods.findFirst({ where: and(eq(timesheetPeriods.year, year), eq(timesheetPeriods.month, month)) });
+  if (stored) return toDto(db, stored, now);
+  return { ...(await toDto(db, await periodHolding(db, standardPeriod(year, month).from), now)), periodId: null };
 }
 
 /** A month not started yet, opened so HR can type in it ahead: set its norm, plan its days. */

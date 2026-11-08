@@ -14,6 +14,7 @@ import {
   type InterviewMode,
   type TemplateKey,
   type ContactChannel,
+  type ApplicationNoteDto,
 } from '@careers/shared';
 import { buildNewsSeed, type MockNewsCategory, type MockNewsPost } from './mock-news-seed.js';
 
@@ -58,9 +59,12 @@ export interface MockApplication {
   cvFileName: string | null;
   cvLink: string | null;
   status: ApplicationStatus;
+  /** The single note of before the timeline; read only while `notes` is missing (older saved demo data). */
   note: string | null;
   noteUpdatedAt: string | null;
   noteUpdatedBy: string | null;
+  /** "Ghi chú nội bộ", newest first. */
+  notes?: ApplicationNoteDto[];
   interviewAt: string | null;
   interviewMode: InterviewMode | null;
   meetingUrl: string | null;

@@ -48,6 +48,7 @@ const routes: RouteObject[] = [
       { path: 'tin/moi', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'tin/:id', lazy: lazy(() => import('../pages/hr/HrJobFormPage')) },
       { path: 'ho-so', lazy: lazy(() => import('../pages/hr/HrApplicantsPage')) },
+      { path: 'ho-so/nhat-ky', lazy: lazy(() => import('../pages/hr/HrRecruitmentLogPage')) },
       { path: 'duyet', lazy: lazy(() => import('../pages/hr/reviews/HrReviewsPage')) },
       { path: 'duyet/:id', lazy: lazy(() => import('../pages/hr/reviews/HrReviewPage')) },
       // Có tab riêng: Bảng công, Nhân viên, Cài đặt (spec-cham-cong.md).

@@ -27,12 +27,19 @@ const statusWord = (status: string | null) =>
 const isRejectReason = (value: string | null): value is RejectReason => REJECT_REASON_KEYS.some((key) => key === value);
 
 const CONTACT_FIELD: Record<string, string> = {
+  fullName: 'Sửa họ tên',
+  gender: 'Sửa giới tính',
   phone: 'Sửa số điện thoại',
   email: 'Sửa email',
   source: 'Sửa nguồn hồ sơ',
 };
 
+/** HR's gender over the CV's: none means the CV's own. */
+const genderWord = (v: string | null) => (v === 'male' ? 'Nam' : v === 'female' ? 'Nữ' : 'Theo CV');
 const timeWord = (iso: string | null) => (iso ? interviewLabel(iso) : 'Chưa chọn');
+
+/** A note line says what was done to the entry; older lines, from before the timeline, have no detail. */
+const NOTE_TITLE: Record<string, string> = { add: 'Thêm ghi chú', edit: 'Sửa ghi chú', delete: 'Xoá ghi chú' };
 
 function fromActivity(entry: ActivityDto): ActivityLine {
   const base = { actor: entry.actor, at: entry.at, change: null, note: null };
@@ -55,9 +62,10 @@ function fromActivity(entry: ActivityDto): ActivityLine {
   }
   if (entry.kind === 'contact') {
     const title = CONTACT_FIELD[entry.detail ?? ''] ?? 'Sửa thông tin liên hệ';
-    return { ...base, icon: 'user', title, change: `${entry.from ?? 'Trống'} → ${entry.to ?? 'Trống'}` };
+    const word = entry.detail === 'gender' ? genderWord : (v: string | null) => v ?? 'Trống';
+    return { ...base, icon: 'user', title, change: `${word(entry.from)} → ${word(entry.to)}` };
   }
-  return { ...base, icon: 'fileText', title: 'Sửa ghi chú' };
+  return { ...base, icon: 'fileText', title: NOTE_TITLE[entry.detail ?? ''] ?? 'Sửa ghi chú' };
 }
 
 const previousCvWords = (previous: string) => {

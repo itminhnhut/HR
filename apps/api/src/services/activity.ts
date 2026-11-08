@@ -2,9 +2,8 @@ import type { ActivityDto, ActivityKind, HrMe } from '@careers/shared';
 import { desc, eq } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applicationActivity } from '../db/schema.js';
-
-/** Note saves itself while HR types: edits this close together are one edit. */
-const NOTE_EDIT_WINDOW_MS = 10 * 60_000;
+import { activityWords } from './activity-words.js';
+import { logRecruitment } from './recruitment-log.js';
 
 export const actorOf = (hr: Pick<HrMe, 'name' | 'email'>) => hr.name || hr.email;
 
@@ -18,33 +17,29 @@ interface ActivityInput {
   at?: Date;
 }
 
-/** One line of "Nhật ký hồ sơ": who changed what, from what to what. Deleted with the application. */
+/**
+ * One line of "Nhật ký hồ sơ": who changed what, from what to what. Deleted with the application. The same change goes
+ * into "Nhật ký tuyển dụng" in words, here and only here, so the two logs never disagree.
+ */
 export async function logActivity(db: Db, entry: ActivityInput): Promise<void> {
+  const at = entry.at ?? new Date();
+  await logRecruitment(db, {
+    applicationId: entry.applicationId,
+    actor: entry.actor,
+    at,
+    ...(await activityWords(db, entry)),
+  });
+  // A note's words stay in its timeline and in "Nhật ký tuyển dụng"; "Nhật ký hồ sơ" only says it changed.
+  const isNote = entry.kind === 'note';
   await db.insert(applicationActivity).values({
     applicationId: entry.applicationId,
     kind: entry.kind,
     actor: entry.actor,
-    fromValue: entry.from ?? null,
-    toValue: entry.to ?? null,
+    fromValue: isNote ? null : (entry.from ?? null),
+    toValue: isNote ? null : (entry.to ?? null),
     detail: entry.detail ?? null,
-    ...(entry.at ? { createdAt: entry.at } : {}),
+    createdAt: at,
   });
-}
-
-export async function logNoteEdit(db: Db, applicationId: string, actor: string, at: Date): Promise<void> {
-  const [last] = await db
-    .select()
-    .from(applicationActivity)
-    .where(eq(applicationActivity.applicationId, applicationId))
-    .orderBy(desc(applicationActivity.createdAt))
-    .limit(1);
-  const isSameEdit =
-    last?.kind === 'note' && last.actor === actor && at.getTime() - last.createdAt.getTime() < NOTE_EDIT_WINDOW_MS;
-  if (isSameEdit && last) {
-    await db.update(applicationActivity).set({ createdAt: at }).where(eq(applicationActivity.id, last.id));
-    return;
-  }
-  await logActivity(db, { applicationId, kind: 'note', actor, at });
 }
 
 export async function activityOf(db: Db, applicationId: string): Promise<ActivityDto[]> {

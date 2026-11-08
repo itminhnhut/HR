@@ -16,6 +16,7 @@ import { checkCvFile, CV_PROBLEM_MESSAGE, cvFileName, deleteFilesQuietly, type C
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid, type MultipartBody } from '../lib/request.js';
 import { logStatus } from './status-log.js';
+import { logRecruitment } from './recruitment-log.js';
 
 /**
  * The same person sending the same form again this soon is a double click or a retry, not a new application.
@@ -93,6 +94,7 @@ async function insertApplication(db: Db, jobId: string, record: ApplicationRecor
       .values({ ...record, jobId, createdAt: at })
       .returning();
     await logStatus(tx, row, 'new', null, at);
+    await logRecruitment(tx, { applicationId: row.id, group: 'ho-so', action: 'Nộp hồ sơ', actor: 'Ứng viên', at });
     return true;
   });
 }

@@ -128,7 +128,7 @@ describe('Nhật ký hồ sơ', () => {
     ]);
   });
 
-  it('should count a note saved again and again while typing as one edit, and leave the words out', async () => {
+  it('should write each note added as its own line, and leave the words out', async () => {
     // Arrange
     const app = await insertApplication(await insertJob(t), { status: 'seen' });
 
@@ -138,7 +138,7 @@ describe('Nhật ký hồ sơ', () => {
     const { activity } = await patch(app.id, { note: 'Gọi lại' });
 
     // Assert
-    expect(of(activity, 'note')).toHaveLength(1);
+    expect(of(activity, 'note')).toHaveLength(2);
     expect(of(activity, 'note')[0]).toMatchObject({ from: null, to: null, at: t.clock.now.toISOString() });
   });
 
@@ -157,13 +157,14 @@ describe('Nhật ký hồ sơ', () => {
 
   it('should write nothing when nothing changed', async () => {
     // Arrange
-    const app = await insertApplication(await insertJob(t), { status: 'seen', note: 'Gọi' });
+    const app = await insertApplication(await insertJob(t), { status: 'seen' });
+    await patch(app.id, { note: 'Gọi' });
 
     // Act
     const { activity } = await patch(app.id, { note: 'Gọi' });
 
     // Assert
-    expect(activity).toEqual([]);
+    expect(activity).toHaveLength(1);
   });
 
   it('should say which contact detail HR changed', async () => {

@@ -44,7 +44,7 @@ const email = optionalEmailSchema.transform((v) => (v ? v.toLowerCase() : null))
  * "Ai giới thiệu" counts only for a referral: under another source its box is hidden, so whatever was left in it can
  * neither be seen nor corrected, and the server does not keep it.
  */
-const withReferrer = <T extends { source: string; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
+const withReferrer = <T extends { source?: string; referrer: string | null }>(v: T, ctx: z.RefinementCtx) => {
   if (v.source !== REFERRAL_SOURCE) return;
   const issue = (message: string) => ctx.addIssue({ code: 'custom', path: ['referrer'], message });
   if (!v.referrer) issue('Ghi tên người giới thiệu.');
@@ -81,8 +81,18 @@ export const hrApplicationSchema = z
   .superRefine(withReferrer);
 export type HrApplicationInput = z.input<typeof hrApplicationSchema>;
 
-/** Contact details of an application HR added (a candidate's own application keeps what they sent). */
-export const hrContactSchema = z.object(contactFields).superRefine(withReferrer);
+/**
+ * What HR fixes on an application (spec-sua-ho-so.md): name, phone, email and gender on any one; the source only on
+ * one HR added, so it may be left out. `gender` null goes back to what the CV says.
+ */
+export const hrContactSchema = z
+  .object({
+    ...contactFields,
+    source: contactFields.source.optional(),
+    fullName: fullNameSchema.optional(),
+    gender: z.enum(['male', 'female'], { message: 'Chọn Nam, Nữ hoặc Theo CV.' }).nullable().optional(),
+  })
+  .superRefine(withReferrer);
 export type HrContactInput = z.input<typeof hrContactSchema>;
 
 /** A new CV given as a link (a file comes as multipart instead). */

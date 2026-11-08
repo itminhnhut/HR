@@ -87,7 +87,7 @@ function EndingJobs({ data }: { data: DashboardDto }) {
                   {STATUS_LABEL[j.status]} · hạn {formatDate(j.deadline)}
                 </span>
               </span>
-              <Link to="/hr/tin" className="text-sm no-underline hover:underline">
+              <Link to="/hr/tin" className="text-sm no-underline hover:underline max-lg:inline-flex max-lg:min-h-11 max-lg:items-center">
                 Sửa hạn nộp
               </Link>
             </li>

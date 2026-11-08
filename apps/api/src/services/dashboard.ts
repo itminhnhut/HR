@@ -12,6 +12,7 @@ import { and, asc, count, eq, gte, lt } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, applicationStatusLog, cvScores, jobs } from '../db/schema.js';
 import { sourceFunnel } from './source-funnel.js';
+import { newestNotes } from './application-notes.js';
 
 const WAITING_DAYS = 3;
 /** Expired jobs stay on the dashboard this long, as a reminder to reopen or close them. */
@@ -98,7 +99,6 @@ export async function dashboard(db: Db, now: Date, period = defaultPeriod(now)):
         jobTitle: jobs.title,
         createdAt: applications.createdAt,
         interviewAt: applications.interviewAt,
-        note: applications.note,
         phone: applications.phone,
         matchPercent: cvScores.percent,
         cvGender: cvScores.gender,
@@ -139,6 +139,10 @@ export async function dashboard(db: Db, now: Date, period = defaultPeriod(now)):
     .map(({ job, status }) => ({ id: job.id, title: job.title, deadline: job.deadline, status }));
 
   const waitSince = new Date(`${addDays(today, -WAITING_DAYS)}T00:00:00.000+07:00`);
+  const notes = await newestNotes(
+    db,
+    interviews.map((i) => i.id),
+  );
 
   return {
     bySource: countBySource(recent),
@@ -162,7 +166,7 @@ export async function dashboard(db: Db, now: Date, period = defaultPeriod(now)):
       jobTitle: i.jobTitle,
       appliedAt: i.createdAt.toISOString(),
       interviewAt: i.interviewAt?.toISOString() ?? null,
-      noteLine: firstLine(i.note),
+      noteLine: firstLine(notes.get(i.id) ?? null),
       phone: i.phone,
       matchPercent: i.matchPercent,
       cvGender: i.cvGender,
