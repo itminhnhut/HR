@@ -1,5 +1,6 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { joinPdfItems, pagesToRead, type PdfTextItem } from './pdf-text.js';
+import { joinPdfItems, pagesToRead, pdfText, type PdfTextItem } from './pdf-text.js';
 
 describe('which pages of a PDF are read', () => {
   it.each([
@@ -79,5 +80,20 @@ describe('text pieces of a PDF joined into lines', () => {
 
   it('should part pieces when the text jumps back along the same line', () => {
     expect(joinPdfItems([piece('Excel', 300, 30), piece('Word', 50, 30)])).toBe('Excel Word');
+  });
+});
+
+describe('text read from a PDF file', () => {
+  it('should drop the NUL a font gives an icon, which the database cannot store', async () => {
+    // Arrange: an icon font maps its glyph to U+0000, as a CV made with an online builder does
+    const bytes = new Uint8Array(readFileSync(new URL('../test/cv-pdfs/cv-nul-char.pdf', import.meta.url)));
+
+    // Act
+    const text = await pdfText(bytes);
+
+    // Assert
+    expect(text).not.toContain('\u0000');
+    expect(text).toContain('0912 000 111');
+    expect(text).toContain('Thanh thao Excel, CRM');
   });
 });

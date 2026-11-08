@@ -302,6 +302,22 @@ describe('POST /api/hr/applications/score-pending', () => {
     expect(list.applications[0]?.matchPercent).toBe(75);
   });
 
+  it('should score a CV whose icon font reads as NUL and go on with the next CVs', async () => {
+    // Arrange
+    const job = await insertJob(t, SALES_JOB);
+    await applyWith(job, { file: 'cv-nul-char.pdf' });
+    await applyWith(job, { file: 'cv-simple-vi.pdf' });
+
+    // Act
+    const res = await hr('POST', '/applications/score-pending');
+
+    // Assert
+    expect(res.status).toBe(200);
+    expect(await json<{ scored: number; remaining: number }>(res)).toEqual({ scored: 2, remaining: 0 });
+    const list = await json<ApplicationsResponse>(await hr('GET', '/applications'));
+    expect(list.applications.every((a) => a.matchPercent !== null)).toBe(true);
+  });
+
   it('should refuse visitors who are not signed in as HR', async () => {
     const res = await t.send('POST', '/api/hr/applications/score-pending');
 

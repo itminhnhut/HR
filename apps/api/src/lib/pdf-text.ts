@@ -66,6 +66,9 @@ export function pagesToRead(pageCount: number): number[] {
   return pageCount > MAX_PAGES ? [...first, pageCount] : first;
 }
 
+/** Some icon fonts map their glyphs to U+0000, which means nothing to a reader and Postgres refuses to store. */
+const NUL = /\u0000/g;
+
 function problemOf(error: unknown): PdfProblem {
   return error instanceof Error && error.name === 'PasswordException' ? 'password' : 'corrupt';
 }
@@ -82,6 +85,7 @@ export async function readPdf(bytes: Uint8Array): Promise<PdfReading> {
     }
     const text = texts
       .join('\n')
+      .replace(NUL, '')
       .replace(/[ \t]+\n/g, '\n')
       .trim();
     return { text, problem: null };
