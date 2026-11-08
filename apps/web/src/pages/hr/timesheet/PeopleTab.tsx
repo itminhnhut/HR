@@ -16,6 +16,8 @@ import { DateField } from './DateField';
 import { DepartmentField } from './DepartmentField';
 import { ConfirmDialog, Field } from './dialogs';
 import { LeaveJobDialog } from './LeaveJobDialog';
+import { PeopleFilterBar, PeopleSearch } from './PeopleFilterBar';
+import { employmentNow, filterPeople, hasLeftBy, START_FILTERS, type PeopleFilters } from './peopleFilters';
 import { useDepartments, useEmployees, useRegions, useStaffKinds } from './queries';
 import { TabSkeleton } from './skeletons';
 
@@ -163,8 +165,8 @@ function RowAction({ label, render, children }: { label: string; render: ReactEl
 }
 
 function PersonRow({ person, regions, kinds, today, isPicked, onPick, onEdit, onLeaveJob }: { person: EmployeeDto; regions: readonly TimesheetRegionDto[]; kinds: readonly StaffKindDto[]; today: string; isPicked: boolean; onPick: () => void; onEdit: () => void; onLeaveJob: () => void }) {
-  const hasLeft = !!person.leftOn && person.leftOn <= today;
-  const now = person.officialOn && person.officialOn <= today ? 'official' : person.employment;
+  const hasLeft = hasLeftBy(person, today);
+  const now = employmentNow(person, today);
   return (
     <tr data-picked={isPicked ? '' : undefined} onClick={onPick} className="cursor-pointer border-b">
       <td className="p-2 text-slate-600"><CopyValue text={person.code} label="mã NV"><span className="pr-7">{person.code}</span></CopyValue></td>
@@ -190,6 +192,19 @@ function PersonRow({ person, regions, kinds, today, isPicked, onPick, onEdit, on
   );
 }
 
+function PeopleTable({ people, regions, kinds, today, pickedId, onPick, onEdit, onLeaveJob }: { people: readonly EmployeeDto[]; regions: readonly TimesheetRegionDto[]; kinds: readonly StaffKindDto[]; today: string; pickedId: string | null; onPick: (id: string) => void; onEdit: (person: EmployeeDto) => void; onLeaveJob: (person: EmployeeDto) => void }) {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[1120px] border-collapse text-sm whitespace-nowrap">
+        <thead><tr className="border-b text-left">{HEADS.map((h) => <th key={h} className="h-10 px-2 font-medium">{h}</th>)}<th aria-label="Sửa" className="sticky right-0 bg-white" /></tr></thead>
+        <tbody>
+          {people.map((p) => <PersonRow key={p.id} person={p} regions={regions} kinds={kinds} today={today} isPicked={p.id === pickedId} onPick={() => onPick(p.id)} onEdit={() => onEdit(p)} onLeaveJob={() => onLeaveJob(p)} />)}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function PeopleTab() {
   const people = useEmployees();
   const regions = useRegions();
@@ -199,6 +214,7 @@ export function PeopleTab() {
   const [leavingJob, setLeavingJob] = useState<EmployeeDto | null>(null);
   const [warning, setWarning] = useState('');
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<PeopleFilters>(START_FILTERS);
   const afterSave = (saved: EmployeeDto) => {
     setDialog(null);
     setLeavingJob(null);
@@ -210,10 +226,12 @@ export function PeopleTab() {
   if (departments.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => departments.refetch()} message={errorMessage(departments.error)} /></div>;
   if (kinds.isError) return <div className="ts-site-tokens"><ErrorState onRetry={() => kinds.refetch()} message={errorMessage(kinds.error)} /></div>;
   const today = todayInVietnam();
+  const shown = filterPeople(people.data, kinds.data, today, filters);
   return (
     <section className="ts-card flex flex-col gap-3 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="m-0 flex items-center gap-2 text-lg font-semibold"><Users className="size-5 text-blue-600" />Nhân viên <span className="rounded-full bg-slate-100 px-2 text-sm font-medium text-slate-600">{people.data.length}</span></h2>
+        <h2 className="m-0 flex items-center gap-2 text-lg font-semibold"><Users className="size-5 text-blue-600" />Nhân viên <span className="rounded-full bg-slate-100 px-2 text-sm font-medium text-slate-600">{shown.length}</span></h2>
+        <PeopleSearch value={filters.query} onChange={(query) => setFilters({ ...filters, query })} />
         <button type="button" onClick={() => setDialog({ editing: null, key: Date.now() })} className="ts-field inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 text-sm font-medium whitespace-nowrap text-white hover:bg-blue-700"><UserPlus className="size-4" />Thêm nhân viên</button>
       </div>
       {warning && (
@@ -223,18 +241,10 @@ export function PeopleTab() {
           <button type="button" aria-label="Đóng cảnh báo" onClick={() => setWarning('')} className="rounded p-1 hover:bg-amber-100"><X className="size-4" /></button>
         </p>
       )}
-      {people.data.length === 0 ? (
-        <p className="m-0 py-8 text-center text-sm text-slate-500">Chưa có nhân viên. Thêm người đầu tiên, kèm phép tồn tại kỳ bắt đầu dùng.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1120px] border-collapse text-sm whitespace-nowrap">
-            <thead><tr className="border-b text-left">{HEADS.map((h) => <th key={h} className="h-10 px-2 font-medium">{h}</th>)}<th aria-label="Sửa" className="sticky right-0 bg-white" /></tr></thead>
-            <tbody>
-              {people.data.map((p) => <PersonRow key={p.id} person={p} regions={regions.data} kinds={kinds.data} today={today} isPicked={p.id === pickedId} onPick={() => setPickedId(p.id)} onEdit={() => setDialog({ editing: p, key: Date.now() })} onLeaveJob={() => setLeavingJob(p)} />)}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {people.data.length > 0 && <PeopleFilterBar people={people.data} regions={regions.data} kinds={kinds.data} filters={filters} shown={shown.length} onChange={setFilters} />}
+      {people.data.length === 0 && <p className="m-0 py-8 text-center text-sm text-slate-500">Chưa có nhân viên. Thêm người đầu tiên, kèm phép tồn tại kỳ bắt đầu dùng.</p>}
+      {people.data.length > 0 && shown.length === 0 && <p className="m-0 py-8 text-center text-sm text-slate-500">Không có nhân viên phù hợp.</p>}
+      {shown.length > 0 && <PeopleTable people={shown} regions={regions.data} kinds={kinds.data} today={today} pickedId={pickedId} onPick={setPickedId} onEdit={(p) => setDialog({ editing: p, key: Date.now() })} onLeaveJob={setLeavingJob} />}
       {dialog && <PersonDialog key={dialog.key} open editing={dialog.editing} people={people.data} regions={regions.data} departments={departments.data.map((d) => d.name)} kinds={kinds.data} onClose={() => setDialog(null)} onSaved={afterSave} />}
       {leavingJob && <LeaveJobDialog person={leavingJob} onClose={() => setLeavingJob(null)} onSaved={afterSave} />}
     </section>

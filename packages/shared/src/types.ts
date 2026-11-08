@@ -156,6 +156,8 @@ export interface ApplicationRowDto {
   matchBonus: number;
   /** As written in the CV, never guessed; null when it does not say. */
   cvGender: import('./cv-match/personal.js').CvGender | null;
+  /** What HR set over the CV's; null keeps the CV's. Shown as `hrGender ?? cvGender`. */
+  hrGender: import('./cv-match/personal.js').CvGender | null;
   /** "2002-12-14", or "2002" when the CV gives only the year. */
   cvBirth: string | null;
   /** First line of the HR note, for the list. */
@@ -216,9 +218,12 @@ export interface ApplicationDetailDto extends ApplicationRowDto {
   message: string | null;
   cvFileName: string | null;
   cvLink: string | null;
+  /** The newest entry of `notes`, for older screens. */
   note: string | null;
   noteUpdatedAt: string | null;
   noteUpdatedBy: string | null;
+  /** "Ghi chú nội bộ", newest first. */
+  notes: import('./recruitment-log.js').ApplicationNoteDto[];
   interviewMode: import('./message-templates.js').InterviewMode | null;
   meetingUrl: string | null;
   /** Last automatic CV check (see spec-cv-match.md); null when never scored. */

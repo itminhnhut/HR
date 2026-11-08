@@ -26,8 +26,18 @@ import {
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { conflictError, hrActor, logEvent, replyWindow, reviewState, viTime, waitingIn } from './review-model.js';
+import { actorOf } from './activity.js';
+import { logRecruitment } from './recruitment-log.js';
 
 /** HR's side of "Sếp duyệt ứng viên" (spec-boss-review.md). */
+
+/** "Gửi sếp duyệt" for each application, in "Nhật ký tuyển dụng". */
+async function logSent(db: Db, batch: Pick<ReviewBatch, 'title' | 'reviewerName'>, ids: string[], hr: HrMe, at: Date) {
+  const detail = `Đợt "${batch.title}", gửi ${batch.reviewerName}`;
+  for (const applicationId of ids) {
+    await logRecruitment(db, { applicationId, group: 'sep-duyet', action: 'Gửi sếp duyệt', actor: actorOf(hr), detail, at });
+  }
+}
 
 const parse = <T extends z.ZodType>(schema: T, raw: unknown): z.output<T> => {
   const parsed = schema.safeParse(raw);
@@ -156,6 +166,8 @@ export async function getReview(db: Db, id: string, now: Date): Promise<ReviewBa
 
 type ItemInput = z.output<typeof reviewAddSchema>['items'][number];
 
+const ids = (items: ItemInput[]) => items.map((i) => i.applicationId);
+
 /** Every application exists and none is waiting in another open batch. */
 async function checkApplications(db: Db, items: ItemInput[], batchId?: string) {
   const ids = items.map((i) => i.applicationId);
@@ -198,6 +210,7 @@ export async function createReview(db: Db, raw: unknown, hr: HrMe, now: Date): P
       .insert(reviewItems)
       .values(input.items.map((item, position) => ({ batchId: batch.id, position, ...item, createdAt: now })));
     await logEvent(tx, { batchId: batch.id, kind: 'sent', actor, at: now, detail: `${input.items.length} ứng viên` });
+    await logSent(tx, input, ids(input.items), hr, now);
     return batch.id;
   });
   return getReview(db, id, now);
@@ -228,6 +241,7 @@ export async function addToReview(db: Db, id: string, raw: unknown, hr: HrMe, no
         applicationId: item.applicationId,
       });
     }
+    await logSent(tx, batch, ids(items), hr, now);
   });
   return getReview(db, batch.id, now);
 }
@@ -249,6 +263,14 @@ export async function removeFromReview(db: Db, id: string, itemId: string, hr: H
     actor: hrActor(hr),
     at: now,
     applicationId: item.applicationId,
+  });
+  await logRecruitment(db, {
+    applicationId: item.applicationId,
+    group: 'sep-duyet',
+    action: 'Bỏ khỏi đợt duyệt',
+    actor: actorOf(hr),
+    detail: `Đợt "${batch.title}"`,
+    at: now,
   });
   return getReview(db, batch.id, now);
 }
@@ -294,6 +316,14 @@ export async function replyInReview(db: Db, id: string, itemId: string, raw: unk
     at: now,
     applicationId: item.applicationId,
     detail: reply,
+  });
+  await logRecruitment(db, {
+    applicationId: item.applicationId,
+    group: 'sep-duyet',
+    action: 'Trả lời sếp',
+    actor: actorOf(hr),
+    detail: reply,
+    at: now,
   });
   return getReview(db, batch.id, now);
 }

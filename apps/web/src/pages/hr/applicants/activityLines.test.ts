@@ -69,6 +69,26 @@ describe('activityLines', () => {
     expect(line).toMatchObject({ title: 'Sửa số điện thoại', change: '0912 → 0913' });
   });
 
+  it('TC-SH-12: should name a fixed name and gender, in words', () => {
+    // Act
+    const lines = activityLines(
+      app({
+        activity: [
+          entry({ kind: 'contact', detail: 'fullName', from: 'Nguyen Van An', to: 'Nguyễn Văn An' }),
+          entry({ kind: 'contact', detail: 'gender', from: null, to: 'female' }),
+        ],
+      }),
+    );
+
+    // Assert
+    expect(lines.map((l) => [l.title, l.change])).toEqual(
+      expect.arrayContaining([
+        ['Sửa họ tên', 'Nguyen Van An → Nguyễn Văn An'],
+        ['Sửa giới tính', 'Theo CV → Nữ'],
+      ]),
+    );
+  });
+
   it('should say only the site of an old CV link, whose address can be hundreds of characters', () => {
     // Arrange
     const previous = `https://www.ntd.vieclam24h.vn/chi-tiet?id=1&token=${'x'.repeat(400)}`;

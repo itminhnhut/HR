@@ -29,6 +29,7 @@ import {
   toSections,
   validateDeadline,
   type ApplicationDetailDto,
+  type ApplicationNoteDto,
   type HrMe,
   type HrUserDto,
   type ApplicationRowDto,
@@ -188,14 +189,38 @@ function appRow(db: MockDb, a: MockDb['applications'][number]): ApplicationRowDt
     hasCv: !!(a.cvFileName || a.cvLink),
     matchPercent: null,
     matchBonus: 0,
-    noteLine: firstLine(a.note),
+    noteLine: firstLine(notesOf(a)[0]?.body ?? null),
     interviewAt: a.interviewAt,
     cvGender: null,
+    hrGender: null,
     cvBirth: null,
     review: null,
     source: 'website',
     cvUpdatedByCandidate: false,
   };
+}
+
+type MockApp = MockDb['applications'][number];
+
+/** Newest first; demo data saved before the timeline turns its one note into the first entry. */
+function notesOf(a: MockApp): ApplicationNoteDto[] {
+  if (a.notes) return a.notes;
+  if (!a.note) return [];
+  const at = a.noteUpdatedAt ?? a.createdAt;
+  return [{ id: `n-${a.id}`, body: a.note, createdBy: a.noteUpdatedBy, createdAt: at, updatedAt: at }];
+}
+
+function addMockNote(a: MockApp, body: string, by: string) {
+  const at = new Date().toISOString();
+  a.notes = [{ id: uid('n'), body, createdBy: by, createdAt: at, updatedAt: at }, ...notesOf(a)];
+}
+
+function findMockNote(id: string, noteId: string) {
+  const db = load();
+  const me = requireHr(db);
+  const a = db.applications.find((x) => x.id === id);
+  const note = a && notesOf(a).find((n) => n.id === noteId);
+  return { db, me, a, note };
 }
 
 function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDetailDto {
@@ -213,13 +238,14 @@ function appDetail(db: MockDb, a: MockDb['applications'][number]): ApplicationDe
     message: a.message,
     cvFileName: a.cvFileName,
     cvLink: a.cvLink,
-    note: a.note,
+    note: notesOf(a)[0]?.body ?? null,
+    notes: notesOf(a),
     interviewMode: a.interviewMode,
     meetingUrl: a.meetingUrl,
     cvScore: null,
     contacts: [...a.contacts].sort((x, y) => y.createdAt.localeCompare(x.createdAt)),
-    noteUpdatedAt: a.noteUpdatedAt,
-    noteUpdatedBy: a.noteUpdatedBy,
+    noteUpdatedAt: notesOf(a)[0]?.updatedAt ?? null,
+    noteUpdatedBy: notesOf(a)[0]?.createdBy ?? null,
     otherApplications: db.applications
       .filter((o) => o.phone === a.phone && o.id !== a.id)
       .sort((x, y) => y.createdAt.localeCompare(x.createdAt))
@@ -537,7 +563,7 @@ export const mockApi: Api = {
           jobTitle: title(a.jobId),
           appliedAt: a.createdAt,
           interviewAt: a.interviewAt,
-          noteLine: firstLine(a.note),
+          noteLine: firstLine(notesOf(a)[0]?.body ?? null),
           phone: a.phone,
           matchPercent: null,
           cvGender: null,
@@ -761,12 +787,37 @@ export const mockApi: Api = {
       }
       a.meetingUrl = url;
     }
-    const note = patch.note === undefined ? undefined : patch.note?.trim() || null;
-    if (note !== undefined && note !== a.note) {
-      a.note = note;
-      a.noteUpdatedAt = new Date().toISOString();
-      a.noteUpdatedBy = me.name || me.email;
-    }
+    const note = patch.note?.trim();
+    if (note && note !== notesOf(a)[0]?.body) addMockNote(a, note, me.name || me.email);
+    save();
+    return delay(appDetail(db, a));
+  },
+
+  async hrAddNote(id, body) {
+    const db = load();
+    const me = requireHr(db);
+    const a = db.applications.find((x) => x.id === id);
+    if (!a) return fail(404, 'Không tìm thấy hồ sơ.');
+    if (!body.trim()) return fail(422, 'Ghi chú đang trống.', { body: 'Ghi chú đang trống.' });
+    addMockNote(a, body.trim(), me.name || me.email);
+    save();
+    return delay(appDetail(db, a));
+  },
+
+  async hrEditNote(id, noteId, body) {
+    const { db, a, note } = findMockNote(id, noteId);
+    if (!a || !note) return fail(404, 'Không tìm thấy ghi chú.');
+    if (!body.trim()) return fail(422, 'Ghi chú đang trống.', { body: 'Ghi chú đang trống.' });
+    const at = new Date().toISOString();
+    a.notes = notesOf(a).map((n) => (n.id === noteId ? { ...n, body: body.trim(), updatedAt: at } : n));
+    save();
+    return delay(appDetail(db, a));
+  },
+
+  async hrDeleteNote(id, noteId) {
+    const { db, a, note } = findMockNote(id, noteId);
+    if (!a || !note) return fail(404, 'Không tìm thấy ghi chú.');
+    a.notes = notesOf(a).filter((n) => n.id !== noteId);
     save();
     return delay(appDetail(db, a));
   },
@@ -936,8 +987,11 @@ export const mockApi: Api = {
   hrParseCv: async () => delay({ fullName: null, phone: null, email: null, readable: false }),
   hrReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   hrUpdateContact: () => fail(501, NO_CV_CHANGES_IN_DEMO),
+  hrLogReach: async () => undefined,
   candidateReplaceCv: () => fail(501, NO_CV_CHANGES_IN_DEMO),
   // The demo site has no timesheet: it holds staff data and only exists with a real server.
+  // The demo keeps no log: the page says there is nothing yet.
+  hrRecruitmentLog: async () => ({ lines: [], hasMore: false }),
   hrTimesheet: noTimesheet,
   hrTimesheetRange: noTimesheet,
   hrTimesheetYear: noTimesheet,
@@ -960,8 +1014,13 @@ export const mockApi: Api = {
   hrAddAbsenceKind: noTimesheet,
   hrDeleteAbsenceKind: noTimesheet,
   hrUpdateAbsenceKind: noTimesheet,
+  hrSetNeedsPaper: noTimesheet,
   hrRegisterAbsence: noTimesheet,
   hrRemoveAbsence: noTimesheet,
+  hrRemoveSheetLeave: noTimesheet,
+  hrUploadAbsenceFile: noTimesheet,
+  hrRemoveAbsenceFile: noTimesheet,
+  hrAbsenceFileUrl: () => null,
   hrTimesheetAddLeaveChange: noTimesheet,
   hrTimesheetRemoveLeaveChange: noTimesheet,
   hrDeleteEmployee: noTimesheet,

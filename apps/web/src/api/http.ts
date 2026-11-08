@@ -67,6 +67,9 @@ import { ApiError, type Api, type CvInput } from './types';
  *   PATCH  /hr/sources/:key  { name?, hidden? }  |  DELETE /hr/sources/:key → SourceDto[]   409 website / in use
  *   PATCH  /hr/applications/:id/contact  { phone, email, source, referrer } → ApplicationDetailDto
  *   PUT    /candidate/applications/:id/cv  (multipart: "cv" | cvLink | useSavedCv) → CandidateOverview   409 cv_locked
+ *   POST   /hr/timesheet/absences/:id/files  (multipart "file", one a request) → AbsenceFileDto[]   400 { code } bad file, 409 too_many_files
+ *   GET    /hr/timesheet/absence-files/:id   → the file (inline, private, no-store)
+ *   DELETE /hr/timesheet/absence-files/:id   → AbsenceFileDto[]
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
@@ -94,6 +97,43 @@ async function request<T>(path: string, init: RequestInit = {}, allow401 = false
     );
   }
   return body as T;
+}
+
+const NETWORK_LOST = 'Mất mạng khi gửi file. Thử gửi lại.';
+
+/** The error body the BE sends, read the same way as request() reads it. */
+function uploadError(xhr: XMLHttpRequest): ApiError {
+  let body: { error?: string; fieldErrors?: Record<string, string>; code?: string } = {};
+  try {
+    body = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+  } catch (error) {
+    console.warn('Upload error body was not JSON', error);
+  }
+  return new ApiError(xhr.status, body.error ?? 'Có lỗi xảy ra, thử lại sau.', body.fieldErrors ?? {}, body.code, body);
+}
+
+/** fetch() cannot tell how far a body has gone up, so a file goes through XMLHttpRequest. */
+function upload<T>(path: string, form: FormData, onProgress?: (percent: number) => void): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${BASE}${path}`);
+    xhr.withCredentials = true;
+    xhr.setRequestHeader('x-requested-with', 'careers-web');
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && onProgress) onProgress(Math.min(100, Math.round((e.loaded / e.total) * 100)));
+    };
+    xhr.onerror = () => reject(new ApiError(0, NETWORK_LOST));
+    xhr.ontimeout = () => reject(new ApiError(0, NETWORK_LOST));
+    xhr.onload = () => {
+      if (xhr.status < 200 || xhr.status >= 300) return reject(uploadError(xhr));
+      try {
+        resolve(JSON.parse(xhr.responseText) as T);
+      } catch (error) {
+        reject(new ApiError(xhr.status, `Máy chủ trả lời lạ: ${error instanceof Error ? error.message : 'không đọc được'}.`));
+      }
+    };
+    xhr.send(form);
+  });
 }
 
 /** A new CV as multipart: "cv" file, "cvLink", or "useSavedCv". */
@@ -211,6 +251,10 @@ export const httpApi: Api = {
     return request(`/hr/applications${query ? `?${query}` : ''}`);
   },
   hrApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`),
+  hrRecruitmentLog: ({ group, search, offset }) => {
+    const query = new URLSearchParams({ tu: String(offset), ...(group ? { nhom: group } : {}), ...(search ? { tim: search } : {}) });
+    return request(`/hr/recruitment-log?${query}`);
+  },
   hrAddApplication: ({ cvFile, ...fields }) => {
     const form = new FormData();
     for (const [key, value] of Object.entries(fields)) if (value) form.append(key, String(value));
@@ -244,9 +288,18 @@ export const httpApi: Api = {
   hrDeleteApprover: (id) => request(`/hr/timesheet/approvers/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   hrAddAbsenceKind: (input) => request('/hr/timesheet/absence-kinds', { method: 'POST', body: JSON.stringify(input) }),
   hrUpdateAbsenceKind: (key, input) => request(`/hr/timesheet/absence-kinds/${encodeURIComponent(key)}`, { method: 'PATCH', body: JSON.stringify(input) }),
+  hrSetNeedsPaper: (key, needsPaper) => request(`/hr/timesheet/absence-kinds/${encodeURIComponent(key)}/needs-paper`, { method: 'PUT', body: JSON.stringify({ needsPaper }) }),
   hrDeleteAbsenceKind: (key) => request(`/hr/timesheet/absence-kinds/${encodeURIComponent(key)}`, { method: 'DELETE' }),
   hrRegisterAbsence: (id, input) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}/absences`, { method: 'POST', body: JSON.stringify(input) }),
+  hrRemoveSheetLeave: (id, line) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}/sheet-leave/remove`, json('POST', line)),
   hrRemoveAbsence: (id, absenceId) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}/absences/${encodeURIComponent(absenceId)}`, { method: 'DELETE' }),
+  hrUploadAbsenceFile: (absenceId, file, onProgress) => {
+    const form = new FormData();
+    form.append('file', file);
+    return upload(`/hr/timesheet/absences/${encodeURIComponent(absenceId)}/files`, form, onProgress);
+  },
+  hrRemoveAbsenceFile: (fileId) => request(`/hr/timesheet/absence-files/${encodeURIComponent(fileId)}`, { method: 'DELETE' }),
+  hrAbsenceFileUrl: (fileId) => `${BASE}/hr/timesheet/absence-files/${encodeURIComponent(fileId)}`,
   hrTimesheetAddLeaveChange: (id, input) => request(`/hr/timesheet/${encodeURIComponent(id)}/leave-changes`, { method: 'POST', body: JSON.stringify(input) }),
   hrTimesheetRemoveLeaveChange: (id, changeId) => request(`/hr/timesheet/${encodeURIComponent(id)}/leave-changes/${encodeURIComponent(changeId)}`, { method: 'DELETE' }),
   hrDeleteEmployee: (id) => request(`/hr/timesheet/employees/${encodeURIComponent(id)}`, { method: 'DELETE' }),
@@ -278,8 +331,14 @@ export const httpApi: Api = {
   hrCreateSource: (name) => request('/hr/sources', json('POST', { name })),
   hrUpdateSource: (key, patch) => request(`/hr/sources/${encodeURIComponent(key)}`, json('PATCH', patch)),
   hrDeleteSource: (key) => request(`/hr/sources/${encodeURIComponent(key)}`, { method: 'DELETE' }),
+  hrLogReach: (id, via) => request(`/hr/applications/${encodeURIComponent(id)}/reach`, json('POST', { via })),
   hrUpdateContact: (id, input) => request(`/hr/applications/${encodeURIComponent(id)}/contact`, json('PATCH', input)),
   hrUpdateApplication: (id, patch) => request(`/hr/applications/${encodeURIComponent(id)}`, json('PATCH', patch)),
+  hrAddNote: (id, body) => request(`/hr/applications/${encodeURIComponent(id)}/notes`, json('POST', { body })),
+  hrEditNote: (id, noteId, body) =>
+    request(`/hr/applications/${encodeURIComponent(id)}/notes/${encodeURIComponent(noteId)}`, json('PATCH', { body })),
+  hrDeleteNote: (id, noteId) =>
+    request(`/hr/applications/${encodeURIComponent(id)}/notes/${encodeURIComponent(noteId)}`, { method: 'DELETE' }),
   hrScorePending: () => request('/hr/applications/score-pending', { method: 'POST' }),
   hrScoreCv: (id) => request(`/hr/applications/${encodeURIComponent(id)}/score`, { method: 'POST' }),
   hrDeleteApplication: (id) => request(`/hr/applications/${encodeURIComponent(id)}`, { method: 'DELETE' }),

@@ -1,5 +1,6 @@
 import type { Db } from './db/index.js';
 import type { CvStore } from './lib/cv-store.js';
+import type { PaperStore } from './lib/paper-store.js';
 import type { CaptchaVerifier } from './lib/captcha.js';
 import type { GoogleVerifier } from './lib/google.js';
 import type { ImageStore } from './lib/image-store.js';
@@ -27,6 +28,8 @@ export interface Deps {
   db: Db;
   config: AppConfig;
   cvStore: CvStore;
+  /** Papers kept with an absence, private like CVs. */
+  paperStore: PaperStore;
   /** Public images in news articles. */
   imageStore: ImageStore;
   verifyGoogleToken: GoogleVerifier;

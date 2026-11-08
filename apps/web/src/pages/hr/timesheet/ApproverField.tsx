@@ -1,4 +1,4 @@
-import { matchesQuery, type ApproverDto } from '@careers/shared';
+import { SHEET_APPROVER, matchesQuery, type ApproverDto } from '@careers/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, ChevronDown, Plus, Trash2, UserCheck, X } from 'lucide-react';
 import { useState } from 'react';
@@ -92,7 +92,12 @@ export function ApproversPanel() {
           <li key={a.id} className="flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 hover:bg-blue-100">
             <span aria-hidden="true" className="inline-flex size-6 shrink-0 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-700"><UserCheck className="size-3.5" /></span>
             <span className="min-w-0 flex-1 truncate text-sm font-medium">{a.name}</span>
-            <button type="button" aria-label={`Xoá ${a.name}`} onClick={() => setRemoving(a)} className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border bg-white hover:bg-red-50 max-md:size-11"><Trash2 className="size-3.5 text-red-600" /></button>
+            {/* HR approves what HR types on the sheet: it always stays (the API refuses too). */}
+            {a.name.toLowerCase() === SHEET_APPROVER.toLowerCase() ? (
+              <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-slate-100 px-2 text-xs font-medium text-slate-600">Mặc định</span>
+            ) : (
+              <button type="button" aria-label={`Xoá ${a.name}`} onClick={() => setRemoving(a)} className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border bg-white hover:bg-red-50 max-md:size-11"><Trash2 className="size-3.5 text-red-600" /></button>
+            )}
           </li>
         ))}
       </ul>

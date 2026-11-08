@@ -1,4 +1,4 @@
-import type { AbsenceKindDto, AbsenceRowDto, ApproverDto, TimesheetAbsenceDto } from '@careers/shared';
+import type { AbsenceKindDto, AbsenceRowDto, ApproverDto, TimesheetAbsenceDto, TimesheetLogPageDto } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createFlow, rowOf, totalsOf, type Flow } from '../test/timesheet-flow.js';
 
@@ -434,17 +434,105 @@ describe('leave typed straight into the sheet', () => {
   });
 });
 
+describe('changing leave typed straight into the sheet (TC-DK-50..53)', () => {
+  const sheetLines = async () => (await flow.call<AbsenceRowDto[]>('GET', '/absences?year=2026')).filter((r) => r.source === 'sheet');
+
+  it('TC-DK-50: should clear the days of a typed line, and log it', async () => {
+    // Arrange
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-05': 'P', '2026-11-06': 'P', '2026-11-12': 'M' });
+
+    // Act
+    await flow.call('POST', `/employees/${person.id}/sheet-leave/remove`, { code: 'P', from: '2026-11-05', to: '2026-11-06' });
+
+    // Assert
+    const cells = rowOf(await flow.period(2026, 11), 'A').cells;
+    expect([cells['2026-11-05']?.entered ?? null, cells['2026-11-06']?.entered ?? null, cells['2026-11-12']?.entered]).toEqual([null, null, 'M']);
+    expect((await sheetLines()).map((r) => r.code)).toEqual(['M']);
+    const log = await flow.call<TimesheetLogPageDto>('GET', '/log?nhom=nghi');
+    expect(log.lines.map((l) => l.action)).toContain('Xoá nghỉ gõ trên bảng công');
+  });
+
+  it('TC-DK-54: should name HR as the approver of leave HR typed on the sheet', async () => {
+    // Arrange
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-05': 'P' });
+
+    // Act + Assert
+    expect((await sheetLines()).map((r) => r.approvedBy)).toEqual(['HR']);
+  });
+
+  it('TC-DK-55: should have HR in the list of approvers from the start', async () => {
+    // Act + Assert
+    expect((await flow.call<ApproverDto[]>('GET', '/approvers')).map((a) => a.name)).toContain('HR');
+  });
+
+  it('TC-DK-51: should refuse to clear a typed line in a closed period', async () => {
+    // Arrange
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.at('2026-10-20');
+    await flow.enter(await flow.period(2026, 10), person.id, { '2026-10-08': 'P' });
+    await flow.at('2026-10-26');
+    await flow.close(2026, 10);
+
+    // Act
+    const answer = await flow.attempt('POST', `/employees/${person.id}/sheet-leave/remove`, { code: 'P', from: '2026-10-08', to: '2026-10-08' });
+
+    // Assert
+    expect(answer.status).toBe(409);
+  });
+
+  it('TC-DK-52: should turn a typed line into a registered absence that takes its days', async () => {
+    // Arrange: P typed on 5/11 and 6/11
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-05': 'P', '2026-11-06': 'P' });
+
+    // Act: registered as a wedding instead, approved
+    await register(person.id, { reason: 'wedding', from: '2026-11-05', to: '2026-11-06', replacesSheet: { code: 'P', from: '2026-11-05', to: '2026-11-06' } });
+
+    // Assert
+    const cells = rowOf(await flow.period(2026, 11), 'A').cells;
+    expect([cells['2026-11-05']?.entered, cells['2026-11-06']?.entered]).toEqual(['CL', 'CL']);
+    expect(await sheetLines()).toEqual([]);
+  });
+
+  it('TC-DK-53: should not take days typed with another code, nor typed outside the line', async () => {
+    // Arrange: P on 5/11, KL on 6/11
+    const person = await flow.addPerson({ code: 'A' });
+    await flow.enter(await flow.period(2026, 11), person.id, { '2026-11-05': 'P', '2026-11-06': 'KL' });
+
+    // Act: the P line, registered over 5/11–6/11
+    await register(person.id, { reason: 'annual', from: '2026-11-05', to: '2026-11-06', replacesSheet: { code: 'P', from: '2026-11-05', to: '2026-11-05' } });
+
+    // Assert: the KL HR typed stays HR's
+    const cells = rowOf(await flow.period(2026, 11), 'A').cells;
+    expect([cells['2026-11-05']?.entered, cells['2026-11-06']?.entered]).toEqual(['P', 'KL']);
+  });
+});
+
 describe('the list of approvers', () => {
   it('TC-DK-26: should let HR add a person, once, and remove them', async () => {
     // Act
     const added = await flow.call<ApproverDto[]>('POST', '/approvers', { name: 'Anh Hùng' }, 201);
     const again = await flow.call<ApproverDto[]>('POST', '/approvers', { name: ' anh hùng ' }, 201);
-    const left = await flow.call<ApproverDto[]>('DELETE', `/approvers/${added[0]?.id}`);
+    const left = await flow.call<ApproverDto[]>('DELETE', `/approvers/${added.find((a) => a.name === 'Anh Hùng')?.id}`);
+
+    // Assert: HR is there from the start
+    expect(added.map((a) => a.name)).toEqual(['Anh Hùng', 'HR']);
+    expect(again).toHaveLength(2);
+    expect(left.map((a) => a.name)).toEqual(['HR']);
+  });
+
+  it('TC-DK-56: should never remove HR from the approvers', async () => {
+    // Arrange
+    const [hr] = await flow.call<ApproverDto[]>('GET', '/approvers');
+
+    // Act
+    const answer = await flow.attempt('DELETE', `/approvers/${hr?.id}`);
 
     // Assert
-    expect(added.map((a) => a.name)).toEqual(['Anh Hùng']);
-    expect(again).toHaveLength(1);
-    expect(left).toEqual([]);
+    expect(answer).toMatchObject({ status: 409, code: 'approver_kept' });
+    expect((await flow.call<ApproverDto[]>('GET', '/approvers')).map((a) => a.name)).toEqual(['HR']);
   });
 
   it('TC-DK-27: should remember a name typed on a line for next time', async () => {
@@ -456,7 +544,7 @@ describe('the list of approvers', () => {
 
     // Assert
     const list = await flow.call<ApproverDto[]>('GET', '/approvers');
-    expect(list.map((a) => a.name)).toEqual(['Chị Lan']);
+    expect(list.map((a) => a.name)).toEqual(['Chị Lan', 'HR']);
   });
 
   it('TC-DK-28: should refuse an empty name', async () => {

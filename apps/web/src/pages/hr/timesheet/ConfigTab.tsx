@@ -1,3 +1,4 @@
+import { groupHolidays, todayInVietnam } from '@careers/shared';
 import { useQuery } from '@tanstack/react-query';
 import { Building2, BadgeCheck, Flag, MapPin, Plane, Tags, UserCheck, type LucideIcon } from 'lucide-react';
 import { useSearchParams } from 'react-router';
@@ -7,7 +8,7 @@ import { ApproversPanel, useApprovers } from './ApproverField';
 import { HolidaysCard } from './HolidaysCard';
 import { LeaveModePanel } from './LeaveModePanel';
 import { DepartmentsPanel, StaffKindsPanel } from './MasterPanels';
-import { useDepartments, useRegions, useStaffKinds } from './queries';
+import { useHolidays, useDepartments, useRegions, useStaffKinds } from './queries';
 import { RegionsPanel } from './SettingsTab';
 
 type SectionId = 'bo-phan' | 'loai-nv' | 'khu-vuc' | 'ngay-le' | 'ly-do' | 'nguoi-duyet' | 'phep';
@@ -33,12 +34,16 @@ export function ConfigTab() {
   const regions = useRegions();
   const reasons = useQuery({ queryKey: ['hr', 'absence-kinds'], queryFn: () => api.hrAbsenceKinds() });
   const approvers = useApprovers();
+  const holidays = useHolidays();
+  // As the holiday list shows them: this year's, a long break such as Tết counted once.
+  const thisYear = todayInVietnam().slice(0, 4);
+  const holidayCount = holidays.data && groupHolidays(holidays.data.filter((h) => h.day.startsWith(`${thisYear}-`))).length;
   const current = (params.get('muc') ?? 'bo-phan') as SectionId;
   const sections: { id: SectionId; icon: LucideIcon; tone: string; label: string; count?: number }[] = [
     { id: 'bo-phan', icon: Building2, tone: 'text-blue-600', label: 'Bộ phận', count: departments.data?.length },
     { id: 'loai-nv', icon: BadgeCheck, tone: 'text-green-600', label: 'Loại nhân viên', count: kinds.data?.length },
     { id: 'khu-vuc', icon: MapPin, tone: 'text-rose-600', label: 'Khu vực', count: regions.data?.length },
-    { id: 'ngay-le', icon: Flag, tone: 'text-teal-600', label: 'Ngày lễ, Tết' },
+    { id: 'ngay-le', icon: Flag, tone: 'text-teal-600', label: 'Ngày lễ, Tết', count: holidayCount },
     { id: 'ly-do', icon: Tags, tone: 'text-indigo-600', label: 'Lý do nghỉ', count: reasons.data?.length },
     { id: 'nguoi-duyet', icon: UserCheck, tone: 'text-emerald-600', label: 'Người duyệt', count: approvers.data?.length },
     { id: 'phep', icon: Plane, tone: 'text-sky-600', label: 'Cách tính phép' },

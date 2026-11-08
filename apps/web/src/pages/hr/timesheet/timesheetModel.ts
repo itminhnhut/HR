@@ -11,6 +11,7 @@ import {
   timesheetTotals,
   WEEKDAY_LABELS,
   weekdayOf,
+  type AbsenceRowDto,
   type AttendanceCode,
   type TimesheetCellsInput,
   type TimesheetDto,
@@ -201,10 +202,12 @@ export function withCells(dto: TimesheetDto, cells: TimesheetCellsInput['cells']
 export interface TimesheetProblem {
   id: string;
   group: 'Cần xử lý' | 'Cần xem';
-  kind: 'saturday' | 'leave' | 'left' | 'adjustment' | 'missingHoliday' | 'holidayWork' | 'probationLeave' | 'sundayWork' | 'holidayOvertime' | 'becameOfficial';
+  kind: 'saturday' | 'leave' | 'left' | 'adjustment' | 'missingHoliday' | 'holidayWork' | 'probationLeave' | 'sundayWork' | 'holidayOvertime' | 'becameOfficial' | 'paper';
   employeeId: string;
   columnId: string;
   text: string;
+  /** For a problem that lives on the Nghỉ tab: the absence to open there, and the year of the list that holds it. */
+  absence?: { absenceId: string; year: number };
 }
 
 export const asNumber = (v: unknown) => (v === 0 ? '-' : String(v).replace('.', ','));
@@ -241,8 +244,22 @@ function restDayProblems(name: string, employeeId: string, grid: GridRow): Times
   return out;
 }
 
+/** Absences in the period whose reason asks for papers and that have none: a reminder only, closing goes ahead. */
+function missingPapers(dto: TimesheetDto, days: readonly DayColumn[], absences: readonly AbsenceRowDto[]): TimesheetProblem[] {
+  const onSheet = new Set(dto.rows.map((r) => r.employeeId));
+  const seen = new Set<string>();
+  return absences.flatMap((a) => {
+    const isMissing = a.source !== 'sheet' && a.needsPaper && a.files.length === 0;
+    if (!isMissing || seen.has(a.id) || !onSheet.has(a.employeeId) || a.to < dto.from || a.from > dto.to) return [];
+    seen.add(a.id);
+    const start = a.from < dto.from ? dto.from : a.from;
+    const span = a.to !== a.from ? `${dayMonth(a.from)}–${dayMonth(a.to)}` : dayMonth(a.from);
+    return [{ id: `g${a.id}`, group: 'Cần xem' as const, kind: 'paper' as const, employeeId: a.employeeId, columnId: days.find((d) => d.iso === start)?.key ?? days[0]?.key ?? '', text: `${a.fullName}: ${a.label} ${span}`, absence: { absenceId: a.id, year: Number(a.from.slice(0, 4)) } }];
+  });
+}
+
 /** What needs a look before closing. A Saturday only counts once the remaining ones can no longer make the norm. */
-export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows: readonly GridRow[]): TimesheetProblem[] {
+export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows: readonly GridRow[], absences: readonly AbsenceRowDto[] = []): TimesheetProblem[] {
   const out: TimesheetProblem[] = [];
   const saturdays = days.filter((d) => d.weekday === 'T7');
   out.push(...missingHolidays(dto, days));
@@ -278,5 +295,6 @@ export function findProblems(dto: TimesheetDto, days: readonly DayColumn[], rows
       out.push({ ...base, id: `a${a.id}`, group: 'Cần xem', kind: 'adjustment', columnId: 'huong', text: `${row.fullName}: điều chỉnh ${balance(a.amount)} công (${a.reason})` });
     }
   }
+  out.push(...missingPapers(dto, days, absences));
   return out;
 }

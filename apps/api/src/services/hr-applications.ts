@@ -1,17 +1,20 @@
 import {
   applicationUpdateSchema,
   bonusCount,
+  CONTACT_CHANNEL_LABEL,
   contactLogSchema,
   fieldErrors,
   isInvited,
   matchesQuery,
   statusChangeProblem,
+  TEMPLATE_LABEL,
   type ApplicationDetailDto,
   type ApplicationRowDto,
   type ApplicationsResponse,
   type ApplicationSource,
   type ApplicationStatus,
   type CvGender,
+  type CvScoreDto,
   type HrMe,
   type MatchItem,
   type SubscriberDto,
@@ -25,8 +28,11 @@ import { hrActor, latestReview, latestReviews, logEvent, reviewMark } from './re
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { expiredApplicationsWhere } from './hr-jobs.js';
-import { activityOf, actorOf, logActivity, logNoteEdit } from './activity.js';
+import { activityOf, actorOf, logActivity } from './activity.js';
+import { logChanges } from './application-changes.js';
+import { insertNote, newestNotes, notesOf } from './application-notes.js';
 import { dropLastStatus, isReportedStep, logStatus, rewindSteps } from './status-log.js';
+import { forgetCandidate, logRecruitment } from './recruitment-log.js';
 
 const STATUSES: ApplicationStatus[] = ['new', 'seen', 'scheduling', 'interview', 'passed', 'hired', 'rejected'];
 
@@ -58,7 +64,8 @@ const firstLine = (text: string | null) =>
     .find((l) => l.trim())
     ?.trim() ?? null;
 
-function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): ApplicationRowDto {
+/** `newestNote`: the body of the newest "Ghi chú nội bộ" entry; `applications.note` is no longer read. */
+function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review'], newestNote: string | null): ApplicationRowDto {
   return {
     id: a.id,
     jobId: a.jobId,
@@ -71,8 +78,9 @@ function toRow(a: ApplicationWithJob, review: ApplicationRowDto['review']): Appl
     matchPercent: a.matchPercent,
     matchBonus: bonusCount(a.matchItems ?? []),
     cvGender: a.cvGender,
+    hrGender: a.hrGender,
     cvBirth: a.cvBirth,
-    noteLine: firstLine(a.note),
+    noteLine: firstLine(newestNote),
     interviewAt: a.interviewAt?.toISOString() ?? null,
     review,
     source: a.source,
@@ -103,8 +111,10 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
     .where(eq(contactLog.applicationId, a.id))
     .orderBy(desc(contactLog.createdAt));
   const reviewInfo = await latestReview(db, a.id);
+  const notes = await notesOf(db, a.id);
+  const newest = notes[0] ?? null;
   return {
-    ...toRow(a, reviewMark(reviewInfo)),
+    ...toRow(a, reviewMark(reviewInfo), newest?.body ?? null),
     reviewInfo,
     rejectReason: a.rejectReason,
     rejectNote: a.rejectNote,
@@ -126,9 +136,10 @@ async function toDetail(db: Db, a: ApplicationWithJob): Promise<ApplicationDetai
     message: a.message,
     cvFileName: a.cvFileName,
     cvLink: a.cvLink,
-    note: a.note,
-    noteUpdatedAt: a.noteUpdatedAt?.toISOString() ?? null,
-    noteUpdatedBy: a.noteUpdatedBy,
+    note: newest?.body ?? null,
+    noteUpdatedAt: newest?.updatedAt ?? null,
+    noteUpdatedBy: newest?.createdBy ?? null,
+    notes,
     otherApplications: others.map((o) => ({
       id: o.id,
       jobTitle: o.jobTitle,
@@ -182,9 +193,13 @@ export async function listApplications(
     found.map((row) => row.id),
   );
   const expired = await expiredIds(db, now);
+  const notes = await newestNotes(
+    db,
+    found.map((row) => row.id),
+  );
   return {
     applications: found.map((row) => ({
-      ...toRow(row, reviewMark(reviews.get(row.id) ?? null)),
+      ...toRow(row, reviewMark(reviews.get(row.id) ?? null), notes.get(row.id) ?? null),
       isExpired: expired.has(row.id),
     })),
     counts,
@@ -262,28 +277,6 @@ function rejectFields(row: Application, input: ApplicationUpdate) {
   };
 }
 
-/** What this change did, for "Nhật ký hồ sơ". */
-async function logChanges(
-  db: Db,
-  before: Application,
-  after: Application,
-  input: ApplicationUpdate,
-  hr: HrMe,
-  now: Date,
-): Promise<void> {
-  const base = { applicationId: before.id, actor: actorOf(hr), at: now };
-  if (after.status !== before.status) {
-    const detail = input.isUndo ? 'undo' : (after.rejectReason ?? null);
-    await logActivity(db, { ...base, kind: 'status', from: before.status, to: after.status, detail });
-  }
-  const timeBefore = before.interviewAt?.toISOString() ?? null;
-  const timeAfter = after.interviewAt?.toISOString() ?? null;
-  if (input.interviewAt !== undefined && !input.isUndo && timeBefore !== timeAfter) {
-    await logActivity(db, { ...base, kind: 'interview', from: timeBefore, to: timeAfter });
-  }
-  if (after.note !== before.note) await logNoteEdit(db, before.id, base.actor, now);
-}
-
 export async function updateApplication(
   db: Db,
   id: string,
@@ -306,7 +299,6 @@ export async function updateApplication(
   }
   // Interview details only belong to "Hẹn phỏng vấn"; for any other status they are cleared below.
   const interviewing = (status ?? row.status) === 'interview';
-  const noteChanged = note !== undefined && (note?.trim() || null) !== row.note;
   const patch = {
     ...(status ? { status } : {}),
     ...rejectFields(row, parsed.data),
@@ -314,8 +306,8 @@ export async function updateApplication(
     ...(interviewAt !== undefined ? { interviewAt: interviewAt ? new Date(interviewAt) : null } : {}),
     ...(interviewing && interviewMode !== undefined ? { interviewMode } : {}),
     ...(interviewing && meetingUrl !== undefined ? { meetingUrl } : {}),
-    ...(noteChanged ? { note: note?.trim() || null, noteUpdatedAt: now, noteUpdatedBy: hr.name || hr.email } : {}),
   };
+  await addPatchedNote(db, id, note, hr, now);
   if (Object.keys(patch).length === 0) return toDetail(db, row);
   const [updated] = await db.update(applications).set(patch).where(eq(applications.id, id)).returning();
   await logChanges(db, row, updated, parsed.data, hr, now);
@@ -332,6 +324,19 @@ export async function updateApplication(
     cvGender: row.cvGender,
     cvBirth: row.cvBirth,
   });
+}
+
+/** An older screen's "PATCH { note }" adds an entry, unless it is empty or says what the newest one says. */
+async function addPatchedNote(db: Db, id: string, note: string | null | undefined, hr: HrMe, now: Date) {
+  const body = note?.trim();
+  if (!body) return;
+  const newest = (await newestNotes(db, [id])).get(id);
+  if (body !== newest) await insertNote(db, id, body, actorOf(hr), now);
+}
+
+/** The detail as it is now, without what opening it does: for answers to a change made elsewhere. */
+export async function applicationDetail(db: Db, id: string): Promise<ApplicationDetailDto> {
+  return toDetail(db, await findApplication(db, id));
 }
 
 /**
@@ -361,6 +366,14 @@ async function checkReview(db: Db, row: ApplicationWithJob, bypassReason: string
     applicationId: row.id,
     detail: bypassReason,
   });
+  await logRecruitment(db, {
+    applicationId: row.id,
+    group: 'sep-duyet',
+    action: 'Vẫn hẹn khi sếp chưa duyệt',
+    actor: actorOf(hr),
+    detail: bypassReason,
+    at: now,
+  });
 }
 
 /** Records that HR prepared a message for this person (the site cannot see whether it was really sent). */
@@ -371,15 +384,31 @@ export async function logContact(db: Db, id: string, raw: unknown, hr: HrMe, now
   await db
     .insert(contactLog)
     .values({ applicationId: row.id, ...parsed.data, hrName: hr.name || hr.email, createdAt: now });
+  await logRecruitment(db, {
+    applicationId: row.id,
+    group: 'lien-he',
+    action: 'Soạn thư',
+    actor: actorOf(hr),
+    detail: `${TEMPLATE_LABEL[parsed.data.templateKey]} (${CONTACT_CHANNEL_LABEL[parsed.data.channel]})`,
+    at: now,
+  });
   return toDetail(db, row);
 }
 
-/** "Chấm CV": scores (or re-uses the stored score of) the application's CV against its job. */
-export async function scoreCvOf(deps: Deps, id: string): Promise<ApplicationDetailDto> {
+const scoreWord = (score: CvScoreDto | null) =>
+  !score ? 'Chưa chấm' : score.percent === null ? 'Không chấm được' : `${score.percent}%`;
+
+/** "Chấm CV": scores (or re-uses the stored score of) the application's CV against its job. A new score is logged. */
+export async function scoreCvOf(deps: Deps, id: string, hr: HrMe): Promise<ApplicationDetailDto> {
   const row = await findApplication(deps.db, id);
   const job = await deps.db.query.jobs.findFirst({ where: eq(jobs.id, row.jobId) });
   if (!job) throw notFound('Không tìm thấy tin.');
-  await scoreApplication(deps, row, job);
+  const before = await storedScore(deps.db, row.id);
+  const after = await scoreApplication(deps, row, job);
+  if (after.scoredAt !== before?.scoredAt) {
+    const words = { from: scoreWord(before), to: scoreWord(after), at: deps.now() };
+    await logRecruitment(deps.db, { applicationId: row.id, group: 'cham-cv', action: 'Chấm CV', actor: actorOf(hr), ...words });
+  }
   return toDetail(deps.db, await findApplication(deps.db, id));
 }
 
@@ -389,22 +418,19 @@ export async function cvOf(db: Db, id: string): Promise<{ pathname: string; full
   return { pathname: row.cvPathname, fullName: row.fullName };
 }
 
-/** Files first: if storage fails nothing is deleted, and a retry finds everything again. */
-async function deleteWithFiles({ db, cvStore }: Deps, rows: Pick<Application, 'id' | 'cvPathname'>[]) {
-  await cvStore.delete(rows.map((r) => r.cvPathname).filter((p): p is string => !!p));
-  if (rows.length > 0)
-    await db.delete(applications).where(
-      inArray(
-        applications.id,
-        rows.map((r) => r.id),
-      ),
-    );
-}
-
-/** "Xoá hồ sơ": the candidate asked, or HR does not need it any more. CV file included. */
-export async function deleteApplication(deps: Deps, id: string): Promise<{ ok: true }> {
+/**
+ * "Xoá hồ sơ": the candidate asked, or HR does not need it any more. CV file included. Files first: if storage fails
+ * nothing is deleted, and a retry finds everything again. The log keeps the deletion, without the candidate's name.
+ */
+export async function deleteApplication(deps: Deps, id: string, hr: HrMe): Promise<{ ok: true }> {
   const row = await findApplication(deps.db, id);
-  await deleteWithFiles(deps, [row]);
+  await deps.cvStore.delete(row.cvPathname ? [row.cvPathname] : []);
+  await deps.db.transaction(async (tx) => {
+    const at = deps.now();
+    await logRecruitment(tx, { applicationId: row.id, group: 'ho-so', action: 'Xoá hồ sơ', actor: actorOf(hr), at });
+    await forgetCandidate(tx, [row.id]);
+    await tx.delete(applications).where(eq(applications.id, row.id));
+  });
   return { ok: true };
 }
 

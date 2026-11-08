@@ -11,25 +11,17 @@ import { ApplicantDetail } from './applicants/ApplicantDetail';
 import { ApplicantList, ListSkeleton, type RowPick } from './applicants/ApplicantList';
 import { ApplicantsToolbar, type ToolbarActions } from './applicants/ApplicantsToolbar';
 import { DetailNav } from './applicants/DetailNav';
-import { ALL_LOOK, AWAITING_LOOK, STATUS_STYLE } from './applicants/statusStyle';
+import { StatusTabs } from './applicants/StatusTabs';
 import { isInTab, useApplicantQueue, type TabKey } from './applicants/useApplicantQueue';
 import { useQueueShortcuts } from './applicants/useQueueShortcuts';
-import { apiMessage, FilterTabs, type TabItem } from './parts';
+import { apiMessage } from './parts';
 import { canSendForReview, PickBar, usePicking } from './reviews/PickForReview';
 import { SendReviewDialog } from './reviews/SendReviewDialog';
 import { ManageSourcesDialog } from './sources/ManageSourcesDialog';
 
-const TAB_KEYS: TabKey[] = ['all', 'new', 'seen', 'scheduling', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
+const TAB_KEYS: TabKey[] = ['all', 'intake', 'interviews', 'results', 'new', 'seen', 'scheduling', 'interview', 'awaiting', 'passed', 'hired', 'rejected'];
 
 const isTab = (v: string | null): v is TabKey => TAB_KEYS.some((k) => k === v);
-
-/** Each tab shows its status's icon, word and colour. */
-function tabItems(counts: Partial<Record<TabKey, number>> | undefined): TabItem<TabKey>[] {
-  return TAB_KEYS.map((key) => {
-    const look = key === 'all' ? ALL_LOOK : key === 'awaiting' ? AWAITING_LOOK : STATUS_STYLE[key];
-    return { key, label: look.label, count: counts?.[key], icon: look.icon, tone: look.tone };
-  });
-}
 
 /** Everything the list shows is kept in the address, so a link or a reload lands on the same view. */
 function useListParams() {
@@ -277,7 +269,7 @@ export function HrApplicantsPage() {
   const [isManaging, setIsManaging] = useState(false);
   useQueueShortcuts({ isEnabled: isDesktop && !picking.active, onPrev: model.goPrev, onNext: model.goNext });
   const awaiting = apps.data?.applications.filter((a) => isInTab(a, 'awaiting', new Date())).length;
-  const tabs = tabItems(apps.data && { ...apps.data.counts, awaiting });
+  const counts = apps.data && { ...apps.data.counts, awaiting };
 
   return (
     // From 1024px the layout makes `main` exactly the window; this takes what is left in it (a notice above the page
@@ -288,13 +280,7 @@ export function HrApplicantsPage() {
         model={model}
         actions={{ onAdd: () => setIsAdding(true), onManageSources: () => setIsManaging(true) }}
       />
-      <FilterTabs
-        items={tabs}
-        value={tab}
-        onChange={(key) => model.setListed('trang-thai', key)}
-        label="Lọc theo trạng thái"
-        className="flex-none border-b border-line max-sm:gap-x-[18px]"
-      />
+      <StatusTabs counts={counts} value={tab} onChange={(key) => model.setListed('trang-thai', key)} />
       <PageContent model={model} isDesktop={isDesktop} />
       {picking.active && (
         <PickBar count={picking.rows.length} onCancel={picking.stop} onNext={() => picking.setSending(true)} />

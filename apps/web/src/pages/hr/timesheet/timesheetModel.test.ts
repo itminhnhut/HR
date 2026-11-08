@@ -1,4 +1,4 @@
-import { standardPeriod, type AttendanceCode, type TimesheetDto, type TimesheetRowDto } from '@careers/shared';
+import { standardPeriod, type AbsenceRowDto, type AttendanceCode, type TimesheetDto, type TimesheetRowDto } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
 import { changedCells, dayColumns, findProblems, gridRows, notesOf, rowTotals, withCells } from './timesheetModel';
 
@@ -328,3 +328,47 @@ describe('the review of someone who became official during the period', () => {
   });
 });
 
+
+describe('papers missing in the period review', () => {
+  const dto = sheet([person()]);
+  const days = dayColumns(dto);
+  const rows = gridRows(dto, days);
+  const file = { id: 'f1', name: 'giay-om.jpg', contentType: 'image/jpeg' as const, size: 800_000, createdBy: 'Lan', createdAt: '2026-11-06T03:00:00.000Z' };
+  const sick: AbsenceRowDto = {
+    id: 'a1', source: 'absence', reason: 'sick', code: 'OM', from: '2026-11-03', to: '2026-11-04', days: 2, label: 'Ốm có giấy BHXH', note: '', handover: '', approvedBy: 'Giám đốc', createdBy: 'Lan',
+    files: [], needsPaper: true, employeeId: dto.rows[0]?.employeeId ?? '', employeeCode: 'NV01', fullName: 'Người A',
+  };
+  const papers = (absences: AbsenceRowDto[]) => findProblems(dto, days, rows, absences).filter((p) => p.kind === 'paper');
+
+  it('TC-GT-61: should list an absence in the period that needs papers and has none, as something to look at, with where it is', () => {
+    // Act
+    const found = papers([sick]);
+
+    // Assert
+    expect(found).toHaveLength(1);
+    expect(found[0]).toMatchObject({ group: 'Cần xem', employeeId: sick.employeeId, absence: { absenceId: 'a1', year: 2026 } });
+    expect(found[0]?.text).toBe('Người A: Ốm có giấy BHXH 03/11–04/11');
+  });
+
+  it('TC-GT-62: should leave out absences that have papers, need none, lie outside the period, were typed on the sheet or belong to someone not on it', () => {
+    // Arrange
+    const others: AbsenceRowDto[] = [
+      { ...sick, id: 'kept', files: [file] },
+      { ...sick, id: 'none', needsPaper: false },
+      { ...sick, id: 'later', from: '2026-12-01', to: '2026-12-02' },
+      { ...sick, id: 'typed', source: 'sheet' },
+      { ...sick, id: 'gone', employeeId: 'someone-else' },
+    ];
+
+    // Act + Assert
+    expect(papers(others)).toEqual([]);
+  });
+
+  it('TC-GT-63: should list one that started before the period and runs into it, once even if two years list it', () => {
+    // Arrange
+    const across = { ...sick, from: '2026-10-20', to: '2026-10-28' };
+
+    // Act + Assert
+    expect(papers([across, across])).toHaveLength(1);
+  });
+});

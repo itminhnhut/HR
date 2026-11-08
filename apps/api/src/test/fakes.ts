@@ -1,4 +1,5 @@
 import type { CvStore } from '../lib/cv-store.js';
+import type { PaperStore } from '../lib/paper-store.js';
 import type { GoogleVerifier } from '../lib/google.js';
 import type { ImageExt } from '../lib/image-info.js';
 import { isImageName, type ImageStore } from '../lib/image-store.js';
@@ -17,6 +18,28 @@ export class MemoryCvStore implements CvStore {
   async get(pathname: string) {
     const bytes = this.files.get(pathname);
     return bytes ? new Blob([bytes]).stream() : null;
+  }
+
+  async delete(pathnames: string[]) {
+    for (const p of pathnames) this.files.delete(p);
+  }
+
+  clear() {
+    this.files.clear();
+  }
+}
+
+/** In-memory stand-in for the private store papers go to. */
+export class MemoryPaperStore implements PaperStore {
+  readonly files = new Map<string, { bytes: Uint8Array; contentType: string }>();
+
+  async put(pathname: string, bytes: Uint8Array, contentType: string) {
+    this.files.set(pathname, { bytes: bytes.slice(), contentType });
+  }
+
+  async get(pathname: string) {
+    const file = this.files.get(pathname);
+    return file ? new Blob([file.bytes as Uint8Array<ArrayBuffer>]).stream() : null;
   }
 
   async delete(pathnames: string[]) {

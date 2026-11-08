@@ -1,10 +1,12 @@
 import { isAwaitingResult, type ApplicationRowDto, type ApplicationStatus } from '@careers/shared';
 import { useEffect, useMemo, useState } from 'react';
+import { groupOf, isGroupKey, type GroupKey } from './statusGroups';
 
-export type TabKey = ApplicationStatus | 'all' | 'awaiting';
+export type TabKey = ApplicationStatus | 'all' | 'awaiting' | GroupKey;
 
 export function isInTab(row: ApplicationRowDto, tab: TabKey, now: Date): boolean {
   if (tab === 'all') return true;
+  if (isGroupKey(tab)) return groupOf(tab)?.statuses.includes(row.status) ?? false;
   return tab === 'awaiting' ? isAwaitingResult(row, now) : row.status === tab;
 }
 

@@ -1,6 +1,6 @@
 import { ABSENCE_COUNTING, type AbsenceKindDto, type AbsenceKindInput } from '@careers/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Check, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Check, FileText, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import { api, ApiError } from '../../../api';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
@@ -18,7 +18,27 @@ export const COUNTINGS: { value: Counting; label: string }[] = [
   { value: 'OM', label: 'BHXH trả (ốm)' },
 ];
 
-function KindRow({ kind, isEditing, onEdit, onRemove }: { kind: AbsenceKindDto; isEditing: boolean; onEdit: () => void; onRemove: () => void }) {
+/** "Cần giấy tờ": an absence for this reason should have papers kept with it (spec-giay-to-nghi.md). */
+function PaperSwitch({ kind, isBusy, onChange }: { kind: AbsenceKindDto; isBusy: boolean; onChange: (needsPaper: boolean) => void }) {
+  const isOn = kind.needsPaper;
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isOn}
+      aria-label={`Cần giấy tờ: ${kind.name}`}
+      disabled={isBusy}
+      onClick={() => onChange(!isOn)}
+      className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium whitespace-nowrap disabled:opacity-50 max-md:h-11 ${isOn ? 'border-blue-300 bg-blue-50 text-blue-800' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+    >
+      <FileText className="size-3.5" />
+      {isOn ? 'Cần giấy tờ' : 'Không cần giấy'}
+      <span aria-hidden className={`relative h-4 w-7 rounded-full transition-colors ${isOn ? 'bg-blue-600' : 'bg-slate-300'}`}><span className={`absolute top-0.5 size-3 rounded-full bg-white transition-all ${isOn ? 'left-3.5' : 'left-0.5'}`} /></span>
+    </button>
+  );
+}
+
+function KindRow({ kind, isEditing, onEdit, onRemove, paper }: { kind: AbsenceKindDto; isEditing: boolean; onEdit: () => void; onRemove: () => void; paper: { isBusy: boolean; onChange: (needsPaper: boolean) => void } }) {
   return (
     <li className={`flex min-h-12 items-center gap-2.5 rounded-md border-b px-2 py-1.5 last:border-b-0 hover:bg-blue-100 ${isEditing ? 'bg-blue-50' : ''}`}>
       <KindMark code={kind.code} reason={kind.key} />
@@ -27,6 +47,7 @@ function KindRow({ kind, isEditing, onEdit, onRemove }: { kind: AbsenceKindDto; 
         <span className="truncate text-xs text-slate-600">{ABSENCE_COUNTING[kind.code]}</span>
       </span>
       {kind.days ? <DaysChip days={kind.days} /> : null}
+      <PaperSwitch kind={kind} isBusy={paper.isBusy} onChange={paper.onChange} />
       {kind.isOwn && (
         <span className="inline-flex shrink-0 gap-1">
           <button type="button" aria-label={`Sửa ${kind.name}`} onClick={onEdit} className="inline-flex size-8 items-center justify-center rounded-md border bg-white hover:bg-slate-50 max-md:size-11"><Pencil className="size-3.5 text-blue-600" /></button>
@@ -61,6 +82,14 @@ function useKindForm() {
     onSuccess: done,
   });
   const remove = useMutation({ mutationFn: (key: string) => api.hrDeleteAbsenceKind(key), onSuccess: done });
+  const paper = useMutation({
+    mutationFn: ({ key, needsPaper }: { key: string; needsPaper: boolean }) => api.hrSetNeedsPaper(key, needsPaper),
+    onSuccess: (list) => {
+      qc.setQueryData(['hr', 'absence-kinds'], list);
+      // Which lines read "Thiếu giấy" follows the switch.
+      void qc.invalidateQueries({ queryKey: ['hr', 'absences'] });
+    },
+  });
   const edit = (k: AbsenceKindDto) => {
     save.reset();
     setEditingKey(k.key);
@@ -72,13 +101,14 @@ function useKindForm() {
     save.reset();
     reset();
   };
-  return { editingKey, name, setName, code, setCode, days, setDays, save, remove, edit, cancel };
+  return { editingKey, name, setName, code, setCode, days, setDays, save, remove, paper, edit, cancel };
 }
 
 /** The reasons offered when entering someone: those in the law as they are, and HR's own to add, change or remove. */
 export function KindsPanel({ kinds }: { kinds: readonly AbsenceKindDto[] }) {
   const form = useKindForm();
-  const { save, remove, editingKey } = form;
+  const { save, remove, paper, editingKey } = form;
+  const paperOf = (k: AbsenceKindDto) => ({ isBusy: paper.isPending, onChange: (needsPaper: boolean) => paper.mutate({ key: k.key, needsPaper }) });
   const [removing, setRemoving] = useState<AbsenceKindDto | null>(null);
   const errors = save.error instanceof ApiError ? save.error.fieldErrors : {};
   const own = kinds.filter((k) => k.isOwn);
@@ -101,14 +131,15 @@ export function KindsPanel({ kinds }: { kinds: readonly AbsenceKindDto[] }) {
         {save.isError && Object.keys(errors).length === 0 && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(save.error)}</p>}
       </section>
       {remove.isError && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(remove.error)}</p>}
+      {paper.isError && <p role="alert" className="m-0 text-sm text-red-600">{errorMessage(paper.error)}</p>}
       <section aria-label="Lý do tự thêm" className="flex flex-col gap-1">
         <h3 className="m-0 text-sm font-semibold">Tự thêm <span className="font-medium text-slate-500">({own.length})</span></h3>
         {own.length === 0 && <p className="m-0 py-2 text-sm text-slate-500">Chưa có. vd: Đám hỏi, Nghỉ nhà có việc.</p>}
-        <ul className="m-0 flex list-none flex-col p-0">{own.map((k) => <KindRow key={k.key} kind={k} isEditing={k.key === editingKey} onEdit={() => form.edit(k)} onRemove={() => setRemoving(k)} />)}</ul>
+        <ul className="m-0 flex list-none flex-col p-0">{own.map((k) => <KindRow key={k.key} kind={k} isEditing={k.key === editingKey} onEdit={() => form.edit(k)} onRemove={() => setRemoving(k)} paper={paperOf(k)} />)}</ul>
       </section>
       <section aria-label="Lý do có sẵn" className="flex flex-col gap-1">
         <h3 className="m-0 text-sm font-semibold">Có sẵn <span className="font-medium text-slate-500">({law.length})</span></h3>
-        <ul className="m-0 flex list-none flex-col p-0">{law.map((k) => <KindRow key={k.key} kind={k} isEditing={false} onEdit={() => undefined} onRemove={() => undefined} />)}</ul>
+        <ul className="m-0 flex list-none flex-col p-0">{law.map((k) => <KindRow key={k.key} kind={k} isEditing={false} onEdit={() => undefined} onRemove={() => undefined} paper={paperOf(k)} />)}</ul>
       </section>
       <ConfirmDialog open={!!removing} title={`Xoá lý do ${removing?.name ?? ''}? Các dòng đã nhập vẫn giữ nguyên.`} isBusy={remove.isPending} onCancel={() => setRemoving(null)} onConfirm={() => { if (removing) remove.mutate(removing.key); setRemoving(null); }} />
     </div>

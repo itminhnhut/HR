@@ -1,4 +1,5 @@
 import {
+  REVIEW_DECISION_LABEL,
   fieldErrors,
   reviewDecisionSchema,
   type ReviewItemPublicDto,
@@ -11,6 +12,7 @@ import { applications, cvScores, jobs, reviewBatches, reviewItems, type ReviewBa
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { logEvent, recentlyLogged, reviewState } from './review-model.js';
+import { logRecruitment } from './recruitment-log.js';
 
 /**
  * The reviewer's side of "Sếp duyệt ứng viên" (spec-boss-review.md): everything goes through the secret link,
@@ -164,6 +166,16 @@ export async function decideInReview(
     applicationId: item.applicationId,
     decision,
     detail: decision ? comment : null,
+  });
+  await logRecruitment(db, {
+    applicationId: item.applicationId,
+    group: 'sep-duyet',
+    action: decision ? 'Sếp quyết định' : 'Sếp bỏ quyết định',
+    actor: batch.reviewerName,
+    from: item.decision ? REVIEW_DECISION_LABEL[item.decision] : null,
+    to: decision ? REVIEW_DECISION_LABEL[decision] : null,
+    detail: decision ? comment : null,
+    at: now,
   });
   return page(db, batch, now);
 }

@@ -17,12 +17,12 @@ const loadMock = (): Promise<MockModule> => (mockModule ??= import('./mock'));
 
 /**
  * Same shape as the real API, so callers stay the same: every call waits for the demo module, then runs.
- * hrCvUrl and reviewCvUrl answer at once; the demo stores no files, so they have no link.
+ * hrCvUrl, reviewCvUrl and hrAbsenceFileUrl answer at once; the demo stores no files, so they have no link.
  */
 function lazyMockApi(): Api {
   const handler: ProxyHandler<Api> = {
     get(_target, key) {
-      if (key === 'hrCvUrl' || key === 'reviewCvUrl') return () => null;
+      if (key === 'hrCvUrl' || key === 'reviewCvUrl' || key === 'hrAbsenceFileUrl') return () => null;
       return async (...args: unknown[]) => {
         const { mockApi } = await loadMock();
         const method: unknown = Reflect.get(mockApi, key);

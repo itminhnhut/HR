@@ -15,6 +15,8 @@ import { asc, eq, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { applications, applicationSources, type ApplicationSourceRow } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
+import { actorOf } from './activity.js';
+import { logRecruitment } from './recruitment-log.js';
 
 /** HR's list of application sources (spec-custom-sources.md). */
 
@@ -85,11 +87,24 @@ export async function createSource(db: Db, raw: unknown, hr: HrMe): Promise<Sour
     if (isUniqueViolation(error)) throw invalid(`Đã có nguồn ${name}.`, { name: `Đã có nguồn ${name}.` });
     throw error;
   }
+  await logSource(db, hr, { action: 'Thêm nguồn', to: name });
   return { key, name, kind: 'custom', hidden: false, applications: 0 };
 }
 
+const logSource = (db: Db, hr: HrMe, words: { action: string; from?: string; to?: string }) =>
+  logRecruitment(db, { applicationId: null, group: 'nguon', actor: actorOf(hr), ...words });
+
+/** What a rename and / or a hide did, for "Nhật ký tuyển dụng". */
+async function logSourceChange(db: Db, hr: HrMe, before: ApplicationSourceRow, name?: string, hidden?: boolean) {
+  const shownName = name ?? before.name;
+  if (name && name !== before.name) await logSource(db, hr, { action: 'Đổi tên nguồn', from: before.name, to: name });
+  if (hidden !== undefined && hidden !== before.hidden) {
+    await logSource(db, hr, { action: hidden ? 'Ẩn nguồn' : 'Hiện nguồn', to: shownName });
+  }
+}
+
 /** Rename and / or hide. "Website" never changes; "Khác" is never hidden, so there is always somewhere to pick. */
-export async function updateSource(db: Db, key: string, raw: unknown): Promise<SourceDto[]> {
+export async function updateSource(db: Db, key: string, raw: unknown, hr: HrMe): Promise<SourceDto[]> {
   const source = await findSource(db, key);
   if (source.kind === 'system') throw new HttpError(409, 'Nguồn "Website" do hệ thống quản lý.', {}, 'system_source');
   const parsed = sourceUpdateSchema.safeParse(raw);
@@ -106,11 +121,12 @@ export async function updateSource(db: Db, key: string, raw: unknown): Promise<S
     if (isUniqueViolation(error) && name) throw invalid(`Đã có nguồn ${name}.`, { name: `Đã có nguồn ${name}.` });
     throw error;
   }
+  await logSourceChange(db, hr, source, name, hidden);
   return listSources(db);
 }
 
 /** Only a source HR added and no application uses; otherwise hide it, so the statistics stay. */
-export async function deleteSource(db: Db, key: string): Promise<SourceDto[]> {
+export async function deleteSource(db: Db, key: string, hr: HrMe): Promise<SourceDto[]> {
   const source = await findSource(db, key);
   if (source.kind !== 'custom')
     throw new HttpError(409, 'Nguồn có sẵn không xoá được, chỉ ẩn được.', {}, 'builtin_source');
@@ -120,6 +136,7 @@ export async function deleteSource(db: Db, key: string): Promise<SourceDto[]> {
     .where(eq(applications.source, key));
   if (n > 0) throw new HttpError(409, `Đang có ${n} hồ sơ từ nguồn này. Ẩn nguồn thay vì xoá.`, {}, 'source_in_use');
   await db.delete(applicationSources).where(eq(applicationSources.key, key));
+  await logSource(db, hr, { action: 'Xoá nguồn', from: source.name });
   return listSources(db);
 }
 

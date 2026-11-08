@@ -1,4 +1,5 @@
 import {
+  SHEET_APPROVER,
   daysOfHolidayBreak,
   employmentOn,
   holidayRangeSchema,
@@ -174,6 +175,9 @@ export async function listEmployees(db: Db): Promise<EmployeeDto[]> {
 }
 
 /** The two kinds of the sheet, added by the migration; tests add them again after clearing. */
+/** Migration 0033 creates it. */
+export const DEFAULT_APPROVERS = [{ name: SHEET_APPROVER }] as const;
+
 export const DEFAULT_STAFF_KINDS = [
   { name: 'Chính thức', rule: 'official', isDefault: true },
   { name: 'Thử việc', rule: 'probation', isDefault: true },

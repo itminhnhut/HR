@@ -1,3 +1,5 @@
+import { useMutation } from '@tanstack/react-query';
+import { api } from '../../../api';
 import { zaloLink, type ApplicationDetailDto, type TemplateKey } from '@careers/shared';
 import { useState, type ReactNode } from 'react';
 import { useApplication } from '../../../api/queries';
@@ -36,11 +38,14 @@ function ContactActions({
   onComposeDone: () => void;
 }) {
   const shape = `${CONTACT_BASE} ${CONTACT_SIZE[layout]}`;
+  // The press is noted in the log; the link still opens the phone's app whether or not that call succeeds.
+  const reach = useMutation({ mutationFn: (via: 'call' | 'zalo') => api.hrLogReach(app.id, via) });
   const outline = `${shape} border border-field bg-white text-navy`;
   return (
     <>
       <a
         href={telLink(app.phone)}
+        onClick={() => reach.mutate('call')}
         className={`${shape} bg-green-700 font-semibold text-white hover:bg-green-800 hover:text-white`}
       >
         <Icon name="phone" size={16} />
@@ -48,6 +53,7 @@ function ContactActions({
       </a>
       <a
         href={zaloLink(app.phone)}
+        onClick={() => reach.mutate('zalo')}
         target="_blank"
         rel="noopener noreferrer"
         className={`${outline} ${TONE.blue.hover}`}
@@ -66,16 +72,14 @@ function ContactActions({
   );
 }
 
-/** Name and position, status, and on the wide layout the contact actions. Never scrolls away. */
+/** Name and position, and the status (with the contact actions on the wide layout). Never scrolls away. */
 function DetailHeader({
   app,
   layout,
-  contact,
   children,
 }: {
   app: ApplicationDetailDto;
   layout: DetailLayout;
-  contact: ReactNode;
   /** The status control. */
   children: ReactNode;
 }) {
@@ -100,10 +104,7 @@ function DetailHeader({
           </span>
         </div>
       </div>
-      <div className="mt-1 flex flex-wrap items-end gap-x-3 gap-y-1.5">
-        {children}
-        {isWide && <div className="flex items-center gap-1.5 xl:ml-auto">{contact}</div>}
-      </div>
+      <div className="mt-1">{children}</div>
     </header>
   );
 }
@@ -135,8 +136,13 @@ function DetailBody({
   );
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <DetailHeader app={app} layout={layout} contact={contact}>
-        <StatusControl app={app} onError={setError} onCompose={setComposeRequest} />
+      <DetailHeader app={app} layout={layout}>
+        <StatusControl
+          app={app}
+          onError={setError}
+          onCompose={setComposeRequest}
+          aside={layout === 'wide' ? contact : undefined}
+        />
       </DetailHeader>
       {error && (
         <div className="flex-none px-3 pt-2">

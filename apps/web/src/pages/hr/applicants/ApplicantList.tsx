@@ -94,7 +94,7 @@ function RowText({ row, showStatus }: { row: ApplicationRowDto; showStatus: bool
       <span className="flex min-w-0 items-center justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
           <span className="min-w-0 truncate text-sm font-semibold leading-5">{row.fullName}</span>
-          <PersonalMarks gender={row.cvGender} birth={row.cvBirth} />
+          <PersonalMarks gender={row.hrGender ?? row.cvGender} birth={row.cvBirth} />
         </span>
         {row.matchPercent != null && (
           <span

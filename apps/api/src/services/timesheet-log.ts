@@ -12,7 +12,10 @@ const ACTIONS_OF_TAB: Record<TimesheetLogArea, readonly string[]> = {
     'Điều chỉnh công', 'Bỏ điều chỉnh công', 'Điều chỉnh phép', 'Bỏ điều chỉnh phép',
     'Chốt kỳ', 'Chênh lệch khi chốt lại', 'Mở lại kỳ', 'Mở kỳ để nhập trước', 'Đổi cách tính phép',
   ],
-  nghi: ['Đăng ký nghỉ', 'Sửa đăng ký nghỉ', 'Huỷ đăng ký nghỉ'],
+  nghi: [
+    'Đăng ký nghỉ', 'Sửa đăng ký nghỉ', 'Huỷ đăng ký nghỉ', 'Xoá nghỉ gõ trên bảng công', 'Thêm giấy tờ', 'Xoá giấy tờ',
+    'Tạo đợt nghỉ công ty', 'Sửa đợt nghỉ công ty', 'Xoá đợt nghỉ công ty', 'Thêm vào đợt nghỉ công ty', 'Bỏ khỏi đợt nghỉ công ty',
+  ],
   'nhan-vien': ['Thêm nhân viên', 'Sửa nhân viên', 'Xoá nhân viên'],
   'cau-hinh': [
     'Thêm bộ phận', 'Sửa bộ phận', 'Xoá bộ phận',

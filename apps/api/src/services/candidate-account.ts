@@ -21,6 +21,7 @@ import { invalid, notFound } from '../lib/http-error.js';
 import type { MultipartBody } from '../lib/request.js';
 import { sentWith, toCandidateMe } from './candidate-auth.js';
 import { toCard } from './job-mappers.js';
+import { forgetCandidate, logRecruitment } from './recruitment-log.js';
 
 export async function overview(db: Db, candidate: Candidate, now: Date): Promise<CandidateOverview> {
   const apps = await db
@@ -167,13 +168,24 @@ export async function updateCandidate(
 }
 
 /** BR-14: a candidate's own deletion request removes everything right away, files included. */
-export async function deleteCandidateData({ db, cvStore }: Deps, candidate: Candidate): Promise<{ ok: true }> {
-  const appFiles = await db.select({ cv: applications.cvPathname }).from(applications).where(sentWith(candidate.email));
-  const files = [...appFiles.map((f) => f.cv), candidate.cvPathname].filter((p): p is string => !!p);
+export async function deleteCandidateData({ db, cvStore, now }: Deps, candidate: Candidate): Promise<{ ok: true }> {
+  const apps = await db
+    .select({ id: applications.id, cv: applications.cvPathname })
+    .from(applications)
+    .where(sentWith(candidate.email));
+  const files = [...apps.map((f) => f.cv), candidate.cvPathname].filter((p): p is string => !!p);
   // Files first: if storage fails nothing is deleted and a retry finds everything again.
   // The other order could leave CVs (personal data) that no row points to any more.
   await cvStore.delete(files);
   await db.transaction(async (tx) => {
+    // "Nhật ký tuyển dụng" keeps that they were deleted, without the name (spec-nhat-ky-ho-so.md §8).
+    for (const app of apps) {
+      await logRecruitment(tx, { applicationId: app.id, group: 'ho-so', action: 'Xoá hồ sơ', actor: 'Ứng viên', at: now() });
+    }
+    await forgetCandidate(
+      tx,
+      apps.map((a) => a.id),
+    );
     await tx.delete(applications).where(sentWith(candidate.email));
     // The account's own alerts go with it (ON DELETE CASCADE).
     await tx.delete(candidates).where(eq(candidates.id, candidate.id));

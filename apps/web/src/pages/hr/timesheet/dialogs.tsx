@@ -1,5 +1,5 @@
 import type { TimesheetRowDto } from '@careers/shared';
-import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, Flag, Hourglass, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarDays, Check, CheckCircle2, FileWarning, Flag, Hourglass, Lock, LockOpen, Plane, ShieldCheck, SlidersHorizontal, Sun, Trash2, UserX, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../../../vendor/shadcn-grid/components/ui/dialog';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
@@ -19,6 +19,7 @@ const KINDS: { kind: ProblemKind; label: string; icon: LucideIcon; tone: string 
   { kind: 'sundayWork', label: 'Làm Chủ nhật', icon: Sun, tone: 'text-amber-600' },
   { kind: 'holidayOvertime', label: 'OT có thể chỉ do ngày lễ', icon: Flag, tone: 'text-blue-600' },
   { kind: 'becameOfficial', label: 'Lên chính thức trong kỳ', icon: ShieldCheck, tone: 'text-green-600' },
+  { kind: 'paper', label: 'Thiếu giấy tờ kèm đơn nghỉ', icon: FileWarning, tone: 'text-orange-600' },
 ];
 
 /** The group title already says what is wrong: the line only needs who and how much. */
