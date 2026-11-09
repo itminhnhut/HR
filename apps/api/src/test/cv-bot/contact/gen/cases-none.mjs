@@ -142,8 +142,8 @@ export const NONE_CASES = [
   Z(
     'zz-long-01',
     'wordPlain',
-    { pages: 3, n: 'Phạm Trung Hiếu', t: 'Giám đốc dự án', ct: ['0903 481 276', 'trunghieu.pham.gd@gmail.com'] },
-    ['Phạm Trung Hiếu', '0903481276', 'trunghieu.pham.gd@gmail.com'],
+    { pages: 3, n: 'Phạm Trung Khôi', t: 'Giám đốc dự án', ct: ['0903 481 276', 'trungkhoi.pham.gd@gmail.com'] },
+    ['Phạm Trung Khôi', '0903481276', 'trungkhoi.pham.gd@gmail.com'],
   ),
   Z(
     'zz-long-02',

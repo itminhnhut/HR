@@ -417,7 +417,7 @@ export function buildSeed(now: Date = new Date()): MockDb {
     }),
     app('a5', 'j4', 'Võ Ngọc Trâm', '0389664664', 'new', 6, { email: 'ngoctram@email.com' }),
     app('a6', 'j2', 'Đặng Gia Huy', '0868210210', 'interview', 9),
-    app('a7', 'j5', 'Bùi Thanh Tùng', '0795589589', 'rejected', 11),
+    app('a7', 'j5', 'Lâm Quang Vĩnh', '0795589589', 'rejected', 11),
     // Minh Anh's other applications, for her account page.
     app('a8', 'j3', 'Trần Minh Anh', '0912345128', 'seen', 8, { email: 'minhanh@email.com' }),
     app('a9', 'j6', 'Trần Minh Anh', '0912345128', 'new', 50, { email: 'minhanh@email.com' }),
