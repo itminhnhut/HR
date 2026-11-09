@@ -4,7 +4,7 @@ import { DateField } from './DateField';
 import { FILTER_KINDS, filtersOn, type AbsenceFilters, type Approval } from './absenceFilters';
 
 const KINDS: readonly AttendanceCode[] = FILTER_KINDS;
-export const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
+export const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white pl-3 text-sm font-normal';
 const dayMonth = (iso: string) => iso.split('-').reverse().slice(0, 2).join('/');
 
 export function Pick({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode }) {

@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
 import { filtersOn, START_FILTERS, type PeopleFilters, type WorkStatus } from './peopleFilters';
 
-const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
+const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white pl-3 text-sm font-normal';
 const STATUSES: { value: WorkStatus; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
   { value: 'working', label: 'Đang làm' },
