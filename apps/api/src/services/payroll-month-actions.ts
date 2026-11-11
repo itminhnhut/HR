@@ -15,7 +15,8 @@ import type { Db } from '../db/index.js';
 import { payrollPeriods, payrollRuns } from '../db/schema.js';
 import { HttpError, invalid } from '../lib/http-error.js';
 import { writePayrollLog } from './payroll-log.js';
-import { liveMonthOf, monthInRange, payrollMonthOf, runOf, type Stored } from './payroll-month.js';
+import { keyOfPeriod as keyOf, runOf, type StoredPeriod as Stored } from './payroll-month-index.js';
+import { liveMonthOf, monthInRange, payrollMonthOf } from './payroll-month.js';
 import { noApproveRight, type PayrollRights } from './payroll-rights.js';
 import type { Tx } from './timesheet-closings.js';
 import { dateWords, moneyWords, monthWords } from './payroll-words.js';
@@ -34,8 +35,6 @@ export interface MonthActionArgs {
   now: Date;
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const keyOf = (p: Pick<Stored, 'year' | 'month'>) => `${p.year}-${pad(p.month)}`;
 const conflict = (message: string, code: string) => new HttpError(409, message, {}, code);
 
 function parse<S extends z.ZodTypeAny>(schema: S, raw: unknown): z.output<S> {
@@ -60,7 +59,7 @@ async function lock(tx: Tx, year: number, month: number): Promise<Stored | undef
 async function lockOrCreate(tx: Tx, year: number, month: number): Promise<Stored> {
   await tx.insert(payrollPeriods).values({ year, month }).onConflictDoNothing();
   const stored = await lock(tx, year, month);
-  if (!stored) throw new Error(`No payroll month ${year}-${pad(month)}`);
+  if (!stored) throw new Error(`No payroll month ${keyOf({ year, month })}`);
   return stored;
 }
 

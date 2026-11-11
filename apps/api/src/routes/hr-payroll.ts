@@ -24,10 +24,15 @@ hrPayrollRoutes.get('/access', (c) => c.json(accessOf(payrollOf(c))));
 
 hrPayrollRoutes.get('/log', async (c) => c.json(await readPayrollLog(c.get('deps').db, c.req.query())));
 
-hrPayrollRoutes.get('/rights', async (c) => c.json(await listPayrollRights(c.get('deps').db, hrOf(c))));
+hrPayrollRoutes.get('/rights', async (c) => {
+  const { db, config } = c.get('deps');
+  return c.json(await listPayrollRights(db, hrOf(c), config.payrollAdmins));
+});
+/** 409 payroll_open while Lương is open to every HR account: the stored rights decide nothing then. */
 hrPayrollRoutes.put('/rights/:id', async (c) => {
-  const { db, now } = c.get('deps');
-  return c.json(await setPayrollRights(db, c.req.param('id'), await readJson(c), hrOf(c), payrollOf(c), now()));
+  const { db, now, config } = c.get('deps');
+  const args = { userId: c.req.param('id'), raw: await readJson(c), me: hrOf(c), mine: payrollOf(c) };
+  return c.json(await setPayrollRights(db, { ...args, admins: config.payrollAdmins, now: now() }));
 });
 
 /** What HR has checked before the first payroll month (spec-luong.md 17.2). */

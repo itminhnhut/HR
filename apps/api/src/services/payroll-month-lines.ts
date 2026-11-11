@@ -11,6 +11,7 @@ import {
   type PayrollDates,
   type PayrollLine,
   type PayrollLineDto,
+  type PayrollLineInput,
   type PayrollLineSheetDto,
   type PayrollMonthInputsDto,
   type PayrollOverrideDto,
@@ -29,6 +30,8 @@ import {
   defaultedContractOf,
   leaveItemFor,
   lineInputOf,
+  profileGapOf,
+  unknownContractOf,
 } from './payroll-month-input.js';
 import { yearBeforeOf, yearPartOfLine } from './payroll-year.js';
 
@@ -57,6 +60,10 @@ export interface PersonFacts {
   yearMonths: PayrollYearPartDto;
   /** What unused leave is paid on (`leaveBaseOf`); null for someone not leaving in the period. */
   leaveBase: LeaveBase | null;
+  /** (42) of the person in the approval of the month before; null when it is not approved or has no row of them. */
+  previousNet: number | null;
+  /** The probation days of the person's level, while on probation in the period; null otherwise. */
+  probation: { days: number; managesBusiness: boolean } | null;
 }
 
 export interface BuiltLine {
@@ -68,7 +75,7 @@ export interface BuiltLine {
 }
 
 export const NO_PROFILE_NOTE = 'Chưa có hồ sơ lương';
-/** Ghi chú of a line whose block is the person's of today: the close was made before HR gave one. */
+const unknownContractNote = (id: string) => `Loại HĐ ${id} không còn trong cấu hình`;
 
 const ZERO_CELLS = (): Record<PayrollCellKey, number> => ({
   kpiBonus: 0,
@@ -131,42 +138,70 @@ function sheetOf(row: TimesheetClosingRowDto, person: PersonFacts, line: Payroll
   };
 }
 
+/** What the row computed, for Rà soát. */
+interface Computed {
+  line: PayrollLine | null;
+  contractTypeId: string | null;
+  /** False for the zero row of someone without a level in force. */
+  hasProfile: boolean;
+  defaultedContract?: string | null;
+  leave?: LeaveItem | null;
+  gap?: { from: string; to: string } | null;
+  unknownContract?: string | null;
+}
+
+function closingFor(row: TimesheetClosingRowDto): ReviewRowInput['closing'] {
+  const totals = closingTotalsOf(row);
+  return {
+    paid: totals.paid,
+    norm: row.norm,
+    overtime: totals.overtime,
+    sundayWorked: totals.sundayWorked ?? 0,
+    leaveClosing: totals.leaveClosing,
+    leaveOverdrawn: totals.leaveOverdrawn,
+  };
+}
+
+/** Câu 33: the probation days of the level against BLLĐ Đ.25 (180 days to manage a business, else 60 at most). */
+function probationOf(person: PersonFacts, config: PayrollConfig): ReviewRowInput['employment']['probation'] {
+  if (!person.probation) return null;
+  const limits = config.law.probationLimits;
+  return { days: person.probation.days, limit: person.probation.managesBusiness ? limits.manager : limits.college };
+}
+
+function employmentFor(
+  row: TimesheetClosingRowDto,
+  person: PersonFacts,
+  config: PayrollConfig,
+  computed: Computed,
+): ReviewRowInput['employment'] {
+  return {
+    leftOn: row.leftOn,
+    contractTypeId: computed.contractTypeId,
+    defaultedContract: computed.defaultedContract ?? null,
+    block: row.block,
+    unconfirmedDates: person.unconfirmedDates,
+    probation: probationOf(person, config),
+    unknownContract: computed.unknownContract ?? null,
+  };
+}
+
 function reviewOf(
   row: TimesheetClosingRowDto,
   person: PersonFacts,
   config: PayrollConfig,
-  computed: {
-    line: PayrollLine | null;
-    contractTypeId: string | null;
-    defaultedContract?: string | null;
-    leave?: LeaveItem | null;
-  },
+  computed: Computed,
 ): ReviewRowInput {
-  const leave = computed.leave;
-  const totals = closingTotalsOf(row);
+  const { leave } = computed;
   const { facts } = person;
-  const hasCommitment = facts?.hasCommitment ?? false;
   return {
     employeeId: row.employeeId,
     label: `${row.code} ${row.fullName}`,
     line: computed.line,
     config,
-    closing: {
-      paid: totals.paid,
-      norm: row.norm,
-      overtime: totals.overtime,
-      sundayWorked: totals.sundayWorked ?? 0,
-      leaveClosing: totals.leaveClosing,
-      leaveOverdrawn: totals.leaveOverdrawn,
-    },
-    employment: {
-      leftOn: row.leftOn,
-      contractTypeId: computed.contractTypeId,
-      defaultedContract: computed.defaultedContract ?? null,
-      block: row.block,
-      unconfirmedDates: person.unconfirmedDates,
-    },
-    profile: { exists: computed.line !== null, gap: null },
+    closing: closingFor(row),
+    employment: employmentFor(row, person, config, computed),
+    profile: { exists: computed.hasProfile, gap: computed.gap ?? null },
     inputs: {
       restDaysTyped: person.inputs.restDays,
       paidDaysTyped: null,
@@ -174,16 +209,25 @@ function reviewOf(
       leavePayoutTyped: leave && leave.typed !== null ? { computed: leave.computed, typed: leave.typed } : null,
     },
     person: {
-      hasCommitment,
+      hasCommitment: facts?.hasCommitment ?? false,
       commitmentYear: facts?.lastCommitmentYear ?? null,
       hasBankAccount: person.hasBankAccount,
       hasPayslipEmail: Boolean(person.email),
     },
-    previous: null,
+    previous: person.previousNet === null ? null : { netPay: person.previousNet, causes: [] },
   };
 }
 
-function zeroLine(row: TimesheetClosingRowDto, person: PersonFacts, config: PayrollConfig): BuiltLine {
+/**
+ * A row paid nothing: someone without a level in force (`unknownContract` null), or whose level stands on a contract
+ * type the month's config does not know; either way Rà soát says it in red.
+ */
+function zeroLine(
+  row: TimesheetClosingRowDto,
+  person: PersonFacts,
+  config: PayrollConfig,
+  unknownContract: string | null = null,
+): BuiltLine {
   const dto: PayrollLineDto = {
     ...personOf(row, config),
     contractTypeId: '',
@@ -193,12 +237,17 @@ function zeroLine(row: TimesheetClosingRowDto, person: PersonFacts, config: Payr
     explain: {},
     overrides: [],
     personSettings: [],
-    note: NO_PROFILE_NOTE,
+    note: unknownContract ? unknownContractNote(unknownContract) : NO_PROFILE_NOTE,
     inputs: person.inputs,
     sheet: sheetOf(row, person, null),
   };
-  const review = reviewOf(row, person, config, { line: null, contractTypeId: null });
-  return { dto, line: null, review, regionId: row.regionId };
+  const computed = {
+    line: null,
+    contractTypeId: unknownContract,
+    hasProfile: unknownContract !== null,
+    unknownContract,
+  };
+  return { dto, line: null, review: reviewOf(row, person, config, computed), regionId: row.regionId };
 }
 
 /**
@@ -245,33 +294,21 @@ function withBlock(
 /** Said on the Khối cell and once in Rà soát, never in the row's note: the note is printed on Excel and payslips. */
 const blockMark = (fromPerson: boolean) => (fromPerson ? { blockFromPerson: true } : {});
 
-/** One person of the close: the engine's row, its tooltips and what Rà soát reads. */
-export function buildLine(
-  closingRow: TimesheetClosingRowDto,
-  person: PersonFacts,
-  rows: readonly SettingRow[],
-  dates: PayrollDates,
-): BuiltLine {
-  const { row, fromPerson } = withBlock(closingRow, person);
-  const config = payrollConfigFor(rows, row.employeeId, dates);
-  const { facts } = person;
-  if (!facts) return zeroLine(row, person, config);
-  const yearBefore = yearBeforeOf(facts, person.yearMonths);
-  const args = {
-    row,
-    facts,
-    config,
-    zone: person.zone,
-    inputs: person.inputs,
-    yearBefore,
-    leaveBase: person.leaveBase,
-  };
-  const input = lineInputOf(args);
-  if (!input) return zeroLine(row, person, config);
-  const leave = leaveItemFor(args);
-  const line = computeLine(input, config);
+interface LineDtoArgs {
+  row: TimesheetClosingRowDto;
+  person: PersonFacts;
+  config: PayrollConfig;
+  input: PayrollLineInput;
+  line: PayrollLine;
+  leave: LeaveItem | null;
+  yearBefore: PayrollYearPartDto;
+  fromPerson: boolean;
+}
+
+/** The computed row as the grid shows it. */
+function lineDtoOf({ row, person, config, input, line, leave, yearBefore, fromPerson }: LineDtoArgs): PayrollLineDto {
   const explain = explainLine(input, line, config);
-  const dto: PayrollLineDto = {
+  return {
     ...personOf(row, config),
     contractTypeId: input.person.contract.id,
     amounts: { ...line.amounts },
@@ -292,11 +329,34 @@ export function buildLine(
     leavePayout: leave ? leavePayoutDtoOf(leave, line, config) : null,
     sheet: sheetOf(row, person, line),
   };
+}
+
+/** One person of the close: the engine's row, its tooltips and what Rà soát reads. */
+export function buildLine(
+  closingRow: TimesheetClosingRowDto,
+  person: PersonFacts,
+  rows: readonly SettingRow[],
+  dates: PayrollDates,
+): BuiltLine {
+  const { row, fromPerson } = withBlock(closingRow, person);
+  const config = payrollConfigFor(rows, row.employeeId, dates);
+  const { facts } = person;
+  if (!facts) return zeroLine(row, person, config);
+  const yearBefore = yearBeforeOf(facts, person.yearMonths);
+  const { zone, inputs, leaveBase } = person;
+  const args = { row, facts, config, zone, inputs, yearBefore, leaveBase };
+  const input = lineInputOf(args);
+  if (!input) return zeroLine(row, person, config, unknownContractOf(facts, config));
+  const leave = leaveItemFor(args);
+  const line = computeLine(input, config);
+  const dto = lineDtoOf({ row, person, config, input, line, leave, yearBefore, fromPerson });
   const computed = {
     line,
     contractTypeId: input.person.contract.id,
+    hasProfile: true,
     defaultedContract: defaultedContractOf(row, facts, config)?.name ?? null,
     leave,
+    gap: profileGapOf(row, facts, config),
   };
   return { dto, line, review: reviewOf(row, person, config, computed), regionId: row.regionId };
 }

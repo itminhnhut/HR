@@ -25,6 +25,7 @@ export * from './recruitment-log.js';
 export * from './absence-files.js';
 export * from './timesheet-leave.js';
 export * from './payroll-api.js';
+export * from './payroll-rights-list.js';
 export * from './payroll-settings.js';
 export * from './payroll-profile.js';
 export * from './timesheet-closings.js';

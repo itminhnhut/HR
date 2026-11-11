@@ -1,5 +1,6 @@
 import {
   PAYROLL_FORMULA_VERSION,
+  PAYROLL_MONTH,
   payrollConfigFor,
   payrollDates,
   payrollTotals,
@@ -10,24 +11,42 @@ import {
   type PayrollConfig,
   type PayrollDates,
   type PayrollMonthDto,
-  type PayrollPeriodStatus,
   type PayrollRetroItemDto,
   type TimesheetRegionDto,
   isInUse,
 } from '@careers/shared';
 import { and, asc, desc, eq } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
-import { payrollPeriods, payrollRuns, timesheetClosings, timesheetPeriods, timesheetRegions } from '../db/schema.js';
+import { timesheetClosings, timesheetPeriods, timesheetRegions } from '../db/schema.js';
 import { notFound } from '../lib/http-error.js';
 import { firstMonth } from './payroll-catalogue.js';
 import { firstMonthChecklist } from './payroll-checklist.js';
 import { peopleFactsOf } from './payroll-month-facts.js';
+import {
+  indexOf,
+  isApprovedPeriod,
+  keyOf,
+  partsOfKey,
+  snapshotsOf,
+  storedOf,
+  type SnapshotOf,
+  type StoredPeriod,
+} from './payroll-month-index.js';
 import { buildLine, type BuiltLine, type PersonFacts } from './payroll-month-lines.js';
 import type { Reader } from './payroll-profile-store.js';
 import { loadRows } from './payroll-settings.js';
 import { payDayFor, type Row } from './payroll-versions.js';
-import { manualRetroItems, retroDiffsFor, retroItemsOf, retroOutOf, withRetro } from './payroll-retro.js';
-import { approvedSnapshotOf, yearSoFarOf, type YearSoFar } from './payroll-year.js';
+import {
+  manualRetroItems,
+  retroDiffsFor,
+  retroItemsOf,
+  retroOutOf,
+  staleRetroOf,
+  withRetro,
+  type MonthRetro,
+  type RetroReaders,
+} from './payroll-retro.js';
+import { yearSoFarOf, type YearSoFar } from './payroll-year.js';
 import { monthWords } from './payroll-words.js';
 import { readClosing } from './timesheet-closings.js';
 
@@ -38,42 +57,22 @@ import { readClosing } from './timesheet-closings.js';
  * `payroll_periods` row and reads as waiting or a draft from the timesheet alone.
  */
 
-export type Stored = typeof payrollPeriods.$inferSelect;
+export type Stored = StoredPeriod;
 type Closing = NonNullable<Awaited<ReturnType<typeof readClosing>>>;
 
 const MONTHS_AHEAD = 12;
-const MONTH_KEY = /^(\d{4})-(0[1-9]|1[0-2])$/;
-const pad = (n: number) => String(n).padStart(2, '0');
-const keyOf = (index: number) => `${Math.floor(index / 12)}-${pad((index % 12) + 1)}`;
-const indexOf = (year: number, month: number) => year * 12 + month - 1;
-const isApproved = (status: PayrollPeriodStatus | undefined) => status === 'approved' || status === 'paid';
+
+/** The month before `dates`, "YYYY-MM". */
+const keyBefore = (dates: Pick<PayrollDates, 'year' | 'month'>) => keyOf(indexOf(dates.year, dates.month) - 1);
 
 /** The months the API answers: the first payroll month on the web to a year after the current period. */
 function checkRange(key: string, first: string, now: Date): { year: number; month: number } {
   const current = periodMonthOf(todayInVietnam(now));
   const last = keyOf(indexOf(current.year, current.month) + MONTHS_AHEAD);
-  const match = MONTH_KEY.exec(key);
-  if (!match || key < first || key > last) {
+  if (!PAYROLL_MONTH.test(key) || key < first || key > last) {
     throw notFound(`Có bảng lương từ ${monthWords(first)} đến ${monthWords(last)}.`);
   }
-  return { year: Number(match[1]), month: Number(match[2]) };
-}
-
-export async function storedOf(db: Reader, year: number, month: number): Promise<Stored | undefined> {
-  const [stored] = await db
-    .select()
-    .from(payrollPeriods)
-    .where(and(eq(payrollPeriods.year, year), eq(payrollPeriods.month, month)));
-  return stored;
-}
-
-/** Bản duyệt lần `no` of a payroll month. */
-export async function runOf(db: Reader, periodId: string, no: number) {
-  const [run] = await db
-    .select()
-    .from(payrollRuns)
-    .where(and(eq(payrollRuns.periodId, periodId), eq(payrollRuns.approvalNo, no)));
-  return run;
+  return partsOfKey(key);
 }
 
 /**
@@ -86,7 +85,7 @@ async function closingOf(
   stored: Stored | undefined,
   again = false,
 ): Promise<Closing | undefined> {
-  const pinned = isApproved(stored?.status) && stored?.closingId ? stored.closingId : null;
+  const pinned = isApprovedPeriod(stored) && stored.closingId ? stored.closingId : null;
   if (pinned && !again) return readClosing(db, pinned);
   const latest = await latestClosingOf(db, dates);
   return latest ?? (pinned ? readClosing(db, pinned) : undefined);
@@ -115,10 +114,16 @@ async function previousNormsOf(db: Reader, dates: PayrollDates, closing: Closing
   const { from, to } = dates.period;
   const leaving = closing.rows.some((r) => r.leftOn !== null && r.leftOn >= from && r.leftOn <= to);
   if (!leaving) return new Map();
-  const before = keyOf(indexOf(dates.year, dates.month) - 1);
-  const previous = { year: Number(before.slice(0, 4)), month: Number(before.slice(5)) };
+  const previous = partsOfKey(keyBefore(dates));
   const earlier = await closingOf(db, previous, await storedOf(db, previous.year, previous.month));
   return new Map((earlier?.rows ?? []).map((r) => [r.employeeId, r.norm]));
+}
+
+/** (42) of each person in the approval of the month before, for "lệch quá 10%" (spec 11.3); empty when not approved. */
+async function previousNetsOf(ctx: LiveContext, dates: PayrollDates): Promise<Map<string, number>> {
+  const previous = partsOfKey(keyBefore(dates));
+  const snapshot = await ctx.snapshotOf(await storedOf(ctx.db, previous.year, previous.month));
+  return new Map((snapshot?.lines ?? []).map((l) => [l.employeeId, l.cells.netPay]));
 }
 
 const regionDto = (r: Pick<TimesheetRegionDto, 'id' | 'name' | 'tone'>) => ({ id: r.id, name: r.name, tone: r.tone });
@@ -159,10 +164,10 @@ function shellOf(dates: PayrollDates, config: PayrollConfig, stored: Stored | un
 
 /** R9: the month before is not approved yet (only from the first month on the web). */
 async function previousIsDraft(db: Reader, dates: PayrollDates, first: string): Promise<boolean> {
-  const previous = keyOf(indexOf(dates.year, dates.month) - 1);
+  const previous = keyBefore(dates);
   if (previous < first) return false;
-  const stored = await storedOf(db, Number(previous.slice(0, 4)), Number(previous.slice(5)));
-  return !isApproved(stored?.status);
+  const { year, month } = partsOfKey(previous);
+  return !isApprovedPeriod(await storedOf(db, year, month));
 }
 
 interface ReviewArgs {
@@ -178,14 +183,15 @@ async function reviewOf(db: Db, { built, closing, dates, first, year, retro }: R
   const firstWebMonth = dates.monthKey === first;
   // A month of the same tax year still open is named with what the yearly figures read of it; R9's own line is
   // left for a month before of another tax year.
-  const previousNamed = year.openMonths.some((m) => m.month === keyOf(indexOf(dates.year, dates.month) - 1).slice(5));
+  const previousNamed = year.openMonths.some((m) => m.month === keyBefore(dates).slice(5));
   return reviewPayroll({
     rows: built.map((b) => b.review),
     blockFromPerson: built.filter((b) => b.dto.blockFromPerson).length,
     previousMonthDraft: !previousNamed && (await previousIsDraft(db, dates, first)),
     yearOpenMonths: year.openMonths,
     retroFrom: [...new Set(retro.map((r) => r.origin))].sort().map((origin) => origin.slice(5)),
-    retroPending: 0,
+    // R6: a difference the month has no row to pay it in waits for HR (`placed: false`).
+    retroPending: retro.filter((r) => !r.placed).length,
     firstWebMonth,
     // A close made on the web is the one HR saw; a backfilled one is confirmed in the checklist (spec 4.21, 17.2).
     closingConfirmed: closing.closing.source === 'web',
@@ -221,6 +227,7 @@ export async function monthInRange(db: Reader, key: string, now: Date): Promise<
   return checkRange(key, firstMonth(await loadRows(db)), now);
 }
 
+/** What one request reads months with; nothing in it outlives the request. */
 interface LiveContext {
   db: Db;
   rows: readonly Row[];
@@ -228,18 +235,38 @@ interface LiveContext {
   now: Date;
   /** Approved months computed as now during this read, so each is computed once. */
   again: Map<string, Promise<PayrollMonthDto>>;
+  /** The approval snapshots read during this read, each once. */
+  snapshotOf: SnapshotOf;
 }
+
+const contextOf = (db: Db, rows: readonly Row[], now: Date): LiveContext => ({
+  db,
+  rows,
+  first: firstMonth(rows),
+  now,
+  again: new Map(),
+  snapshotOf: snapshotsOf(db),
+});
+
+/**
+ * How a month is computed: `read` for the month asked for, with Rà soát; `again` an approved month as it would
+ * compute now (R6), on its latest close; `year` an earlier draft read only for the yearly figures. Neither of the
+ * last two has Rà soát.
+ */
+type Mode = 'read' | 'again' | 'year';
 
 /** An approved month computed as now, beside its approval (R6); nothing is written. */
 function recomputeOf(ctx: LiveContext): (key: string) => Promise<PayrollMonthDto> {
   return (key) => {
     const known = ctx.again.get(key);
     if (known) return known;
-    const computed = computeMonth(ctx, key, undefined, true).then((live) => live.dto);
+    const computed = computeMonth(ctx, key, undefined, 'again').then((live) => live.dto);
     ctx.again.set(key, computed);
     return computed;
   };
 }
+
+const readersOf = (ctx: LiveContext): RetroReaders => ({ recompute: recomputeOf(ctx), snapshotOf: ctx.snapshotOf });
 
 /**
  * Truy lĩnh / truy thu of the month (R6 (a)): a draft receives what the approved months right before it compute
@@ -251,67 +278,65 @@ async function retroOf(
   dates: PayrollDates,
   built: readonly BuiltLine[],
   facts: ReadonlyMap<string, PersonFacts>,
-): Promise<PayrollRetroItemDto[]> {
-  if (isApproved(stored?.status)) return (await approvedSnapshotOf(ctx.db, stored))?.retro ?? [];
-  const diffs = await retroDiffsFor(ctx.db, { first: ctx.first, dates, recompute: recomputeOf(ctx) });
+): Promise<MonthRetro> {
+  if (isApprovedPeriod(stored)) return { items: (await ctx.snapshotOf(stored))?.retro ?? [], stale: new Map() };
+  const diffs = await retroDiffsFor(ctx.db, { first: ctx.first, dates, ...readersOf(ctx) });
   const typed = (id: string) => facts.get(id)?.inputs.retro ?? [];
   const paid = built.flatMap((b) => (b.line ? [b.dto] : []));
   const placed = new Set(paid.map((p) => p.employeeId));
   const computed = diffs.length === 0 ? [] : await retroItemsOf(ctx.db, { diffs, typed, placed });
   // What HR added by hand for a month with no computed difference comes after the computed ones.
-  return [...computed, ...manualRetroItems(paid, typed, computed)];
+  const items = [...computed, ...manualRetroItems(paid, typed, computed)];
+  return { items, stale: staleRetroOf(paid, typed, computed) };
 }
 
 /** Computed from the close, the profiles and the config (R3): a draft, or a month still waiting for its close. */
 export async function liveMonthOf(db: Db, key: string, now: Date): Promise<LiveMonth> {
-  const rows = await loadRows(db);
-  const first = firstMonth(rows);
-  checkRange(key, first, now);
-  return computeMonth({ db, rows, first, now, again: new Map() }, key);
+  const ctx = contextOf(db, await loadRows(db), now);
+  checkRange(key, ctx.first, now);
+  return computeMonth(ctx, key);
 }
 
 /**
  * The block the approval took from the person where the close had none (F19). The month computed as now (R6) keeps
  * it; without it every such person would lose the block, and a truy thu would be proposed though nothing changed.
  */
-async function approvedBlocksOf(db: Reader, stored: Stored | undefined) {
-  const snapshot = await approvedSnapshotOf(db, stored);
+async function approvedBlocksOf(snapshotOf: SnapshotOf, stored: Stored) {
+  const snapshot = await snapshotOf(stored);
   const lines = snapshot?.lines.filter((l) => l.blockFromPerson) ?? [];
   return new Map(lines.map((l) => [l.employeeId, l.block]));
 }
 
-/**
- * The month on the earlier months of its tax year; an earlier draft is computed the same way, oldest first.
- * `again`: an approved month as it would compute now, without Rà soát.
- */
-async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, again = false): Promise<LiveMonth> {
-  const { db, rows, first, now } = ctx;
-  const year = Number(key.slice(0, 4));
-  const month = Number(key.slice(5));
-  const stored = await storedOf(db, year, month);
-  const dates = payrollDates(year, month, stored?.payDate ?? undefined, payDayFor(rows, key));
-  const config = payrollConfigFor(rows, null, dates);
-  const closing = await closingOf(db, dates, stored, again);
-  const regions = await regionsOf(db, closing);
-  const shell = { ...shellOf(dates, config, stored), regions };
-  if (!closing) {
-    const dto: PayrollMonthDto = {
-      ...shell,
-      status: 'waiting',
-      computedAt: null,
-      lines: [],
-      totals: {},
-      review: [],
-      closingNo: null,
-    };
-    return { dto, closingId: null };
-  }
-  const draftOf = async (earlier: string, soFar: YearSoFar) => (await computeMonth(ctx, earlier, soFar)).dto;
-  const yearSoFar = known ?? (await yearSoFarOf(db, { rows, first, dates, draftOf }));
-  const previousNorms = await previousNormsOf(db, dates, closing);
-  const facts = await peopleFactsOf(db, closing.rows, rows, dates, yearSoFar.byEmployee, previousNorms);
-  const status = isApproved(stored?.status) && stored ? stored.status : 'draft';
-  const approvedBlocks = status === 'draft' ? null : await approvedBlocksOf(db, stored);
+/** A month whose timesheet period is not closed yet: no row, nothing to review. */
+const waitingDto = (shell: Shell): PayrollMonthDto => ({
+  ...shell,
+  status: 'waiting',
+  computedAt: null,
+  lines: [],
+  totals: {},
+  review: [],
+  closingNo: null,
+});
+
+/** A month with its close, before its rows are built. */
+interface MonthBase {
+  stored: Stored | undefined;
+  dates: PayrollDates;
+  config: PayrollConfig;
+  closing: Closing;
+  shell: Shell;
+}
+
+/** The row of each person of the close, before truy lĩnh / truy thu, and what the month knows about them. */
+async function plainLinesOf(ctx: LiveContext, base: MonthBase, yearSoFar: YearSoFar, mode: Mode) {
+  const { db, rows } = ctx;
+  const { stored, dates, closing } = base;
+  const facts = await peopleFactsOf(db, closing.rows, rows, dates, {
+    yearMonths: yearSoFar.byEmployee,
+    previousNorms: await previousNormsOf(db, dates, closing),
+    previousNets: mode === 'read' ? await previousNetsOf(ctx, dates) : new Map<string, number>(),
+  });
+  const approvedBlocks = isApprovedPeriod(stored) ? await approvedBlocksOf(ctx.snapshotOf, stored) : null;
   const plain = closing.rows.flatMap((row) => {
     const person = facts.get(row.employeeId);
     if (!person) return [];
@@ -319,16 +344,28 @@ async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, ag
     const currentBlock = approvedBlocks ? (approvedBlocks.get(row.employeeId) ?? null) : person.currentBlock;
     return [buildLine(row, { ...person, currentBlock }, rows, dates)];
   });
-  const retro = await retroOf(ctx, stored, dates, plain, facts);
-  const built = plain.map((b) => withRetro(b, retro));
+  return { plain, facts };
+}
+
+/** The month's rows, truy lĩnh / truy thu, totals and (to read it) Rà soát, on the earlier months of its tax year. */
+async function computedMonth(ctx: LiveContext, base: MonthBase, known: YearSoFar | undefined, mode: Mode) {
+  const { db, rows, first, now, snapshotOf } = ctx;
+  const { stored, dates, config, closing, shell } = base;
+  const draftOf = async (earlier: string, soFar: YearSoFar) => (await computeMonth(ctx, earlier, soFar, 'year')).dto;
+  const yearSoFar = known ?? (await yearSoFarOf(db, { rows, first, dates, draftOf, snapshotOf }));
+  const { plain, facts } = await plainLinesOf(ctx, base, yearSoFar, mode);
+  const monthRetro = await retroOf(ctx, stored, dates, plain, facts);
+  const retro = [...monthRetro.items];
+  const built = plain.map((b) => withRetro(b, monthRetro));
   const lines = built.flatMap((b) => (b.line ? [b.line] : []));
+  const status = isApprovedPeriod(stored) ? stored.status : 'draft';
   const dto: PayrollMonthDto = {
     ...shell,
     status,
     computedAt: status === 'draft' ? now.toISOString() : null,
-    lines: orderLines(built, regions, config),
+    lines: orderLines(built, shell.regions, config),
     totals: payrollTotals(lines, config.options.rounding),
-    review: again ? [] : await reviewOf(db, { built, closing, dates, first, year: yearSoFar, retro }),
+    review: mode === 'read' ? await reviewOf(db, { built, closing, dates, first, year: yearSoFar, retro }) : [],
     retro,
     closingNo: closing.closing.closeNo,
     formulaVersion: PAYROLL_FORMULA_VERSION,
@@ -336,13 +373,26 @@ async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, ag
   return { dto, closingId: closing.closing.id };
 }
 
+/** The month on the earlier months of its tax year; an earlier draft is computed the same way, oldest first. */
+async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, mode: Mode = 'read'): Promise<LiveMonth> {
+  const { db, rows } = ctx;
+  const { year, month } = partsOfKey(key);
+  const stored = await storedOf(db, year, month);
+  const dates = payrollDates(year, month, stored?.payDate ?? undefined, payDayFor(rows, key));
+  const config = payrollConfigFor(rows, null, dates);
+  const closing = await closingOf(db, dates, stored, mode === 'again');
+  const shell = { ...shellOf(dates, config, stored), regions: await regionsOf(db, closing) };
+  if (!closing) return { dto: waitingDto(shell), closingId: null };
+  return computedMonth(ctx, { stored, dates, config, closing, shell }, known, mode);
+}
+
 /** Bản duyệt lần N of an approved or paid month (R4), with the month's state on top. */
-async function frozenOf(db: Reader, stored: Stored | undefined): Promise<PayrollMonthDto | undefined> {
-  if (!stored || !isApproved(stored.status) || stored.approvalNo === null) return undefined;
-  const run = await runOf(db, stored.id, stored.approvalNo);
-  if (!run) return undefined;
+async function frozenOf(snapshotOf: SnapshotOf, stored: Stored | undefined): Promise<PayrollMonthDto | undefined> {
+  if (!isApprovedPeriod(stored)) return undefined;
+  const snapshot = await snapshotOf(stored);
+  if (!snapshot) return undefined;
   return {
-    ...run.snapshot,
+    ...snapshot,
     status: stored.status,
     computedAt: null,
     approval: approvalOf(stored),
@@ -350,23 +400,19 @@ async function frozenOf(db: Reader, stored: Stored | undefined): Promise<Payroll
   };
 }
 
-/** What an approved month computes differently now and where it goes (R6); null when nothing differs. */
-async function retroOutFor(db: Db, key: string, frozen: PayrollMonthDto, now: Date) {
-  const rows = await loadRows(db);
-  const ctx: LiveContext = { db, rows, first: firstMonth(rows), now, again: new Map() };
-  return retroOutOf(db, key, frozen, recomputeOf(ctx));
-}
-
 /** An approved month as it would compute today (R6), for what its approval did not keep; nothing is written. */
 export async function monthAsNow(db: Db, key: string, now: Date): Promise<PayrollMonthDto> {
-  const rows = await loadRows(db);
-  return recomputeOf({ db, rows, first: firstMonth(rows), now, again: new Map() })(key);
+  return recomputeOf(contextOf(db, await loadRows(db), now))(key);
 }
 
-/** `GET /months/:YYYY-MM`: an approved or paid month reads its approval snapshot, any other month is computed. */
+/**
+ * `GET /months/:YYYY-MM`: an approved or paid month reads its approval snapshot, with what it computes differently
+ * now and where that goes (R6); any other month is computed.
+ */
 export async function payrollMonthOf(db: Db, key: string, now: Date): Promise<PayrollMonthDto> {
-  const { year, month } = await monthInRange(db, key, now);
-  const frozen = await frozenOf(db, await storedOf(db, year, month));
-  if (!frozen) return (await liveMonthOf(db, key, now)).dto;
-  return { ...frozen, retroOut: await retroOutFor(db, key, frozen, now) };
+  const ctx = contextOf(db, await loadRows(db), now);
+  const { year, month } = checkRange(key, ctx.first, now);
+  const frozen = await frozenOf(ctx.snapshotOf, await storedOf(db, year, month));
+  if (!frozen) return (await computeMonth(ctx, key)).dto;
+  return { ...frozen, retroOut: await retroOutOf(db, key, frozen, readersOf(ctx)) };
 }

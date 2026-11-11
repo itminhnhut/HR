@@ -4,6 +4,7 @@ import {
   type HrMe,
   type PayrollAccessDto,
   type PayrollRightsDto,
+  type PayrollRightsListDto,
 } from '@careers/shared';
 import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
@@ -64,11 +65,16 @@ async function bootstrapFromEnv(db: Db, admins: readonly string[], now: Date): P
  */
 export const PAYROLL_OPEN = '*';
 
+export const isPayrollOpen = (admins: readonly string[]): boolean => admins.includes(PAYROLL_OPEN);
+
+const OPEN_WORDS = 'Lương đang mở cho mọi tài khoản HR, chưa cần phân quyền';
+const payrollOpen = () => new HttpError(409, OPEN_WORDS, {}, 'payroll_open');
+
 /** Read again on every request: a right taken away applies to the very next call. */
 export async function payrollRightsOf(db: Db, me: HrMe, admins: readonly string[], now: Date): Promise<PayrollRights> {
   const user = await db.query.hrUsers.findFirst({ where: eq(hrUsers.id, me.id) });
   if (!user) return { canPayroll: false, canApprovePayroll: false };
-  if (admins.includes(PAYROLL_OPEN)) return { canPayroll: true, canApprovePayroll: true };
+  if (isPayrollOpen(admins)) return { canPayroll: true, canApprovePayroll: true };
   if (user.canPayroll || !admins.includes(user.email)) return rightsOf(user);
   await bootstrapFromEnv(db, admins, now);
   const fresh = await db.query.hrUsers.findFirst({ where: eq(hrUsers.id, me.id) });
@@ -80,9 +86,17 @@ export const accessOf = (rights: PayrollRights): PayrollAccessDto => ({
   canApprovePayroll: rights.canApprovePayroll,
 });
 
-export async function listPayrollRights(db: Db, me: HrMe): Promise<PayrollRightsDto[]> {
+/** Every account with its stored rights; `open` says they decide nothing while Lương is open to every HR account. */
+export async function listPayrollRights(db: Db, me: HrMe, admins: readonly string[]): Promise<PayrollRightsListDto> {
   const rows = await db.select().from(hrUsers).orderBy(asc(hrUsers.createdAt), asc(hrUsers.email));
-  return rows.map((u) => ({ userId: u.id, email: u.email, name: u.name, ...rightsOf(u), isMe: u.id === me.id }));
+  const accounts = rows.map((u) => ({
+    userId: u.id,
+    email: u.email,
+    name: u.name,
+    ...rightsOf(u),
+    isMe: u.id === me.id,
+  }));
+  return { open: isPayrollOpen(admins), accounts };
 }
 
 /** Someone other than `exceptId` still holds both rights. Locks the holders, so two removals cannot both pass. */
@@ -114,18 +128,23 @@ function changeWords(before: PayrollRights, after: PayrollRights): { action: str
   };
 }
 
+export interface SetRightsArgs {
+  userId: string;
+  raw: unknown;
+  me: HrMe;
+  mine: PayrollRights;
+  admins: readonly string[];
+  now: Date;
+}
+
 /**
  * Giving or taking a right. Xem, sửa may give Xem, sửa; Duyệt is given or taken only by someone who has it, so nobody
- * raises their own rights. At least one account keeps both.
+ * raises their own rights. At least one account keeps both. While Lương is open to every HR account the stored rights
+ * decide nothing, so nothing is changed or logged (409 payroll_open).
  */
-export async function setPayrollRights(
-  db: Db,
-  userId: string,
-  raw: unknown,
-  me: HrMe,
-  mine: PayrollRights,
-  now: Date,
-): Promise<PayrollRightsDto> {
+export async function setPayrollRights(db: Db, args: SetRightsArgs): Promise<PayrollRightsDto> {
+  const { userId, raw, me, mine, admins, now } = args;
+  if (isPayrollOpen(admins)) throw payrollOpen();
   const parsed = payrollRightsSchema.safeParse(raw);
   if (!parsed.success) throw invalid('Duyệt lương cần có quyền Xem, sửa lương.', fieldErrors(parsed.error));
   const user = isUuid(userId) ? await db.query.hrUsers.findFirst({ where: eq(hrUsers.id, userId) }) : undefined;

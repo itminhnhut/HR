@@ -9,7 +9,7 @@ import type {
   PayrollRetroItemDto,
 } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { givePayrollRight } from '../test/payroll-flow.js';
+import { addSetting, givePayrollRight } from '../test/payroll-flow.js';
 import { createFlow, type Flow } from '../test/timesheet-flow.js';
 
 /**
@@ -193,6 +193,27 @@ describe('L-M08 a raise dated inside an approved month', () => {
   });
 });
 
+describe('L-M08 what explains a difference', () => {
+  it("should keep the person's own lines and the config for everyone, not other people's own config", async () => {
+    // Arrange: after the raise, HR sets six rules of NV A's own and one for everyone.
+    const { a, b } = await approvedNovember();
+    await raiseB(b);
+    for (const month of ['2027-01', '2027-02', '2027-03', '2027-04', '2027-05', '2027-06']) {
+      await addSetting(flow, { key: 'quy-tac.ty-le-thu-viec', employeeId: a.id, from: month, value: 0.9 });
+    }
+    await addSetting(flow, { key: 'quy-tac.gio-mot-ngay', from: '2027-07', value: 8 });
+
+    // Act
+    const { causes } = onlyRetro(await monthOf('2026-12'), b);
+
+    // Assert
+    const details = causes.map((c) => c.detail);
+    expect(details.some((d) => /NV02/.test(d))).toBe(true);
+    expect(details.some((d) => /cho tất cả/.test(d))).toBe(true);
+    expect(details.filter((d) => /NV01/.test(d))).toEqual([]);
+  });
+});
+
 describe('L-M08 a dependant taken away in an approved month', () => {
   it('should take the tax of that month back from the next draft month', async () => {
     // Arrange
@@ -254,6 +275,34 @@ describe('L-M09 HR leaves an adjustment out or types over it', () => {
   });
 });
 
+describe('L-M09 an amount typed over a difference that is gone', () => {
+  it('should pay nothing of it and say so, while an amount HR added by hand is still paid', async () => {
+    // Arrange: HR types over the raise's difference and adds one by hand for October.
+    const { b } = await approvedNovember();
+    const before = lineOf(await monthOf('2026-12'), b);
+    const raise = await raiseB(b);
+    const typed = [
+      { origin: '2026-11', amount: 1_000_000, reason: 'Thoả thuận' },
+      { origin: '2026-10', amount: 500_000, reason: 'Bù lương tháng 10' },
+    ];
+    await typeInputs('2026-12', b, { retro: typed });
+
+    // Act: the raise is deleted, so November computes as approved again.
+    await flow.payroll('DELETE', `/profiles/${b.id}/versions/${raise.version.id}`);
+    const december = await monthOf('2026-12');
+
+    // Assert
+    const item = onlyRetro(december, b);
+    expect(item).toMatchObject({ origin: '2026-10', typed: 500_000, amount: 500_000, placed: true });
+    expect(lineOf(december, b).cells.netPay - before.cells.netPay).toBe(500_000);
+    expect(december.review.find((i) => i.code === 'retro-typed-stale')).toMatchObject({
+      level: 'yellow',
+      employeeId: b.id,
+      message: 'Truy lĩnh / truy thu từ T11/2026: Khoản gõ đè không còn chênh lệch — đã bỏ qua',
+    });
+  });
+});
+
 describe('C03 a truy lĩnh / truy thu HR adds by hand', () => {
   it('should pay an amount for a month the web computed no difference for, outside tax and insurance', async () => {
     // Arrange: nothing changed after November was approved, so December carries nothing by itself.
@@ -306,6 +355,43 @@ describe('C03 a truy lĩnh / truy thu HR adds by hand', () => {
     expect((taken.line?.cells.netPay ?? 0) - before.cells.netPay).toBe(-200_000);
     expect(back.line?.cells.netPay).toBe(before.cells.netPay);
     expect(retroOf(await monthOf('2026-12'), b)).toEqual([]);
+  });
+});
+
+describe('L-M08 a difference the receiving month has no row for', () => {
+  it('should stay owed after that month is approved, proposed again to the next month', async () => {
+    // Arrange: NV B leaves inside November, so December has no row of NV B to pay the raise in.
+    await givePayrollRight(flow);
+    const a = await flow.addPerson({ code: 'NV01', fullName: 'NV A', joinedOn: '2025-03-01' });
+    const b = await flow.addPerson({ code: 'NV02', fullName: 'NV B', joinedOn: '2025-03-01', leftOn: '2026-11-20' });
+    for (const person of [a, b]) {
+      const level = { ...LEVEL, effectiveOn: '2025-03-01', amounts: { luong: 9_000_000, com: 1_100_000 } };
+      await flow.payroll('POST', `/profiles/${person.id}/versions`, level, 201);
+    }
+    await flow.at('2026-11-26');
+    await flow.close(2026, 11);
+    await approve('2026-11');
+    await flow.at('2026-12-26');
+    await flow.close(2026, 12);
+    await raiseB(b);
+
+    // Act
+    const december = await approve('2026-12');
+    await flow.at('2027-01-26');
+    await flow.close(2027, 1);
+    const january = await monthOf('2027-01');
+    const novemberNow = await monthOf('2026-11');
+
+    // Assert
+    const unplaced = onlyRetro(december, b);
+    expect(unplaced).toMatchObject({ origin: '2026-11', placed: false, amount: 0 });
+    expect(unplaced.computed).toBeGreaterThan(0);
+    expect(onlyRetro(january, b)).toMatchObject({ origin: '2026-11', computed: unplaced.computed, placed: false });
+    expect(novemberNow.retroOut).toEqual({ month: '2027-01', people: 1, net: unplaced.computed });
+    expect(january.review.find((i) => i.code === 'retro-pending')).toMatchObject({
+      level: 'yellow',
+      message: 'Có 1 hồi tố chưa chọn cách',
+    });
   });
 });
 

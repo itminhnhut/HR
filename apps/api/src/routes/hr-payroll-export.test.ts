@@ -1,6 +1,7 @@
 import type { EmployeeDto, PayrollExportDto, PayrollMonthDto } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { payrollLog } from '../db/schema.js';
+import { payrollKeyFromSecret } from '../lib/payroll-crypto.js';
 import { givePayrollRight } from '../test/payroll-flow.js';
 import { createFlow, type Flow } from '../test/timesheet-flow.js';
 
@@ -187,6 +188,31 @@ describe('POST /export, the payroll workbook', () => {
     expect([line.cells.netPay, line.sheet?.dependants]).toEqual([lineOf(approved, a).cells.netPay, 1]);
     expect(line.sheet?.bankAccount).toBe(ACCOUNT);
     expect(only.notes.join(' ')).toContain('Tham số');
+  });
+
+  it('should mark an account sealed under an older secret and still export the rest of the month', async () => {
+    // Arrange
+    flow.t.deps.config.payrollKey = payrollKeyFromSecret('an-old-session-secret-for-tests-only-x');
+    const { a, b } = await hireCompany();
+    flow.t.deps.config.payrollKey = payrollKeyFromSecret('a-new-session-secret-for-tests-only-yy');
+    const other = '098765432109';
+    await flow.payroll(
+      'POST',
+      `/profiles/${b.id}/bank`,
+      { bank: 'Ngân hàng Thử', accountNumber: other, changedOn: '2026-10-01' },
+      201,
+    );
+    await closeNovember();
+
+    // Act
+    const answer = await exportOf({ months: ['2026-11'], kind: 'payroll' });
+
+    // Assert
+    const [only] = answer.months;
+    if (!only) throw new Error('The export has no month');
+    expect(lineOf(only.month, a).sheet?.bankAccount).toBe('Cần nhập lại số TK');
+    expect(lineOf(only.month, b).sheet?.bankAccount).toBe(other);
+    expect(await logLines()).toHaveLength(1);
   });
 
   it('should answer several months oldest first and log them in one line', async () => {

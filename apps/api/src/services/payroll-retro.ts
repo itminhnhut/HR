@@ -11,12 +11,21 @@ import {
   type PayrollRetroItemDto,
   type PayrollRetroOutDto,
 } from '@careers/shared';
-import { and, asc, gt, inArray, sql } from 'drizzle-orm';
-import { payrollLog, payrollPeriods } from '../db/schema.js';
+import { and, asc, gt, inArray } from 'drizzle-orm';
+import { payrollLog } from '../db/schema.js';
+import {
+  indexOf,
+  indexOfKey,
+  isApprovedPeriod,
+  keyOf,
+  storedBetween,
+  type SnapshotOf,
+  type StoredPeriod,
+} from './payroll-month-index.js';
 import type { BuiltLine } from './payroll-month-lines.js';
 import type { Reader } from './payroll-profile-store.js';
 import { moneyWords, monthWords } from './payroll-words.js';
-import { approvedSnapshotOf, yearPartOfLine } from './payroll-year.js';
+import { yearPartOfLine } from './payroll-year.js';
 
 /**
  * Truy lĩnh / truy thu (spec-luong.md R6 (a), 11.4; step 17). An approved or paid month is never computed again in
@@ -26,18 +35,14 @@ import { approvedSnapshotOf, yearPartOfLine } from './payroll-year.js';
  */
 
 type Cells = Partial<Record<PayrollMoneyCell, number>>;
-type Stored = typeof payrollPeriods.$inferSelect;
 
 /** How far back an approved month is still compared; an older change waits for the yearly settlement. */
 export const RETRO_MONTHS_BACK = 6;
 const MAX_CAUSES = 5;
 const CAUSE_AREAS = ['ho-so', 'cau-hinh', 'cham-cong'] as const;
 
-const pad = (n: number) => String(n).padStart(2, '0');
-const indexOf = (year: number, month: number) => year * 12 + month - 1;
-const keyOf = (index: number) => `${Math.floor(index / 12)}-${pad((index % 12) + 1)}`;
-const indexOfKey = (key: string) => indexOf(Number(key.slice(0, 4)), Number(key.slice(5)));
-const isApproved = (s: Stored | undefined): s is Stored => s?.status === 'approved' || s?.status === 'paid';
+/** "YYYY-MM" as Rà soát and the log write it: "MM/YYYY". */
+const retroWords = (origin: string) => `${origin.slice(5)}/${origin.slice(0, 4)}`;
 
 const moneyOf = (line: PayrollLineDto | undefined, key: PayrollMoneyCell) => line?.cells[key] ?? 0;
 
@@ -72,6 +77,13 @@ export interface OriginDiff {
   people: PersonDiff[];
 }
 
+/**
+ * Only an item a later approval placed on a row was carried: one without a row there paid nothing, so its difference
+ * is still owed and goes to the next month where the person has a row.
+ */
+const carriedBy = (items: readonly PayrollRetroItemDto[], origin: string, employeeId: string) =>
+  items.filter((r) => r.placed && r.origin === origin && r.employeeId === employeeId).map((r) => r.cells);
+
 function peopleDiffs(
   origin: string,
   now: readonly PayrollLineDto[],
@@ -82,7 +94,7 @@ function peopleDiffs(
   return ids.flatMap((id) => {
     const nowLine = now.find((l) => l.employeeId === id);
     const approvedLine = approved.find((l) => l.employeeId === id);
-    const done = carried.filter((r) => r.origin === origin && r.employeeId === id).map((r) => r.cells);
+    const done = carriedBy(carried, origin, id);
     const cells = remainingCells(nowLine, approvedLine, done);
     const person = nowLine ?? approvedLine;
     if (!person || Object.keys(cells).length === 0) return [];
@@ -90,48 +102,55 @@ function peopleDiffs(
   });
 }
 
-async function storedBetween(db: Reader, from: number, to: number): Promise<Stored[]> {
-  return db
-    .select()
-    .from(payrollPeriods)
-    .where(sql`${payrollPeriods.year} * 12 + ${payrollPeriods.month} - 1 between ${from} and ${to}`);
-}
-
 interface Approved {
   key: string;
-  stored: Stored;
+  stored: StoredPeriod;
   snapshot: PayrollMonthSnapshot;
 }
 
 /** The approved months in a row from `start`, going `step` (−1 back, +1 on), until the first month that is not. */
-async function approvedRun(db: Reader, stored: readonly Stored[], start: number, step: 1 | -1): Promise<Approved[]> {
+async function approvedRun(
+  snapshotOf: SnapshotOf,
+  stored: readonly StoredPeriod[],
+  start: number,
+  step: 1 | -1,
+): Promise<Approved[]> {
   const run: Approved[] = [];
   for (let i = start, n = 0; n < RETRO_MONTHS_BACK; i += step, n += 1) {
     const key = keyOf(i);
     const period = stored.find((s) => indexOf(s.year, s.month) === i);
-    const snapshot = isApproved(period) ? await approvedSnapshotOf(db, period) : undefined;
+    const snapshot = isApprovedPeriod(period) ? await snapshotOf(period) : undefined;
     if (!period || !snapshot) break;
     run.push({ key, stored: period, snapshot });
   }
   return run;
 }
 
-export interface RetroArgs {
+/** What the months around an approved month are read with: one request's approvals and its months computed as now. */
+export interface RetroReaders {
+  /** An approved month computed as now, on its latest timesheet close; nothing is written. */
+  recompute: (key: string) => Promise<PayrollMonthDto>;
+  /** The approval snapshots of the request (`snapshotsOf`). */
+  snapshotOf: SnapshotOf;
+}
+
+export interface RetroArgs extends RetroReaders {
   /** The first payroll month on the web. */
   first: string;
   dates: Pick<PayrollDates, 'year' | 'month'>;
-  /** An approved month computed as now, on its latest timesheet close; nothing is written. */
-  recompute: (key: string) => Promise<PayrollMonthDto>;
 }
 
 /**
  * What the open month `dates` receives: the differences of the approved months right before it, oldest first. A
  * month before another open month is that month's to receive.
  */
-export async function retroDiffsFor(db: Reader, { first, dates, recompute }: RetroArgs): Promise<OriginDiff[]> {
+export async function retroDiffsFor(
+  db: Reader,
+  { first, dates, recompute, snapshotOf }: RetroArgs,
+): Promise<OriginDiff[]> {
   const end = indexOf(dates.year, dates.month);
   const stored = await storedBetween(db, end - RETRO_MONTHS_BACK, end - 1);
-  const chain = (await approvedRun(db, stored, end - 1, -1)).filter((m) => m.key >= first).reverse();
+  const chain = (await approvedRun(snapshotOf, stored, end - 1, -1)).filter((m) => m.key >= first).reverse();
   const diffs: OriginDiff[] = [];
   for (const [i, month] of chain.entries()) {
     const now = await recompute(month.key);
@@ -149,10 +168,10 @@ export async function retroOutOf(
   db: Reader,
   key: string,
   snapshot: PayrollMonthSnapshot,
-  recompute: RetroArgs['recompute'],
+  { recompute, snapshotOf }: RetroReaders,
 ): Promise<PayrollRetroOutDto | null> {
   const start = indexOfKey(key) + 1;
-  const later = await approvedRun(db, await storedBetween(db, start, start + RETRO_MONTHS_BACK), start, 1);
+  const later = await approvedRun(snapshotOf, await storedBetween(db, start, start + RETRO_MONTHS_BACK), start, 1);
   // Past the months still compared, the difference is no longer carried.
   if (later.length >= RETRO_MONTHS_BACK) return null;
   const now = await recompute(key);
@@ -169,17 +188,26 @@ type LogLine = typeof payrollLog.$inferSelect;
 const mentions = (detail: string, code: string) =>
   new RegExp(`(^|[^\\p{L}\\p{N}])${code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|[^\\p{L}\\p{N}])`, 'u').test(detail);
 
-/** The log lines after the approval that can explain a person's difference: their profile, the config, the timesheet. */
+/** A config line for everyone; one for a single person names them ("cho NV01 …", `payroll-settings`). */
+const isForEveryone = (detail: string) => detail.includes('cho tất cả');
+
+/**
+ * The log lines after the approval that can explain a person's difference: their profile, the config for everyone
+ * or for them, the timesheet of that month. The lines about the person come first, then the latest others, up to
+ * MAX_CAUSES, in time order.
+ */
 function causesOf(lines: readonly LogLine[], origin: OriginDiff, code: string): PayrollRetroCauseDto[] {
   const since = origin.approvedAt;
-  return lines
-    .filter((l) => !since || l.at > since)
-    .filter((l) => {
-      if (l.area === 'cau-hinh') return true;
-      if (l.area === 'cham-cong') return l.month === origin.origin;
-      return mentions(l.detail, code);
-    })
-    .slice(-MAX_CAUSES)
+  const after = lines.filter((l) => !since || l.at > since);
+  const own = after.filter((l) => l.area !== 'cham-cong' && mentions(l.detail, code));
+  const others = after.filter((l) =>
+    l.area === 'cham-cong' ? l.month === origin.origin : l.area === 'cau-hinh' && isForEveryone(l.detail),
+  );
+  const kept = own.slice(-MAX_CAUSES);
+  const room = MAX_CAUSES - kept.length;
+  const picked = new Set([...kept, ...(room > 0 ? others.slice(-room) : [])]);
+  return after
+    .filter((l) => picked.has(l))
     .map((l) => ({ area: l.area, action: l.action, detail: l.detail, by: l.actor, at: l.at.toISOString() }));
 }
 
@@ -227,21 +255,30 @@ export async function retroItemsOf(
   );
 }
 
+/** The amounts typed for a person with no computed item of their month, and not left out (0). */
+function uncomputedInputs(
+  employeeId: string,
+  typed: (employeeId: string) => readonly PayrollRetroInputDto[],
+  computed: readonly PayrollRetroItemDto[],
+): PayrollRetroInputDto[] {
+  const isComputed = (origin: string) => computed.some((c) => c.employeeId === employeeId && c.origin === origin);
+  return typed(employeeId).filter((input) => input.amount !== 0 && !isComputed(input.origin));
+}
+
 /**
  * Truy lĩnh / truy thu HR adds by hand (C03): an amount typed for a month the web computed no difference of — pay
  * forgotten before the web, money to take back. It is HR's own number, so it moves (32) and (42) only, as an amount
  * typed over a computed one does; it carries no cells, so a later difference of that month is never reduced by it.
+ * An amount typed over a computed difference that is gone since is not one of them (`staleRetroOf`).
  */
 export function manualRetroItems(
   people: readonly { employeeId: string; code: string; fullName: string }[],
   typed: (employeeId: string) => readonly PayrollRetroInputDto[],
   computed: readonly PayrollRetroItemDto[],
 ): PayrollRetroItemDto[] {
-  const isComputed = (employeeId: string, origin: string) =>
-    computed.some((c) => c.employeeId === employeeId && c.origin === origin);
   return people.flatMap((person) =>
-    typed(person.employeeId)
-      .filter((input) => input.amount !== 0 && !isComputed(person.employeeId, input.origin))
+    uncomputedInputs(person.employeeId, typed, computed)
+      .filter((input) => !input.overComputed)
       .map((input) => ({
         employeeId: person.employeeId,
         code: person.code,
@@ -257,6 +294,21 @@ export function manualRetroItems(
         causes: [],
       })),
   );
+}
+
+/** By person, the months "MM/YYYY" of the amounts typed over a computed difference that is gone: not paid. */
+export function staleRetroOf(
+  people: readonly { employeeId: string }[],
+  typed: (employeeId: string) => readonly PayrollRetroInputDto[],
+  computed: readonly PayrollRetroItemDto[],
+): Map<string, string[]> {
+  const stale = people.flatMap(({ employeeId }) => {
+    const origins = uncomputedInputs(employeeId, typed, computed)
+      .filter((input) => input.overComputed)
+      .map((input) => retroWords(input.origin));
+    return origins.length > 0 ? [[employeeId, origins] as const] : [];
+  });
+  return new Map(stale);
 }
 
 /** What the row's cells move by: every cell of a computed item; (32) and (42) alone for an amount HR typed. */
@@ -282,10 +334,21 @@ function noteOf(item: PayrollRetroItemDto): string {
   return `${kind} ${monthWords(item.origin)} ${signed(item.amount)}${item.typed === null ? '' : ' (HR gõ)'}`;
 }
 
-const retroWords = (origin: string) => `${origin.slice(5)}/${origin.slice(0, 4)}`;
+/** The amounts typed over a difference that is gone, for Rà soát. */
+function withStale(built: BuiltLine, stale: readonly string[]): BuiltLine {
+  if (stale.length === 0) return built;
+  return { ...built, review: { ...built.review, inputs: { ...built.review.inputs, retroStale: stale } } };
+}
+
+/** What the receiving month carries: its items and, by person, the typed amounts left out as stale. */
+export interface MonthRetro {
+  items: readonly PayrollRetroItemDto[];
+  stale: ReadonlyMap<string, readonly string[]>;
+}
 
 /** The row of the receiving month with its items inside: the cells, the totals, the yearly figures and Ghi chú. */
-export function withRetro(built: BuiltLine, items: readonly PayrollRetroItemDto[]): BuiltLine {
+export function withRetro(plain: BuiltLine, { items, stale }: MonthRetro): BuiltLine {
+  const built = withStale(plain, stale.get(plain.dto.employeeId) ?? []);
   const mine = items.filter((i) => i.employeeId === built.dto.employeeId && i.placed);
   if (!built.line || mine.length === 0) return built;
   const line = adjustLine(built.line, sumCells(mine.map(movesOf)));

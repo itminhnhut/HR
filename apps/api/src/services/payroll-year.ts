@@ -4,13 +4,11 @@ import {
   type PayrollLine,
   type PayrollLineDto,
   type PayrollMonthDto,
-  type PayrollMonthSnapshot,
   type PayrollProfileMonthDto,
   type PayrollYearPartDto,
   type ReviewMonthInput,
 } from '@careers/shared';
-import { and, eq, sql } from 'drizzle-orm';
-import { payrollPeriods, payrollRuns } from '../db/schema.js';
+import { indexOf, keyOf, keyOfPeriod, storedBetween, type SnapshotOf } from './payroll-month-index.js';
 import type { Reader } from './payroll-profile-store.js';
 import { payDateOf, payDayFor, type Row } from './payroll-versions.js';
 
@@ -32,9 +30,6 @@ export interface YearSoFar {
 export const NO_YEAR_SO_FAR: YearSoFar = { byEmployee: new Map(), openMonths: [] };
 
 const MONTHS_BACK = 12;
-const pad = (n: number) => String(n).padStart(2, '0');
-const indexOf = (year: number, month: number) => year * 12 + month - 1;
-const keyOf = (index: number) => `${Math.floor(index / 12)}-${pad((index % 12) + 1)}`;
 
 export const addYearParts = (a: PayrollYearPartDto, b: PayrollYearPartDto): PayrollYearPartDto => ({
   clothingExempt: a.clothingExempt + b.clothingExempt,
@@ -99,22 +94,6 @@ function withLines(
   return { byEmployee, openMonths: [...soFar.openMonths, ...(open ? [open] : []), ...partial] };
 }
 
-type Stored = typeof payrollPeriods.$inferSelect;
-
-/** Bản duyệt in force of an approved or paid month; undefined for any other month. */
-export async function approvedSnapshotOf(
-  db: Reader,
-  stored: Stored | undefined,
-): Promise<PayrollMonthSnapshot | undefined> {
-  const approved = stored?.status === 'approved' || stored?.status === 'paid';
-  if (!stored || !approved || stored.approvalNo === null) return undefined;
-  const [run] = await db
-    .select({ snapshot: payrollRuns.snapshot })
-    .from(payrollRuns)
-    .where(and(eq(payrollRuns.periodId, stored.id), eq(payrollRuns.approvalNo, stored.approvalNo)));
-  return run?.snapshot;
-}
-
 export interface YearSoFarArgs {
   rows: readonly Row[];
   /** The first payroll month on the web: the months before it are in the opening balance. */
@@ -122,16 +101,18 @@ export interface YearSoFarArgs {
   dates: PayrollDates;
   /** A month not approved, computed now on the year so far; `waiting` while its timesheet is not closed. */
   draftOf: (key: string, soFar: YearSoFar) => Promise<PayrollMonthDto>;
+  /** The approval snapshots of the request (`snapshotsOf`). */
+  snapshotOf: SnapshotOf;
 }
 
 /** The earlier pay months of the tax year of `dates`, oldest first, summed by person. */
-export async function yearSoFarOf(db: Reader, { rows, first, dates, draftOf }: YearSoFarArgs): Promise<YearSoFar> {
+export async function yearSoFarOf(
+  db: Reader,
+  { rows, first, dates, draftOf, snapshotOf }: YearSoFarArgs,
+): Promise<YearSoFar> {
   const end = indexOf(dates.year, dates.month);
-  const stored = await db
-    .select()
-    .from(payrollPeriods)
-    .where(sql`${payrollPeriods.year} * 12 + ${payrollPeriods.month} - 1 between ${end - MONTHS_BACK} and ${end - 1}`);
-  const storedOf = (key: string) => stored.find((s) => `${s.year}-${pad(s.month)}` === key);
+  const stored = await storedBetween(db, end - MONTHS_BACK, end - 1);
+  const storedOf = (key: string) => stored.find((s) => keyOfPeriod(s) === key);
   const payYearOf = (key: string) =>
     Number((storedOf(key)?.payDate ?? payDateOf(key, payDayFor(rows, key))).slice(0, 4));
   const keys = Array.from({ length: MONTHS_BACK }, (_, i) => keyOf(end - MONTHS_BACK + i)).filter(
@@ -140,7 +121,7 @@ export async function yearSoFarOf(db: Reader, { rows, first, dates, draftOf }: Y
   let soFar = NO_YEAR_SO_FAR;
   for (const key of keys) {
     const month = key.slice(5);
-    const approved = await approvedSnapshotOf(db, storedOf(key));
+    const approved = await snapshotOf(storedOf(key));
     if (approved) {
       soFar = withLines(soFar, approved.lines, null, month);
       continue;

@@ -1,6 +1,8 @@
 import {
   employmentOn,
   kpiLevelFor,
+  nextDay,
+  paidBySegment,
   PAYROLL_DEFAULT_CONTRACT,
   PAYROLL_INSURANCE_PAID,
   paySegmentsFor,
@@ -104,29 +106,67 @@ function contractOf(steps: readonly ContractStep[], config: PayrollConfig): Cont
 
 /**
  * The default official contract this month stands on for want of a level HR typed (Rà soát asks HR to pick one),
- * when it reaches the period or the insurance month; null when HR's levels say it all.
+ * when it reaches the period or the insurance month; null when HR's levels say it all. The insurance month is the
+ * pay month, so its last day is always after the period's (26 → 25).
  */
 export function defaultedContractOf(
   row: Pick<TimesheetClosingRowDto, 'officialOn'>,
   facts: PayrollProfileMonthDto,
   config: PayrollConfig,
 ): ContractType | null {
-  const { period, insuranceMonth } = config.dates;
-  const last = period.to > `${insuranceMonth}-31` ? period.to : `${insuranceMonth}-31`;
+  const last = `${config.dates.insuranceMonth}-31`;
   const step = contractStepsOf(facts, row.officialOn, config).find((s) => s.defaulted && s.from <= last);
   return step?.type ?? null;
+}
+
+/** The days of the period with their codes, (17) and the leave paid in it; null for a backfilled row without codes. */
+function dayCodesOf(row: TimesheetClosingRowDto, config: PayrollConfig) {
+  const { codes } = row;
+  if (!codes) return null;
+  const totals = closingTotalsOf(row);
+  const days = periodDays(config.dates.period);
+  const dayCodes = days.map((d) => codes[d] ?? null);
+  return { days, codes: dayCodes, paid: totals.paid, leavePaid: Math.max(0, totals.leave - totals.leaveOverdrawn) };
+}
+
+/**
+ * The days of the period paid before the person's first level starts (spec 11.3 "có công nhưng chưa có mức"): from
+ * the first of them to the day before the level. Those days are paid nothing; null when there are none.
+ */
+export function profileGapOf(
+  row: TimesheetClosingRowDto,
+  facts: PayrollProfileMonthDto,
+  config: PayrollConfig,
+): { from: string; to: string } | null {
+  const first = [...facts.versions].sort(byFrom)[0];
+  const base = dayCodesOf(row, config);
+  if (!first || !base || first.from <= config.dates.period.from) return null;
+  const paidBefore = (day: string) => paidBySegment({ ...base, splitOn: day }).before;
+  const before = base.days.filter((d) => d < first.from);
+  const from = before.find((d) => paidBefore(nextDay(d)) > 0);
+  const to = before[before.length - 1];
+  return from && to ? { from, to } : null;
+}
+
+/**
+ * The contract type id of the level the period ends on when the month's config does not know it (spec 11.3): the
+ * row cannot be computed. Null when it is known.
+ */
+export function unknownContractOf(facts: PayrollProfileMonthDto, config: PayrollConfig): string | null {
+  const last = [...facts.versions]
+    .sort(byFrom)
+    .filter((v) => v.from <= config.dates.period.to)
+    .pop();
+  if (!last || config.contractTypes.some((t) => t.id === last.contractTypeId)) return null;
+  return last.contractTypeId;
 }
 
 /** Spec 5.6: split by the codes of each day; a backfilled row without codes is one part at the last level. */
 function segmentsOf({ row, facts, config }: LineInputArgs): PaySegment[] {
   const { period } = config.dates;
   const totals = closingTotalsOf(row);
-  const leavePaid = Math.max(0, totals.leave - totals.leaveOverdrawn);
-  const { codes } = row;
-  if (codes) {
-    const days = periodDays(period);
-    const dayCodes = days.map((d) => codes[d] ?? null);
-    const base = { days, codes: dayCodes, paid: totals.paid, leavePaid };
+  const base = dayCodesOf(row, config);
+  if (base) {
     return paySegmentsFor({
       ...base,
       employment: row.employment,

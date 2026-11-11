@@ -22,7 +22,8 @@ import { HttpError, invalid } from '../lib/http-error.js';
 import { MAIL_NOT_CONFIGURED, MailError, mailRouteOf, sendMail, type Mailer } from '../lib/mailer.js';
 import { listMessageTemplates } from './message-templates.js';
 import { writePayrollLog } from './payroll-log.js';
-import { payrollMonthOf, storedOf } from './payroll-month.js';
+import { payrollMonthOf } from './payroll-month.js';
+import { storedOf } from './payroll-month-index.js';
 import { dateWords, moneyWords, personWords } from './payroll-words.js';
 import { actorOf } from './timesheet-people.js';
 

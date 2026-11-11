@@ -21,11 +21,16 @@ export interface AppConfig {
   /** IndexNow key (production only); null turns the pings and the /<key>.txt file off. */
   indexNowKey: string | null;
   /**
-   * PAYROLL_ADMINS: sign-in emails (lowercase) given both payroll rights while nobody has any payroll right.
-   * Ignored once someone has it (spec-luong.md 10.2).
+   * PAYROLL_ADMINS unset or empty: [PAYROLL_OPEN], every HR account has both payroll rights and the stored rights
+   * decide nothing (changing them answers 409 payroll_open). Set: sign-in emails (lowercase) given both rights while
+   * nobody has any payroll right, ignored once someone has it (spec-luong.md 10.2).
    */
   payrollAdmins: readonly string[];
-  /** PAYROLL_KEY: seals bank account numbers (spec-luong.md 10.2). Null: saving an account answers 503. */
+  /**
+   * Seals bank account numbers (spec-luong.md 10.2): PAYROLL_KEY when set, else a key made from the session secret
+   * (version 0). Null only when that secret is the public local default and the database is real (payrollKeyOf):
+   * saving, showing or exporting a whole number then answers 503.
+   */
   payrollKey: PayrollKey | null;
 }
 

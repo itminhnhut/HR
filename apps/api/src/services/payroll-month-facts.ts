@@ -1,8 +1,10 @@
 import {
   EMPTY_MONTH_INPUTS,
   EMPTY_YEAR_PART,
+  employmentOn,
   type PayrollDates,
   type PayrollMonthInputsDto,
+  type PayrollProfileVersionDto,
   type PayrollYearPartDto,
   type TimesheetClosingRowDto,
 } from '@careers/shared';
@@ -18,12 +20,12 @@ import {
   payrollTaxCommitments,
 } from '../db/schema.js';
 import { accountOn } from './payroll-bank.js';
-import { regionalMinimum } from './payroll-catalogue.js';
+import { probationDaysOf, regionalMinimum } from './payroll-catalogue.js';
 import { leaveBaseOf } from './payroll-leave-payout.js';
 import type { PersonFacts } from './payroll-month-lines.js';
 import { commitmentDtoOf, dependantDtoOf, openingDtoOf, recurringDtoOf } from './payroll-profile-facts.js';
 import { monthFactsOf } from './payroll-profile-read.js';
-import { versionsOf, type Reader } from './payroll-profile-store.js';
+import { levelOn, versionsOf, type Reader } from './payroll-profile-store.js';
 import { dateWords } from './payroll-words.js';
 import type { Row } from './payroll-versions.js';
 
@@ -99,14 +101,40 @@ function unconfirmedDatesOf(row: TimesheetClosingRowDto, person: Employee | unde
   );
 }
 
+/**
+ * Câu 33: while the person is on probation in the period, the probation days of the level they are on then (its own
+ * or its contract type's) and whether the job manages the business (BLLĐ Đ.25).
+ */
+function probationOf(
+  row: TimesheetClosingRowDto,
+  versions: readonly PayrollProfileVersionDto[],
+  rows: readonly Row[],
+  dates: PayrollDates,
+): PersonFacts['probation'] {
+  const { from, to } = dates.period;
+  const start = row.joinedOn && row.joinedOn > from ? row.joinedOn : from;
+  if (start > to || employmentOn(row, start) !== 'probation') return null;
+  const level = levelOn(versions, start) ?? versions.find((v) => v.effectiveOn > start && v.effectiveOn <= to);
+  if (!level) return null;
+  const days = level.probationDays ?? probationDaysOf(rows, level.contractTypeId, row.employeeId, dates.monthKey);
+  return { days, managesBusiness: level.managesBusiness };
+}
+
+export interface PeopleFactsExtra {
+  /** Σ of the earlier pay months of the tax year, by person. */
+  yearMonths?: ReadonlyMap<string, PayrollYearPartDto>;
+  /** Công chuẩn of each person in the period before, for the leave payout; empty when the web has no close of it. */
+  previousNorms?: ReadonlyMap<string, number>;
+  /** (42) of each person in the approval of the month before; empty when it is not approved. */
+  previousNets?: ReadonlyMap<string, number>;
+}
+
 export async function peopleFactsOf(
   db: Reader,
   closingRows: readonly TimesheetClosingRowDto[],
   rows: readonly Row[],
   dates: PayrollDates,
-  yearMonths: ReadonlyMap<string, PayrollYearPartDto> = new Map(),
-  /** Công chuẩn of each person in the period before, for the leave payout; empty when the web has no close of it. */
-  previousNorms: ReadonlyMap<string, number> = new Map(),
+  { yearMonths = new Map(), previousNorms = new Map(), previousNets = new Map() }: PeopleFactsExtra = {},
 ): Promise<Map<string, PersonFacts>> {
   const ids = closingRows.map((r) => r.employeeId);
   if (ids.length === 0) return new Map();
@@ -126,17 +154,21 @@ export async function peopleFactsOf(
         openings: mine(all.openings, id).map(openingDtoOf),
       };
       const facts = monthFactsOf(profile, rows, dates.monthKey, dates.payDate);
+      // The sheet and the payslip use the account in force on the pay date; one from a later day is not there yet.
+      const bank = accountOn(mine(all.banks, id), dates.payDate) ?? null;
       const person: PersonFacts = {
         facts: facts.versions.length > 0 ? facts : null,
         zone: regionalMinimum(rows, { id, regionId: row.regionId }, dates.insuranceDate)?.zone ?? 'I',
-        hasBankAccount: all.banks.some((b) => b.employeeId === id),
+        hasBankAccount: bank !== null,
         email: employee?.email ?? null,
-        bank: accountOn(mine(all.banks, id), dates.payDate) ?? null,
+        bank,
         unconfirmedDates: unconfirmedDatesOf(row, employee, dates),
         inputs: typedInputsOf(all.typed.find((t) => t.employeeId === id)),
         currentBlock: employee?.block ?? null,
         yearMonths: yearMonths.get(id) ?? EMPTY_YEAR_PART,
         leaveBase: leaveBaseOf(row, versions, dates.period, previousNorms.get(id)),
+        previousNet: previousNets.get(id) ?? null,
+        probation: probationOf(row, versions, rows, dates),
       };
       return [id, person];
     }),
