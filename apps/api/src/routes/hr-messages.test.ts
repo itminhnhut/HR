@@ -47,6 +47,7 @@ describe('message templates', () => {
       'rejection',
       'rejection_interview',
       'call',
+      'payslip',
     ]);
     expect(body.templates[0]).toEqual(DEFAULT_MESSAGE_TEMPLATES.interview_onsite);
     expect(body.customized).toEqual([]);
