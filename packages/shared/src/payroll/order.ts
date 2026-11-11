@@ -24,6 +24,6 @@ export function sortPayrollRows<T extends OrderedRow>(rows: readonly T[], contra
       a.regionOrder - b.regionOrder ||
       rank(typeIds, a.contractTypeId) - rank(typeIds, b.contractTypeId) ||
       rank(BLOCK_ORDER, a.block) - rank(BLOCK_ORDER, b.block) ||
-      a.code.localeCompare(b.code),
+      a.code.localeCompare(b.code, undefined, { numeric: true }),
   );
 }

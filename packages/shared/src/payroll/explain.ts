@@ -1,5 +1,5 @@
 import type { PayrollConfig } from './config.js';
-import { kpiRuleOf, type ComponentPaid } from './income.js';
+import { kpiRuleOf, workedSegments, type ComponentPaid } from './income.js';
 import type { PayrollLine, PayrollLineInput } from './line.js';
 import { min, roundDong, sum, toNumber } from './rational.js';
 import { settingFor } from './settings.js';
@@ -52,11 +52,13 @@ const cell = (formula: string, refs: (PayrollConfigRef | null)[] = []): PayrollC
 });
 
 const lastSegment = ({ input }: Ctx) => input.income.segments[input.income.segments.length - 1];
+const worked = ({ input }: Ctx) => workedSegments(input.income.segments);
 
-/** (18): Σ(per-day component × its rate) ÷ norm, of the last segment. */
+/** (18): Σ(per-day component × its rate) ÷ norm, of the last segment with paid days. */
 function dailyRateText(ctx: Ctx): string {
   const { config, line, input } = ctx;
-  const segment = lastSegment(ctx);
+  const parts = worked(ctx);
+  const segment = parts[parts.length - 1];
   if (!segment) return '';
   const paid = config.components.filter((c) => c.perDay && (segment.amounts[c.id] ?? 0) > 0);
   const amountOf = (id: string) => dong(segment.amounts[id] ?? 0);
@@ -64,9 +66,9 @@ function dailyRateText(ctx: Ctx): string {
   const full = paid.filter((c) => !(segment.probation && c.probationRate)).map((c) => amountOf(c.id));
   const group = (list: string[]) => (list.length > 1 ? `(${list.join(' + ')})` : (list[0] ?? '0'));
   const rate = pct(config.rules.probationRate);
-  const parts = [...(reduced.length ? [`${group(reduced)} × ${rate}`] : []), ...full];
-  const top = reduced.length && full.length ? `(${parts.join(' + ')})` : parts.length > 1 ? group(parts) : parts[0];
-  const tail = input.income.segments.length > 1 ? ' (đoạn cuối kỳ)' : '';
+  const terms = [...(reduced.length ? [`${group(reduced)} × ${rate}`] : []), ...full];
+  const top = reduced.length && full.length ? `(${terms.join(' + ')})` : terms.length > 1 ? group(terms) : terms[0];
+  const tail = parts.length > 1 ? ' (đoạn cuối kỳ)' : '';
   return `${top ?? '0'} ÷ ${count(input.income.norm)} = ${dong(line.cells.dailyRate)}${tail}`;
 }
 
@@ -99,11 +101,11 @@ function overtimeText({ line, config }: Ctx): string {
   return `${parts.join(' + ')} = ${dong(line.cells.overtimePay)}`;
 }
 
-function incomeText({ line, input }: Ctx): string {
-  const { income, cells } = line;
+function incomeText(ctx: Ctx): string {
+  const { income, cells } = ctx.line;
   const fixed = roundDong(sum(income.componentPaid.filter((e) => !e.component.perDay).map((e) => e.paid)));
   const dayPart =
-    input.income.segments.length > 1
+    worked(ctx).length > 1
       ? `Lương ngày công ${dong(roundDong(income.dayPay))}`
       : `Tròn(${exact(income.dailyRate)} × ${count(income.paidDays)}${fixed ? ` + ${dong(fixed)}` : ''})`;
   const rest = [cells.kpiBonus, cells.otherIncome, cells.overtimePay].map(dong).join(' + ');

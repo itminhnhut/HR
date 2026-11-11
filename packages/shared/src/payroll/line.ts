@@ -2,6 +2,7 @@ import type { PayrollConfig } from './config.js';
 import type { Zone } from './defaults-law.js';
 import {
   computeIncome,
+  NO_OVERTIME,
   type IncomeInput,
   type IncomeResult,
   type KpiPercentSource,
@@ -201,7 +202,7 @@ export function computeLine(input: PayrollLineInput, config: PayrollConfig): Pay
     },
     exact,
     kpiPercentSource: income.kpiPercentSource,
-    overtime: input.income.overtime ?? { weekdayHours: 0, restDays: 0, holidayDays: 0 },
+    overtime: input.income.overtime ?? NO_OVERTIME,
     amounts,
     income,
     insurance,

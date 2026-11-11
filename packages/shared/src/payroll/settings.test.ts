@@ -185,3 +185,51 @@ describe('sources of the law defaults (spec 5.8, Q6)', () => {
     expect([june?.value, june?.source]).toEqual([2_340_000, 'NĐ 73/2024/NĐ-CP Đ.3']);
   });
 });
+
+describe('the progressive tax table (luat.bieu-thue)', () => {
+  const schema = LAW_SETTINGS['luat.bieu-thue'].schema;
+  const messagesOf = (value: unknown) => schema.safeParse(value).error?.issues.map((i) => i.message) ?? [];
+
+  it('should accept the table of the law in force', () => {
+    // Arrange
+    const table = LAW_SETTINGS['luat.bieu-thue'].defaults.map((d) => d.value);
+
+    // Act / Assert
+    expect(table.every((value) => schema.safeParse(value).success)).toBe(true);
+  });
+
+  it('should refuse a table whose last bracket has a top', () => {
+    // Act
+    const messages = messagesOf([
+      { upTo: 10_000_000, rate: 0.05 },
+      { upTo: 30_000_000, rate: 0.1 },
+    ]);
+
+    // Assert
+    expect(messages).toEqual(['Bậc cuối của biểu thuế không có mức trên (để trống).']);
+  });
+
+  it('should refuse a table whose tops do not rise bracket by bracket', () => {
+    // Act
+    const messages = messagesOf([
+      { upTo: 30_000_000, rate: 0.05 },
+      { upTo: 10_000_000, rate: 0.1 },
+      { upTo: null, rate: 0.2 },
+    ]);
+
+    // Assert
+    expect(messages).toEqual(['Mức trên của các bậc phải tăng dần.']);
+  });
+
+  it('should refuse a table with an open bracket before the last', () => {
+    // Act
+    const messages = messagesOf([
+      { upTo: 10_000_000, rate: 0.05 },
+      { upTo: null, rate: 0.1 },
+      { upTo: null, rate: 0.2 },
+    ]);
+
+    // Assert
+    expect(messages).toEqual(['Chỉ bậc cuối được để trống mức trên.']);
+  });
+});

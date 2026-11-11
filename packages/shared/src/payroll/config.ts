@@ -44,41 +44,54 @@ export interface PayrollConfig {
   used: Resolved<unknown>[];
 }
 
+const RULE_KEYS = {
+  probationRate: 'quy-tac.ty-le-thu-viec',
+  hoursPerDay: 'quy-tac.gio-mot-ngay',
+  overtimeRates: 'quy-tac.he-so-lam-them',
+  restDayHours: 'quy-tac.gio-cong-ngay-nghi',
+  insuranceCount: 'quy-tac.dem-ngay-bh',
+  kpiByBlock: 'quy-tac.kpi-theo-khoi',
+  kpiOfficialByDays: 'quy-tac.kpi-chinh-thuc-theo-ngay',
+  grossWithKpi: 'quy-tac.gross-gom-kpi',
+} as const satisfies Record<keyof PayrollConfig['rules'], SettingKey>;
+
+const OPTION_KEYS = {
+  rounding: 'tuy-chon.d01',
+  flatBase: 'tuy-chon.d02',
+  unionFund: 'tuy-chon.d03',
+  healthWhenNotSocial: 'tuy-chon.d04',
+  overtimeExempt: 'tuy-chon.d05',
+  kpiSplit: 'tuy-chon.d06',
+  workingDays: 'tuy-chon.d07',
+  leavePayout: 'tuy-chon.d08',
+  commitment: 'tuy-chon.d09',
+  afterLeaving: 'tuy-chon.d10',
+  sundayWork: 'tuy-chon.d12',
+  insuranceAgreed: 'tuy-chon.d15',
+} as const satisfies Record<keyof PayrollConfig['options'], SettingKey>;
+
+type ValuesOf<T extends Readonly<Record<string, SettingKey>>> = { -readonly [F in keyof T]: SettingValue<T[F]> };
+
+/** Each field's setting read once: the values by field, and the versions read, in field order. */
+function readAll<T extends Readonly<Record<string, SettingKey>>>(
+  keys: T,
+  read: (key: SettingKey) => Resolved<unknown>,
+): { values: ValuesOf<T>; used: Resolved<unknown>[] } {
+  const pairs = Object.entries(keys).map(([field, key]) => [field, read(key)] as const);
+  return {
+    values: Object.fromEntries(pairs.map(([field, resolved]) => [field, resolved.value])) as ValuesOf<T>,
+    used: pairs.map(([, resolved]) => resolved),
+  };
+}
+
 export function payrollConfigFor(
   rows: readonly SettingRow[],
   personId: string | null,
   dates: PayrollDates,
 ): PayrollConfig {
-  const used: Resolved<unknown>[] = [];
-  const get = <K extends SettingKey>(key: K): SettingValue<K> => {
-    const resolved = settingFor(rows, key, personId, dates.monthKey);
-    used.push(resolved);
-    return resolved.value;
-  };
-  const rules = {
-    probationRate: get('quy-tac.ty-le-thu-viec'),
-    hoursPerDay: get('quy-tac.gio-mot-ngay'),
-    overtimeRates: get('quy-tac.he-so-lam-them'),
-    restDayHours: get('quy-tac.gio-cong-ngay-nghi'),
-    insuranceCount: get('quy-tac.dem-ngay-bh'),
-    kpiByBlock: get('quy-tac.kpi-theo-khoi'),
-    kpiOfficialByDays: get('quy-tac.kpi-chinh-thuc-theo-ngay'),
-    grossWithKpi: get('quy-tac.gross-gom-kpi'),
-  };
-  const options = {
-    rounding: get('tuy-chon.d01'),
-    flatBase: get('tuy-chon.d02'),
-    unionFund: get('tuy-chon.d03'),
-    healthWhenNotSocial: get('tuy-chon.d04'),
-    overtimeExempt: get('tuy-chon.d05'),
-    kpiSplit: get('tuy-chon.d06'),
-    workingDays: get('tuy-chon.d07'),
-    leavePayout: get('tuy-chon.d08'),
-    commitment: get('tuy-chon.d09'),
-    afterLeaving: get('tuy-chon.d10'),
-    sundayWork: get('tuy-chon.d12'),
-    insuranceAgreed: get('tuy-chon.d15'),
-  };
+  const read = (key: SettingKey) => settingFor(rows, key, personId, dates.monthKey);
+  const rules = readAll(RULE_KEYS, read);
+  const options = readAll(OPTION_KEYS, read);
   return {
     personId,
     rows,
@@ -86,8 +99,8 @@ export function payrollConfigFor(
     components: componentsFor(rows, personId, dates.monthKey),
     contractTypes: contractTypesFor(rows, personId, dates.monthKey),
     law: lawParamsFor(rows, dates, personId),
-    rules,
-    options,
-    used,
+    rules: rules.values,
+    options: options.values,
+    used: [...rules.used, ...options.used],
   };
 }
