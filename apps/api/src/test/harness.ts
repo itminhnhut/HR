@@ -1,6 +1,7 @@
 import { sourceNameKey } from '@careers/shared';
 import { DEFAULT_SOURCES } from '../services/sources.js';
 import { DEFAULT_APPROVERS, DEFAULT_REGIONS, DEFAULT_STAFF_KINDS } from '../services/timesheet-people.js';
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
 import { getTableName, is, sql } from 'drizzle-orm';
@@ -20,6 +21,8 @@ const TABLES = Object.values(schema)
   .join(', ');
 
 export const HR_EMAIL = 'hr@congty.vn';
+/** A key made up for each test run, never a real one. */
+const TEST_PAYROLL_KEY = { version: 1, key: randomBytes(32) };
 export const TEST_INDEXNOW_KEY = 'test-indexnow-key-0001';
 
 /** 10:00 on 20/10/2026 in Vietnam. */
@@ -60,6 +63,8 @@ export async function createTestContext(): Promise<TestContext> {
       sessionSecret: 'test-secret-test-secret-test-secret!',
       secureCookies: false,
       indexNowKey: TEST_INDEXNOW_KEY,
+      payrollAdmins: [],
+      payrollKey: TEST_PAYROLL_KEY,
     },
     cvStore,
     paperStore,
@@ -100,6 +105,8 @@ export async function createTestContext(): Promise<TestContext> {
       deps.fetch = outbound.fetch;
       deps.config.indexNowKey = TEST_INDEXNOW_KEY;
       deps.config.isProduction = false;
+      deps.config.payrollAdmins = [];
+      deps.config.payrollKey = TEST_PAYROLL_KEY;
       deps.verifyGoogleToken = fakeGoogle;
       deps.verifyCaptcha = null;
       await db.execute(sql.raw(`TRUNCATE ${TABLES} CASCADE`));

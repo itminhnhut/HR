@@ -69,11 +69,12 @@ export function MultiFilter({ label, icon: Icon, items, picked, onChange, mark, 
         <Icon className="size-4 text-slate-500" />
         {label}
         {picked.length > 0 && <span aria-hidden="true" className="h-4 w-px bg-slate-200" />}
-        {only && <span className="max-w-32 truncate rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-800">{only}</span>}
+        {only && <span className="max-w-[min(60vw,20rem)] truncate rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-800">{only}</span>}
         {picked.length > 1 && <span className="rounded bg-blue-50 px-1.5 py-0.5 text-xs font-medium text-blue-800">{picked.length} đã chọn</span>}
         <ChevronDown className="size-4 text-slate-400" />
       </PopoverTrigger>
-      <PopoverContent align="start" finalFocus={trigger} className="w-60 p-0">
+      {/* As wide as its longest option (a name is never cut); past the cap the option wraps to a second line. */}
+      <PopoverContent align="start" finalFocus={trigger} className="w-max max-w-[min(92vw,420px)] min-w-60 p-0">
         <Command label={`Chọn ${label.toLowerCase()}`}>
           {isSearchable && <CommandInput placeholder={`Tìm ${label.toLowerCase()}`} />}
           <CommandList>
@@ -86,7 +87,7 @@ export function MultiFilter({ label, icon: Icon, items, picked, onChange, mark, 
                     <span aria-hidden="true" className={`flex size-4 shrink-0 items-center justify-center rounded border ${isOn ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 bg-white'}`}>
                       {isOn && <Check className="size-3" />}
                     </span>
-                    {mark ? mark(item.value) : <span className="truncate">{item.label}</span>}
+                    {mark ? mark(item.value) : <span className="min-w-0 break-words">{item.label}</span>}
                   </CommandItem>
                 );
               })}

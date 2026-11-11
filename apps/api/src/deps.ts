@@ -1,3 +1,4 @@
+import type { PayrollKey } from './lib/payroll-crypto.js';
 import type { Db } from './db/index.js';
 import type { CvStore } from './lib/cv-store.js';
 import type { PaperStore } from './lib/paper-store.js';
@@ -6,6 +7,7 @@ import type { GoogleVerifier } from './lib/google.js';
 import type { ImageStore } from './lib/image-store.js';
 import type { RealtimeReader } from './lib/ga-realtime.js';
 import type { FetchFn } from './lib/indexnow.js';
+import type { Mailer } from './lib/mailer.js';
 
 export interface AppConfig {
   /** Public FRONTEND origin, used in share pages and the sitemap. */
@@ -18,6 +20,13 @@ export interface AppConfig {
   secureCookies: boolean;
   /** IndexNow key (production only); null turns the pings and the /<key>.txt file off. */
   indexNowKey: string | null;
+  /**
+   * PAYROLL_ADMINS: sign-in emails (lowercase) given both payroll rights while nobody has any payroll right.
+   * Ignored once someone has it (spec-luong.md 10.2).
+   */
+  payrollAdmins: readonly string[];
+  /** PAYROLL_KEY: seals bank account numbers (spec-luong.md 10.2). Null: saving an account answers 503. */
+  payrollKey: PayrollKey | null;
 }
 
 /**
@@ -40,4 +49,6 @@ export interface Deps {
   fetch: FetchFn;
   /** "Đang truy cập" on the HR overview. */
   readRealtime: RealtimeReader;
+  /** Mail the server sends by itself (payslips); null or absent: not configured, HR sends from their own mailbox. */
+  mailer?: Mailer | null;
 }

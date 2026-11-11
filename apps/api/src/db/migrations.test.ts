@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
+import { dayCode, periodDays, restDayWork, timesheetTotals, type AttendanceCode } from '@careers/shared';
 import { drizzle } from 'drizzle-orm/pglite';
 import { migrate } from 'drizzle-orm/pglite/migrator';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -23,6 +24,14 @@ function migrationsUpTo(count: number): string {
   const journal = JSON.parse(readFileSync(journalPath, 'utf8')) as { entries: unknown[] };
   writeFileSync(journalPath, JSON.stringify({ ...journal, entries: journal.entries.slice(0, count) }));
   return dir;
+}
+
+/** How many migrations come before the one named `name` (its tag without the number), so renumbering keeps tests right. */
+function countBefore(name: string): number {
+  const journal = JSON.parse(readFileSync(join(MIGRATIONS, 'meta', '_journal.json'), 'utf8')) as { entries: { tag: string }[] };
+  const index = journal.entries.findIndex((e) => e.tag.replace(/^\d+_/, '') === name);
+  if (index < 0) throw new Error(`No migration named ${name}`);
+  return index;
 }
 
 describe('migration 0002: candidates by Google email', SLOW, () => {
@@ -606,5 +615,432 @@ describe('migration 0038: company days off (Nghỉ công ty)', SLOW, () => {
     expect(batch).toMatchObject({ version: 1, note: '', approvedBy: null });
     await expect(removing).rejects.toThrow();
     expect(await db.select().from(schema.timesheetAbsences)).toHaveLength(2);
+  });
+});
+
+describe('migration payroll_rights: Quyền Lương and its own log', SLOW, () => {
+  it('L-H07: should leave every existing HR account without a payroll right, and refuse Duyệt without Xem, sửa', async () => {
+    // Arrange: one HR account before the migration
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_rights')) });
+    await pg.exec(`insert into hr_users (email, password_hash) values ('hr@congty.vn', 'h')`);
+
+    // Act
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_rights') + 1) });
+
+    // Assert
+    const rights = await pg.query(`select can_payroll, can_approve_payroll from hr_users`);
+    expect(rights.rows).toEqual([{ can_payroll: false, can_approve_payroll: false }]);
+    await expect(pg.exec(`update hr_users set can_approve_payroll = true`)).rejects.toThrow();
+  });
+
+  it('L-I10: should keep the payroll log only added to', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_rights') + 1) });
+
+    // Act
+    await pg.exec(`insert into payroll_log (area, actor, action, detail, at) values ('quyen', 'Lan', 'Cấp quyền', 'x', now())`);
+
+    // Assert
+    await expect(pg.exec(`update payroll_log set detail = 'y'`)).rejects.toThrow(/only added to/);
+    await expect(pg.exec(`delete from payroll_log`)).rejects.toThrow(/only added to/);
+    expect((await pg.query(`select detail from payroll_log`)).rows).toEqual([{ detail: 'x' }]);
+  });
+});
+
+describe('migration timesheet_closings: each close kept for good', SLOW, () => {
+  const REGION = '11111111-1111-4111-8111-111111111111';
+  const A = '22222222-2222-4222-8222-22222222222a';
+  const B = '22222222-2222-4222-8222-22222222222b';
+  const C = '22222222-2222-4222-8222-22222222222c';
+  const HOLIDAY = '2026-10-01';
+  const ENTERED: Record<string, AttendanceCode> = { '2026-10-01': '1', '2026-10-04': '1', '2026-10-05': 'P', '2026-10-06': 'KL' };
+
+  /** What the close of 26/10 counted for someone who joined on 29/09, by the rules in @careers/shared. */
+  function closedTotals() {
+    const days = periodDays({ from: '2026-09-26', to: '2026-10-25' });
+    const codes = days.map((day) =>
+      dayCode({ day, entered: ENTERED[day] ?? null, isHoliday: day === HOLIDAY, today: '2026-10-26', joinedOn: '2026-09-29', leftOn: null }),
+    );
+    const totals = timesheetTotals({ codes, norm: 22, leaveOpening: 2, employment: 'official', rule: { threshold: 14, perPeriod: 1, mode: 'excel' } });
+    return { ...totals, ...restDayWork(days, codes, new Set([HOLIDAY])) };
+  }
+
+  async function beforeClosings() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('timesheet_closings')) });
+    const totals = closedTotals();
+    const tampered = { ...totals, actual: totals.actual + 1 };
+    const entries = Object.entries(ENTERED).flatMap(([day, code]) => [A, B, C].map((id) => `('${id}', '${day}', '${code}', 'Lan')`));
+    await pg.exec(`
+      insert into timesheet_regions (id, name, saturdays) values ('${REGION}', 'Vùng thử', 2);
+      insert into employees (id, code, full_name, region_id, employment, joined_on, official_on) values
+        ('${A}', 'NV01', 'NV A', '${REGION}', 'official', '2026-09-29', '2026-08-01'),
+        ('${B}', 'NV02', 'NV B', '${REGION}', 'official', '2026-09-29', null),
+        ('${C}', 'NV03', 'NV C', '${REGION}', 'official', '2026-09-29', null);
+      insert into timesheet_periods (id, year, month, from_on, to_on, status, norms, closed_at, closed_by, frozen) values
+        ('33333333-3333-4333-8333-333333333310', 2026, 10, '2026-09-26', '2026-10-25', 'closed', '{"${REGION}": 22}',
+          '2026-10-26T03:00:00Z', 'Lan', '{"holidays": [{"day": "${HOLIDAY}", "name": "Lễ thử"}], "regions": []}'),
+        ('33333333-3333-4333-8333-333333333311', 2026, 11, '2026-10-26', '2026-11-25', 'open', '{}', null, null, null);
+      insert into timesheet_entries (employee_id, day, code, updated_by) values ${entries.join(', ')};
+      insert into timesheet_snapshots (period_id, employee_id, code, full_name, department, title, region_id, employment, staff_label, joined_on, norm, leave_opening, leave_closing, totals) values
+        ('33333333-3333-4333-8333-333333333310', '${A}', 'NV01', 'NV A', 'Kinh doanh', 'Nhân viên', '${REGION}', 'official', 'Chính thức', '2026-09-29', 22, 2, ${totals.leaveClosing}, '${JSON.stringify(totals)}'),
+        ('33333333-3333-4333-8333-333333333310', '${B}', 'NV02', 'NV B', '', '', '${REGION}', 'official', null, '2026-09-29', 22, 2, ${totals.leaveClosing}, '${JSON.stringify(tampered)}'),
+        ('33333333-3333-4333-8333-333333333310', '${C}', 'NV03', 'NV C', '', '', '${REGION}', 'official', null, '2026-09-29', 22, 2, 0, null),
+        ('33333333-3333-4333-8333-333333333311', '${A}', 'NV01', 'NV A', '', '', '${REGION}', 'official', null, null, 22, 2, 2, null);
+    `);
+    return { pg, db };
+  }
+
+  it('L-L28: should keep each closed period as close number 1, copied from its snapshot, and nothing for an open one', async () => {
+    // Arrange
+    const { pg, db } = await beforeClosings();
+
+    // Act
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('timesheet_closings') + 1) });
+
+    // Assert
+    const closings = await pg.query(`select year, month, close_no, closed_by, source, closed_at, norms, holidays from timesheet_closings`);
+    expect(closings.rows).toEqual([
+      {
+        year: 2026,
+        month: 10,
+        close_no: 1,
+        closed_by: 'Lan',
+        source: 'backfill',
+        closed_at: new Date('2026-10-26T03:00:00Z'),
+        norms: { [REGION]: 22 },
+        holidays: [{ day: HOLIDAY, name: 'Lễ thử' }],
+      },
+    ]);
+    const rows = await pg.query<{ code: string; department: string; staff_label: string | null; official_on: string | null }>(
+      `select code, department, staff_label, official_on::text from timesheet_closing_rows order by code`,
+    );
+    expect(rows.rows).toEqual([
+      { code: 'NV01', department: 'Kinh doanh', staff_label: 'Chính thức', official_on: '2026-08-01' },
+      { code: 'NV02', department: '', staff_label: null, official_on: null },
+      { code: 'NV03', department: '', staff_label: null, official_on: null },
+    ]);
+  });
+
+  it('L-C02: should rebuild the code of every day from the cells and the holidays of the close, matching its totals', async () => {
+    // Arrange
+    const { pg, db } = await beforeClosings();
+
+    // Act
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('timesheet_closings') + 1) });
+
+    // Assert
+    const [row] = (
+      await pg.query<{ codes: Record<string, string | null>; cannot_rebuild: boolean; kind: string | null }>(
+        `select r.codes, r.cannot_rebuild, k.name as kind from timesheet_closing_rows r left join timesheet_staff_kinds k on k.id = r.staff_kind_id where r.code = 'NV01'`,
+      )
+    ).rows;
+    expect(row?.cannot_rebuild).toBe(false);
+    expect(row?.kind).toBe('Chính thức');
+    expect(Object.keys(row?.codes ?? {})).toHaveLength(30);
+    expect(row?.codes).toMatchObject({
+      '2026-09-26': null,
+      '2026-09-28': null,
+      '2026-09-29': '1',
+      '2026-10-01': '1',
+      '2026-10-02': '1',
+      '2026-10-04': '1',
+      '2026-10-05': 'P',
+      '2026-10-06': 'KL',
+      '2026-10-11': null,
+    });
+  });
+
+  it('L-C02: should mark a person whose totals the cells no longer give, or who has no totals, as not rebuilt, without codes', async () => {
+    // Arrange
+    const { pg, db } = await beforeClosings();
+
+    // Act
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('timesheet_closings') + 1) });
+
+    // Assert
+    const rows = await pg.query(`select code, cannot_rebuild, codes from timesheet_closing_rows where code <> 'NV01' order by code`);
+    expect(rows.rows).toEqual([
+      { code: 'NV02', cannot_rebuild: true, codes: null },
+      { code: 'NV03', cannot_rebuild: true, codes: null },
+    ]);
+  });
+
+  it('L-L28: should refuse to change or remove a close, and to delete its period', async () => {
+    // Arrange
+    const { pg, db } = await beforeClosings();
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('timesheet_closings') + 1) });
+
+    // Act + Assert
+    await expect(pg.exec(`update timesheet_closing_rows set full_name = 'x'`)).rejects.toThrow(/never changed/);
+    await expect(pg.exec(`delete from timesheet_closings`)).rejects.toThrow(/never changed/);
+    await expect(pg.exec(`delete from timesheet_periods where month = 10`)).rejects.toThrow();
+  });
+});
+
+describe('migration payroll_timesheet_link: khối, confirmed dates and the payroll month', SLOW, () => {
+  const REGION = '11111111-1111-4111-8111-111111111111';
+
+  it('L-L29: should leave every person without khối and with no date confirmed, as HR has not checked them yet', async () => {
+    // Arrange: a person whose dates were typed in before the migration
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_timesheet_link')) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('${REGION}', 'Vùng thử');
+      insert into employees (code, full_name, region_id, joined_on, official_on) values ('NV01', 'NV A', '${REGION}', '2026-01-05', '2026-03-05');
+    `);
+
+    // Act
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_timesheet_link') + 1) });
+
+    // Assert
+    const people = await pg.query(`select block, joined_on_confirmed, official_on_confirmed, left_on_confirmed from employees`);
+    expect(people.rows).toEqual([{ block: null, joined_on_confirmed: false, official_on_confirmed: false, left_on_confirmed: false }]);
+    await expect(pg.exec(`update employees set block = 'XX'`)).rejects.toThrow();
+  });
+
+  it('L-C04: should keep a payroll month on a close, refuse an approved one without it, and refuse an unknown status', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_timesheet_link') + 1) });
+
+    // Act + Assert
+    await expect(pg.exec(`insert into payroll_periods (year, month, status) values (2026, 10, 'approved')`)).rejects.toThrow();
+    await expect(pg.exec(`insert into payroll_periods (year, month, status) values (2026, 10, 'other')`)).rejects.toThrow();
+    await pg.exec(`insert into payroll_periods (year, month) values (2026, 10)`);
+    const rows = await pg.query(`select status, closing_id, row_version from payroll_periods`);
+    expect(rows.rows).toEqual([{ status: 'waiting', closing_id: null, row_version: 0 }]);
+    await expect(pg.exec(`insert into payroll_periods (year, month) values (2026, 10)`)).rejects.toThrow();
+  });
+
+  it('L-L30: should keep one check per item and close, the close of a check kept (RESTRICT)', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_timesheet_link') + 1) });
+    await pg.exec(`
+      insert into timesheet_periods (id, year, month, from_on, to_on, status) values ('33333333-3333-4333-8333-333333333310', 2026, 10, '2026-09-26', '2026-10-25', 'closed');
+      insert into timesheet_closings (id, period_id, close_no, year, month, from_on, to_on, closed_at, closed_by, source, holidays, regions, norms)
+        values ('44444444-4444-4444-8444-444444444444', '33333333-3333-4333-8333-333333333310', 1, 2026, 10, '2026-09-26', '2026-10-25', now(), 'Lan', 'backfill', '[]', '[]', '{}');
+    `);
+    const check = `insert into payroll_first_month_checks (item, closing_id, confirmed, confirmed_at, confirmed_by) values ('lan-chot-ky-cong', '44444444-4444-4444-8444-444444444444', true, now(), 'Lan')`;
+
+    // Act
+    await pg.exec(check);
+
+    // Assert
+    await expect(pg.exec(check)).rejects.toThrow();
+    await expect(pg.exec(`delete from timesheet_closings`)).rejects.toThrow();
+    expect((await pg.query(`select item, employee_id, confirmed from payroll_first_month_checks`)).rows).toEqual([
+      { item: 'lan-chot-ky-cong', employee_id: null, confirmed: true },
+    ]);
+  });
+});
+
+describe('migration payroll_settings: versioned configuration rows', SLOW, () => {
+  const A = '22222222-2222-4222-8222-22222222222a';
+  const REGION = '11111111-1111-4111-8111-111111111111';
+
+  async function migrated() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_settings') + 1) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('${REGION}', 'Vùng thử');
+      insert into employees (id, code, full_name, region_id) values ('${A}', 'NV01', 'NV A', '${REGION}');
+    `);
+    return pg;
+  }
+
+  const row = (from: string, employee = 'null', superseded = 'null') =>
+    `insert into payroll_settings (key, employee_id, applies_from, value, superseded_by, created_by)
+       values ('quy-tac.gio-mot-ngay', ${employee}, '${from}', '8', ${superseded}, 'Lan')`;
+
+  it('L-A13: should keep one live row per key, scope and date, a corrected row and a person’s row aside', async () => {
+    // Arrange
+    const pg = await migrated();
+    await pg.exec(row('2026-12'));
+
+    // Act + Assert
+    await expect(pg.exec(row('2026-12'))).rejects.toThrow();
+    await pg.exec(row('2026-12', `'${A}'`));
+    await expect(pg.exec(row('2026-12', `'${A}'`))).rejects.toThrow();
+    await pg.exec(row('2026-12', 'null', `'33333333-3333-4333-8333-333333333333'`));
+    const rows = await pg.query(`select employee_id, superseded_by is not null as replaced from payroll_settings order by 1, 2`);
+    expect(rows.rows).toEqual([
+      { employee_id: A, replaced: false },
+      { employee_id: null, replaced: false },
+      { employee_id: null, replaced: true },
+    ]);
+  });
+
+  it('L-L01: should refuse a row that is neither a value nor a stop, and a date in another shape', async () => {
+    // Arrange
+    const pg = await migrated();
+
+    // Act + Assert
+    await expect(
+      pg.exec(`insert into payroll_settings (key, applies_from, created_by) values ('khoan.com.thue', '2026-12', 'Lan')`),
+    ).rejects.toThrow();
+    await expect(pg.exec(row('12/2026'))).rejects.toThrow();
+    await pg.exec(`insert into payroll_settings (key, employee_id, applies_from, stop, created_by) values ('khoan.com.thue', '${A}', '2027-03', true, 'Lan')`);
+    await expect(pg.exec(`delete from employees`)).rejects.toThrow();
+  });
+});
+
+describe('migration payroll_profiles: hồ sơ lương', SLOW, () => {
+  const A = '22222222-2222-4222-8222-22222222222a';
+  const REGION = '11111111-1111-4111-8111-111111111111';
+  const P = '55555555-5555-4555-8555-555555555555';
+
+  async function migrated() {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_profiles') + 1) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('${REGION}', 'Vùng thử');
+      insert into employees (id, code, full_name, region_id) values ('${A}', 'NV01', 'NV A', '${REGION}');
+    `);
+    return pg;
+  }
+
+  it('L-B11: should keep one level per person and date, its amounts going with it, the person kept (RESTRICT)', async () => {
+    // Arrange
+    const pg = await migrated();
+    const level = (id: string) =>
+      `insert into payroll_profiles (id, employee_id, effective_on, contract_type_id, created_by) values ('${id}', '${A}', '2026-11-01', 'khong-thoi-han', 'Lan')`;
+    await pg.exec(level(P));
+    await pg.exec(`insert into payroll_profile_amounts (profile_id, component_id, amount) values ('${P}', 'luong', 10000000000)`);
+
+    // Act + Assert
+    await expect(pg.exec(level('55555555-5555-4555-8555-555555555556'))).rejects.toThrow();
+    await expect(pg.exec(`insert into payroll_profile_amounts (profile_id, component_id, amount) values ('${P}', 'com', -1)`)).rejects.toThrow();
+    expect((await pg.query(`select amount from payroll_profile_amounts`)).rows).toEqual([{ amount: 10000000000 }]);
+    await expect(pg.exec(`delete from employees`)).rejects.toThrow();
+    await pg.exec(`delete from payroll_profiles`);
+    expect((await pg.query(`select count(*)::int as n from payroll_profile_amounts`)).rows).toEqual([{ n: 0 }]);
+  });
+
+  it('L-B24: should have no column for the plain account number, only the cipher, its key version and last four digits', async () => {
+    // Arrange
+    const pg = await migrated();
+
+    // Act
+    const columns = await pg.query<{ column_name: string }>(
+      `select column_name from information_schema.columns where table_name = 'payroll_bank_accounts' order by column_name`,
+    );
+
+    // Assert
+    expect(columns.rows.map((c) => c.column_name)).toEqual([
+      'account_cipher', 'bank', 'changed_on', 'created_at', 'created_by', 'employee_id', 'id', 'key_version', 'last4', 'payslip_email',
+    ]);
+    await expect(
+      pg.exec(`insert into payroll_bank_accounts (employee_id, bank, account_cipher, key_version, last4, changed_on, created_by) values ('${A}', 'B', 'x', 1, '12a4', '2026-11-01', 'Lan')`),
+    ).rejects.toThrow();
+  });
+
+  it('L-B21, L-E07: should keep one commitment and one opening balance per person and tax year', async () => {
+    // Arrange
+    const pg = await migrated();
+    const commitment = `insert into payroll_tax_commitments (employee_id, year, signed_on, created_by) values ('${A}', 2026, '2026-11-20', 'Lan')`;
+    const opening = `insert into payroll_opening (employee_id, tax_year, overtime_hours, updated_by, updated_at) values ('${A}', 2026, 12.5, 'Lan', now())`;
+
+    // Act
+    await pg.exec(commitment);
+    await pg.exec(opening);
+
+    // Assert
+    await expect(pg.exec(commitment)).rejects.toThrow();
+    await expect(pg.exec(opening)).rejects.toThrow();
+    expect((await pg.query(`select overtime_hours::text as h from payroll_opening`)).rows).toEqual([{ h: '12.5' }]);
+  });
+});
+
+describe('migration payroll_month_inputs: what HR types for a month', SLOW, () => {
+  const A = '22222222-2222-4222-8222-22222222222a';
+  const REGION = '11111111-1111-4111-8111-111111111111';
+
+  it('L-D08, L-D09: should keep one row per person and month, and refuse a KPI over 200% or negative hours', async () => {
+    // Arrange
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_month_inputs') + 1) });
+    await pg.exec(`
+      insert into timesheet_regions (id, name) values ('${REGION}', 'Vùng thử');
+      insert into employees (id, code, full_name, region_id) values ('${A}', 'NV01', 'NV A', '${REGION}');
+    `);
+    const row = (kpi: string, hours: string) =>
+      `insert into payroll_month_inputs (year, month, employee_id, kpi_percent, overtime_hours, updated_by, updated_at) values (2026, 11, '${A}', ${kpi}, ${hours}, 'Lan', now())`;
+
+    // Act
+    await pg.exec(row('0.875', '10.5'));
+
+    // Assert
+    await expect(pg.exec(row('0.5', '0'))).rejects.toThrow();
+    await pg.exec(`delete from payroll_month_inputs`);
+    await expect(pg.exec(row('2.5', '0'))).rejects.toThrow();
+    await expect(pg.exec(row('null', '-1'))).rejects.toThrow();
+    await pg.exec(row('null', '0'));
+    const stored = await pg.query(`select kpi_percent, other_income, cash, note from payroll_month_inputs`);
+    expect(stored.rows).toEqual([{ kpi_percent: null, other_income: [], cash: [], note: '' }]);
+    await expect(pg.exec(`delete from employees`)).rejects.toThrow();
+  });
+});
+
+describe('migration payroll_runs: bản duyệt lần N', SLOW, () => {
+  const PERIOD = '33333333-3333-4333-8333-333333333333';
+  const CLOSING = '44444444-4444-4444-8444-444444444444';
+  const MONTH = '55555555-5555-4555-8555-555555555555';
+
+  /** A closed November with its payroll month, before any approval. */
+  async function closedMonth(): Promise<PGlite> {
+    const pg = new PGlite();
+    const db = drizzle({ client: pg, schema });
+    await migrate(db, { migrationsFolder: migrationsUpTo(countBefore('payroll_runs') + 1) });
+    await pg.exec(`
+      insert into timesheet_periods (id, year, month, from_on, to_on, status, closed_by, closed_at)
+        values ('${PERIOD}', 2026, 11, '2026-10-26', '2026-11-25', 'closed', 'Lan', now());
+      insert into timesheet_closings (id, period_id, year, month, from_on, to_on, close_no, closed_at, closed_by, holidays, regions, norms)
+        values ('${CLOSING}', '${PERIOD}', 2026, 11, '2026-10-26', '2026-11-25', 1, now(), 'Lan', '[]', '[]', '{}');
+      insert into payroll_periods (id, year, month, status) values ('${MONTH}', 2026, 11, 'draft');
+    `);
+    return pg;
+  }
+
+  it('L-E05, L-E12: should keep an approval unchanged, only marked once as reopened, and never deleted', async () => {
+    // Arrange
+    const pg = await closedMonth();
+    await pg.exec(`insert into payroll_runs (period_id, approval_no, closing_id, snapshot, approved_at, approved_by)
+      values ('${MONTH}', 1, '${CLOSING}', '{"totals": {"netPay": 1000}}', now(), 'Lan')`);
+
+    // Act
+    await pg.exec(`update payroll_runs set reopened_at = now(), reopened_by = 'Lan', reopen_reason = 'Sai'`);
+
+    // Assert
+    await expect(pg.exec(`update payroll_runs set reopen_reason = 'Khác'`)).rejects.toThrow(/never changed/);
+    await expect(pg.exec(`update payroll_runs set snapshot = '{}'`)).rejects.toThrow(/never changed/);
+    await expect(pg.exec(`delete from payroll_runs`)).rejects.toThrow(/never changed/);
+    const runs = await pg.query(`select snapshot, reopen_reason from payroll_runs`);
+    expect(runs.rows).toEqual([{ snapshot: { totals: { netPay: 1000 } }, reopen_reason: 'Sai' }]);
+  });
+
+  it('should refuse a second approval with the same number for the month', async () => {
+    // Arrange
+    const pg = await closedMonth();
+    const run = `insert into payroll_runs (period_id, approval_no, closing_id, snapshot, approved_at, approved_by)
+      values ('${MONTH}', 1, '${CLOSING}', '{}', now(), 'Lan')`;
+
+    // Act
+    await pg.exec(run);
+
+    // Assert
+    await expect(pg.exec(run)).rejects.toThrow();
   });
 });

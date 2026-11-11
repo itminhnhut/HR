@@ -26,8 +26,12 @@ export interface Flow {
   /** A moment of that day in Vietnam, signed in again because sessions do not last for months. */
   at(day: string): Promise<void>;
   call<T>(method: string, path: string, body?: unknown, expected?: number): Promise<T>;
+  /** The same HR on the payroll API (/api/hr/payroll), which needs the payroll right. */
+  payroll<T>(method: string, path: string, body?: unknown, expected?: number): Promise<T>;
   /** The status and the error code, when the answer is the point of the test. */
   attempt(method: string, path: string, body?: unknown): Promise<{ status: number; code?: string }>;
+  /** The same for any address of the API (`/api/hr/payroll/…`), for answers that are not 200. */
+  attemptAt(method: string, fullPath: string, body?: unknown): Promise<{ status: number; code?: string }>;
   addPerson(over?: Record<string, unknown>): Promise<EmployeeDto>;
   updatePerson(person: EmployeeDto, over: Record<string, unknown>): Promise<EmployeeDto>;
   period(year: number, month: number): Promise<TimesheetDto>;
@@ -47,6 +51,12 @@ export async function createFlow(): Promise<Flow> {
   const request = (method: string, path: string, body?: unknown) => t.send(method, `/api/hr/timesheet${path}`, body, { cookie });
   const call = async <T>(method: string, path: string, body?: unknown, expected = 200): Promise<T> => {
     const res = await request(method, path, body);
+    const text = await res.text();
+    expect(res.status, `${method} ${path}: ${text}`).toBe(expected);
+    return (text ? JSON.parse(text) : null) as T;
+  };
+  const payroll = async <T>(method: string, path: string, body?: unknown, expected = 200): Promise<T> => {
+    const res = await t.send(method, `/api/hr/payroll${path}`, body, { cookie });
     const text = await res.text();
     expect(res.status, `${method} ${path}: ${text}`).toBe(expected);
     return (text ? JSON.parse(text) : null) as T;
@@ -74,8 +84,12 @@ export async function createFlow(): Promise<Flow> {
       await signIn();
     },
     call,
-    async attempt(method, path, body) {
-      const res = await request(method, path, body);
+    payroll,
+    attempt(method, path, body) {
+      return flow.attemptAt(method, `/api/hr/timesheet${path}`, body);
+    },
+    async attemptAt(method, fullPath, body) {
+      const res = await t.send(method, fullPath, body, { cookie });
       const text = await res.text();
       let code: string | undefined;
       try {

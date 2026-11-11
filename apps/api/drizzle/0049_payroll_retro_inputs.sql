@@ -1,0 +1,1 @@
+ALTER TABLE "payroll_month_inputs" ADD COLUMN "retro" jsonb DEFAULT '[]'::jsonb NOT NULL;

@@ -1,0 +1,2 @@
+ALTER TABLE "payroll_month_inputs" ADD COLUMN "leave_payout" bigint;--> statement-breakpoint
+ALTER TABLE "payroll_month_inputs" ADD CONSTRAINT "payroll_month_inputs_leave_payout" CHECK ("payroll_month_inputs"."leave_payout" is null or "payroll_month_inputs"."leave_payout" >= 0);

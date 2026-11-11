@@ -53,6 +53,8 @@ describe('HR sign-in with own password', () => {
       contactEmail: null,
       jobTitle: 'HR Generalist',
       alias: null,
+      canPayroll: false,
+      canApprovePayroll: false,
     });
   });
 

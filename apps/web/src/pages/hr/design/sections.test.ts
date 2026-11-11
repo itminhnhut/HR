@@ -19,8 +19,11 @@ describe('sectionOf', () => {
 });
 
 describe('HR_SECTIONS', () => {
-  it('should give every area its own icon and colour, so they can be told apart at a glance', () => {
+  it('should give every area its own icon, so they can be told apart at a glance', () => {
     expect(new Set(HR_SECTIONS.map((s) => s.icon)).size).toBe(HR_SECTIONS.length);
+  });
+
+  it('should give every area its own colour, so they can be told apart at a glance', () => {
     expect(new Set(HR_SECTIONS.map((s) => s.tone)).size).toBe(HR_SECTIONS.length);
   });
 });

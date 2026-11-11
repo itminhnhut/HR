@@ -51,6 +51,8 @@ import {
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
 import { actorOf, dayWords, listHolidays, listRegions, listStaffKinds } from './timesheet-people.js';
+import { recordClosing } from './timesheet-closings.js';
+import { onTimesheetClosed, onTimesheetReopened, withPayrollNotice } from './payroll-timesheet.js';
 
 /** Bảng chấm công (spec-cham-cong.md): reading, entering, closing. The arithmetic is in @careers/shared. */
 
@@ -650,8 +652,10 @@ export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date)
   const dto = await toDto(db, period, now);
   const holidays = new Set(dto.holidays.map((h) => h.day));
   const days = periodDays({ from: period.fromOn, to: period.toOn });
+  const codesOf = new Map<string, Record<string, AttendanceCode | null>>();
   const snapshots = dto.rows.map((row) => {
     const codes = days.map((day) => dayCode({ day, entered: row.cells[day]?.entered ?? null, isHoliday: holidays.has(day), today: dto.today, joinedOn: row.joinedOn, leftOn: row.leftOn }));
+    codesOf.set(row.employeeId, Object.fromEntries(days.map((day, i) => [day, codes[i] ?? null])));
     const totals = timesheetTotals({
       codes,
       norm: row.norm,
@@ -672,12 +676,14 @@ export async function closePeriod(db: Db, periodId: string, hr: HrMe, now: Date)
     await tx.delete(timesheetSnapshots).where(eq(timesheetSnapshots.periodId, periodId));
     if (snapshots.length > 0) await tx.insert(timesheetSnapshots).values(snapshots);
     const [row] = await tx.update(timesheetPeriods).set({ status: 'closed', closedAt: now, closedBy: actorOf(hr), frozen: { holidays: dto.holidays, regions: dto.regions } }).where(eq(timesheetPeriods.id, periodId)).returning();
+    // Kept for good, with the code of every day: payroll pays from a close, and closing again adds one (spec-luong.md 10.1).
+    const closing = await recordClosing(tx, { period, closedAt: now, closedBy: actorOf(hr), holidays: dto.holidays, regions: dto.regions, norms: dto.norms, people: snapshots.map((s) => ({ ...s, codes: codesOf.get(s.employeeId) ?? {} })) });
     if (differences) await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Chênh lệch khi chốt lại', detail: differences, at: now });
     await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Chốt kỳ', detail: `Tháng ${period.month}/${period.year}`, at: now });
-    return row;
+    return { row, notice: await onTimesheetClosed(tx, period, closing, hr, now) };
   });
-  if (!updated) throw notFound('Không tìm thấy kỳ công.');
-  return toDto(db, updated, now);
+  if (!updated.row) throw notFound('Không tìm thấy kỳ công.');
+  return withPayrollNotice(await toDto(db, updated.row, now), updated.notice);
 }
 
 /** Only the latest closed period: reopening an older one would change the balances the later ones started from. */
@@ -691,10 +697,11 @@ export async function reopenPeriod(db: Db, periodId: string, raw: unknown, hr: H
   const updated = await db.transaction(async (tx) => {
     const [row] = await tx.update(timesheetPeriods).set({ status: 'open', closedAt: null, closedBy: null, frozen: null }).where(eq(timesheetPeriods.id, periodId)).returning();
     await tx.insert(timesheetLog).values({ periodId, actor: actorOf(hr), action: 'Mở lại kỳ', detail: parsed.data.reason, at: now });
-    return row;
+    // Lương is told in the same transaction: a draft waits for the close again, an approved month gets a label (R7).
+    return { row, notice: await onTimesheetReopened(tx, period, parsed.data.reason, hr, now) };
   });
-  if (!updated) throw notFound('Không tìm thấy kỳ công.');
-  return toDto(db, updated, now);
+  if (!updated.row) throw notFound('Không tìm thấy kỳ công.');
+  return withPayrollNotice(await toDto(db, updated.row, now), updated.notice);
 }
 
 const leaveModeSchema = z.object({ mode: z.enum(LEAVE_MODES) });

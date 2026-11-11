@@ -6,6 +6,7 @@ import { hrUsers, type HrUser } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { generatePassword, hashPassword, passwordProblem, verifyPassword } from '../lib/password.js';
 import { toHrMe, unlockHrSignIn } from './hr-accounts.js';
+import { requireNotLastFullHolder } from './payroll-rights.js';
 import { isUuid, normalizeEmail } from '../lib/request.js';
 
 const toDto = (user: HrUser, me: HrMe): HrUserDto => ({
@@ -75,6 +76,7 @@ export async function deleteHrUser(db: Db, id: string, me: HrMe): Promise<{ ok: 
   if (user.id === me.id) throw new HttpError(422, 'Không xoá được tài khoản bạn đang dùng.');
   const [{ total }] = await db.select({ total: count() }).from(hrUsers);
   if (total <= 1) throw new HttpError(422, 'Phải còn ít nhất một tài khoản HR.');
+  await requireNotLastFullHolder(db, user);
   await db.delete(hrUsers).where(eq(hrUsers.id, user.id));
   return { ok: true };
 }

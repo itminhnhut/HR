@@ -14,6 +14,7 @@ const TEMPLATE_LOOK: Record<TemplateKey, { icon: IconName; tone: Tone }> = {
   rejection: { icon: 'xCircle', tone: 'rose' },
   rejection_interview: { icon: 'mail', tone: 'slate' },
   call: { icon: 'phone', tone: 'green' },
+  payslip: { icon: 'mail', tone: 'sky' },
 };
 
 export function HrMessagesPage() {

@@ -1,3 +1,4 @@
+import { payrollKeyFrom } from './lib/payroll-crypto.js';
 import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { createGaRealtimeReader, gaRealtimeConfig, type RealtimeReader } from './lib/ga-realtime.js';
@@ -8,6 +9,7 @@ import { googleVerifier, type GoogleVerifier } from './lib/google.js';
 import { vercelBlobImageStore, type ImageStore } from './lib/image-store.js';
 import { companyName, envValue } from './lib/env-value.js';
 import { isValidIndexNowKey } from './lib/indexnow.js';
+import { mailerFromEnv } from './lib/mailer.js';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -70,6 +72,13 @@ function indexNowKey(isProduction: boolean): string | null {
   return null;
 }
 
+/** PAYROLL_ADMINS="a@congty.vn, b@congty.vn": who gets the payroll rights first. Never real emails in code. */
+export const payrollAdmins = (value: string | undefined): string[] =>
+  (value ?? '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter((email) => email.length > 0);
+
 /** "Đang truy cập": off until the Google Analytics settings exist. */
 function realtimeReader(now: () => Date): RealtimeReader {
   const config = gaRealtimeConfig(process.env);
@@ -98,6 +107,8 @@ export function createProductionApp(local: LocalOverrides = {}) {
       sessionSecret: sessionSecret(),
       secureCookies: onVercel,
       indexNowKey: indexNowKey(isProduction),
+      payrollAdmins: payrollAdmins(process.env.PAYROLL_ADMINS),
+      payrollKey: payrollKeyFrom(process.env.PAYROLL_KEY, process.env.PAYROLL_KEY_VERSION),
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
     paperStore: useLocal.paperStore ?? vercelBlobPaperStore,
@@ -107,5 +118,6 @@ export function createProductionApp(local: LocalOverrides = {}) {
     now: () => new Date(),
     fetch: (url, init) => fetch(url, init),
     readRealtime: realtimeReader(() => new Date()),
+    mailer: mailerFromEnv(process.env, (url, init) => fetch(url, init), () => new Date()),
   });
 }

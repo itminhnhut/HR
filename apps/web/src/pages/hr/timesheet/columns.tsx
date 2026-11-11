@@ -17,7 +17,7 @@ export const REGION_TONE: Record<RegionTone, string> = {
   orange: 'bg-orange-100 text-orange-800 border-orange-300',
 };
 
-export function RegionBadge({ regionId, regions }: { regionId: unknown; regions: readonly TimesheetRegionDto[] }) {
+export function RegionBadge({ regionId, regions }: { regionId: unknown; regions: readonly Pick<TimesheetRegionDto, 'id' | 'name' | 'tone'>[] }) {
   const region = regions.find((r) => r.id === regionId);
   return (
     <span className={`inline-flex h-6 max-w-full min-w-0 items-center gap-1 rounded-full border px-2 text-xs font-semibold whitespace-nowrap ${region ? REGION_TONE[region.tone] : 'border-slate-200 bg-slate-100 text-slate-700'}`}>

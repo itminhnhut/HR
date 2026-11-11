@@ -15,6 +15,15 @@ import {
   type TemplateKey,
   type ContactChannel,
   type ApplicationNoteDto,
+  type PayrollBankAccountDto,
+  type PayrollCommitmentDto,
+  type PayrollDependantDto,
+  type PayrollLogLineDto,
+  type PayrollMonthInputsDto,
+  type PayrollOpeningDto,
+  type PayrollProfileVersionDto,
+  type PayrollSettingDto,
+  type PayrollRecurringDto,
 } from '@careers/shared';
 import { buildNewsSeed, type MockNewsCategory, type MockNewsPost } from './mock-news-seed.js';
 
@@ -105,6 +114,29 @@ export interface MockHrUser {
   contactEmail: string | null;
   jobTitle: string | null;
   alias: string | null;
+  /** Lương; absent in older demo data, which counts as having it. */
+  canPayroll?: boolean;
+  /** Duyệt lương; absent counts as having it when the account has Lương. */
+  canApprovePayroll?: boolean;
+}
+
+/** What Duyệt, Mở lại and Đã chuyển khoản changed on a demo payroll month. */
+export interface MockPayrollMonthState {
+  status: 'draft' | 'approved' | 'paid';
+  approval: { no: number; at: string; by: string } | null;
+  /** The last lần N, kept after Mở lại so the next Duyệt is N+1. */
+  lastApprovalNo: number;
+  paidOn: string | null;
+}
+
+/** A demo person's Hồ sơ lương; the whole account number stays here, the API answers with its last four digits. */
+export interface MockPayrollProfile {
+  versions: PayrollProfileVersionDto[];
+  dependants: PayrollDependantDto[];
+  commitments: PayrollCommitmentDto[];
+  recurring: PayrollRecurringDto[];
+  banks: (PayrollBankAccountDto & { accountNumber: string })[];
+  openings: PayrollOpeningDto[];
 }
 
 export interface MockDb {
@@ -120,6 +152,18 @@ export interface MockDb {
   candidates: MockCandidate[];
   newsCategories: MockNewsCategory[];
   newsPosts: MockNewsPost[];
+  /** Lương months changed by Duyệt, Mở lại, Đã chuyển khoản, by "YYYY-MM"; absent in older demo data. */
+  payrollMonths?: Record<string, MockPayrollMonthState>;
+  /** Nhật ký lương lines the demo wrote after its seeded ones, oldest first; absent until the first. */
+  payrollLog?: PayrollLogLineDto[];
+  /** Đầu vào tháng HR typed, by "YYYY-MM" then employee id; absent until the demo first saves one. */
+  payrollInputs?: Record<string, Record<string, PayrollMonthInputsDto>>;
+  /** Hồ sơ lương by employee id; absent until the demo first reads it. */
+  payrollProfiles?: Record<string, MockPayrollProfile>;
+  /** First-month checklist items HR ticked, as "employeeId:item". */
+  payrollChecks?: string[];
+  /** Cấu hình lương rows HR added; absent until the demo first saves one (then the seed row is in it). */
+  payrollSettings?: PayrollSettingDto[];
   /** hr: the signed-in HR account id. */
   session: { hr: string | null; candidateEmail: string | null };
 }

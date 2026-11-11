@@ -13,7 +13,8 @@ import {
   PLACEHOLDERS,
   SUBJECT_MAX,
   TEMPLATE_BODY_MAX,
-  TEMPLATE_KEYS,
+  // The letters to a candidate: the payslip mail to an employee has its own tests (mail/payslip.test.ts).
+  APPLICANT_TEMPLATE_KEYS as TEMPLATE_KEYS,
   TEMPLATE_LABEL,
   TEMPLATE_SECTION_MAX,
   type MessageTemplate,
@@ -128,7 +129,7 @@ describe('default templates of the mail design', () => {
 
   it('should only use tokens HR can fill and start with the greeting', () => {
     const known = PLACEHOLDERS.map((p) => p.token);
-    for (const t of Object.values(DEFAULT_MESSAGE_TEMPLATES)) {
+    for (const t of TEMPLATE_KEYS.map((key) => DEFAULT_MESSAGE_TEMPLATES[key])) {
       const tokens = allTexts(t).match(/\{[^{}]*\}/g) ?? [];
 
       for (const token of tokens) expect(known).toContain(token);
@@ -221,7 +222,7 @@ describe('default templates of the mail design', () => {
   });
 
   it('should give HR contact the same way in every template', () => {
-    for (const t of Object.values(DEFAULT_MESSAGE_TEMPLATES)) {
+    for (const t of TEMPLATE_KEYS.map((key) => DEFAULT_MESSAGE_TEMPLATES[key])) {
       expect(`${t.callout} ${t.closing}`).toContain('Ms. {Tên HR} – {SĐT HR}');
     }
   });

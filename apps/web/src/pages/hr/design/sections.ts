@@ -11,6 +11,8 @@ export interface HrSection {
   end?: boolean;
   /** Shows how many new applications wait. */
   badge?: boolean;
+  /** Only for HR with the payroll right (spec-luong.md 2 (1)). */
+  needsPayroll?: boolean;
 }
 
 export const HR_SECTIONS: readonly HrSection[] = [
@@ -19,11 +21,16 @@ export const HR_SECTIONS: readonly HrSection[] = [
   { to: '/hr/ho-so', label: 'Hồ sơ ứng viên', icon: 'inbox', tone: 'sky', badge: true },
   { to: '/hr/duyet', label: 'Sếp duyệt', icon: 'checkSquare', tone: 'green' },
   { to: '/hr/cham-cong', label: 'Chấm công', icon: 'calendar', tone: 'red' },
+  { to: '/hr/luong', label: 'Lương', icon: 'money', tone: 'lime', needsPayroll: true },
   { to: '/hr/tin-tuc', label: 'Tin tức', icon: 'newspaper', tone: 'rose' },
   { to: '/hr/mau-tin', label: 'Mẫu tin', icon: 'fileText', tone: 'teal' },
   { to: '/hr/mau-thu', label: 'Mẫu thư', icon: 'mail', tone: 'amber' },
   { to: '/hr/tai-khoan', label: 'Tài khoản HR', icon: 'users', tone: 'slate' },
 ];
+
+/** The menu one HR sees: Lương only with the payroll right. */
+export const visibleSections = (canPayroll: boolean): readonly HrSection[] =>
+  HR_SECTIONS.filter((section) => !section.needsPayroll || canPayroll);
 
 /** "Tin tuyển dụng" stays active while editing a job under /hr/tin/…. */
 export function isSectionActive(section: HrSection, pathname: string): boolean {

@@ -1,10 +1,12 @@
 import { toggleClass } from '../shadcn/toggle';
 import {
   DEFAULT_MESSAGE_TEMPLATES,
-  PLACEHOLDERS,
   SUBJECT_MAX,
   addDays,
+  fillPayslipTemplate,
   fillTemplateSections,
+  payslipMailDetails,
+  placeholderTokensFor,
   MAIL_COMPANY,
   todayInVietnam,
   vietnamInterviewParts,
@@ -26,12 +28,18 @@ import { MailPreview } from './MailPreview';
 import { mailDetails, sectionsFor, type SectionField } from './mailSections';
 
 /** Buttons that insert "{Tên ứng viên}" etc. where the cursor is, so nobody types the braces by hand. */
-function PlaceholderButtons({ onInsert }: { onInsert: (token: string) => void }) {
+function PlaceholderButtons({
+  templateKey,
+  onInsert,
+}: {
+  templateKey: TemplateKey;
+  onInsert: (token: string) => void;
+}) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xs text-muted">Bấm để chèn thông tin, web tự điền khi soạn thư cho từng người:</span>
       <div className="flex flex-wrap gap-1.5">
-        {PLACEHOLDERS.map(({ token }) => (
+        {placeholderTokensFor(templateKey).map((token) => (
           <button
             key={token}
             type="button"
@@ -65,6 +73,49 @@ function sampleValues(me: HrMe | null | undefined, start: string, key: TemplateK
     hrAlias: me?.alias ?? '',
     company: MAIL_COMPANY.name,
   };
+}
+
+/** The payslip mail goes to an employee: a made-up one, a made-up month, and no amount unless the text asks. */
+function PayslipSamplePreview({ template }: { template: MessageTemplate }) {
+  const me = useHrMe();
+  const { content, missing } = fillPayslipTemplate(template, {
+    fullName: 'Nguyễn Minh Anh',
+    month: '10/2026',
+    payDate: '05/11/2026',
+    netPay: '12.345.000 đ',
+    hrName: me.data?.name ?? '',
+    hrPhone: me.data?.phone ?? '',
+    company: MAIL_COMPANY.name,
+  });
+  const details = payslipMailDetails({
+    name: me.data?.name ?? '',
+    phone: me.data?.phone ?? '',
+    title: me.data?.jobTitle ?? '',
+    alias: me.data?.alias ?? '',
+    email: MAIL_COMPANY.hrEmail,
+  });
+  return (
+    <section aria-label="Xem trước thư" className="flex min-w-0 flex-col gap-2">
+      <span className="text-xs font-medium text-slate">
+        Xem trước với nhân viên mẫu (Nguyễn Minh Anh, tháng 10/2026)
+      </span>
+      <strong className="text-sm font-semibold text-navy">{content.subject}</strong>
+      <MailPreview
+        templateKey={template.key}
+        title="Xem trước thư"
+        html={designedMailHtml(content, details)}
+        className="h-[520px] rounded-control border border-line xl:h-[720px]"
+      />
+      <span className="text-xs text-muted">
+        Thư này gửi từ <Link to="/hr/luong/phieu-luong">Lương › Phiếu lương</Link>, kèm file phiếu lương của từng người.
+      </span>
+      {missing.length > 0 && (
+        <span className="text-xs text-[#8a6d00]">
+          {missing.join(', ')} chưa có: điền ở <Link to="/hr/tai-khoan">Tài khoản HR</Link>.
+        </span>
+      )}
+    </section>
+  );
 }
 
 function SamplePreview({ template }: { template: MessageTemplate }) {
@@ -217,7 +268,7 @@ export function TemplateEditor({ template, customized }: { template: MessageTemp
           Bố cục, logo, khung ngày giờ, chữ ký và chân thư là cố định. Ở đây chỉ sửa được phần chữ.
         </Notice>
         <TemplateFields template={template} form={form} />
-        <PlaceholderButtons onInsert={form.insert} />
+        <PlaceholderButtons templateKey={template.key} onInsert={form.insert} />
         <div className="flex flex-wrap justify-end gap-2.5">
           {customized && (
             <Button variant="ghost" icon="copy" disabled={isResetting} onClick={restoreDefault} className="sm:mr-auto">
@@ -230,7 +281,11 @@ export function TemplateEditor({ template, customized }: { template: MessageTemp
         </div>
       </div>
       <div className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-        <SamplePreview template={{ key: template.key, ...form.texts }} />
+        {template.key === 'payslip' ? (
+          <PayslipSamplePreview template={{ key: template.key, ...form.texts }} />
+        ) : (
+          <SamplePreview template={{ key: template.key, ...form.texts }} />
+        )}
       </div>
     </div>
   );

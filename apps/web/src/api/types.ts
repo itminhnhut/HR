@@ -1,4 +1,11 @@
 import type {
+  PayslipChangesDto,
+  PayslipListDto,
+  PayslipMarkInput,
+  PayslipSendInput,
+  PayslipSendResultDto,
+} from '@careers/shared';
+import type {
   ApplicationDetailDto,
   ApplicationFields,
   ApplicationsResponse,
@@ -71,7 +78,106 @@ import type {
   LeaveMode,
   RecruitmentLogGroup,
   RecruitmentLogPageDto,
+  PayrollBankAccountDto,
+  PayrollBankInput,
+  PayrollChecklistDto,
+  PayrollFirstMonthCheckDto,
+  PayrollFirstMonthCheckInput,
+  PayrollCommitmentDto,
+  PayrollDependantDto,
+  PayrollOpeningDto,
+  PayrollProfileDto,
+  PayrollProfileListDto,
+  PayrollProfilePrefillDto,
+  PayrollProfileVersionInput,
+  PayrollProfileVersionSavedDto,
+  PayrollRecurringDto,
+  PayrollRecurringKind,
+  PayrollSettingDto,
+  PayrollSettingInput,
+  PayrollSettingSavedDto,
+  PayrollSettingsMonthDto,
+  PayrollLogArea,
+  PayrollLogPageDto,
 } from '@careers/shared';
+
+import type {
+  PayrollExportDto,
+  PayrollExportRequest,
+  PayrollMonthDto,
+  PayrollMonthInputsInput,
+  PayrollMonthInputsResultDto,
+} from '@careers/shared';
+
+/** Lương (spec-luong.md 10, 11.2): the month, its rows and HR's month inputs are shared with the API. */
+export type {
+  PayrollLogArea,
+  PayrollLogLineDto,
+  PayrollLogPageDto,
+  PayrollCashItemDto,
+  PayrollExportDto,
+  PayrollExportMonthDto,
+  PayrollExportRequest,
+  PayrollLineDto,
+  PayrollMonthDto,
+  PayrollMonthInputsDto,
+  PayrollMonthInputsInput,
+  PayrollMonthInputsResultDto,
+  PayrollOtherIncomeDto,
+  PayrollOverrideDto,
+  PayrollPeriodStatus,
+} from '@careers/shared';
+
+/** Duyệt (spec 11.4): a red warning left needs `acknowledgedRed` ("Đã xem cảnh báo đỏ"). */
+/** What Nhật ký lương is asked for (spec-luong.md 11.9): every filter is optional, lines come 100 at a time. */
+export interface PayrollLogQuery {
+  area?: PayrollLogArea;
+  /** "YYYY-MM"; left out for every month. */
+  month?: string;
+  /** A person's code, as the lines write it. */
+  personCode?: string;
+  actor?: string;
+  /** Only Duyệt, Mở lại, Đã chuyển khoản. */
+  isApprovalOnly?: boolean;
+  search?: string;
+  offset: number;
+}
+
+export interface PayrollApproveInput {
+  acknowledgedRed: boolean;
+}
+/** Mở lại (R7): the reason is required. */
+export interface PayrollReopenInput {
+  reason: string;
+}
+/** Đã chuyển khoản: the transfer day "YYYY-MM-DD" and an optional note. */
+export interface PayrollMarkPaidInput {
+  paidOn: string;
+  note?: string;
+}
+
+/** Người phụ thuộc, cam kết thuế, khoản (32) định kỳ: each added, changed and deleted the same way. */
+export type PayrollFactKind = 'dependants' | 'commitments' | 'recurring';
+export interface PayrollDependantInput {
+  fromMonth: string;
+  toMonth: string | null;
+  count: number;
+}
+export interface PayrollCommitmentInput {
+  year: number;
+  signedOn: string;
+}
+export interface PayrollRecurringInput {
+  kind: PayrollRecurringKind;
+  /** 0 for "Công ty trả thay BH": the month's employee insurance, never typed. */
+  amount: number;
+  /** "Tính thuế" of "Công ty trả thay BH"; left out: not taxed, as HR's file. */
+  taxable?: boolean;
+  fromMonth: string;
+  toMonth: string | null;
+  note: string;
+}
+export type PayrollOpeningInput = Omit<PayrollOpeningDto, 'taxYear'>;
 
 export class ApiError extends Error {
   constructor(
@@ -219,6 +325,84 @@ export interface Api {
   hrTimesheet(year: number, month: number): Promise<TimesheetDto>;
   hrTimesheetRange(from: string, to: string): Promise<TimesheetDto>;
   hrTimesheetYear(year: number): Promise<TimesheetMonthDto[]>;
+  /** Nhật ký lương, newest first. 403 without the payroll right. */
+  hrPayrollLog(query: PayrollLogQuery): Promise<PayrollLogPageDto>;
+  /** Bảng lương of one month. 403 without the payroll right; 404 with the valid range outside it. */
+  hrPayrollMonth(year: number, month: number): Promise<PayrollMonthDto>;
+  /**
+   * The months of one download with what the file prints beyond the grid; the payroll file carries the whole account
+   * number. 403 without the payroll right, 404 outside the range, 409 a month waiting for the close or without rows.
+   */
+  hrPayrollExport(input: PayrollExportRequest): Promise<PayrollExportDto>;
+  /** Phiếu lương of a month "YYYY-MM": each person's address and whether the payslip was sent. */
+  hrPayrollPayslips(monthKey: string): Promise<PayslipListDto>;
+  /** "Đánh dấu đã gửi" (or taking it back). 409 unless the month is approved or paid. */
+  hrPayrollPayslipsMark(monthKey: string, input: PayslipMarkInput): Promise<PayslipListDto>;
+  /** "Thay đổi từ lần gửi" of one person: the payslip as sent against the payslip now, and the log since. */
+  hrPayrollPayslipChanges(monthKey: string, employeeId: string): Promise<PayslipChangesDto>;
+  /** "Đánh dấu vẫn đúng (không cần gửi lại)". 409 when a figure differs from what was sent. */
+  hrPayrollPayslipUnchanged(monthKey: string, employeeId: string): Promise<PayslipListDto>;
+  /** "Gửi tự động" of one person with their file. 409 mail not configured, a draft month or no email. */
+  hrPayrollPayslipSend(monthKey: string, input: PayslipSendInput): Promise<PayslipSendResultDto>;
+  /** Duyệt a draft. 403 without the approve right, 409 not a draft, 422 a red warning not acknowledged. */
+  hrPayrollApprove(year: number, month: number, input: PayrollApproveInput): Promise<PayrollMonthDto>;
+  /** Mở lại the latest approved month. 403 without the approve right, 409 paid or not the latest, 422 no reason. */
+  hrPayrollReopen(year: number, month: number, input: PayrollReopenInput): Promise<PayrollMonthDto>;
+  /** Đã chuyển khoản on an approved month. 409 not approved, 422 a bad day. */
+  hrPayrollMarkPaid(year: number, month: number, input: PayrollMarkPaidInput): Promise<PayrollMonthDto>;
+  /** Đầu vào tháng of one person, partial (lists replaced whole). 409 payroll_month_locked, 422 { fieldErrors }. */
+  hrPayrollSaveInputs(
+    monthKey: string,
+    employeeId: string,
+    input: PayrollMonthInputsInput,
+  ): Promise<PayrollMonthInputsResultDto>;
+  /** Hồ sơ lương (spec-luong.md 11.5): everyone from Chấm công, with or without a profile. */
+  hrPayrollProfiles(): Promise<PayrollProfileListDto>;
+  hrPayrollProfile(employeeId: string): Promise<PayrollProfileDto>;
+  /** What "Tạo hồ sơ" fills in: component defaults and the contract type's default, from the day they joined. */
+  hrPayrollProfilePrefill(employeeId: string): Promise<PayrollProfilePrefillDto>;
+  /** Only a profile no approved month used. */
+  hrPayrollDeleteProfile(employeeId: string): Promise<{ ok: true }>;
+  /** A pay level from a date; 422 { fieldErrors }, 409 two levels on one day. */
+  hrPayrollSaveLevel(
+    employeeId: string,
+    id: string | null,
+    input: PayrollProfileVersionInput,
+  ): Promise<PayrollProfileVersionSavedDto>;
+  hrPayrollDeleteLevel(employeeId: string, id: string): Promise<{ ok: true }>;
+  hrPayrollSaveDependant(employeeId: string, id: string | null, input: PayrollDependantInput): Promise<PayrollDependantDto>;
+  hrPayrollSaveCommitment(
+    employeeId: string,
+    id: string | null,
+    input: PayrollCommitmentInput,
+  ): Promise<PayrollCommitmentDto>;
+  hrPayrollSaveRecurring(employeeId: string, id: string | null, input: PayrollRecurringInput): Promise<PayrollRecurringDto>;
+  hrPayrollDeleteFact(employeeId: string, kind: PayrollFactKind, id: string): Promise<{ ok: true }>;
+  hrPayrollSaveOpening(employeeId: string, taxYear: number, input: PayrollOpeningInput): Promise<PayrollOpeningDto>;
+  hrPayrollDeleteOpening(employeeId: string, taxYear: number): Promise<{ ok: true }>;
+  /** The number goes in whole and comes back as its last four digits. */
+  hrPayrollAddBank(employeeId: string, input: PayrollBankInput): Promise<PayrollBankAccountDto>;
+  hrPayrollDeleteBank(employeeId: string, id: string): Promise<{ ok: true }>;
+  /** "Hiện đủ": the whole number, written in the payroll log. */
+  hrPayrollRevealBank(employeeId: string, id: string): Promise<{ accountNumber: string }>;
+  /** Danh sách kiểm trước tháng lương đầu (spec 17.2). */
+  hrPayrollChecklist(): Promise<PayrollChecklistDto>;
+  /** HR ticks (or unticks) one item of the list as checked. */
+  hrPayrollConfirmCheck(input: PayrollFirstMonthCheckInput): Promise<PayrollFirstMonthCheckDto>;
+  /** Cấu hình lương (spec 6, 11.6): every stored row; `key` and `employeeId` narrow it. */
+  hrPayrollSettings(filter?: { key?: string; employeeId?: string }): Promise<PayrollSettingDto[]>;
+  /** Each setting as month `YYYY-MM` reads it (R2), its rows labelled; `employeeId` resolves one person's view. */
+  hrPayrollSettingsMonth(month: string, employeeId?: string): Promise<PayrollSettingsMonthDto>;
+  /** A new row from a month (or date) for everyone or one person, or a stop row. 422 { fieldErrors }, 409 same date. */
+  hrPayrollAddSetting(input: PayrollSettingInput): Promise<PayrollSettingSavedDto>;
+  /** Only a row no approved month used (409 otherwise). */
+  hrPayrollEditSetting(
+    id: string,
+    input: { from?: string; value?: unknown; source?: string },
+  ): Promise<PayrollSettingSavedDto>;
+  hrPayrollDeleteSetting(id: string): Promise<{ ok: true }>;
+  /** "Sửa lỗi" (R5): a replacement on the same date, the old row kept as "đã thay". */
+  hrPayrollCorrectSetting(id: string, input: { value: unknown; source?: string }): Promise<PayrollSettingSavedDto>;
   hrSaveHolidayRange(input: HolidayRangeInput): Promise<TimesheetHolidayDto[]>;
   hrDeleteHolidayRange(from: string, to: string): Promise<TimesheetHolidayDto[]>;
   hrAllAbsences(year: number): Promise<AbsenceRowDto[]>;

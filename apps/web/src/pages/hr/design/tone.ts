@@ -2,7 +2,7 @@
  * The admin's colour families (no purple): one word per family, so a screen says "orange" and every part of it matches.
  * Text and white-on-solid pairs reach 4.5:1 on their own backgrounds. What each one is for: spec-admin-design.md.
  */
-export type Tone = 'blue' | 'sky' | 'teal' | 'green' | 'amber' | 'orange' | 'rose' | 'red' | 'slate';
+export type Tone = 'blue' | 'sky' | 'teal' | 'green' | 'lime' | 'amber' | 'orange' | 'rose' | 'red' | 'slate';
 
 export interface ToneClasses {
   /** The square behind an icon. */
@@ -57,6 +57,15 @@ export const TONE: Record<Tone, ToneClasses> = {
     underline: 'border-green-600',
     bar: 'bg-green-500',
     hover: 'hover:bg-green-50 hover:text-green-700',
+  },
+  lime: {
+    tile: 'bg-lime-100 text-lime-800',
+    text: 'text-lime-700',
+    pill: 'border-lime-200 bg-lime-50 text-lime-700',
+    solid: 'bg-lime-700 text-white',
+    underline: 'border-lime-600',
+    bar: 'bg-lime-500',
+    hover: 'hover:bg-lime-50 hover:text-lime-700',
   },
   amber: {
     tile: 'bg-amber-100 text-amber-700',

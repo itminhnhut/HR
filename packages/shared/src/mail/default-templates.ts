@@ -83,4 +83,17 @@ Chúng tôi vui mừng thông báo hồ sơ của bạn đã vượt qua vòng s
 Bạn cũng có thể nhắn Zalo cho Ms. {Tên HR} – {SĐT HR} nếu thuận tiện hơn.`,
     closing: 'Đây là buổi trao đổi thân thiện, bạn không cần chuẩn bị gì nhiều. Rất mong được trò chuyện cùng bạn!',
   },
+  // To an employee, from Lương › Phiếu lương. No amount in the text and no attachment: the payslip table follows the text in the mail.
+  payslip: {
+    key: 'payslip',
+    subject: '[Top Flow] Phiếu lương tháng {Tháng} - {Họ tên}',
+    body: `Thân gửi anh/chị {Họ tên},
+
+Phòng Nhân sự gửi anh/chị phiếu lương tháng {Tháng}, chi tiết ở ngay bên dưới. Ngày chi trả: {Ngày trả}.`,
+    note: '',
+    calloutTitle: 'LƯU Ý',
+    callout:
+      'Phiếu lương là thông tin riêng của anh/chị, vui lòng không chuyển tiếp cho người khác. Nếu có thắc mắc, anh/chị phản hồi thư này trong vòng 3 ngày làm việc kể từ ngày nhận để phòng Nhân sự kiểm tra.',
+    closing: 'Cảm ơn anh/chị đã đồng hành cùng Top Flow.',
+  },
 };

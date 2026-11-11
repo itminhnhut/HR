@@ -53,6 +53,8 @@ const routes: RouteObject[] = [
       { path: 'duyet/:id', lazy: lazy(() => import('../pages/hr/reviews/HrReviewPage')) },
       // Có tab riêng: Bảng công, Nhân viên, Cài đặt (spec-cham-cong.md).
       { path: 'cham-cong/*', lazy: lazy(() => import('../pages/hr/timesheet/TimesheetPage')) },
+      // Lương (spec-luong.md 11): tab Bảng lương, Hồ sơ lương, Cấu hình, Tổng quan, Nhật ký; chỉ người có quyền.
+      { path: 'luong/*', lazy: lazy(() => import('../pages/hr/payroll/PayrollPage')) },
       { path: 'mau-tin', lazy: lazy(() => import('../pages/hr/HrTemplatePage')) },
       { path: 'mau-thu', lazy: lazy(() => import('../pages/hr/HrMessagesPage')) },
       { path: 'tai-khoan', lazy: lazy(() => import('../pages/hr/HrAccountsPage')) },

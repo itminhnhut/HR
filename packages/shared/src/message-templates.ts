@@ -7,7 +7,8 @@ import type { MailContent } from './mail/types.js';
 
 export { DEFAULT_MESSAGE_TEMPLATES } from './mail/default-templates.js';
 
-export type TemplateKey = 'interview_onsite' | 'interview_online' | 'rejection' | 'rejection_interview' | 'call';
+export type TemplateKey =
+  'interview_onsite' | 'interview_online' | 'rejection' | 'rejection_interview' | 'call' | 'payslip';
 export type InterviewMode = 'onsite' | 'online';
 export type ContactChannel = 'gmail' | 'mailto' | 'copy' | 'copy_html';
 
@@ -17,13 +18,17 @@ export const TEMPLATE_KEYS: TemplateKey[] = [
   'rejection',
   'rejection_interview',
   'call',
+  'payslip',
 ];
+/** The templates of a letter to a candidate; `payslip` goes to an employee, from Lương › Phiếu lương. */
+export const APPLICANT_TEMPLATE_KEYS: TemplateKey[] = TEMPLATE_KEYS.filter((key) => key !== 'payslip');
 export const TEMPLATE_LABEL: Record<TemplateKey, string> = {
   interview_onsite: 'Mời phỏng vấn trực tiếp',
   interview_online: 'Mời phỏng vấn online',
   rejection: 'Từ chối hồ sơ',
   rejection_interview: 'Từ chối sau phỏng vấn',
   call: 'Hẹn gọi điện',
+  payslip: 'Phiếu lương',
 };
 export const CONTACT_CHANNEL_LABEL: Record<ContactChannel, string> = {
   gmail: 'Mở Gmail',

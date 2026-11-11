@@ -279,7 +279,7 @@ describe('mail templates and sender details', () => {
     await run(mockApi.hrSignIn(DEMO_HR.email, demoHrPassword()));
   };
 
-  it('should list the five templates with all their sections', async () => {
+  it('should list the templates, the payslip mail last, with all their sections', async () => {
     // Arrange
     await signIn();
 
@@ -293,6 +293,7 @@ describe('mail templates and sender details', () => {
       'rejection',
       'rejection_interview',
       'call',
+      'payslip',
     ]);
     expect(templates.find((t) => t.key === 'rejection')?.calloutTitle).toBeTruthy();
   });

@@ -5,9 +5,13 @@ import type {
   ArticleHeadingRef,
   ArticleState,
   CvGender,
+  EmployeeBlock,
   JobTemplate,
   MatchItem,
   NewsImage,
+  PayrollFirstMonthItem,
+  PayrollLogArea,
+  PayrollPeriodStatus,
   RegionTone,
   RecruitmentLogGroup,
   RejectReason,
@@ -18,6 +22,7 @@ import type {
   LeaveMode,
   SaturdayChange,
   StaffType,
+  TimesheetClosingSource,
   TimesheetHolidayDto,
   TimesheetRegionDto,
   TimesheetTotals,
@@ -25,6 +30,7 @@ import type {
 } from '@careers/shared';
 import {
   boolean,
+  check,
   jsonb,
   date,
   real,
@@ -55,6 +61,7 @@ export const templateKey = pgEnum('template_key', [
   'rejection',
   'rejection_interview',
   'call',
+  'payslip',
 ]);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy', 'copy_html']);
 export const applicationStatus = pgEnum('application_status', [
@@ -242,10 +249,17 @@ export const hrUsers = pgTable(
     jobTitle: text('job_title').default('HR Generalist'),
     /** Shown in brackets in the mail signature and filled in as {Tên gọi khác}, e.g. "Ms. Lee". */
     alias: text('alias'),
+    /** Lương (spec-luong.md 10.2): Xem, sửa lương. Nobody has it until granted, or PAYROLL_ADMINS bootstraps it. */
+    canPayroll: boolean('can_payroll').notNull().default(false),
+    /** Duyệt lương; only with Xem, sửa. */
+    canApprovePayroll: boolean('can_approve_payroll').notNull().default(false),
     createdAt,
     updatedAt,
   },
-  (t) => [uniqueIndex('hr_users_email_idx').on(t.email)],
+  (t) => [
+    uniqueIndex('hr_users_email_idx').on(t.email),
+    check('hr_users_approve_needs_payroll', sql`not ${t.canApprovePayroll} or ${t.canPayroll}`),
+  ],
 );
 
 /** One row per attempt of a rate-limited action (e.g. phone lookup); counted per key within a time window. */
@@ -672,10 +686,18 @@ export const employees = pgTable(
     officialOn: date('official_on'),
     leftOn: date('left_on'),
     openingLeave: real('opening_leave').notNull().default(0),
+    /** Khối (spec-luong.md 10.1); null until HR sets it. Each close keeps the one it had. */
+    block: text('block').$type<EmployeeBlock>(),
+    /** Email nhận phiếu lương; null until HR types it. Lowercase. */
+    email: text('email'),
+    /** HR checked the date: dates typed in from the old sheets are not until then (spec-luong.md 4.20). */
+    joinedOnConfirmed: boolean('joined_on_confirmed').notNull().default(false),
+    officialOnConfirmed: boolean('official_on_confirmed').notNull().default(false),
+    leftOnConfirmed: boolean('left_on_confirmed').notNull().default(false),
     createdAt,
     updatedAt,
   },
-  (t) => [uniqueIndex('employees_code_idx').on(t.code)],
+  (t) => [uniqueIndex('employees_code_idx').on(t.code), check('employees_block', sql`${t.block} in ('BO', 'KD')`)],
 );
 
 /** One period per month; its norms and leave rule stay with it, so changing a setting never rewrites the past. */
@@ -907,3 +929,150 @@ export const timesheetLog = pgTable(
   },
   (t) => [index('timesheet_log_period_idx').on(t.periodId, t.at)],
 );
+
+/**
+ * Lần chốt kỳ công (spec-luong.md 10.1): one row per close, never changed or removed (a trigger refuses it). Closing again
+ * after a reopen adds the next `closeNo`; the snapshots above stay what Chấm công reads.
+ */
+export const timesheetClosings = pgTable(
+  'timesheet_closings',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    periodId: uuid('period_id')
+      .notNull()
+      .references(() => timesheetPeriods.id, { onDelete: 'restrict' }),
+    closeNo: integer('close_no').notNull(),
+    year: integer('year').notNull(),
+    month: integer('month').notNull(),
+    fromOn: date('from_on').notNull(),
+    toOn: date('to_on').notNull(),
+    closedAt: tz('closed_at').notNull(),
+    closedBy: text('closed_by').notNull(),
+    source: text('source').$type<TimesheetClosingSource>().notNull().default('web'),
+    holidays: jsonb('holidays').$type<TimesheetHolidayDto[]>().notNull(),
+    regions: jsonb('regions').$type<TimesheetRegionDto[]>().notNull(),
+    norms: jsonb('norms').$type<Record<string, number>>().notNull(),
+    createdAt,
+  },
+  (t) => [uniqueIndex('timesheet_closings_period_no_idx').on(t.periodId, t.closeNo)],
+);
+
+/** Each person of a close as it was: who, where, what kind, the dates, the totals and the code of every day. */
+export const timesheetClosingRows = pgTable(
+  'timesheet_closing_rows',
+  {
+    closingId: uuid('closing_id')
+      .notNull()
+      .references(() => timesheetClosings.id, { onDelete: 'restrict' }),
+    employeeId: uuid('employee_id')
+      .notNull()
+      .references(() => employees.id, { onDelete: 'restrict' }),
+    code: text('code').notNull(),
+    fullName: text('full_name').notNull(),
+    department: text('department').notNull(),
+    title: text('title').notNull(),
+    block: text('block').$type<EmployeeBlock>(),
+    regionId: uuid('region_id').notNull(),
+    /** No foreign key: a kind removed later must not change a close. `staffLabel` keeps its name. */
+    staffKindId: uuid('staff_kind_id'),
+    staffLabel: text('staff_label'),
+    employment: text('employment').$type<StaffType>().notNull(),
+    joinedOn: date('joined_on'),
+    officialOn: date('official_on'),
+    leftOn: date('left_on'),
+    norm: real('norm').notNull(),
+    totals: jsonb('totals').$type<TimesheetTotals>(),
+    /** "YYYY-MM-DD" → code for every day of the period; null when a backfill could not rebuild them. */
+    codes: jsonb('codes').$type<Record<string, AttendanceCode | null>>(),
+    cannotRebuild: boolean('cannot_rebuild').notNull().default(false),
+  },
+  (t) => [
+    primaryKey({ columns: [t.closingId, t.employeeId] }),
+    index('timesheet_closing_rows_employee_idx').on(t.employeeId),
+    check('timesheet_closing_rows_codes_or_flag', sql`${t.cannotRebuild} = (${t.codes} is null)`),
+  ],
+);
+
+/**
+ * Danh sách kiểm trước tháng lương đầu (spec-luong.md 17.2): what HR has checked before the first payroll month. One row
+ * per item and person or close; a person's item has `employeeId`, the close of a period done by a script has `closingId`.
+ */
+export const payrollFirstMonthChecks = pgTable(
+  'payroll_first_month_checks',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    item: text('item').$type<PayrollFirstMonthItem>().notNull(),
+    employeeId: uuid('employee_id').references(() => employees.id, { onDelete: 'restrict' }),
+    closingId: uuid('closing_id').references(() => timesheetClosings.id, { onDelete: 'restrict' }),
+    confirmed: boolean('confirmed').notNull().default(false),
+    confirmedAt: tz('confirmed_at').notNull(),
+    confirmedBy: text('confirmed_by').notNull(),
+  },
+  (t) => [unique('payroll_first_month_checks_item_idx').on(t.item, t.employeeId, t.closingId).nullsNotDistinct()],
+);
+
+/**
+ * A payroll month (spec-luong.md 10.2), created only when HR types or computes in it. Only what Chấm công tells it is
+ * here yet: its status, the close it reads, and the label of a reopened timesheet period (R7), plus the pay date, the
+ * approval in force and the transfer day the month view shows (step 15; approving writes them in step 16).
+ */
+export const payrollPeriods = pgTable(
+  'payroll_periods',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    year: integer('year').notNull(),
+    month: integer('month').notNull(),
+    status: text('status').$type<PayrollPeriodStatus>().notNull().default('waiting'),
+    /** The close of the timesheet period it reads; an approved month keeps the one it was approved on. */
+    closingId: uuid('closing_id').references(() => timesheetClosings.id, { onDelete: 'restrict' }),
+    /** Set while the timesheet period of an approved month is reopened, or closed again with other figures. */
+    timesheetReopenedAt: tz('timesheet_reopened_at'),
+    timesheetReopenedBy: text('timesheet_reopened_by'),
+    timesheetReopenReason: text('timesheet_reopen_reason'),
+    /** Ngày chi trả HR set for this month; null reads `quy-tac.ngay-chi-tra` (R2). */
+    payDate: date('pay_date'),
+    /** The approval in force (R4): its number N, when and by whom. Null while waiting or a draft. */
+    approvalNo: integer('approval_no'),
+    approvedAt: tz('approved_at'),
+    approvedBy: text('approved_by'),
+    /** Đã chuyển khoản: the transfer day. */
+    paidOn: date('paid_on'),
+    /** Two people saving at once: the later one is told to reload (spec-luong.md 4.23). */
+    rowVersion: integer('row_version').notNull().default(0),
+    createdAt,
+    updatedAt,
+  },
+  (t) => [
+    uniqueIndex('payroll_periods_month_idx').on(t.year, t.month),
+    check('payroll_periods_status', sql`${t.status} in ('waiting', 'draft', 'approved', 'paid')`),
+    check(
+      'payroll_periods_approved_on_a_close',
+      sql`${t.status} in ('waiting', 'draft') or ${t.closingId} is not null`,
+    ),
+    check(
+      'payroll_periods_approval',
+      sql`(${t.approvalNo} is null) = (${t.approvedAt} is null) and (${t.approvalNo} is null) = (${t.approvedBy} is null) and coalesce(${t.approvalNo}, 1) > 0`,
+    ),
+    check('payroll_periods_paid', sql`${t.paidOn} is null or ${t.status} = 'paid'`),
+  ],
+);
+
+/** Nhật ký lương (spec-luong.md 10.2, 11.9): its own table, never the timesheet log. Only added to (a trigger refuses the rest). */
+export const payrollLog = pgTable(
+  'payroll_log',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    area: text('area').$type<PayrollLogArea>().notNull(),
+    actor: text('actor').notNull(),
+    action: text('action').notNull(),
+    /** In words, old → new. */
+    detail: text('detail').notNull(),
+    /** The payroll month it touches, "YYYY-MM"; null when none (rights). */
+    month: text('month'),
+    at: tz('at').notNull(),
+  },
+  (t) => [index('payroll_log_at_idx').on(t.at), index('payroll_log_month_idx').on(t.month, t.at)],
+);
+
+export * from './schema-payroll.js';
+export * from './schema-payslips.js';

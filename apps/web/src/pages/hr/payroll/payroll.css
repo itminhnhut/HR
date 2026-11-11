@@ -1,0 +1,30 @@
+/*
+ * Bảng lương: dòng nhóm (khu vực · loại HĐ · khối) và dòng tổng nổi trên các dòng người, kể cả ở cột đứng yên.
+ * Một lớp phủ, vì màu nền từng cột đang !important trong lớp tiện ích của Tailwind (như dòng đang bấm ở Chấm công).
+ */
+body.hr-timesheet [data-payroll-grid] [data-slot='data-grid-row']:has([data-row-kind='group']) [data-slot='data-grid-cell']:not([data-selected], [data-focused]) {
+  background-image: linear-gradient(#f1f5f9, #f1f5f9);
+}
+
+body.hr-timesheet [data-payroll-grid] [data-slot='data-grid-row']:has([data-row-kind='total']) [data-slot='data-grid-cell']:not([data-selected], [data-focused]) {
+  background-image: linear-gradient(#e2e8f0, #e2e8f0);
+  box-shadow: inset 0 2px 0 #94a3b8;
+}
+
+/* Trên điện thoại, số mở Hồ sơ lương hay Bảng công cũng bấm được bằng ngón tay như các nút trong ô (≥ 44px). */
+@media (max-width: 639px) {
+  body.hr-timesheet [data-payroll-grid] [role='gridcell'] a {
+    min-height: 44px;
+  }
+}
+
+/* Every native select on the payroll pages: the browser's arrow sits against the edge, this one is inset like the pickers. */
+body.hr-timesheet select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  text-overflow: ellipsis;
+}

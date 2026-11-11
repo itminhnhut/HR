@@ -41,6 +41,7 @@ import {
 import { DEMO_CANDIDATE_EMAIL, DEMO_HR, randomPassword, type MockDb, type MockHrUser, type MockJob } from './mock-seed';
 import { delay, fail, load, requireHr, save, uid } from './mock-store';
 import { newsMockApi } from './mock-news';
+import { payrollMockApi } from './mock-payroll';
 import { relatedPostsForJob } from './mock-news-model';
 import { ApiError, type Api } from './types';
 
@@ -156,6 +157,9 @@ const toHrMe = (u: MockHrUser): HrMe => ({
   contactEmail: u.contactEmail,
   jobTitle: u.jobTitle,
   alias: u.alias,
+  // Demo accounts may see Lương unless a test or a demo takes the right away.
+  canPayroll: u.canPayroll !== false,
+  canApprovePayroll: u.canPayroll !== false && u.canApprovePayroll !== false,
 });
 const toUserDto = (u: MockHrUser, me: MockHrUser): HrUserDto => ({
   id: u.id,
@@ -970,6 +974,7 @@ export const mockApi: Api = {
   },
 
   ...newsMockApi,
+  ...payrollMockApi,
 
   // "Sếp duyệt ứng viên" needs the real BE (a private link to share): the demo only says so.
   hrReviews: async () => delay([]),

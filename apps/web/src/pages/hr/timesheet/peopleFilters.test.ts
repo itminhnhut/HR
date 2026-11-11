@@ -11,7 +11,8 @@ const kinds: StaffKindDto[] = [
 ];
 const person = (id: string, over: Partial<EmployeeDto>): EmployeeDto => ({
   id, code: id.toUpperCase(), fullName: `Người ${id}`, department: 'Kinh doanh', title: '', regionId: 'hcm', employment: 'official',
-  staffKindId: null, joinedOn: '2025-01-01', officialOn: null, leftOn: null, openingLeave: 0, ...over,
+  staffKindId: null, joinedOn: '2025-01-01', officialOn: null, leftOn: null, openingLeave: 0,
+  email: null, block: null, joinedOnConfirmed: false, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
 });
 const people = [
   person('a', { fullName: 'Nguyễn Thị Hương', code: 'NV01', title: 'Kế toán trưởng', department: 'Kế toán' }),
@@ -142,7 +143,7 @@ describe('counting the filters on', () => {
 
   it('should count each filter set, the search and the status included', () => {
     // Arrange
-    const filters: PeopleFilters = { query: 'an', regionId: 'hn', department: 'Kế toán', staffKindId: 'k-off', status: 'left' };
+    const filters: PeopleFilters = { query: 'an', regionId: 'hn', department: 'Kế toán', staffKindId: 'k-off', block: '', status: 'left' };
 
     // Act
     const count = filtersOn(filters);

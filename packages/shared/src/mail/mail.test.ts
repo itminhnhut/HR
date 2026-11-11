@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_MESSAGE_TEMPLATES,
   fillTemplateSections,
-  TEMPLATE_KEYS,
+  // The letters to a candidate: the payslip mail to an employee has its own tests (mail/payslip.test.ts).
+  APPLICANT_TEMPLATE_KEYS as TEMPLATE_KEYS,
   type TemplateKey,
   type TemplateValues,
 } from '../message-templates.js';
