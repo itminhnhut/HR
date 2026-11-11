@@ -2,6 +2,7 @@ import { Hono, type Context } from 'hono';
 import type { Env } from '../app.js';
 import { hrOf } from '../lib/hr-auth.js';
 import { readJson } from '../lib/request.js';
+import { confirmPayslipUnchanged, payslipChangesOf } from '../services/payslip-changes.js';
 import {
   markPayslipsSent,
   payslipsOf,
@@ -43,3 +44,22 @@ hrPayrollPayslipRoutes.post('/months/:month/payslips/mark', async (c) =>
 hrPayrollPayslipRoutes.post('/months/:month/payslips/send', async (c) =>
   c.json(await sendPayslip(c.get('deps').db, await args(c))),
 );
+
+/** "Thay đổi từ lần gửi": the payslip as sent against the payslip now, why, and the log since. Reads only. */
+hrPayrollPayslipRoutes.get('/months/:month/payslips/:employeeId/changes', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await payslipChangesOf(db, c.req.param('month'), c.req.param('employeeId'), now()));
+});
+
+/** "Đánh dấu vẫn đúng (không cần gửi lại)": 409 when a figure differs from what was sent. */
+hrPayrollPayslipRoutes.post('/months/:month/payslips/:employeeId/unchanged', async (c) => {
+  const { db, now } = c.get('deps');
+  const args = {
+    key: c.req.param('month'),
+    employeeId: c.req.param('employeeId'),
+    hr: hrOf(c),
+    now: now(),
+    mail: mailOf(c),
+  };
+  return c.json(await confirmPayslipUnchanged(db, args));
+});

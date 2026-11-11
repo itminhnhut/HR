@@ -133,4 +133,22 @@ describe('Khối of a draft month', () => {
     expect(lineOf(month, person)).toEqual(lineOf(approved, person));
     expect(lineOf(month, person).block).toBe('BO');
   });
+
+  it('should propose no truy lĩnh / truy thu for a month approved with the block of the person', async () => {
+    // Arrange: the close has no block, HR gives BO, the month is approved with it
+    await givePayrollRight(flow);
+    const person = await flow.addPerson({ code: 'NV35', fullName: 'NV NV35', joinedOn: '2026-09-04', block: null });
+    const level = { effectiveOn: '2026-09-04', contractTypeId: '12-thang', kpiAmount: 2_000_000, amounts: AMOUNTS };
+    await flow.payroll('POST', `/profiles/${person.id}/versions`, level, 201);
+    await closeNovember();
+    await flow.updatePerson(person, { block: 'BO' });
+    await flow.payroll<PayrollMonthDto>('POST', '/months/2026-11/approve', { acknowledgedRed: true });
+
+    // Act: nothing changed since the approval
+    const month = await monthOf();
+
+    // Assert: computed again it is the same month, so nothing goes to the next one
+    expect(lineOf(month, person).cells.kpiBonus).toBeGreaterThan(0);
+    expect(month.retroOut ?? null).toBeNull();
+  });
 });

@@ -155,6 +155,22 @@ describe('the payroll file of the month on screen', () => {
     expect([exported.closingNo, exported.formulaVersion, exported.isBankUnknown]).toEqual([null, null, true]);
     expect(exported.rows.every((r) => r.person.bankAccount === null && r.person.email === null)).toBe(true);
   });
+
+  it('should print HR’s own note of the row first in (52), then the automatic notes', async () => {
+    // Arrange: the first row gets a note typed by HR and an automatic one.
+    const loaded = await golden();
+    const [head, ...rest] = loaded.month.lines;
+    if (!head) throw new Error('The golden month has no row');
+    const noted = { ...head, note: 'Chỉ BHYT', inputs: { ...head.inputs, note: 'Chờ bổ sung hồ sơ' } };
+    const month = { ...loaded.month, lines: [noted, ...rest] };
+
+    // Act
+    const sheet = await sheetOf(month, loaded.settings);
+
+    // Assert
+    const row = rowOf(sheet, head.code);
+    expect(sheet.getCell(row, columnOf(sheet, '52')).value).toBe('Chờ bổ sung hồ sơ · Chỉ BHYT');
+  });
 });
 
 describe('payslips of the month on screen', () => {

@@ -7,7 +7,7 @@ import {
   type TaxMethod,
 } from '@careers/shared';
 import type { PayrollExportDto, PayrollExportMonthDto, PayrollLineDto, PayrollMonthDto } from '../../../../api';
-import { printedNote } from '../payrollModel';
+import { hrNoteOf, printedNote } from '../payrollModel';
 import { monthKeyText } from './format';
 import { payslipOf, type Payslip } from './payslip';
 import type {
@@ -123,6 +123,7 @@ function rowOf(line: PayrollLineDto, month: PayrollMonthDto): PayrollExportRow {
   const cash = cashPartsOf(line);
   const retro = retroOf(line.employeeId, month);
   const regionOrder = month.regions.findIndex((r) => r.id === line.regionId);
+  const hrNote = hrNoteOf(line);
   return {
     person: {
       employeeId: line.employeeId,
@@ -139,6 +140,7 @@ function rowOf(line: PayrollLineDto, month: PayrollMonthDto): PayrollExportRow {
       email: line.sheet?.payslipEmail ?? null,
       bankAccount: line.sheet?.bankAccount ?? null,
       bankName: line.sheet?.bankName ?? null,
+      ...(hrNote ? { note: hrNote } : {}),
     },
     line: lineOf(line, month),
     ...(cash ? { cash: cash.cash } : {}),

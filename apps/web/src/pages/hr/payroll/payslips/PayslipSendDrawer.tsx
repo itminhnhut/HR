@@ -11,13 +11,13 @@ import { designedMailHtml } from '../../mail/mailLogos';
 import { MailPreview } from '../../mail/MailPreview';
 import { OUTLINE } from '../../timesheet/gridParts';
 import { payslipOnScreen } from '../excel/fromMonth';
+import { PayslipStatus } from './PayslipMarkCell';
 import {
   emailLink,
   mailWithPayslipHtml,
   mailWithPayslipText,
   payslipMailOf,
   sendBlock,
-  statusWords,
   walkWords,
 } from './payslipsModel';
 
@@ -35,9 +35,9 @@ export interface PayslipSendDrawerProps {
   me: HrMe | null | undefined;
   /** Set while HR goes through several people one by one. */
   walk?: { index: number; total: number; onNext: () => void };
-  isMarking: boolean;
   markError: string | null;
-  onMark: (isSent: boolean) => void;
+  /** The mail went to Outlook, Gmail or a mail app: the web keeps "Đã gửi". Marking by hand is on the list. */
+  onSent: () => void;
   onClose: () => void;
 }
 
@@ -106,11 +106,9 @@ export function PayslipSendDrawer(p: PayslipSendDrawerProps) {
   const record = () => {
     if (recorded.current.has(stamp)) return;
     recorded.current = new Set([...recorded.current, stamp]);
-    p.onMark(true);
+    p.onSent();
   };
   const rich = useCopyMail(html, text, mail.outlook, stamp, record);
-  const status = statusWords(person.send);
-  const isSent = person.send.state === 'sent';
   return (
     <Dialog open onOpenChange={(o) => !o && p.onClose()}>
       <DialogContent
@@ -125,6 +123,7 @@ export function PayslipSendDrawer(p: PayslipSendDrawerProps) {
           <DialogPrimitive.Description className="sr-only">
             Thư phiếu lương của một người, như sẽ gửi
           </DialogPrimitive.Description>
+          <PayslipStatus send={person.send} />
         </DialogHeader>
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-5">
           <p className="m-0 text-sm text-slate-600">
@@ -136,8 +135,6 @@ export function PayslipSendDrawer(p: PayslipSendDrawerProps) {
                 Thiếu email — bấm để nhập
               </Link>
             )}
-            {' · '}
-            <span data-tone={status.tone}>{status.text}</span>
           </p>
           <strong className="text-sm text-slate-900">{mail.content.subject}</strong>
           {mail.missing.length > 0 && (
@@ -173,15 +170,6 @@ export function PayslipSendDrawer(p: PayslipSendDrawerProps) {
               <CopyMailButton state={rich} disabled={block !== null} />
             </span>
             <PlainActions mail={mail} text={text} isHeld={block !== null} onOpen={record} />
-            <button
-              type="button"
-              disabled={!list.canSend || p.isMarking}
-              title={list.canSend ? undefined : (block ?? undefined)}
-              onClick={() => p.onMark(!isSent)}
-              className={`${OUTLINE} h-9`}
-            >
-              {isSent ? 'Đánh dấu chưa gửi' : 'Đánh dấu đã gửi'}
-            </button>
             {walk && (
               <button
                 type="button"
@@ -194,8 +182,8 @@ export function PayslipSendDrawer(p: PayslipSendDrawerProps) {
             )}
           </div>
           <p className="m-0 text-xs text-slate-500">
-            Bấm "Sao chép &amp; mở Outlook", dán thư (Ctrl+V) vào Outlook rồi bấm Gửi. Web tự ghi "Đã gửi" cho người
-            này.
+            Bấm "Sao chép &amp; mở Outlook", dán thư (Ctrl+V, máy Mac: Cmd+V) vào Outlook rồi bấm Gửi. Web tự ghi "Đã
+            gửi" cho người này; đánh dấu hoặc bỏ đánh dấu bằng tay ở cột Trạng thái gửi của danh sách.
           </p>
         </footer>
       </DialogContent>

@@ -4,6 +4,8 @@ import type {
   PayrollLogPageDto,
   PayrollMonthDto,
   PayrollMonthInputsResultDto,
+  PayrollProfileDto,
+  PayrollProfileVersionSavedDto,
   PayrollRetroItemDto,
 } from '@careers/shared';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -83,7 +85,7 @@ async function approvedNovember(): Promise<Company> {
 
 /** A raise of NV B dated on the first day of the November period, entered after November was approved. */
 const raiseB = (b: EmployeeDto, luong = 12_000_000, effectiveOn = '2026-10-26') =>
-  flow.payroll(
+  flow.payroll<PayrollProfileVersionSavedDto>(
     'POST',
     `/profiles/${b.id}/versions`,
     { ...LEVEL, effectiveOn, amounts: { luong, com: 1_100_000 } },
@@ -151,6 +153,43 @@ describe('L-M08 a raise dated inside an approved month', () => {
     const [cause] = onlyRetro(december, b).causes;
     expect(cause).toMatchObject({ area: 'ho-so', by: 'Lan', at: '2026-12-26T03:00:00.000Z' });
     expect(cause?.detail).toMatch(/NV02/);
+  });
+
+  it('should let HR change and delete the raise added after the approval, and drop the difference with it', async () => {
+    // Arrange: November was approved without the raise, so its approval never used that level.
+    const { b } = await approvedNovember();
+    const raise = await raiseB(b);
+    const path = `/profiles/${b.id}/versions/${raise.version.id}`;
+    const first = onlyRetro(await monthOf('2026-12'), b).computed;
+
+    // Act
+    await flow.payroll('PUT', path, {
+      ...LEVEL,
+      effectiveOn: '2026-10-26',
+      amounts: { luong: 10_000_000, com: 1_100_000 },
+    });
+    const edited = onlyRetro(await monthOf('2026-12'), b).computed;
+    await flow.payroll('DELETE', path);
+    const december = await monthOf('2026-12');
+
+    // Assert
+    expect(edited).toBeGreaterThan(0);
+    expect(edited).toBeLessThan(first);
+    expect(retroOf(december, b)).toEqual([]);
+    expect((await monthOf('2026-11')).retroOut ?? null).toBeNull();
+  });
+
+  it('should keep the level the approval used locked, with the months that used it', async () => {
+    // Arrange
+    const { b } = await approvedNovember();
+    const profile = await flow.payroll<PayrollProfileDto>('GET', `/profiles/${b.id}`);
+    const path = `/profiles/${b.id}/versions/${profile.versions[0]?.id}`;
+
+    // Act
+    const res = await flow.payroll<{ error: string }>('DELETE', path, undefined, 409);
+
+    // Assert
+    expect(res.error).toMatch(/^Đã dùng ở T11\/2026 đã duyệt\./);
   });
 });
 

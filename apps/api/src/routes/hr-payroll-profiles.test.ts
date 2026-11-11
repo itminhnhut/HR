@@ -181,6 +181,55 @@ describe('L-B08 – L-B11 changing a level (R5)', () => {
     expect(res.error).toBe('Đã dùng ở T10/2026 đã duyệt. Thêm mức mới từ 26/10/2026 hoặc Sửa lỗi.');
   });
 
+  it('should keep the lock on a level that was there when the month was approved', async () => {
+    // Arrange: the level dated inside October exists before the approval of October.
+    const person = await flow.addPerson({ code: 'NV03', fullName: 'NV C', joinedOn: '2026-01-05' });
+    await flow.at('2026-11-01');
+    await addVersion(person, base({ effectiveOn: '2026-07-26' }));
+    const { version } = await addVersion(person, base({ effectiveOn: '2026-10-10' }));
+    await approvedMonth(flow, 2026, 10, 'approved', new Date('2026-11-05T03:00:00.000Z'));
+    await flow.at('2026-11-11');
+    const path = `/profiles/${person.id}/versions/${version.id}`;
+
+    // Act
+    const edited = await flow.payroll<{ error: string }>('PUT', path, base({ effectiveOn: '2026-10-10' }), 409);
+    const deleted = await flow.payroll<{ error: string }>('DELETE', path, undefined, 409);
+
+    // Assert
+    expect(edited.error).toBe('Đã dùng ở T10/2026 đã duyệt. Thêm mức mới từ 26/10/2026 hoặc Sửa lỗi.');
+    expect(deleted.error).toBe(edited.error);
+  });
+
+  it('should let HR change and delete a level added after the approval: the approval never used it', async () => {
+    // Arrange: October is approved on the first level; a level dated inside October is added afterwards.
+    const person = await flow.addPerson({ code: 'NV03', fullName: 'NV C', joinedOn: '2026-01-05' });
+    await flow.at('2026-11-01');
+    const first = await addVersion(person, base({ effectiveOn: '2026-07-26' }));
+    await approvedMonth(flow, 2026, 10, 'approved', new Date('2026-11-05T03:00:00.000Z'));
+    await flow.at('2026-11-11');
+    const late = await addVersion(person, base({ effectiveOn: '2026-10-10', amounts: { luong: 12_000_000 } }));
+    const path = `/profiles/${person.id}/versions/${late.version.id}`;
+
+    // Act
+    const saved = await flow.payroll<PayrollProfileVersionSavedDto>(
+      'PUT',
+      path,
+      base({ effectiveOn: '2026-10-10', amounts: { luong: 11_000_000 } }),
+    );
+    await flow.payroll(
+      'PUT',
+      `/profiles/${person.id}/versions/${first.version.id}`,
+      base({ effectiveOn: '2026-07-26' }),
+      409,
+    );
+    await flow.payroll('DELETE', path);
+
+    // Assert
+    expect(late.approvedMonthsTouched).toEqual(['2026-10']);
+    expect(saved.version.amounts).toEqual({ luong: 11_000_000 });
+    expect((await profileOf(person)).versions.map((v) => v.effectiveOn)).toEqual(['2026-07-26']);
+  });
+
   it.todo('L-B08: "Sửa lỗi" on a level an approved month used goes through the retroactive flow (step 17)');
 
   it('L-B09: should change a level only drafts use, and log old → new', async () => {
@@ -281,7 +330,9 @@ describe('L-B12 – L-B14 the person in Chấm công', () => {
     expect(profile.leavingFrom).toBe('2026-10-10');
   });
 
-  it.todo('L-B13: levels after the last day are ignored inside the leaving month (no row from T11: hr-payroll-month.test.ts)');
+  it.todo(
+    'L-B13: levels after the last day are ignored inside the leaving month (no row from T11: hr-payroll-month.test.ts)',
+  );
 
   it('L-B14: should keep a returning person’s new profile apart from the old one', async () => {
     // Arrange
@@ -302,7 +353,9 @@ describe('L-B12 – L-B14 the person in Chấm công', () => {
     expect((await profileOf(back)).versions.map((v) => v.amounts.luong)).toEqual([12_000_000]);
   });
 
-  it.todo('L-B16, L-B17, L-B27: dates and regions come from the timesheet close (steps 15, 17; L-B25 in hr-payroll-month.test.ts)');
+  it.todo(
+    'L-B16, L-B17, L-B27: dates and regions come from the timesheet close (steps 15, 17; L-B25 in hr-payroll-month.test.ts)',
+  );
 });
 
 describe('L-A23 a new default amount for a component', () => {

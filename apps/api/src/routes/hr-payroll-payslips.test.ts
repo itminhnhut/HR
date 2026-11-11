@@ -2,6 +2,7 @@ import type {
   EmployeeDto,
   PayrollLogPageDto,
   PayrollMonthDto,
+  PayslipChangesDto,
   PayslipListDto,
   PayslipSendResultDto,
 } from '@careers/shared';
@@ -327,5 +328,113 @@ describe('Gửi tự động', () => {
     expect(result).toMatchObject({ isSent: false, sentTo: null, error: 'Ứng dụng chưa được cấp quyền Mail.Send' });
     expect(personOf(await list(), a)?.send).toMatchObject({ state: 'failed', channel: 'auto', error: result.error });
     expect((await logLines())[0]).toBe('Gửi phiếu lương bị lỗi: NV01 NV A: Ứng dụng chưa được cấp quyền Mail.Send');
+  });
+});
+
+describe('Thay đổi từ lần gửi', () => {
+  const changes = (person: EmployeeDto, expected = 200) =>
+    flow.payroll<PayslipChangesDto>('GET', `/months/2026-11/payslips/${person.id}/changes`, undefined, expected);
+  const support = (person: EmployeeDto, amount: number) =>
+    flow.payroll('PUT', `/months/2026-11/lines/${person.id}/inputs`, {
+      cash: [{ kind: 'support', amount, reason: 'Hỗ trợ thử' }],
+    });
+  const stillRight = (person: EmployeeDto, expected = 200) =>
+    flow.payroll<PayslipListDto>('POST', `/months/2026-11/payslips/${person.id}/unchanged`, {}, expected);
+
+  /** Approved, NV A marked sent, reopened; `change` runs on the draft; approved again as number 2. */
+  async function sentThenApprovedAgain(change: (people: { a: EmployeeDto; b: EmployeeDto }) => Promise<unknown>) {
+    const people = await november();
+    await approve();
+    tick();
+    await mark([people.a.id]);
+    tick();
+    await reopen();
+    tick();
+    await change(people);
+    tick();
+    await approve();
+    return people;
+  }
+
+  it('should answer 403 to someone without the payroll right', async () => {
+    // Arrange
+    const { a } = await november();
+    await flow.t.db.update(hrUsers).set({ canPayroll: false, canApprovePayroll: false });
+
+    // Act
+    const read = await attemptPayroll('GET', `/months/2026-11/payslips/${a.id}/changes`);
+    const confirm = await attemptPayroll('POST', `/months/2026-11/payslips/${a.id}/unchanged`, {});
+
+    // Assert
+    expect([read.status, confirm.status]).toEqual([403, 403]);
+  });
+
+  it('should compare what was sent with the payslip now: the figures that differ, net pay first, and why', async () => {
+    // Arrange
+    const { a, b } = await sentThenApprovedAgain(async (p) => {
+      await support(p.a, 500_000);
+      await support(p.b, 700_000);
+    });
+
+    // Act
+    const dto = await changes(a);
+
+    // Assert
+    expect(dto.sent).toMatchObject({ approvalNo: 1, channel: 'manual' });
+    expect(dto.current).toEqual({ status: 'approved', approvalNo: 2 });
+    expect(dto.events.map((e) => [e.kind, e.approvalNo, e.reason])).toEqual([
+      ['reopened', 1, 'Sửa số'],
+      ['approved', 2, null],
+    ]);
+    const net = dto.cells[0];
+    expect(net?.key).toBe('netPay');
+    expect((net?.now ?? 0) - (net?.sent ?? 0)).toBe(500_000);
+    expect(dto.cells.map((c) => c.key)).toContain('cash');
+    expect(dto.sentMonth?.lines.map((l) => l.employeeId)).toEqual([a.id]);
+    expect(dto.sentMonth?.approval?.no).toBe(1);
+    expect(dto.canConfirmUnchanged).toBe(false);
+    const words = dto.log.map((l) => `${l.action}: ${l.detail}`);
+    expect(words.some((w) => w.startsWith('Sửa đầu vào tháng') && w.includes('NV01'))).toBe(true);
+    expect(words.some((w) => w.startsWith('Mở lại'))).toBe(true);
+    expect(words.some((w) => w.includes('NV02'))).toBe(false);
+    expect(dto.log.map((l) => l.at)).toEqual([...dto.log.map((l) => l.at)].sort().reverse());
+    expect(JSON.stringify(dto.sentMonth)).not.toContain(b.id);
+    await stillRight(a, 409);
+  });
+
+  it('should say nothing differs when the month was only reopened and approved again, and let HR confirm it', async () => {
+    // Arrange
+    const { a } = await sentThenApprovedAgain(async () => undefined);
+
+    // Act
+    const before = await changes(a);
+    tick();
+    const list2 = await stillRight(a);
+
+    // Assert
+    expect(before.cells).toEqual([]);
+    expect(before.canConfirmUnchanged).toBe(true);
+    expect(personOf(list2, a)?.send).toMatchObject({ state: 'sent', channel: 'manual' });
+    expect((await logLines())[0]).toBe(
+      'Xác nhận phiếu lương không đổi: Bản duyệt lần 2: NV01 NV A (số trên phiếu không đổi so với bản duyệt lần 1 đã gửi)',
+    );
+  });
+
+  it('should have nothing to compare for someone never sent', async () => {
+    // Arrange
+    const { b } = await sentThenApprovedAgain(async () => undefined);
+
+    // Act
+    const dto = await changes(b);
+
+    // Assert
+    expect(dto).toMatchObject({
+      sent: null,
+      sentMonth: null,
+      cells: [],
+      events: [],
+      log: [],
+      canConfirmUnchanged: false,
+    });
   });
 });

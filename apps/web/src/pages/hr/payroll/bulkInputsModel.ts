@@ -1,20 +1,21 @@
 import type { PayrollCashKind } from '@careers/shared';
 import type { PayrollLineDto, PayrollMonthInputsInput } from '../../../api';
 import { lockReasonOf, parseNumberInput } from './monthInputsModel';
-import { filterLines, type PayrollFilters } from './payrollModel';
+import { filterLines, isFiltered, NOTE_MAX, type PayrollFilters } from './payrollModel';
 
 /**
  * "Nhập cho nhiều người" without React (F11): one value of (19), or one more line of (24) or (32), for the people
  * picked. A list is sent whole, so a new line is added after the lines each person already has this month.
  */
 
-export type BulkColumn = 'kpiPercent' | 'otherIncome' | 'cash' | 'retro';
+export type BulkColumn = 'kpiPercent' | 'otherIncome' | 'cash' | 'retro' | 'note';
 
 export const BULK_COLUMNS: readonly { value: BulkColumn; label: string }[] = [
   { value: 'kpiPercent', label: '(19) % đánh giá KPI' },
   { value: 'otherIncome', label: '(24) Thu nhập khác' },
   { value: 'cash', label: '(32) Hỗ trợ / hoàn ứng / tạm ứng' },
   { value: 'retro', label: 'Truy lĩnh / truy thu (thêm tay)' },
+  { value: 'note', label: 'Ghi chú' },
 ];
 
 export interface BulkDraft {
@@ -27,6 +28,8 @@ export interface BulkDraft {
   /** Truy lĩnh / truy thu added by hand (C03): the month it is for, "YYYY-MM", and which way the money goes. */
   origin: string;
   retroKind: 'pay' | 'take';
+  /** Ghi chú HR: the same text for everyone picked, in place of the note each of them has this month. */
+  note: string;
 }
 
 export const EMPTY_BULK: BulkDraft = {
@@ -37,6 +40,7 @@ export const EMPTY_BULK: BulkDraft = {
   reason: '',
   origin: '',
   retroKind: 'pay',
+  note: '',
 };
 
 const MAX_LINES = 20;
@@ -44,12 +48,16 @@ const MAX_LINES = 20;
 /** Who the column can be typed for: (19) only for people with a KPI; a list only while it has room for a line. */
 export function bulkPeople(lines: readonly PayrollLineDto[], column: BulkColumn): PayrollLineDto[] {
   if (column === 'kpiPercent') return lines.filter((l) => !lockReasonOf('kpiPercent', l, null));
-  if (column === 'retro') return [...lines];
+  if (column === 'retro' || column === 'note') return [...lines];
   return lines.filter((l) => l.inputs[column].length < MAX_LINES);
 }
 
-/** The people ticked when the dialog opens: the rows the grid's filters show, among those the column takes. */
+/**
+ * The people ticked when the dialog opens: nobody while the grid shows everyone, so a value never lands on people HR
+ * did not pick. With a filter on the grid: the rows it shows, among those the column takes.
+ */
 export function defaultPicked(lines: readonly PayrollLineDto[], filters: PayrollFilters, column: BulkColumn): string[] {
+  if (!isFiltered(filters)) return [];
   const shown = new Set(filterLines(lines, filters).map((l) => l.employeeId));
   return bulkPeople(lines, column)
     .filter((l) => shown.has(l.employeeId))
@@ -75,8 +83,17 @@ function retroPatch(origin: string, amount: number, reason: string): BulkPatch {
   };
 }
 
+/** The same note for everyone picked. An empty one is refused here: a note is deleted on the person's own cell. */
+function notePatch(text: string): BulkPatch {
+  const note = text.trim();
+  if (!note) return { ok: false, error: 'Nhập ghi chú. Xoá ghi chú: bấm ô Ghi chú của từng người trên lưới.' };
+  if (note.length > NOTE_MAX) return { ok: false, error: `Ghi chú tối đa ${NOTE_MAX} ký tự.` };
+  return { ok: true, patchFor: () => ({ note }) };
+}
+
 /** What to send for each person, or the first thing to fix in the form. */
 export function bulkPatch(draft: BulkDraft): BulkPatch {
+  if (draft.column === 'note') return notePatch(draft.note);
   if (draft.column === 'kpiPercent') {
     const parsed = parseNumberInput('kpiPercent', draft.amount);
     return parsed.ok ? { ok: true, patchFor: () => parsed.patch } : parsed;

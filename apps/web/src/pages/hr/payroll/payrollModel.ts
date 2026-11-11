@@ -333,6 +333,18 @@ export const printedNote = (note: string) =>
     .filter((part) => part && !part.includes(BLOCK_FROM_PERSON))
     .join('; ');
 
+/** The API's limit on HR's note of a row (`payrollMonthInputsSchema`). */
+export const NOTE_MAX = 500;
+
+export const AUTO_NOTE_TITLE = 'Ghi chú tự động của hệ thống';
+
+/** HR's own note of the person this month (a month input); `line.note` holds the notes the web writes by itself. */
+export const hrNoteOf = (line: { inputs: { note: string } }) => line.inputs.note.trim();
+
+/** What the Excel file (52) and the payslip print: HR's note, then the automatic notes that are printed. */
+export const fullNoteOf = (line: { note: string; inputs: { note: string } }) =>
+  [hrNoteOf(line), printedNote(line.note)].filter(Boolean).join(' · ');
+
 /**
  * Khối is typed on the person in Chấm công → Nhân viên: the link opens that person's form there (`nv`); a person
  * without a block lands on the "Thiếu khối" list (`khoi=none`), so the others still missing are behind the form.

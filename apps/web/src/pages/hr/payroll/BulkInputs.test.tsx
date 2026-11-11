@@ -57,8 +57,47 @@ describe('Nhập cho nhiều người', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
 
     // Assert
-    expect(await screen.findByRole('button', { name: 'Về số tự tính cho 1 người' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'Lưu cho 1 người' })).toBeTruthy();
     expect(screen.getByRole<HTMLInputElement>('checkbox', { name: 'NV01 · NV A' }).checked).toBe(true);
+    expect(screen.getByText('Đang chọn 1 người (theo bộ lọc của lưới)')).toBeTruthy();
+  });
+
+  it('should open with nobody ticked when the grid is not filtered, and hold the save until someone is', async () => {
+    // Arrange
+    const put = spyOnApi('hrPayrollSaveInputs').mockResolvedValue(answer);
+    show();
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
+    const save = await screen.findByRole<HTMLButtonElement>('button', { name: 'Lưu cho 0 người' });
+    const boxes = screen.getAllByRole<HTMLInputElement>('checkbox');
+
+    // Assert: nobody, and nothing to save.
+    expect(boxes.map((b) => b.checked)).toEqual([false, false, false]);
+    expect(save.disabled).toBe(true);
+    expect(screen.getByText('Đang chọn 0 người')).toBeTruthy();
+
+    // Act: two people ticked: exactly those two are saved.
+    fireEvent.change(screen.getByRole('textbox', { name: '% đánh giá KPI' }), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('checkbox', { name: 'NV01 · NV A' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'NV11 · NV K' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Lưu cho 2 người' }));
+
+    // Assert
+    await waitFor(() => expect(put).toHaveBeenCalledTimes(2));
+    expect(put.mock.calls.map((c) => c[1])).toEqual(['nv-a', 'nv-k']);
+  });
+
+  it('should tick everyone with "Chọn tất cả" and nobody with "Bỏ chọn"', async () => {
+    // Arrange
+    show();
+    fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
+
+    // Act + Assert
+    fireEvent.click(await screen.findByRole('button', { name: 'Chọn tất cả' }));
+    expect(screen.getByRole('button', { name: 'Lưu cho 3 người' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Bỏ chọn' }));
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: 'Lưu cho 0 người' }).disabled).toBe(true);
   });
 
   it('should keep the dialog open and name who was not saved, with the reason', async () => {
@@ -71,6 +110,7 @@ describe('Nhập cho nhiều người', () => {
     // Act
     fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
     fireEvent.change(await screen.findByRole('textbox', { name: '% đánh giá KPI' }), { target: { value: '90' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Chọn tất cả' }));
     fireEvent.click(screen.getByRole('button', { name: 'Lưu cho 3 người' }));
 
     // Assert
@@ -84,7 +124,8 @@ describe('Nhập cho nhiều người', () => {
 
     // Act: the % is left empty.
     fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Về số tự tính cho 3 người' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Chọn tất cả' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Lưu cho 3 người' }));
     const ask = await screen.findByRole('alertdialog', { name: 'Xoá % KPI đã gõ' });
 
     // Assert
@@ -93,12 +134,34 @@ describe('Nhập cho nhiều người', () => {
     expect(put).not.toHaveBeenCalled();
 
     // Act: asked again, and confirmed.
-    fireEvent.click(screen.getByRole('button', { name: 'Về số tự tính cho 3 người' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Lưu cho 3 người' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Xoá % đã gõ' }));
 
     // Assert
     await waitFor(() => expect(put).toHaveBeenCalledTimes(3));
     expect(put).toHaveBeenCalledWith('2026-10', 'nv-a', { kpiPercent: null });
+  });
+
+  it('should save the same Ghi chú for the two people ticked, and refuse an empty one', async () => {
+    // Arrange
+    const put = spyOnApi('hrPayrollSaveInputs').mockResolvedValue(answer);
+    show();
+
+    // Act
+    fireEvent.click(screen.getByRole('button', { name: 'Nhập cho nhiều người' }));
+    const form = await screen.findByRole('form', { name: 'Nhập cho nhiều người' });
+    fireEvent.change(within(form).getByRole('combobox', { name: 'Cột' }), { target: { value: 'note' } });
+    fireEvent.click(within(form).getByRole('button', { name: 'Khối KD' }));
+    fireEvent.click(within(form).getByRole('button', { name: 'Lưu cho 2 người' }));
+    const refusal = within(form).getByRole('alert').textContent;
+    fireEvent.change(within(form).getByRole('textbox', { name: 'Ghi chú' }), { target: { value: ' Chờ đối soát ' } });
+    fireEvent.click(within(form).getByRole('button', { name: 'Lưu cho 2 người' }));
+
+    // Assert
+    expect(refusal).toMatch(/^Nhập ghi chú\./);
+    await waitFor(() => expect(put).toHaveBeenCalledTimes(2));
+    expect(put).toHaveBeenCalledWith('2026-10', 'nv-c', { note: 'Chờ đối soát' });
+    expect(put).toHaveBeenCalledWith('2026-10', 'nv-k', { note: 'Chờ đối soát' });
   });
 
   it('should not be offered on an approved month', () => {

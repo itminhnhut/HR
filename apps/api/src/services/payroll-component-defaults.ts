@@ -66,7 +66,7 @@ export async function applyDefault(
           );
       } else {
         const { id: _id, createdBy: _by, createdAt: _at, ...copy } = level;
-        await insertLevel(tx, person.id, { ...copy, effectiveOn: fromOn, amounts }, hr);
+        await insertLevel(tx, person.id, { ...copy, effectiveOn: fromOn, amounts }, hr, now);
       }
     }
     const codes = movable.map((f) => f.person.code).join(', ');

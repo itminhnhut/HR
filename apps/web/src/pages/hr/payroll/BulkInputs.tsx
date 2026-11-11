@@ -23,19 +23,40 @@ import {
 } from './bulkInputsModel';
 import { PeoplePicker } from './config/PeoplePicker';
 import { saveError } from './inputParts';
-import { filtersFromParams } from './payrollModel';
+import { filtersFromParams, isFiltered, NOTE_MAX } from './payrollModel';
 import { useSaveMonthInputs } from './queries';
 
 /**
- * "Nhập cho nhiều người" (F11): the same % KPI, or one more line of (24) or (32), for the people ticked. It opens on
- * the people the grid is filtered to; each person is saved in turn and the result says who was not.
+ * "Nhập cho nhiều người" (F11): the same % KPI or Ghi chú, or one more line of (24) or (32), for the people ticked. It opens on
+ * nobody ticked, or on the people the grid is filtered to (and says so); the save names how many people it is for and
+ * stays off until someone is ticked. Each person is saved in turn and the result says who was not.
  */
 
 const FIELD = 'ts-field h-9 min-w-0 rounded-md border bg-white px-2 text-sm';
 const LABEL = 'flex min-w-0 flex-col gap-1 text-xs font-medium text-slate-700';
 
+function NoteField({ draft, onChange }: { draft: BulkDraft; onChange: (next: BulkDraft) => void }) {
+  return (
+    <label className={LABEL}>
+      <span className="flex justify-between gap-2">
+        Ghi chú (thay ghi chú HR đã gõ của những người được chọn)
+        <span className="shrink-0 font-normal text-slate-500 tabular-nums">{`${draft.note.length}/${NOTE_MAX}`}</span>
+      </span>
+      <textarea
+        aria-label="Ghi chú"
+        rows={3}
+        maxLength={NOTE_MAX}
+        value={draft.note}
+        onChange={(e) => onChange({ ...draft, note: e.target.value })}
+        className="min-h-16 w-full resize-y rounded-md border bg-white px-2 py-1.5 text-sm break-words"
+      />
+    </label>
+  );
+}
+
 function ValueFields({ draft, onChange }: { draft: BulkDraft; onChange: (next: BulkDraft) => void }) {
   const isPercent = draft.column === 'kpiPercent';
+  if (draft.column === 'note') return <NoteField draft={draft} onChange={onChange} />;
   return (
     <div className="grid gap-2 sm:grid-cols-2">
       <label className={LABEL}>
@@ -127,13 +148,21 @@ function BulkDialog({ month, search, onClose }: { month: PayrollMonthDto; search
   const save = useSaveMonthInputs(month.monthKey);
   const people = bulkPeople(month.lines, draft.column);
   const left = month.lines.length - people.length;
+  // Only the people in the list can be saved for: the button counts exactly those.
+  const targets = people.filter((l) => picked.includes(l.employeeId));
+  const [isFromFilter, setIsFromFilter] = useState(() => isFiltered(filters));
+  const pick = (next: string[]) => {
+    setIsFromFilter(false);
+    setPicked(next);
+  };
   const setColumn = (column: BulkColumn) => {
     setIsAsking(false);
     setDraft({ ...draft, column, amount: '' });
     setPicked(defaultPicked(month.lines, filters, column));
+    setIsFromFilter(isFiltered(filters));
     setNotice(null);
   };
-  const pickBlock = (block: string) => setPicked(people.filter((l) => l.block === block).map((l) => l.employeeId));
+  const pickBlock = (block: string) => pick(people.filter((l) => l.block === block).map((l) => l.employeeId));
   // An empty % puts (19) back to the computed one: that wipes what HR typed, so it is asked once (F26).
   const isReset = draft.column === 'kpiPercent' && draft.amount.trim() === '';
   const [isAsking, setIsAsking] = useState(false);
@@ -141,7 +170,6 @@ function BulkDialog({ month, search, onClose }: { month: PayrollMonthDto; search
     event.preventDefault();
     const patch = bulkPatch(draft);
     if (!patch.ok) return setNotice(patch.error);
-    const targets = people.filter((l) => picked.includes(l.employeeId));
     if (targets.length === 0) return setNotice('Chọn ít nhất một người.');
     if (isReset && !isSure) return setIsAsking(true);
     setIsAsking(false);
@@ -204,7 +232,12 @@ function BulkDialog({ month, search, onClose }: { month: PayrollMonthDto; search
             ))}
             {left > 0 && draft.column === 'kpiPercent' && <span>{`${left} người không có KPI nên không ở đây.`}</span>}
           </div>
-          <PeoplePicker people={people} picked={picked} onChange={setPicked} />
+          <PeoplePicker
+            people={people}
+            picked={targets.map((l) => l.employeeId)}
+            onChange={pick}
+            note={isFromFilter ? 'theo bộ lọc của lưới' : undefined}
+          />
           {notice && (
             <p role="alert" className="m-0 text-sm font-medium text-red-700">
               {notice}
@@ -216,7 +249,7 @@ function BulkDialog({ month, search, onClose }: { month: PayrollMonthDto; search
               aria-label="Xoá % KPI đã gõ"
               className="flex flex-wrap items-center gap-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900"
             >
-              <span className="min-w-0 flex-1 basis-56">{`Xoá % KPI đã gõ của ${picked.length} người, quay về số tự tính?`}</span>
+              <span className="min-w-0 flex-1 basis-56">{`Xoá % KPI đã gõ của ${targets.length} người, quay về số tự tính?`}</span>
               <button type="button" onClick={() => setIsAsking(false)} className={OUTLINE}>
                 Huỷ
               </button>
@@ -235,10 +268,10 @@ function BulkDialog({ month, search, onClose }: { month: PayrollMonthDto; search
             </button>
             <button
               type="submit"
-              disabled={isBusy || isAsking || picked.length === 0}
+              disabled={isBusy || isAsking || targets.length === 0}
               className="ts-field inline-flex items-center justify-center rounded-md border border-blue-600 bg-blue-600 px-4 text-sm font-medium whitespace-nowrap text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              {isBusy ? 'Đang lưu…' : `${isReset ? 'Về số tự tính' : 'Lưu'} cho ${picked.length} người`}
+              {isBusy ? 'Đang lưu…' : `Lưu cho ${targets.length} người`}
             </button>
           </DialogFooter>
         </form>

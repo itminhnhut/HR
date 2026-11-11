@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '../../../../api';
 import { spyOnApi } from '../../../../test/apiSpy';
 import { address, month, open, person } from '../payrollTestData';
-import { answerReads, LEVEL, profile } from './profileTestData';
+import { answerReads, LEVEL, LIST, profile } from './profileTestData';
 
 /** Hồ sơ lương (spec 11.5, 17.2). Cases: docs/test-cases-luong.md L-B01, L-B06, L-B24, L-B28, L-L17. */
 
@@ -158,6 +158,61 @@ describe('the drawer', () => {
     const bank = await within(await drawer()).findByRole('region', { name: 'Ngân hàng' });
     expect(await within(bank).findByRole('textbox', { name: 'Số tài khoản' })).toBeTruthy();
     expect(address()).toBe('/hr/luong/ho-so?ky=2026-10&hs=nv-a&phan=ngan-hang&them=1');
+  });
+
+  it('should show the account on file today in Tài khoản, whatever the month viewed says, and "Từ dd/mm" for one that starts later', async () => {
+    // Arrange: the month viewed was paid before either account started.
+    answerReads();
+    const [a, j, ...rest] = LIST.people;
+    spyOnApi('hrPayrollProfiles').mockResolvedValue({
+      ...LIST,
+      people: [
+        { ...a!, account: { last4: '6789', changedOn: '2026-11-08', isInForce: true } },
+        { ...j!, account: { last4: '1111', changedOn: '2026-11-12', isInForce: false } },
+        ...rest.map((p) => ({ ...p, account: null })),
+      ],
+    });
+
+    // Act
+    open('/hr/luong/ho-so?ky=2026-10');
+
+    // Assert
+    const inForce = await screen.findAllByRole('button', { name: /^Tài khoản của NV A: ••••6789\. Mở phần Tài khoản/ });
+    const later = screen.getAllByRole('button', { name: /^Tài khoản của NV J: Từ 12\/11\. Mở phần Tài khoản/ });
+    const none = screen.getAllByRole('button', { name: /^Tài khoản của NV M: Thiếu\. Thêm tài khoản ngân hàng/ });
+    expect([inForce.length, later.length, none.length].every((n) => n > 0)).toBe(true);
+  });
+
+  it("should date a person's first account from the day they joined, so it is there for every month, and say so", async () => {
+    // Arrange
+    answerReads(profile({ bankAccounts: [] }));
+    open('/hr/luong/ho-so?ky=2026-10&hs=nv-a&phan=ngan-hang&them=1');
+
+    // Act
+    const bank = await within(await drawer()).findByRole('region', { name: 'Ngân hàng' });
+    const from = await within(bank).findByRole('button', { name: 'Từ ngày' });
+
+    // Assert
+    expect(from.textContent).toBe('02/03/2025');
+    expect(within(bank).getByRole('note').textContent).toBe(
+      'Tài khoản này dùng cho mọi kỳ lương có ngày trả lương từ 02/03/2025 trở đi. Tài khoản đầu tiên: điền sẵn ngày vào làm để tháng lương nào cũng có tài khoản.',
+    );
+  });
+
+  it('should date a later account from today and say which pay dates it is for', async () => {
+    // Arrange: the person already has an account.
+    answerReads();
+    open('/hr/luong/ho-so?ky=2026-10&hs=nv-a&phan=ngan-hang&them=1');
+
+    // Act
+    const bank = await within(await drawer()).findByRole('region', { name: 'Ngân hàng' });
+    const from = await within(bank).findByRole('button', { name: 'Từ ngày' });
+
+    // Assert
+    expect(from.textContent).toBe('08/11/2026');
+    expect(within(bank).getByRole('note').textContent).toBe(
+      'Tài khoản này dùng cho mọi kỳ lương có ngày trả lương từ 08/11/2026 trở đi. Các kỳ trả trước ngày đó giữ tài khoản cũ.',
+    );
   });
 
   it('F28: should open the dependants of the person, nothing being added, from a number of dependants', async () => {

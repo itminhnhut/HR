@@ -1,7 +1,7 @@
 import { standardPeriod } from '@careers/shared';
-import { asc, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
-import { payrollPeriods } from '../db/schema.js';
+import { payrollPeriods, payrollRuns } from '../db/schema.js';
 import { HttpError } from '../lib/http-error.js';
 import { monthWords } from './payroll-words.js';
 
@@ -21,6 +21,25 @@ export async function approvedMonths(db: Pick<Db, 'select'>): Promise<string[]> 
     .where(inArray(payrollPeriods.status, ['approved', 'paid']))
     .orderBy(asc(payrollPeriods.year), asc(payrollPeriods.month));
   return rows.map((r) => `${r.year}-${pad(r.month)}`);
+}
+
+/** An approved or paid month and when its approval in force was made; null when the month has no approval row. */
+export interface MonthApproval {
+  month: string;
+  approvedAt: Date | null;
+}
+
+/** Every approved or paid payroll month with the time of the approval in force (the one not reopened), oldest first. */
+export async function monthApprovals(db: Pick<Db, 'select'>): Promise<MonthApproval[]> {
+  const rows = await db
+    .select({ year: payrollPeriods.year, month: payrollPeriods.month, approvedAt: payrollRuns.approvedAt })
+    .from(payrollPeriods)
+    .leftJoin(payrollRuns, and(eq(payrollRuns.periodId, payrollPeriods.id), isNull(payrollRuns.reopenedAt)))
+    .where(inArray(payrollPeriods.status, ['approved', 'paid']))
+    .orderBy(asc(payrollPeriods.year), asc(payrollPeriods.month), asc(payrollRuns.approvalNo));
+  const latest = new Map<string, Date | null>();
+  for (const r of rows) latest.set(`${r.year}-${pad(r.month)}`, r.approvedAt);
+  return [...latest].map(([month, approvedAt]) => ({ month, approvedAt }));
 }
 
 /** The days of payroll month "YYYY-MM": 26 of the month before to 25. */

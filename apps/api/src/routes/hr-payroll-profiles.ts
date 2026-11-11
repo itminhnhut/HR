@@ -19,7 +19,10 @@ const ctx = (c: Context<Env>) => {
   return { db, now: now(), hr: hrOf(c), key: config.payrollKey, person: c.req.param('employeeId') ?? '' };
 };
 
-hrPayrollProfileRoutes.get('/profiles', async (c) => c.json(await listProfiles(c.get('deps').db)));
+hrPayrollProfileRoutes.get('/profiles', async (c) => {
+  const { db, now } = c.get('deps');
+  return c.json(await listProfiles(db, todayInVietnam(now())));
+});
 hrPayrollProfileRoutes.get('/profiles/:employeeId', async (c) => {
   const { db, person } = ctx(c);
   return c.json(await profileOf(db, person));

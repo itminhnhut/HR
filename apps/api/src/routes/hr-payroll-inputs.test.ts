@@ -326,6 +326,35 @@ describe('when inputs can be saved, by whom, and the log (L-C01, L-H01, spec 11.
     expect(log.lines[0]).toMatchObject({ area: 'bang-luong', action: 'Sửa đầu vào tháng', month: '2026-11' });
   });
 
+  it('should keep HR’s note apart from the automatic note, log each change of it, and refuse one over 500 letters', async () => {
+    // Arrange
+    const { a } = await hireCompany();
+    await closeNovember();
+    const before = await lineOf(a);
+
+    // Act
+    await putInputs(a, { note: '  Chờ bổ sung hồ sơ ' });
+    const noted = await lineOf(a);
+    await putInputs(a, { note: 'Đã đủ hồ sơ' });
+    await putInputs(a, { note: '' });
+    const cleared = await lineOf(a);
+    const tooLong = await refused(a, { note: 'x'.repeat(501) }, 422);
+
+    // Assert
+    expect(noted.inputs.note).toBe('Chờ bổ sung hồ sơ');
+    expect(noted.note).toBe(before.note);
+    expect(noted.cells).toEqual(before.cells);
+    expect(cleared.inputs.note).toBe('');
+    expect(tooLong).toMatchObject({ fieldErrors: { note: 'Ghi chú tối đa 500 ký tự.' } });
+    const log = await flow.payroll<PayrollLogPageDto>('GET', '/log?nhom=bang-luong&ky=2026-11');
+    // The three saves share the test clock's minute, so the order among them is not asserted.
+    expect(log.lines.map((l) => l.detail).sort()).toEqual([
+      'NV01 NV A: ghi chú "Chờ bổ sung hồ sơ" → "Đã đủ hồ sơ"',
+      'NV01 NV A: ghi chú "Đã đủ hồ sơ" → trống',
+      'NV01 NV A: ghi chú trống → "Chờ bổ sung hồ sơ"',
+    ]);
+  });
+
   it('should refuse inputs on an approved or paid month with 409 and store nothing', async () => {
     // Arrange
     const { a } = await hireCompany();

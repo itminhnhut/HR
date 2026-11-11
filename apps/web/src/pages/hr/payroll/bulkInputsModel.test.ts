@@ -25,6 +25,12 @@ describe('who a column can be typed for', () => {
     // Assert
     expect(picked).toEqual(['b']);
   });
+
+  it('should tick nobody when the grid shows everyone: HR picks who the value is for', () => {
+    // Act + Assert
+    expect(defaultPicked([A, B, NO_KPI], NO_FILTER, 'kpiPercent')).toEqual([]);
+    expect(defaultPicked([A, B, NO_KPI], NO_FILTER, 'otherIncome')).toEqual([]);
+  });
 });
 
 describe('what is sent for each person', () => {

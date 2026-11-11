@@ -1,11 +1,14 @@
 import { DEFAULT_MESSAGE_TEMPLATES, renderMailHtml, type PayslipListDto, type PayslipPersonDto } from '@careers/shared';
 import { describe, expect, it } from 'vitest';
+import type { Payslip } from '../excel/payslip';
 import {
   listedPeople,
   mailWithPayslipHtml,
   mailWithPayslipText,
   notSentCount,
   payslipMailOf,
+  payslipTableHtml,
+  payslipText,
   sendBlock,
   statusFilterOf,
   statusWords,
@@ -79,12 +82,21 @@ describe('who the list shows', () => {
 
 describe('what a status reads', () => {
   it('should say when and by whom it was sent, in Vietnam time', () => {
-    expect(statusWords(sentAt)).toEqual({ text: 'Đã gửi lúc 14:05 05/11/2026 bởi HR Thử', tone: 'green' });
+    expect(statusWords(sentAt)).toEqual({ chip: 'Đã gửi', detail: '14:05 · 05/11/2026 · bởi HR Thử', tone: 'green' });
   });
 
   it('should say the numbers changed after a reopen, and "Chưa gửi" for nobody yet', () => {
-    expect(statusWords({ ...sentAt, state: 'stale' }).text).toContain('Số đã đổi, cần gửi lại');
-    expect(statusWords(person('1').send)).toEqual({ text: 'Chưa gửi', tone: 'grey' });
+    expect(statusWords({ ...sentAt, state: 'stale' })).toEqual({
+      chip: 'Cần gửi lại',
+      detail: 'Số đã đổi sau lần gửi 14:05 05/11',
+      tone: 'amber',
+    });
+    expect(statusWords(person('1').send)).toEqual({ chip: 'Chưa gửi', detail: null, tone: 'grey' });
+    expect(statusWords({ ...sentAt, state: 'failed', error: 'Hộp thư đầy' })).toEqual({
+      chip: 'Lỗi',
+      detail: 'Hộp thư đầy',
+      tone: 'red',
+    });
   });
 });
 
@@ -119,6 +131,7 @@ describe('the mail of one person', () => {
       info: [['Họ và tên', 'Người Thử 1']],
       sections: [{ title: 'Thu nhập', lines: [{ label: 'Lương <cơ bản>', amount: 9_000_000, format: 'money' }] }],
       netPay: 9_000_000,
+      notes: [],
     } as unknown as Parameters<typeof mailWithPayslipHtml>[1];
 
     // Act
@@ -138,5 +151,47 @@ describe('the mail of one person', () => {
 
   it('should say where a walk through several people stands', () => {
     expect(walkWords(1, 5)).toBe('Người 2/5');
+  });
+});
+
+describe('the notes of the payslip in the mail', () => {
+  const slip = (notes: string[]): Payslip => ({
+    employeeId: 'e1',
+    code: 'NV01',
+    name: 'Người Thử A',
+    monthLabel: 'T10/2026',
+    title: 'PHIẾU LƯƠNG THÁNG 10/2026',
+    isDraft: false,
+    stamp: '',
+    replaces: null,
+    info: [],
+    sections: [],
+    netPay: 9_000_000,
+    bank: null,
+    notes,
+  });
+
+  it("should print HR's note first, then the system's, under the payslip, in the designed mail and the plain one", () => {
+    // Arrange
+    const noted = slip(['Đã trừ tạm ứng <tháng 9>', 'Chỉ BHYT · 15 ngày không hưởng lương']);
+
+    // Act
+    const html = payslipTableHtml(noted);
+    const text = payslipText(noted);
+
+    // Assert
+    expect(html).toContain('Ghi chú');
+    expect(html.indexOf('Đã trừ tạm ứng &lt;tháng 9&gt;')).toBeGreaterThan(html.indexOf('Thực nhận'));
+    expect(html.indexOf('Chỉ BHYT')).toBeGreaterThan(html.indexOf('Đã trừ tạm ứng'));
+    expect(text.split('\n').slice(-2)).toEqual([
+      'Ghi chú: Đã trừ tạm ứng <tháng 9>',
+      'Ghi chú: Chỉ BHYT · 15 ngày không hưởng lương',
+    ]);
+  });
+
+  it('should leave the notes out when there is none', () => {
+    // Act + Assert
+    expect(payslipTableHtml(slip([]))).not.toContain('Ghi chú');
+    expect(payslipText(slip([]))).not.toContain('Ghi chú');
   });
 });

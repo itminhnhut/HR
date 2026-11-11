@@ -1,5 +1,6 @@
 import {
   PAYROLL_DEFAULT_CONTRACT,
+  listedAccountOf,
   PAYROLL_MONTH,
   periodMonthOf,
   type PayrollProfileDto,
@@ -8,10 +9,11 @@ import {
   type PayrollProfilePrefillDto,
   type PayrollProfileVersionDto,
 } from '@careers/shared';
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, inArray } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import {
   employees,
+  payrollBankAccounts,
   payrollDependants,
   payrollOpening,
   payrollRecurringItems,
@@ -35,7 +37,7 @@ const monthOfDay = (day: string) => {
 };
 
 /** Everyone in Chấm công still there at the first payroll month or later, with a profile or not (L-B01). */
-export async function listProfiles(db: Db): Promise<PayrollProfileListDto> {
+export async function listProfiles(db: Db, today: string): Promise<PayrollProfileListDto> {
   const [people, rows] = await Promise.all([db.select().from(employees).orderBy(asc(employees.code)), loadRows(db)]);
   const start = periodOfMonth(firstMonth(rows)).from;
   const current = people.filter((p) => !p.leftOn || p.leftOn >= start);
@@ -43,12 +45,24 @@ export async function listProfiles(db: Db): Promise<PayrollProfileListDto> {
     db,
     current.map((p) => p.id),
   );
+  const ids = current.map((p) => p.id);
+  const t = payrollBankAccounts;
+  const banks = ids.length
+    ? await db
+        .select({ employeeId: t.employeeId, last4: t.last4, changedOn: t.changedOn })
+        .from(t)
+        .where(inArray(t.employeeId, ids))
+    : [];
   const withProfile = new Set(levels.map((l) => l.employeeId));
   const overridden = new Set(rows.filter((r) => r.employeeId && !r.supersededBy && !r.stop).map((r) => r.employeeId));
   const list = current.map((p) => ({
     ...personDtoOf(p),
     hasProfile: withProfile.has(p.id),
     hasOverrides: overridden.has(p.id),
+    account: listedAccountOf(
+      banks.filter((b) => b.employeeId === p.id),
+      today,
+    ),
   }));
   return { people: list, missing: current.filter((p) => !withProfile.has(p.id)).map(personDtoOf) };
 }

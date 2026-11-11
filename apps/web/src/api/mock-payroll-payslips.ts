@@ -1,4 +1,10 @@
-import type { PayslipListDto, PayslipMarkInput, PayslipSendDto, PayslipSendResultDto } from '@careers/shared';
+import type {
+  PayslipChangesDto,
+  PayslipListDto,
+  PayslipMarkInput,
+  PayslipSendDto,
+  PayslipSendResultDto,
+} from '@careers/shared';
 import { delay, fail } from './mock-store';
 import type { PayrollMonthDto } from './types';
 
@@ -50,6 +56,26 @@ export const payslipsMockApi = (monthOf: (year: number, month: number) => Promis
       marks = { ...marks, ...changed };
       return delay(await list(monthKey));
     },
+    /** The demo never reopens a month, so a payslip sent is never out of date: nothing to compare. */
+    async hrPayrollPayslipChanges(monthKey: string, employeeId: string): Promise<PayslipChangesDto> {
+      const person = (await list(monthKey)).people.find((p) => p.employeeId === employeeId);
+      if (!person) return fail(404, 'Người này không có trong bảng lương của tháng.');
+      const month = await monthOf(Number(monthKey.slice(0, 4)), Number(monthKey.slice(5, 7)));
+      return delay({
+        monthKey,
+        employeeId,
+        code: person.code,
+        fullName: person.fullName,
+        sent: null,
+        current: { status: month.status, approvalNo: month.approval?.no ?? null },
+        events: [],
+        sentMonth: null,
+        cells: [],
+        canConfirmUnchanged: false,
+        log: [],
+      });
+    },
+    hrPayrollPayslipUnchanged: (): Promise<PayslipListDto> => fail(409, 'Không có gì để xác nhận.'),
     hrPayrollPayslipSend: (): Promise<PayslipSendResultDto> => fail(409, 'Chưa cấu hình hộp thư gửi'),
   };
 };

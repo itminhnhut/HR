@@ -174,7 +174,7 @@ function valueOf(key: string, config: PayrollConfig): PayrollColumn['value'] {
 function groupH(hideBank: boolean): PayrollColumn[] {
   const text = { group: 'H' as const, format: 'text' as const, isTotalled: false };
   const note = (r: PayrollExportRow) =>
-    [r.line.insurance.status.note, r.person.note ?? ''].filter((s) => s.length > 0).join(' · ') || null;
+    [r.person.note ?? '', r.line.insurance.status.note].filter((s) => s.length > 0).join(' · ') || null;
   const bank: PayrollColumn[] = [
     { ...text, key: 'email', number: '49', header: 'Email nhận phiếu lương', width: 24, value: (r) => r.person.email },
     {

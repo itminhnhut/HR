@@ -199,7 +199,7 @@ export function payslipOf(month: PayslipMonth, row: PayrollExportRow): Payslip {
     ],
     netPay: line.cells.netPay,
     bank: month.isBankUnknown ? null : `${person.bankName ?? 'Chưa có ngân hàng'} · ${lastFour(person.bankAccount)}`,
-    notes: [line.insurance.status.note].filter((n) => n.length > 0),
+    notes: [person.note ?? '', line.insurance.status.note].filter((n) => n.length > 0),
   };
 }
 

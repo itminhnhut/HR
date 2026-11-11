@@ -295,7 +295,7 @@ describe('the Cấu hình tab', () => {
     fireEvent.click(within(form).getByRole('checkbox', { name: 'NV01 · NV A' }));
     fireEvent.click(within(form).getByRole('checkbox', { name: 'NV10 · NV J' }));
     fireEvent.click(within(form).getByRole('checkbox', { name: 'NV20 · NV Z' }));
-    expect(within(form).getByText('Đã chọn 3 người')).toBeTruthy();
+    expect(within(form).getByText('Đang chọn 3 người')).toBeTruthy();
     fireEvent.click(within(form).getByRole('button', { name: 'Lưu' }));
 
     // Assert
@@ -304,7 +304,7 @@ describe('the Cấu hình tab', () => {
     const alert = await within(form).findByRole('alert');
     expect(alert.textContent).toContain('Đã lưu 2/3 người');
     expect(alert.textContent).toContain('NV20 · NV Z: Người này đã nghỉ việc.');
-    expect(within(form).getByText('Đã chọn 1 người')).toBeTruthy();
+    expect(within(form).getByText('Đang chọn 1 người')).toBeTruthy();
   });
 
   it('should not save for nobody when "Chọn nhân viên" has no one picked', async () => {

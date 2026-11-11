@@ -8,8 +8,10 @@ import { errorMessage } from '../../parts';
 import { SELECT } from '../../timesheet/AbsenceFilterBar';
 import { OUTLINE } from '../../timesheet/gridParts';
 import { filterLines, type PayrollFilters } from '../payrollModel';
+import { PayslipChangesDrawer } from './PayslipChangesDrawer';
+import { markHeldReason, PayslipMarkCell } from './PayslipMarkCell';
 import { PayslipSendDrawer } from './PayslipSendDrawer';
-import { emailLink, listedPeople, STATUS_FILTERS, STATUS_PARAM, statusFilterOf, statusWords } from './payslipsModel';
+import { emailLink, isSent, listedPeople, STATUS_FILTERS, STATUS_PARAM, statusFilterOf } from './payslipsModel';
 
 /**
  * Lương › Phiếu lương: everyone of the month with the address their payslip goes to and whether it was sent. HR sends
@@ -26,27 +28,28 @@ export const usePayslips = (monthKey: string | null) =>
     refetchOnWindowFocus: false,
   });
 
-const TONES = {
-  grey: 'text-slate-600',
-  green: 'text-emerald-700',
-  amber: 'text-amber-700',
-  red: 'text-red-600',
-} as const;
 const money = (n: number) => Math.round(n).toLocaleString('vi-VN');
 const HEADS = ['Mã NV', 'Họ và tên', 'Bộ phận', 'Khối', 'Email nhận phiếu lương', 'Thực nhận', 'Trạng thái gửi'];
 
 function PersonRow({
   person,
   isChecked,
+  canSend,
+  isMarking,
   onCheck,
+  onMark,
+  onChanges,
   onOpen,
 }: {
   person: PayslipPersonDto;
   isChecked: boolean;
+  canSend: boolean;
+  isMarking: boolean;
   onCheck: (isOn: boolean) => void;
+  onMark: (isSent: boolean) => void;
+  onChanges: () => void;
   onOpen: () => void;
 }) {
-  const status = statusWords(person.send);
   return (
     <tr onClick={onOpen} className="cursor-pointer border-b hover:bg-slate-50">
       <td className="w-9 p-2" onClick={(e) => e.stopPropagation()}>
@@ -78,7 +81,7 @@ function PersonRow({
         )}
       </td>
       <td className="p-2 text-right tabular-nums">{money(person.netPay)}</td>
-      <td className={`p-2 ${TONES[status.tone]}`}>{status.text}</td>
+      <PayslipMarkCell person={person} canSend={canSend} isBusy={isMarking} onMark={onMark} onChanges={onChanges} />
       <td className="p-2 text-right">
         <button
           type="button"
@@ -100,15 +103,22 @@ function Toolbar({
   list,
   shown,
   checked,
+  toMark,
+  isMarking,
   filter,
   onFilter,
+  onMark,
   onWalk,
 }: {
   list: PayslipListDto;
   shown: number;
   checked: number;
+  /** How many of the ticked people are not marked sent yet. */
+  toMark: number;
+  isMarking: boolean;
   filter: string;
   onFilter: (value: string) => void;
+  onMark: () => void;
   onWalk: () => void;
 }) {
   const reason = list.canSend ? undefined : 'Tháng lương chưa duyệt nên chưa gửi được.';
@@ -127,12 +137,29 @@ function Toolbar({
         ))}
       </select>
       <span className="text-sm text-slate-600">{shown} người</span>
+      {checked > 0 && (
+        <span
+          title={
+            toMark === 0 ? 'Những người đã tích đều đã đánh dấu đã gửi.' : (markHeldReason(list.canSend) ?? undefined)
+          }
+          className="ml-auto inline-flex"
+        >
+          <button
+            type="button"
+            disabled={toMark === 0 || !list.canSend || isMarking}
+            onClick={onMark}
+            className={OUTLINE}
+          >
+            {`Đánh dấu đã gửi ${toMark} người`}
+          </button>
+        </span>
+      )}
       <button
         type="button"
         disabled={checked === 0 || !list.canSend}
         title={reason}
         onClick={onWalk}
-        className="ts-field ml-auto inline-flex h-9 items-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white disabled:opacity-50"
+        className={`ts-field ${checked > 0 ? '' : 'ml-auto'} inline-flex h-9 items-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white disabled:opacity-50`}
       >
         {checked > 0 ? `Gửi lần lượt ${checked} người` : 'Tích người cần gửi'}
       </button>
@@ -175,12 +202,21 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
   const templates = useMessageTemplates();
   const me = useHrMe();
   const [checked, setChecked] = useState<readonly string[]>([]);
+  /** The person whose "Thay đổi từ lần gửi" is open. */
+  const [changesOf, setChangesOf] = useState<string | null>(null);
   const view = useOpenPerson(query.data?.people ?? []);
   const filter = statusFilterOf(view.params.get(STATUS_PARAM));
   const shownIds = useMemo(() => new Set(filterLines(month.lines, filters).map((l) => l.employeeId)), [month, filters]);
   const mark = useMutation({
     mutationFn: (input: { employeeIds: string[]; sent: boolean }) => api.hrPayrollPayslipsMark(month.monthKey, input),
     onSuccess: (data) => qc.setQueryData(payslipsKey(month.monthKey), data),
+  });
+  const unchanged = useMutation({
+    mutationFn: (employeeId: string) => api.hrPayrollPayslipUnchanged(month.monthKey, employeeId),
+    onSuccess: (data) => {
+      qc.setQueryData(payslipsKey(month.monthKey), data);
+      setChangesOf(null);
+    },
   });
   if (query.isPending) return <p className="m-0 text-sm text-slate-600">Đang tải danh sách phiếu lương…</p>;
   if (query.isError)
@@ -192,7 +228,10 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
   const list = query.data;
   const people = listedPeople(list.people, shownIds, filter);
   const picked = people.filter((p) => checked.includes(p.employeeId));
+  const unsent = picked.filter((p) => !isSent(p)).map((p) => p.employeeId);
   const template = templates.data?.templates.find((t) => t.key === 'payslip');
+  const changed = list.people.find((p) => p.employeeId === changesOf) ?? null;
+  const markError = mark.isError ? `Chưa ghi được trạng thái gửi: ${errorMessage(mark.error)}` : null;
   const check = (ids: readonly string[], isOn: boolean) =>
     setChecked((prev) => (isOn ? [...new Set([...prev, ...ids])] : prev.filter((id) => !ids.includes(id))));
   return (
@@ -206,10 +245,18 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
         list={list}
         shown={people.length}
         checked={picked.length}
+        toMark={unsent.length}
+        isMarking={mark.isPending}
         filter={filter}
         onFilter={view.setFilter}
+        onMark={() => mark.mutate({ employeeIds: unsent, sent: true })}
         onWalk={() => view.startWalk(picked.map((p) => p.employeeId))}
       />
+      {markError && !view.person && !changed && (
+        <p role="alert" className="m-0 text-sm text-red-600">
+          {markError}
+        </p>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm whitespace-nowrap">
           <thead>
@@ -242,7 +289,11 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
                 key={p.employeeId}
                 person={p}
                 isChecked={checked.includes(p.employeeId)}
+                canSend={list.canSend}
+                isMarking={mark.isPending}
+                onMark={(sent) => mark.mutate({ employeeIds: [p.employeeId], sent })}
                 onCheck={(isOn) => check([p.employeeId], isOn)}
+                onChanges={() => setChangesOf(p.employeeId)}
                 onOpen={() => view.open(p.employeeId)}
               />
             ))}
@@ -250,6 +301,26 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
         </table>
       </div>
       {people.length === 0 && <p className="m-0 py-4 text-center text-sm text-slate-600">Không có ai khớp bộ lọc.</p>}
+      {changed && (
+        <PayslipChangesDrawer
+          key={changed.employeeId}
+          month={month}
+          person={changed}
+          people={list.people}
+          canSend={list.canSend}
+          isBusy={mark.isPending || unchanged.isPending}
+          error={unchanged.isError ? `Chưa ghi được: ${errorMessage(unchanged.error)}` : markError}
+          onOpenPayslip={() => {
+            setChangesOf(null);
+            view.open(changed.employeeId);
+          }}
+          onMarkAgain={() =>
+            mark.mutate({ employeeIds: [changed.employeeId], sent: true }, { onSuccess: () => setChangesOf(null) })
+          }
+          onConfirmUnchanged={() => unchanged.mutate(changed.employeeId)}
+          onClose={() => setChangesOf(null)}
+        />
+      )}
       {view.person && template && (
         <PayslipSendDrawer
           key={view.person.employeeId}
@@ -259,9 +330,8 @@ export function PayslipsTab({ month, filters }: { month: PayrollMonthDto; filter
           template={template}
           me={me.data}
           walk={view.walk ? { index: view.walk.index, total: view.walk.ids.length, onNext: view.next } : undefined}
-          isMarking={mark.isPending}
-          markError={mark.isError ? `Chưa ghi được trạng thái gửi: ${errorMessage(mark.error)}` : null}
-          onMark={(sent) => mark.mutate({ employeeIds: [view.person?.employeeId ?? ''], sent })}
+          markError={markError}
+          onSent={() => mark.mutate({ employeeIds: [view.person?.employeeId ?? ''], sent: true })}
           onClose={view.close}
         />
       )}

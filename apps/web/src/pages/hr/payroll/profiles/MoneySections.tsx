@@ -8,7 +8,7 @@ import { Input } from '../../../../vendor/shadcn-grid/components/ui/input';
 import { DateField } from '../../timesheet/DateField';
 import { ConfirmDialog } from '../../timesheet/dialogs';
 import { errorMessage } from '../../parts';
-import { showDay } from './profileModel';
+import { bankAppliesWords, bankStartOf, showDay } from './profileModel';
 import {
   Empty,
   EntryForm,
@@ -168,7 +168,18 @@ export function OpeningSection({ profile, today }: { profile: PayrollProfileDto;
 
 type BankDraft = { bank: string; accountNumber: string; changedOn: string };
 
-function BankForm({ employeeId, start, onDone }: { employeeId: string; start: BankDraft; onDone: () => void }) {
+function BankForm({
+  employeeId,
+  start,
+  isFirst,
+  onDone,
+}: {
+  employeeId: string;
+  start: BankDraft;
+  /** The person has no account yet: the date goes back to the day they joined. */
+  isFirst: boolean;
+  onDone: () => void;
+}) {
   const [d, setD] = useState<BankDraft>(start);
   const set = (patch: Partial<BankDraft>) => setD((x) => ({ ...x, ...patch }));
   const save = useProfileSave(
@@ -212,6 +223,9 @@ function BankForm({ employeeId, start, onDone }: { employeeId: string; start: Ba
         error={errors.changedOn}
         onChange={(changedOn) => set({ changedOn })}
       />
+      <p role="note" className="m-0 text-xs text-slate-600 sm:col-span-2">
+        {bankAppliesWords(d.changedOn, { changedOn: start.changedOn, isFirst })}
+      </p>
     </EntryForm>
   );
 }
@@ -274,10 +288,11 @@ export function BankSection({
   );
   const rows = profile.bankAccounts;
   const latest = rows[0];
+  const first = bankStartOf(profile, today);
   const start: BankDraft = {
     bank: latest?.bank ?? '',
     accountNumber: '',
-    changedOn: today,
+    changedOn: first.changedOn,
   };
   const show = (accountId: string, number: string | null) =>
     setShown(({ [accountId]: _, ...rest }) => (number ? { ...rest, [accountId]: number } : rest));
@@ -286,7 +301,7 @@ export function BankSection({
       id="ho-so-ngan-hang"
       icon={Landmark}
       title="Ngân hàng"
-      hint="Đổi tài khoản: thêm tài khoản mới từ ngày đổi; tài khoản cũ giữ cho các tháng trước."
+      hint="Mỗi tháng lương dùng tài khoản có hiệu lực vào ngày trả lương. Đổi tài khoản: thêm tài khoản mới từ ngày đổi; tài khoản cũ giữ cho các tháng trước."
       onAdd={isAdding ? undefined : () => setIsAdding(true)}
       addLabel="Thêm tài khoản"
     >
@@ -300,7 +315,7 @@ export function BankSection({
         {' · '}
         <Link to={`/hr/cham-cong/nhan-vien?nv=${encodeURIComponent(id)}`}>Sửa email ở Chấm công › Nhân viên</Link>
       </p>
-      {isAdding && <BankForm employeeId={id} start={start} onDone={() => setIsAdding(false)} />}
+      {isAdding && <BankForm employeeId={id} start={start} isFirst={first.isFirst} onDone={() => setIsAdding(false)} />}
       {rows.length === 0 && !isAdding && <Empty>Chưa có số tài khoản: Rà soát sẽ báo thiếu STK.</Empty>}
       <ul className="m-0 list-none p-0">
         {rows.map((a) => (
@@ -312,7 +327,7 @@ export function BankSection({
                 {a.bank} <span className="tabular-nums">{shown[a.id] ?? `••••${a.last4}`}</span>
               </>
             }
-            sub={`Từ ${showDay(a.changedOn)}`}
+            sub={`Từ ${showDay(a.changedOn)}${a.changedOn > today ? ' · chưa đến ngày dùng' : ''}`}
             extra={
               <RevealButton employeeId={id} account={a} shown={shown[a.id] ?? null} onShown={(n) => show(a.id, n)} />
             }

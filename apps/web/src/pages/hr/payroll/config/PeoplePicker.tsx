@@ -2,7 +2,10 @@ import { matchesQuery, type PayrollPersonDto } from '@careers/shared';
 import { useState } from 'react';
 import { Input } from '../../../../vendor/shadcn-grid/components/ui/input';
 
-/** Several people at once for an override: search, tick, "all shown" and "none"; the count is always in view. */
+/**
+ * Several people at once: search, tick, "Chọn tất cả" (only the ones a search shows) and "Bỏ chọn". The count is always
+ * in view, and whoever opens the picker decides who is ticked to start with: nobody unless they say so.
+ */
 
 const SMALL =
   'inline-flex min-h-9 items-center rounded-md border bg-white px-2.5 text-xs font-medium hover:bg-slate-50 max-sm:min-h-11';
@@ -11,6 +14,8 @@ export function PeoplePicker(p: {
   people: readonly Pick<PayrollPersonDto, 'employeeId' | 'code' | 'fullName'>[];
   picked: readonly string[];
   onChange: (next: string[]) => void;
+  /** After the count, why these people are ticked: "theo bộ lọc của lưới". */
+  note?: string;
 }) {
   const [query, setQuery] = useState('');
   const shown = p.people.filter((x) => matchesQuery(`${x.fullName} ${x.code}`, query));
@@ -29,7 +34,7 @@ export function PeoplePicker(p: {
           className="min-w-0 flex-1 basis-40 bg-white"
         />
         <button type="button" onClick={addShown} className={SMALL}>
-          Chọn hết đang hiện
+          {query.trim() ? 'Chọn hết đang hiện' : 'Chọn tất cả'}
         </button>
         <button type="button" onClick={() => p.onChange([])} className={SMALL}>
           Bỏ chọn
@@ -51,7 +56,7 @@ export function PeoplePicker(p: {
         ))}
         {shown.length === 0 && <li className="px-2 py-1.5 text-sm text-slate-600">Không có nhân viên khớp.</li>}
       </ul>
-      <span className="text-xs font-medium text-slate-700">{`Đã chọn ${p.picked.length} người`}</span>
+      <span className="text-xs font-medium text-slate-700">{`Đang chọn ${p.picked.length} người${p.note ? ` (${p.note})` : ''}`}</span>
     </fieldset>
   );
 }

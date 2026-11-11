@@ -52,6 +52,7 @@ export interface PayrollPerson {
   email: string | null;
   bankAccount: string | null;
   bankName: string | null;
+  /** HR's own note of the person this month: printed before the automatic notes in (52) and on the payslip. */
   note?: string;
 }
 

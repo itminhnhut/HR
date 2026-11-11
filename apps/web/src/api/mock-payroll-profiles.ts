@@ -1,6 +1,7 @@
 import {
   DEFAULT_COMPONENTS,
   fieldErrors,
+  listedAccountOf,
   PAYROLL_DEFAULT_CONTRACT,
   PAYROLL_PERSON_CHECK_ITEMS,
   payrollBankSchema,
@@ -12,6 +13,7 @@ import {
   PAYROLL_INSURANCE_PAID,
   periodMonthOf,
   standardPeriod,
+  todayInVietnam,
   type PayrollBankAccountDto,
   type PayrollChecklistDto,
   type PayrollFirstMonthCheckInput,
@@ -259,10 +261,13 @@ export function profileMockApi(lines: Lines) {
         ...p,
         hasProfile: (profiles[p.employeeId]?.versions.length ?? 0) > 0,
         hasOverrides: p.fullName === 'NV A',
+        account: listedAccountOf(profiles[p.employeeId]?.banks ?? [], todayInVietnam(new Date())),
       }));
       return delay({
         people,
-        missing: people.filter((p) => !p.hasProfile).map(({ hasProfile: _, hasOverrides: __, ...p }) => p),
+        missing: people
+          .filter((p) => !p.hasProfile)
+          .map(({ hasProfile: _, hasOverrides: __, account: ___, ...p }) => p),
       });
     },
     hrPayrollProfile: (employeeId: string) =>

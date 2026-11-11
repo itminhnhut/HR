@@ -6,6 +6,7 @@ import {
   type PayrollChecklistDto,
   type PayrollCommitmentDto,
   type PayrollDependantDto,
+  type PayrollListAccountDto,
   type PayrollPersonCheckDto,
   type PayrollPersonCheckItem,
   type PayrollProfileDto,
@@ -143,6 +144,46 @@ export function filterProfiles(rows: readonly ProfileRow[], f: ProfileFilters, t
 
 /** 26/11/2026. */
 export const showDay = (day: string | null) => (day ? day.split('-').reverse().join('/') : '–');
+
+/**
+ * "Tài khoản" of a row in the list: the account on file today, whatever the month viewed was paid with. One that only
+ * starts later reads "Từ 12/11" (it is there, not missing); null is "Thiếu". Without the fact (an older API) the row
+ * falls back to what the month viewed says.
+ */
+export function accountWords(
+  account: PayrollListAccountDto | null | undefined,
+  fromMonth: string | undefined,
+): { text: string; isMissing: boolean } {
+  if (account === undefined) return { text: fromMonth ?? '–', isMissing: fromMonth === 'Thiếu' };
+  if (account === null) return { text: 'Thiếu', isMissing: true };
+  if (account.isInForce) return { text: `••••${account.last4}`, isMissing: false };
+  return { text: `Từ ${showDay(account.changedOn).slice(0, 5)}`, isMissing: false };
+}
+
+/**
+ * "Từ ngày" a new account starts with. A month is paid into the account in force on its pay date, so a person's first
+ * account goes back to the day they joined (else their first level): every month then has it. A later account is a
+ * change, dated today.
+ */
+export function bankStartOf(
+  profile: Pick<PayrollProfileDto, 'person' | 'versions' | 'bankAccounts'>,
+  today: string,
+): { changedOn: string; isFirst: boolean } {
+  if (profile.bankAccounts.length > 0) return { changedOn: today, isFirst: false };
+  const firstLevel = profile.versions.map((v) => v.effectiveOn).sort()[0];
+  const earliest = profile.person.joinedOn ?? firstLevel ?? today;
+  return { changedOn: earliest < today ? earliest : today, isFirst: true };
+}
+
+/** One line under the form: from which pay dates the account is used, and what the months before have. */
+export function bankAppliesWords(changedOn: string, start: { changedOn: string; isFirst: boolean }): string {
+  if (!changedOn) return 'Chọn ngày bắt đầu dùng tài khoản này.';
+  const from = `Tài khoản này dùng cho mọi kỳ lương có ngày trả lương từ ${showDay(changedOn)} trở đi.`;
+  if (!start.isFirst) return `${from} Các kỳ trả trước ngày đó giữ tài khoản cũ.`;
+  if (changedOn <= start.changedOn)
+    return `${from} Tài khoản đầu tiên: điền sẵn ngày vào làm để tháng lương nào cũng có tài khoản.`;
+  return `${from} Các kỳ trả trước ngày đó sẽ thiếu tài khoản.`;
+}
 /** T12/2026. */
 export const monthWords = (month: string) => `T${Number(month.slice(5))}/${month.slice(0, 4)}`;
 const pad = (n: number) => String(n).padStart(2, '0');

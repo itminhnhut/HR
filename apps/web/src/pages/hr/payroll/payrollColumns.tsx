@@ -21,6 +21,7 @@ import { CopyValue } from '../timesheet/CopyValue';
 import { fitColumnWidth, textMeasurer } from '../timesheet/gridLayout';
 import { PAYSLIP_LINK_WIDTH, PayslipLink } from './download/PayslipDrawer';
 import { PayrollInputCell } from './PayrollInputCell';
+import { PayrollNoteCell } from './PayrollNoteCell';
 import { BracketCell, DependantsCell } from './PayrollSheetCells';
 import {
   BlockCell,
@@ -34,7 +35,6 @@ import {
 import {
   columnTotals,
   formatValue,
-  printedNote,
   type PayrollBand,
   type PayrollBandId,
   type PayrollColumnSpec,
@@ -140,7 +140,6 @@ function infoRenderer(id: string, month: PayrollMonthDto): (line: PayrollLineDto
     kv: (l) => <RegionChip regionId={l.regionId} regions={month.regions} />,
     hd: (l) => <ContractChip name={contract(l)} isProbation={l.probation} />,
     khoi: (l) => <BlockCell line={l} />,
-    ghiChu: (l) => textCell(printedNote(l.note), 'ghi chú', 'text-xs text-slate-600'),
   };
   return renderers[id] ?? (() => null);
 }
@@ -227,6 +226,7 @@ function columnOf(spec: PayrollColumnSpec, ctx: ColumnContext) {
       if (r.kind === 'total' && spec.kind !== 'info') return <TotalCell column={spec} value={totals[spec.id]} />;
       if (r.kind !== 'line') return <SpecialCell row={r} id={spec.id} />;
       if (spec.id === 'bracket') return <BracketCell line={r.line} bracket={spec.value(r.line)} />;
+      if (spec.id === 'ghiChu') return <PayrollNoteCell line={r.line} month={context} />;
       if (spec.kind === 'info') return render(r.line, r.stt);
       return spec.input ? (
         <PayrollInputCell line={r.line} column={spec} month={context} />

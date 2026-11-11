@@ -1,4 +1,5 @@
 import type {
+  PayslipChangesDto,
   PayslipListDto,
   PayslipMarkInput,
   PayslipSendInput,
@@ -337,6 +338,10 @@ export interface Api {
   hrPayrollPayslips(monthKey: string): Promise<PayslipListDto>;
   /** "Đánh dấu đã gửi" (or taking it back). 409 unless the month is approved or paid. */
   hrPayrollPayslipsMark(monthKey: string, input: PayslipMarkInput): Promise<PayslipListDto>;
+  /** "Thay đổi từ lần gửi" of one person: the payslip as sent against the payslip now, and the log since. */
+  hrPayrollPayslipChanges(monthKey: string, employeeId: string): Promise<PayslipChangesDto>;
+  /** "Đánh dấu vẫn đúng (không cần gửi lại)". 409 when a figure differs from what was sent. */
+  hrPayrollPayslipUnchanged(monthKey: string, employeeId: string): Promise<PayslipListDto>;
   /** "Gửi tự động" of one person with their file. 409 mail not configured, a draft month or no email. */
   hrPayrollPayslipSend(monthKey: string, input: PayslipSendInput): Promise<PayslipSendResultDto>;
   /** Duyệt a draft. 403 without the approve right, 409 not a draft, 422 a red warning not acknowledged. */

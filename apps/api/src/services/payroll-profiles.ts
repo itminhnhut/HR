@@ -13,13 +13,23 @@ import { payrollProfileAmounts, payrollProfiles } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { regionalMinimum, SALARY_COMPONENT } from './payroll-catalogue.js';
 import { writePayrollLog } from './payroll-log.js';
-import { approvedMonths, periodOfMonth, usedConflict } from './payroll-months.js';
-import { addDays, levelsOf, monthsUsingLevel, personOf, type Employee } from './payroll-profile-store.js';
+import { approvedMonths, monthApprovals, periodOfMonth, usedConflict } from './payroll-months.js';
+import {
+  addDays,
+  levelsOf,
+  monthsThatUsedLevel,
+  monthsUsingLevel,
+  personOf,
+  type Employee,
+} from './payroll-profile-store.js';
 import { loadRows } from './payroll-settings.js';
 import { dateWords, moneyWords, personWords, valueWords } from './payroll-words.js';
 import { actorOf } from './timesheet-people.js';
 
-/** Pay levels by effective date (spec-luong.md 10.2, 11.5, R5): added freely, changed only while no approved month used them. */
+/**
+ * Pay levels by effective date (spec-luong.md 10.2, 11.5, R5): added freely, changed only while no approved month used
+ * them. "Used" means the level was there when the month was approved: one added afterwards is still HR's to fix.
+ */
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
 type Level = Omit<PayrollProfileVersionDto, 'id' | 'createdBy' | 'createdAt'>;
@@ -110,11 +120,12 @@ async function saved(tx: Tx, employeeId: string, id: string) {
   return found;
 }
 
-async function insertLevel(tx: Tx, employeeId: string, level: Level, hr: HrMe): Promise<string> {
+/** `now`: the API's clock, the one approvals are dated with, so "added after the approval" compares like with like. */
+async function insertLevel(tx: Tx, employeeId: string, level: Level, hr: HrMe, now: Date): Promise<string> {
   const { amounts, ...fields } = level;
   const [row] = await tx
     .insert(payrollProfiles)
-    .values({ ...fields, employeeId, createdBy: actorOf(hr) })
+    .values({ ...fields, employeeId, createdBy: actorOf(hr), createdAt: now })
     .returning({ id: payrollProfiles.id });
   if (!row) throw notFound('Không lưu được hồ sơ.');
   await writeAmounts(tx, row.id, amounts);
@@ -134,7 +145,7 @@ export async function addLevel(
   sameDay(levels, level.effectiveOn);
   const warnings = await warningsFor(db, person, level, levels);
   return db.transaction(async (tx) => {
-    const id = await insertLevel(tx, person.id, level, hr);
+    const id = await insertLevel(tx, person.id, level, hr, now);
     const detail = `Thêm hồ sơ của ${personWords(person)}, từ ${dateWords(level.effectiveOn)}: ${levelWords(level)}`;
     await log(tx, hr, now, level.effectiveOn, 'Thêm', detail);
     const version = await saved(tx, person.id, id);
@@ -152,10 +163,11 @@ function nextFreeDay(approved: readonly string[]): string {
 }
 
 async function unusedLevel(db: Db, employeeId: string, id: string) {
-  const [levels, approved] = await Promise.all([levelsOf(db, employeeId), approvedMonths(db)]);
+  const [levels, approvals] = await Promise.all([levelsOf(db, employeeId), monthApprovals(db)]);
+  const approved = approvals.map((a) => a.month);
   const current = levels.find((l) => l.id === id);
   if (!current) throw notFound('Không tìm thấy mức.');
-  const used = monthsUsingLevel(levels, current, approved);
+  const used = monthsThatUsedLevel(levels, current, approvals);
   if (used.length > 0) throw usedConflict(used, `Thêm mức mới từ ${dateWords(nextFreeDay(approved))} hoặc Sửa lỗi.`);
   return { levels, approved, current };
 }
@@ -200,8 +212,8 @@ export async function deleteLevel(db: Db, employeeId: string, id: string, hr: Hr
 /** The whole profile, only when no approved month used any of its levels (L-B10). */
 export async function deleteProfile(db: Db, employeeId: string, hr: HrMe, now: Date): Promise<void> {
   const person = await personOf(db, employeeId);
-  const [levels, approved] = await Promise.all([levelsOf(db, person.id), approvedMonths(db)]);
-  const used = [...new Set(levels.flatMap((l) => monthsUsingLevel(levels, l, approved)))].sort();
+  const [levels, approvals] = await Promise.all([levelsOf(db, person.id), monthApprovals(db)]);
+  const used = [...new Set(levels.flatMap((l) => monthsThatUsedLevel(levels, l, approvals)))].sort();
   if (used.length > 0) throw usedConflict(used, 'Hồ sơ đã dùng không xoá được.');
   if (levels.length === 0) return;
   await db.transaction(async (tx) => {

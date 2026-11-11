@@ -143,7 +143,7 @@ interface SaveArgs {
   actor: string;
 }
 
-async function saveSend(db: Pick<Db, 'insert'>, row: SaveArgs): Promise<void> {
+export async function saveSend(db: Pick<Db, 'insert'>, row: SaveArgs): Promise<void> {
   const { periodId: _p, employeeId: _e, approvalNo: _n, ...changed } = row;
   const t = payrollPayslipSends;
   await db

@@ -176,6 +176,28 @@ export interface PayrollBankAccountDto {
   changedOn: string;
 }
 
+/** The account a list shows for a person: the one in force today, or the next one when none is yet. */
+export interface PayrollListAccountDto {
+  last4: string;
+  changedOn: string;
+  /** False: the account only starts on `changedOn`, a day after today. */
+  isInForce: boolean;
+}
+
+/**
+ * The account to show on `today`: the newest one changed on or before it; when every account starts later, the first
+ * of those, so the list reads "Từ dd/mm" instead of "Thiếu". Null: no account at all.
+ */
+export function listedAccountOf(
+  accounts: readonly Pick<PayrollBankAccountDto, 'last4' | 'changedOn'>[],
+  today: string,
+): PayrollListAccountDto | null {
+  const byDay = [...accounts].sort((a, b) => a.changedOn.localeCompare(b.changedOn));
+  const inForce = byDay.filter((a) => a.changedOn <= today).at(-1);
+  const shown = inForce ?? byDay[0];
+  return shown ? { last4: shown.last4, changedOn: shown.changedOn, isInForce: shown === inForce } : null;
+}
+
 /** Số dư đầu năm thuế (câu 34, L-E07): every pay in the tax year before the first one on the web, by pay date. */
 export const payrollOpeningSchema = z.object({
   taxableIncome: money.default(0),
@@ -212,7 +234,12 @@ export interface PayrollPersonDto {
 }
 
 export interface PayrollProfileListDto {
-  people: (PayrollPersonDto & { hasProfile: boolean; hasOverrides: boolean })[];
+  people: (PayrollPersonDto & {
+    hasProfile: boolean;
+    hasOverrides: boolean;
+    /** The bank account on file today (or the one that starts later); null: none. Absent from an older API. */
+    account?: PayrollListAccountDto | null;
+  })[];
   /** "NV13 có trong Chấm công từ 03/11, chưa có hồ sơ" (L-B01). */
   missing: PayrollPersonDto[];
 }

@@ -1,4 +1,10 @@
-import type { EmployeeDto, PayrollBankAccountDto, PayrollProfileDto, PayrollProfileMonthDto } from '@careers/shared';
+import type {
+  EmployeeDto,
+  PayrollBankAccountDto,
+  PayrollProfileDto,
+  PayrollProfileListDto,
+  PayrollProfileMonthDto,
+} from '@careers/shared';
 import { eq } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { payrollBankAccounts, payrollLog } from '../db/schema.js';
@@ -176,6 +182,28 @@ describe('L-B24 bank account', () => {
     await flow.payroll('POST', path('/bank'), body, 422);
     flow.t.deps.config.payrollKey = null;
     await flow.payroll('POST', path('/bank'), { ...body, accountNumber: '012345678901' }, 503);
+  });
+
+  it('should list the account in force today, and say from when for one that only starts later', async () => {
+    // Arrange
+    await flow.at('2026-11-11');
+    const later = await flow.addPerson({ code: 'NV03', fullName: 'NV C', joinedOn: '2026-01-05' });
+    const none = await flow.addPerson({ code: 'NV04', fullName: 'NV D', joinedOn: '2026-01-05' });
+    const add = (id: string, accountNumber: string, changedOn: string) =>
+      flow.payroll('POST', `/profiles/${id}/bank`, { bank: 'Ngân hàng Thử', accountNumber, changedOn }, 201);
+    await add(person.id, '000000001111', '2026-01-05');
+    await add(person.id, '000000002222', '2026-11-11');
+    await add(person.id, '000000003333', '2026-12-01');
+    await add(later.id, '000000004444', '2026-11-12');
+
+    // Act
+    const list = await flow.payroll<PayrollProfileListDto>('GET', '/profiles');
+
+    // Assert
+    const accountOf = (id: string) => list.people.find((p) => p.employeeId === id)?.account;
+    expect(accountOf(person.id)).toEqual({ last4: '2222', changedOn: '2026-11-11', isInForce: true });
+    expect(accountOf(later.id)).toEqual({ last4: '4444', changedOn: '2026-11-12', isInForce: false });
+    expect(accountOf(none.id)).toBeNull();
   });
 
   it.todo('L-B23: an account changed after approval is flagged in the Excel of that month (steps 16, 23)');

@@ -271,6 +271,16 @@ export async function liveMonthOf(db: Db, key: string, now: Date): Promise<LiveM
 }
 
 /**
+ * The block the approval took from the person where the close had none (F19). The month computed as now (R6) keeps
+ * it; without it every such person would lose the block, and a truy thu would be proposed though nothing changed.
+ */
+async function approvedBlocksOf(db: Reader, stored: Stored | undefined) {
+  const snapshot = await approvedSnapshotOf(db, stored);
+  const lines = snapshot?.lines.filter((l) => l.blockFromPerson) ?? [];
+  return new Map(lines.map((l) => [l.employeeId, l.block]));
+}
+
+/**
  * The month on the earlier months of its tax year; an earlier draft is computed the same way, oldest first.
  * `again`: an approved month as it would compute now, without Rà soát.
  */
@@ -301,11 +311,13 @@ async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, ag
   const previousNorms = await previousNormsOf(db, dates, closing);
   const facts = await peopleFactsOf(db, closing.rows, rows, dates, yearSoFar.byEmployee, previousNorms);
   const status = isApproved(stored?.status) && stored ? stored.status : 'draft';
+  const approvedBlocks = status === 'draft' ? null : await approvedBlocksOf(db, stored);
   const plain = closing.rows.flatMap((row) => {
     const person = facts.get(row.employeeId);
     if (!person) return [];
-    // Only a draft reads the person's block of today; an approved month stands on its close alone.
-    return [buildLine(row, status === 'draft' ? person : { ...person, currentBlock: null }, rows, dates)];
+    // Only a draft reads the person's block of today; an approved month stands on its close and its approval.
+    const currentBlock = approvedBlocks ? (approvedBlocks.get(row.employeeId) ?? null) : person.currentBlock;
+    return [buildLine(row, { ...person, currentBlock }, rows, dates)];
   });
   const retro = await retroOf(ctx, stored, dates, plain, facts);
   const built = plain.map((b) => withRetro(b, retro));

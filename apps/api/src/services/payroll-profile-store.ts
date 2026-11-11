@@ -85,6 +85,28 @@ export function monthsUsingLevel(
   });
 }
 
+/**
+ * The approved months whose approval really used a level (R5): the level was there when the month was approved and
+ * in force on a day of it, among the levels that existed then. A level added after the approval was never in its
+ * snapshot, so HR may still change or delete it; the retroactive flow recomputes the month. A month without an
+ * approval time (an approval older than the approval rows) counts every level it touches, as before.
+ */
+export function monthsThatUsedLevel(
+  levels: readonly PayrollProfileVersionDto[],
+  level: Pick<PayrollProfileVersionDto, 'id' | 'effectiveOn' | 'createdAt'>,
+  approvals: readonly { month: string; approvedAt: Date | null }[],
+): string[] {
+  return approvals
+    .filter(({ month, approvedAt }) => {
+      if (!approvedAt) return monthsUsingLevel(levels, level, [month]).length > 0;
+      const at = approvedAt.toISOString();
+      if (level.createdAt > at) return false;
+      const then = levels.filter((l) => l.createdAt <= at);
+      return monthsUsingLevel(then, level, [month]).length > 0;
+    })
+    .map((a) => a.month);
+}
+
 export function addDays(day: string, days: number): string {
   const d = new Date(`${day}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);

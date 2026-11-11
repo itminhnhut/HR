@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { PayrollPeriodStatus } from './payroll-api.js';
+import type { PayrollLogLineDto, PayrollMonthDto, PayrollPeriodStatus } from './payroll-api.js';
 
 /** Lương › Phiếu lương: who gets a payslip of a month, where it goes, and whether it was sent. */
 
@@ -80,4 +80,50 @@ export interface PayslipSendResultDto {
   /** Why it was not sent. */
   error: string | null;
   send: PayslipSendDto;
+}
+
+/** What happened to the month after a payslip went out: it was reopened, or approved again under a new number. */
+export interface PayslipChangeEventDto {
+  kind: 'reopened' | 'approved';
+  /** The approval reopened, or the new one. */
+  approvalNo: number;
+  at: string;
+  by: string;
+  /** Why HR reopened it; null for an approval. */
+  reason: string | null;
+}
+
+/** A figure of the person's line that is not what it was when the payslip went out. */
+export interface PayslipCellChangeDto {
+  /** The cell of the payroll line, e.g. `netPay`. */
+  key: string;
+  sent: number | null;
+  now: number | null;
+}
+
+/**
+ * "Thay đổi từ lần gửi" of one person (Lương › Phiếu lương): the payslip as it was sent (the approval it was sent
+ * for) against the payslip now, why they may differ and what was done since. Read only.
+ */
+export interface PayslipChangesDto {
+  monthKey: string;
+  employeeId: string;
+  code: string;
+  fullName: string;
+  /** The last time the payslip went out; null when it never did (then nothing is compared). */
+  sent: { at: string; by: string; approvalNo: number; channel: PayslipSendChannel } | null;
+  current: { status: PayrollPeriodStatus; approvalNo: number | null };
+  /** After the send, oldest first. */
+  events: PayslipChangeEventDto[];
+  /**
+   * The month as the approval the payslip was sent for froze it, with this person's line only: the browser prints
+   * the payslip of then from it. Null when that approval kept nothing for the person.
+   */
+  sentMonth: PayrollMonthDto | null;
+  /** The cells that differ, net pay first; empty when the numbers are the same. */
+  cells: PayslipCellChangeDto[];
+  /** The month is approved again and nothing differs: HR may say the payslip sent is still right. */
+  canConfirmUnchanged: boolean;
+  /** Payroll log lines after the send about this person or the whole month, newest first. */
+  log: PayrollLogLineDto[];
 }

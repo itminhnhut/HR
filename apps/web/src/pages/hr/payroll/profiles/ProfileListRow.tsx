@@ -1,7 +1,8 @@
 import { ChevronRight } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import type { ProfilePartId } from './ProfileDrawer';
-import { hasLeftBy, showDay, type ProfileRow, type ProfileSummary } from './profileModel';
+import type { PayrollListAccountDto } from '@careers/shared';
+import { accountWords, hasLeftBy, showDay, type ProfileRow, type ProfileSummary } from './profileModel';
 
 /**
  * One person of the Hồ sơ lương list. Every value is the way to where it is edited (F28): a cell opens the person's
@@ -54,7 +55,7 @@ export interface ListFact {
  * one that is there opens the part, its items each with their own "Sửa". Someone without a row in the month viewed
  * shows "–" and opens the part as it is.
  */
-export function listFactsOf(s: ProfileSummary | null): ListFact[] {
+export function listFactsOf(s: ProfileSummary | null, onFile?: PayrollListAccountDto | null): ListFact[] {
   const fact = (
     id: string,
     label: string,
@@ -71,7 +72,7 @@ export function listFactsOf(s: ProfileSummary | null): ListFact[] {
     isMissing: add !== null,
     align,
   });
-  const noAccount = s?.account === 'Thiếu';
+  const account = accountWords(onFile, s?.account);
   return [
     fact('gross', 'Gross', s ? money(s.gross) : '–', 'muc', null, 'xl:justify-end'),
     fact(
@@ -91,7 +92,7 @@ export function listFactsOf(s: ProfileSummary | null): ListFact[] {
       s && s.recurring === 0 ? 'Thêm khoản (32) định kỳ' : null,
       'xl:justify-end',
     ),
-    fact('account', 'Tài khoản', s?.account ?? '–', 'ngan-hang', noAccount ? 'Thêm tài khoản ngân hàng' : null),
+    fact('account', 'Tài khoản', account.text, 'ngan-hang', account.isMissing ? 'Thêm tài khoản ngân hàng' : null),
   ];
 }
 
@@ -130,7 +131,7 @@ function FactButton(p: { fact: ListFact; name: string; isChip: boolean; onOpen: 
 
 export function PersonRow(p: { row: ProfileRow; today: string; onOpen: (at?: OpenAt) => void }) {
   const { row } = p;
-  const facts = listFactsOf(row.summary);
+  const facts = listFactsOf(row.summary, row.account);
   return (
     // The whole row is a mouse target; the name is the button a keyboard and a screen reader use.
     <li

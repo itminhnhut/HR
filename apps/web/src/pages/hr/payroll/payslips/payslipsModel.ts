@@ -61,8 +61,8 @@ export function listedPeople(
 export const notSentCount = (list: PayslipListDto | undefined): number =>
   list ? list.people.filter((p) => !isSent(p)).length : 0;
 
-/** "14:05 05/11/2026" in Vietnam. */
-function timeWords(iso: string): string {
+/** The hour, day, month and year of a moment in Vietnam, each as two digits (the year as four). */
+function timeParts(iso: string): { time: string; day: string; year: string } {
   const parts = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Ho_Chi_Minh',
     hour: '2-digit',
@@ -72,22 +72,52 @@ function timeWords(iso: string): string {
     year: 'numeric',
   }).formatToParts(new Date(iso));
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
-  return `${get('hour')}:${get('minute')} ${get('day')}/${get('month')}/${get('year')}`;
+  return { time: `${get('hour')}:${get('minute')}`, day: `${get('day')}/${get('month')}`, year: get('year') };
+}
+
+/** "14:05 05/11/2026" in Vietnam: when a payslip went out, a month was reopened or approved. */
+export function sentTimeWords(iso: string): string {
+  const at = timeParts(iso);
+  return `${at.time} ${at.day}/${at.year}`;
 }
 
 export interface StatusWords {
-  text: string;
+  /** The short word of the chip: "Chưa gửi", "Đã gửi", "Cần gửi lại", "Lỗi". */
+  chip: string;
+  /** One small line under the chip: when and by whom, what changed, or why it failed. Null: nothing to add. */
+  detail: string | null;
   tone: 'grey' | 'green' | 'amber' | 'red';
 }
 
-/** Chưa gửi / Đã gửi lúc … bởi … / Số đã đổi, cần gửi lại / Lỗi. */
+/** The send status of one person, the same on the list and in the drawer: a short chip and one line of detail. */
 export function statusWords(send: PayslipSendDto): StatusWords {
-  const when = send.at ? ` lúc ${timeWords(send.at)}` : '';
-  const who = send.by ? ` bởi ${send.by}` : '';
-  if (send.state === 'sent') return { text: `Đã gửi${when}${who}`, tone: 'green' };
-  if (send.state === 'stale') return { text: `Số đã đổi, cần gửi lại (lần trước gửi${when})`, tone: 'amber' };
-  if (send.state === 'failed') return { text: `Lỗi: ${send.error ?? 'chưa gửi được'}`, tone: 'red' };
-  return { text: 'Chưa gửi', tone: 'grey' };
+  const at = send.at ? timeParts(send.at) : null;
+  if (send.state === 'sent') {
+    const parts = [at && `${at.time} · ${at.day}/${at.year}`, send.by && `bởi ${send.by}`].filter(Boolean);
+    return { chip: 'Đã gửi', detail: parts.length > 0 ? parts.join(' · ') : null, tone: 'green' };
+  }
+  if (send.state === 'stale') {
+    const detail = at ? `Số đã đổi sau lần gửi ${at.time} ${at.day}` : 'Số đã đổi sau lần gửi trước';
+    return { chip: 'Cần gửi lại', detail, tone: 'amber' };
+  }
+  if (send.state === 'failed') return { chip: 'Lỗi', detail: send.error ?? 'Chưa gửi được', tone: 'red' };
+  return { chip: 'Chưa gửi', detail: null, tone: 'grey' };
+}
+
+export interface MarkAction {
+  /** What the button on the row reads. */
+  label: string;
+  /** The same in full, read before the person's name. */
+  name: string;
+  /** What the click records: sent, or the mark taken back. */
+  isSent: boolean;
+}
+
+/** The one-click mark of a row: take it back when sent, mark again when the numbers changed, mark otherwise. */
+export function markAction(send: PayslipSendDto): MarkAction {
+  if (send.state === 'sent') return { label: 'Bỏ đánh dấu', name: 'Bỏ đánh dấu đã gửi', isSent: false };
+  if (send.state === 'stale') return { label: 'Đánh dấu đã gửi lại', name: 'Đánh dấu đã gửi lại', isSent: true };
+  return { label: 'Đánh dấu đã gửi', name: 'Đánh dấu đã gửi', isSent: true };
 }
 
 /** Why the send actions are off for this person; null when HR can send. Preview is never off. */
@@ -191,11 +221,18 @@ export function payslipTableHtml(slip: Payslip): string {
       return head + lines;
     })
     .join('');
+  // HR's own note first, then the system's, as on the card and in Excel; no row when the payslip has none.
+  const notes = slip.notes
+    .map(
+      (note) =>
+        `<tr><td style="${CELL}color:#555;">Ghi chú</td><td style="${CELL}font-style:italic;color:#555;">${escapeHtml(note)}</td></tr>`,
+    )
+    .join('');
   return `<table role="presentation" align="center" cellpadding="0" cellspacing="0" style="width:100%;max-width:640px;margin:16px auto;border-collapse:collapse;background:#ffffff;">
 <tr><td colspan="2" align="center" style="${CELL}font-size:16px;font-weight:bold;">${escapeHtml(slip.title)}</td></tr>
 ${info}${sections}
 <tr><td style="${CELL}font-weight:bold;background:#fff2cc;">Thực nhận</td><td align="right" style="${CELL}font-weight:bold;background:#fff2cc;">${money(slip.netPay)}</td></tr>
-</table>`;
+${notes}</table>`;
 }
 
 /** Where the closing ("…Thân mến,") of the designed mail starts: the payslip goes right before it. */
@@ -224,6 +261,7 @@ export function payslipText(slip: Payslip): string {
     ...slip.info.map(([label, value]) => `${label}: ${value}`),
     ...lines,
     `THỰC NHẬN: ${money(slip.netPay)}`,
+    ...slip.notes.map((note) => `Ghi chú: ${note}`),
   ].join('\n');
 }
 
