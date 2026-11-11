@@ -1,6 +1,6 @@
 # Spec: Lương
 
-Trạng thái: **chờ HR duyệt**. Bản 08/11/2026, chốt mục 17. Danh mục test: `docs/test-cases-luong.md`.
+Trạng thái: **chờ HR duyệt**. Bản 08/11/2026, chốt mục 17; sửa 10/11: % KPI theo khối (5.3), KPCĐ mặc định tắt (D03), BHYT tháng HĐ đóng BH bắt đầu (5.4); sửa 11/11 theo code đã làm: khối đọc từ nhân viên khi bản chốt chưa có (10.1), cộng dồn năm thuế (R9), tiền phép chưa nghỉ (5.5), truy lĩnh / truy thu tự động (R6), Tổng quan và liên kết (11.x). Danh mục test: `docs/test-cases-luong.md`.
 Người trong spec và test chỉ ghi bằng tên giả (NV A, NV B…). Mọi số tiền là số minh hoạ, không lấy từ file của HR.
 
 ## 0. Đọc nhanh
@@ -18,14 +18,14 @@ HR tính lương bằng một file Excel 53 cột, nhóm A (định mức) → H
 | Điều thấy trong file | Bằng chứng |
 |---|---|
 | Cột "Ngày công thực tế" khớp 12/12 với cột **Hưởng lương** của Chấm công trên web, nên lấy thẳng được | So theo người, không theo chuỗi mã (một mã trong file gõ thừa số 0) |
-| % KPI là ô gõ ở cả 12 dòng. 3 dòng thử việc có giá trị bằng đúng *công ÷ chuẩn × 90%*, 2 dòng thử việc khác thì không | Màu ô trên PDF, tính lại |
+| % KPI là ô gõ ở cả 12 dòng. Soát từng ô (10/11): khối BO bằng đúng *công ÷ chuẩn*, × 90% ở ngày thử việc (thử việc 15/22 → 61,36%; 19,5/22 → 79,77%, khớp tới số lẻ), chính thức đủ công → 100%. Khối KD là số HR đánh giá (0%, 80%, 100%), không theo công, cả thử việc lẫn chính thức | Màu ô trên PDF, tính lại |
 | Gross thoả thuận thiếu KPI ở 4 dòng, công thức khác nhau giữa các dòng | Tính lại |
 | Một dòng có khoản cộng vào Thu nhập thực tế không đến từ cột nào. File không ghi lý do | Tính lại |
 | Làm tròn không theo một quy tắc: cột (33) làm tròn trong công thức, dòng tổng = làm tròn của tổng chưa tròn | Tính lại |
 | Không có KPCĐ 2% | Cột (46) trống |
 | Khoản ở cột (32) của 2 dòng cộng vào thực nhận, không vào thu nhập chịu thuế, không vào tổng chi phí. File **không ghi** đó là khoản gì | Tính lại |
-| Cột "Xăng xe + ĐT" miễn thuế cả hai. NĐ 253/2026 Đ.8 k2 đ chỉ miễn phần khoán văn phòng phẩm, công tác phí, điện thoại, trang phục trong mức được trừ khi tính thuế TNDN; xăng xe trả cố định không có trong danh mục loại trừ nên chịu thuế (Đ.8 k3) | Công báo số 402 ngày 16/07/2026 |
-| Chuyên cần là khoản cố định, chia theo ngày như lương, không có điều kiện riêng, nhưng không vào lương đóng BH | Tính lại; NĐ 158/2025 Đ.7 k1 c |
+| Cột "Xăng xe + ĐT" miễn thuế cả hai. NĐ 253/2026 Đ.8 k2 đ chỉ miễn phần khoán văn phòng phẩm, công tác phí, điện thoại, trang phục trong mức được trừ khi tính thuế TNDN; xăng xe trả cố định không có trong danh mục loại trừ nên chịu thuế (Đ.8 k3) | Công báo số 402 ngày 16/07/2026; web vẫn giữ như file: một khoản, miễn toàn bộ (17.3 K2, chốt 09/11/2026) |
+| Chuyên cần chia theo ngày như lương, không vào lương đóng BH (lương đóng BH = lương thời gian ở mọi người chính thức) | Tính lại; web giữ như file (câu 16, K3 chốt 09/11/2026) |
 | File không có ngày vào, ngày nghỉ, ngày chính thức, ngày chi trả. Các ngày đang có trên web do người nhập suy ra từ ô cuối có số | PDF, CSV, nhật ký Chấm công |
 
 Kiểm lại cách hiểu: một script trên máy (không commit) dựng engine ở chế độ "như file HR" (mục 5.7, 5.9) và tái tạo được **228/228 ô số** của file T10 (12 người × 19 cột, lệch không quá 1 đồng). Vậy công thức ở mục 5 hiểu đúng file; chỗ khác file là chỗ cố ý sửa.
@@ -75,7 +75,7 @@ Chấm công phải sửa nhiều lần vì những điểm dưới đây chỉ 
 | 4.1 | **Lọc ở mọi danh sách** | Thanh lọc chung trên Bảng lương, Hồ sơ, Phiếu, Nhật ký, Tổng quan: Kỳ (mặc định kỳ hiện tại), Nhân viên, Bộ phận, Khối, Khu vực, Trạng thái, ô Tìm. Bộ lọc nằm trên địa chỉ (`?ky=2026-11&kv=…&tim=…`), dán link mở đúng chỗ. Có nút Xoá lọc; không có kết quả thì nói rõ và có nút xoá tìm |
 | 4.2 | **Thêm, sửa, xoá đủ ở mọi nơi**, ghi vào **một** tab Nhật ký | Mỗi đối tượng (khoản, tham số, quy tắc, loại HĐ, hồ sơ, ô tháng, truy lĩnh) có đủ thêm, sửa, xoá hoặc "Ngừng từ tháng" khi đã dùng (R5). Nhật ký ghi icon, câu thường, cũ → mới từng trường, ai, lúc nào (có năm), mã người. Chuyển tab, mở màn không ghi. Nhật ký là tab, không mở modal |
 | 4.3 | **Gọn, có nhóm, không tràn, không rớt một nút xuống dòng** | Nút gom theo nhóm (Tính, Duyệt, Tải); nút ít dùng vào menu "Thêm". Kiểm ở 1440, 1280 và 390 px: không tràn ngang trang, không nút nào xuống dòng một mình, chữ không nhỏ hơn 12 px, ô bấm từ 24 px |
-| 4.4 | **Dòng nào cũng bấm được về nguồn** | Dòng lương → ô của người đó ở Bảng công (`/hr/cham-cong?ky=…&nv=…`); ô tính → cấu hình đã dùng; dòng nhật ký → đối tượng; dòng Rà soát → ô lỗi; dòng Tổng quan → tháng đó |
+| 4.4 | **Dòng nào cũng bấm được về nguồn** | Dòng lương → ô của người đó ở Bảng công (`/hr/cham-cong?ky=…&nv=…`); ô tính → cấu hình đã dùng; dòng nhật ký → đối tượng; dòng Rà soát → ô lỗi; dòng Tổng quan → tháng đó; ô Khối và dòng Rà soát "Thiếu khối" → form người đó ở `/hr/cham-cong/nhan-vien?nv=<id>` (11.3) |
 | 4.5 | **Kỳ đã chốt, đã duyệt chỉ đọc**, mở lại rõ ràng, giữ số của chính nó | Dải khoá "Đã duyệt lần N, chỉ xem" như Chấm công; nút Mở lại có hộp lý do; tháng đã duyệt đọc bản chụp, không tính lại |
 | 4.6 | **Ghi đè từng người hiện ngay trên dòng** | Ô có ghi đè có dấu chấm màu và tooltip "Riêng NV A từ T12: …"; cột Mã có icon nếu người đó có cấu hình riêng; Hồ sơ có bộ lọc "Có cấu hình riêng" |
 | 4.7 | **Mặc định chọn sẵn** | Kỳ hiện tại; người duyệt = HR đang đăng nhập (có quyền Duyệt); người lập biểu = HR đang đăng nhập; ngày chi trả ngày 05 tháng sau; ngày chuyển khoản = ngày chi trả |
@@ -126,14 +126,14 @@ Giờ làm thêm ngày thường: Chấm công không có, HR gõ.
 
 ### 5.3 Công thức từng cột
 
-Số cột theo file HR. Cột (11) tách thành (11a) Xăng xe và (11b) Điện thoại (câu 3, mục 17).
+Số cột theo file HR. Cột (11) "Xăng xe + ĐT" là một khoản như file (17.3 K2); công ty trả riêng thì tách thành (11a) Xăng xe và (11b) Điện thoại (câu 3, mục 17).
 
 | Cột | Công thức |
 |---|---|
 | (16) Gross thoả thuận | Σ mức các khoản + KPI 100%. Chỉ để xem |
 | (18) Lương 1 ngày | Σ(khoản *chia theo ngày* × TV của khoản) ÷ Chuẩn. Giữ số đầy đủ |
 | Khoản cố định | Khoản tắt "chia theo ngày": trả đủ × TV của khoản (D11) |
-| (19) % KPI | Chính thức: HR gõ. Thử việc: Ngày ÷ Chuẩn × TV, HR gõ đè được. Tháng có tách đoạn: D06 |
+| (19) % KPI | HR gõ thì lấy số gõ. Chưa gõ thì theo khối của người đó (quy tắc "% KPI theo khối", ghi đè cho tất cả hoặc từng người): **khối BO** = Σ(Ngày × tỷ lệ) ÷ Chuẩn, tỷ lệ TV ở ngày thử việc, 100% ở ngày chính thức (BO chính thức thiếu công: mặc định, chưa có dữ liệu thực tế xác nhận); **khối KD** và người chưa có khối = HR gõ, chưa gõ thì 0% và Rà soát đỏ "Chưa gõ % KPI". Tháng có tách đoạn: D06 |
 | (20) Thưởng hiệu suất | KPI × (19) |
 | (25) Tiền làm thêm | Giờ ngày thường × (18) ÷ giờ một ngày × 150% + Công ngày nghỉ ngoài (17) × (18) × 200% + Công CN đã nằm trong (17) × (18) × 100% (D12) + Công ngày lễ × (18) × 300%. (18) ở đây chỉ gồm khoản bật "vào lương làm thêm" (mặc định mọi khoản chia theo ngày) |
 | (26) Thu nhập thực tế | Tròn((18) × Ngày + khoản cố định) + (20) + (24) + (25) |
@@ -141,15 +141,15 @@ Số cột theo file HR. Cột (11) tách thành (11a) Xăng xe và (11b) Điệ
 | Lương đóng BHTN | Σ khoản *tính BH*, kẹp trong [lương tối thiểu vùng, 20 × lương tối thiểu vùng]. Không có cột riêng, hiện ở tooltip (30) |
 | (28) (29) (30) | 8% × (27) / 1,5% × (27) / 1% × lương đóng BHTN, theo trạng thái BH của tháng (5.4) |
 | (31) Đoàn phí | 0,5% × (27) nếu là đoàn viên và tháng có đóng BHXH |
-| (32) Hỗ trợ / Hoàn ứng / Tạm ứng | Hỗ trợ + Hoàn ứng − Tạm ứng. Ba ô gõ riêng, điền sẵn từ khoản (32) định kỳ của hồ sơ; khoản không chọn loại là Hỗ trợ (câu 4); chi tiết ghi ở cột Ghi chú |
+| (32) Hỗ trợ / Hoàn ứng / Tạm ứng | Hỗ trợ + Hoàn ứng − Tạm ứng. Ba ô gõ riêng, điền sẵn từ khoản (32) định kỳ của hồ sơ; khoản không chọn loại là Hỗ trợ (câu 4); chi tiết ghi ở cột Ghi chú. **Thêm 10/11/2026:** khoản định kỳ loại "Công ty trả thay BH" không gõ số tiền, mỗi tháng tự cộng = (28) + (29) + (30) của tháng đó; mặc định không tính thuế, không vào (34), (48) như file T10; bật "Tính thuế" thì như Hỗ trợ |
 | (33) Miễn thuế | Phần đã trả của khoản miễn thuế (khoản chia theo ngày: mức × TV × Ngày ÷ Chuẩn), mỗi khoản không quá trần của nó (cơm: trần tiền ăn tháng; điện thoại: mức ghi trong HĐLĐ / quy chế; trang phục: phần còn lại của trần năm) + tiền làm thêm trong giới hạn giờ, gồm cả phần 100% của công CN đã nằm trong (17) (D05, D12) + thu nhập khác đánh dấu miễn thuế + tiền phép chưa nghỉ trong mức luật (D08) |
 | (34) Chịu thuế | (26) + Hỗ trợ − (33) |
 | (37) Giảm trừ BH | (28) + (29) + (30) |
 | (38) Tính thuế | MAX(0, (34) − giảm trừ bản thân − NPT × giảm trừ NPT − (37)) |
-| (40) Thuế | Theo cách thuế của tháng: *lũy tiến* 5 bậc trên (38); *10%* × cơ sở D02 (mặc định (26) + Hỗ trợ) khi cơ sở từ ngưỡng (D02, D10); *không khấu trừ* khi có cam kết (D09) |
+| (40) Thuế | Theo cách thuế của tháng: *lũy tiến* 5 bậc trên (38); *10%* × cơ sở D02 (mặc định (26) + Hỗ trợ) khi cơ sở từ ngưỡng (D02, D10); *không khấu trừ* khi có cam kết (D09): cam kết ký riêng trong hồ sơ, hoặc cam kết kèm hợp đồng của loại HĐ (mục 17.1 câu 10, đổi 10/11/2026); công thức ô ghi rõ "Cam kết theo hợp đồng" / "Cam kết ký ngày …" / "khấu trừ 10%" |
 | (41) Tổng khấu trừ | (28) + (29) + (30) + (31) + (40) |
 | (42) Thực nhận | (26) − (41) + (32) |
-| (43) (44) (45) (46) | 17,5% × (27) / 3% × (27) / 1% × lương đóng BHTN / KPCĐ 2% × (27), theo trạng thái BH (D03) |
+| (43) (44) (45) (46) | 17,5% × (27) / 3% × (27) / 1% × lương đóng BHTN / KPCĐ 2% × (27) khi bật D03 (mặc định tắt), theo trạng thái BH |
 | (47) | (43) + (44) + (45) + (46) |
 | (48) Tổng chi phí | (26) + Hỗ trợ + (47). Hoàn ứng, tạm ứng không phải chi phí lương |
 
@@ -171,7 +171,7 @@ Tháng BH của tháng lương T là tháng dương lịch T (Luật BHXH 2024 �
 | BH-2 | Cả tháng thuộc HĐ đóng BH | Ngày không hưởng lương từ 14 trở lên thì không đóng BHXH, BHTN | Luật BHXH 2024 Đ.33 k5, Đ.34 k3; Luật Việc làm 2025 Đ.33 k4 |
 
 - Ngoại lệ: tháng đầu làm việc hoặc tháng đầu trở lại làm việc mà nghỉ ốm từ 14 ngày thì vẫn đóng BHXH (Đ.33 k6). Hai bên thoả thuận vẫn đóng thì đóng trên căn cứ tháng gần nhất (Đ.33 k5, D15).
-- Tháng không đóng BHXH: KPCĐ = 0 (D03, vì KPCĐ tính trên quỹ lương đóng BHXH). BHYT theo D04: ốm hoặc thai sản từ 14 ngày thì BHXH đóng BHYT, bảng lương ghi 0 (Luật BHYT Đ.12 k2 b sửa bởi Luật 51/2024); trường hợp khác vẫn đóng như file T10. Trạng thái BH hiện ở cột Ghi chú: "Chỉ BHYT · 15 ngày không hưởng lương".
+- Tháng không đóng BHXH: KPCĐ = 0 (D03, vì KPCĐ tính trên quỹ lương đóng BHXH). BHYT theo D04: ốm hoặc thai sản từ 14 ngày thì BHXH đóng BHYT, bảng lương ghi 0 (Luật BHYT Đ.12 k2 b sửa bởi Luật 51/2024); trường hợp khác vẫn đóng như file T10. Riêng **tháng HĐ đóng BH bắt đầu** (vào làm, hoặc HĐLĐ nối sau HĐ thử việc riêng) mà quy tắc 14 ngày loại BHXH thì không đóng cả BHYT, (27) trống, đóng đủ từ tháng sau: BHYT bằng 4,5% tiền lương tháng làm căn cứ đóng BHXH (NĐ 188/2025 Đ.6 k1 a), tháng đó chưa phát sinh đóng BHXH (Luật BHXH 2024 Đ.33 k5); D04 chỉ giữ BHYT cho người đã thuộc HĐ đóng BH từ đầu tháng. QĐ 366/QĐ-BHXH không nói riêng trường hợp này: cần xác nhận với cơ quan BHXH (17.3 K4). Trạng thái BH hiện ở cột Ghi chú: "Chỉ BHYT · 15 ngày không hưởng lương".
 - Ngày 26–31 nằm ở kỳ công sau: tính tạm từ ô đã nhập của kỳ sau, ghi "tạm". Kỳ sau chốt mà kết quả đổi thì tạo dòng **điều chỉnh BH** ở tháng nháp kế tiếp (R6, loại thứ ba).
 - BH không chia theo ngày công: tháng có đóng thì đóng trên đủ (27).
 - Trần BHTN = 20 × lương tối thiểu vùng, khác trần BHXH, BHYT = 20 × lương cơ sở.
@@ -179,6 +179,8 @@ Tháng BH của tháng lương T là tháng dương lịch T (Luật BHXH 2024 �
 ### 5.5 Nghỉ việc, thuế 10%, cam kết
 
 - **Tiền phép chưa nghỉ** (BLLĐ Đ.113 k3; NĐ 145/2020 Đ.67 k3: căn cứ là "tiền lương theo hợp đồng lao động của tháng trước liền kề tháng người lao động thôi việc"): mặc định = Σ khoản bật "lương theo HĐ" của hồ sơ ngày cuối tháng trước ÷ công chuẩn kỳ trước × số ngày phép còn (`leaveClosing`). "Lương theo HĐ" mặc định = lương thời gian, PC trách nhiệm, chuyên cần; không gồm cơm, xăng xe, điện thoại, nhà ở, trang phục, KPI (BLLĐ Đ.90 k1; TT 10/2020 Đ.3 k5). Số chia không có trong luật, nên dùng công chuẩn như (18) của file T10. **Miễn thuế** trong mức này (NĐ 253 Đ.26 k2); HR bật thêm khoản thì phần vượt chịu thuế (Đ.26 k3). Vào (24) thành dòng riêng "Tiền phép chưa nghỉ", không vào lương đóng BH. Trả trong 14 ngày làm việc (BLLĐ Đ.48 k1): Rà soát nhắc hạn.
+  - **Cách làm thật (11/11):** tự tính khi **ngày làm việc cuối nằm trong kỳ công**. Hồ sơ đọc ở ngày cuối kỳ trước; người chưa có hồ sơ lúc đó thì đọc hồ sơ ngày nghỉ và dùng công chuẩn kỳ này. Công chuẩn kỳ trước lấy từ lần chốt kỳ trước, không có thì lấy kỳ này.
+  - HR gõ đè số tiền ở Đầu vào tháng (hộp sửa (24)): **trống = tự tính, 0 = không trả**. Phần gõ cao hơn mức luật chịu thuế; người không nghỉ trong kỳ mà HR gõ thì chịu thuế toàn bộ. Rà soát vàng khi số gõ khác số tính (11.3).
 - **10%** (NĐ 253 Đ.50 k2): áp cho HĐ dưới 3 tháng hoặc không HĐ, và khi trả cho người đã chấm dứt HĐ, mọi loại HĐ (D10), nếu lần chi từ 5.000.000. Cơ sở (D02) = mọi khoản thu nhập từ tiền lương của lần chi: (26) + Hỗ trợ, không trừ BH, giảm trừ gia cảnh. Dưới ngưỡng: 0, trừ khi người đó yêu cầu (ô gõ đè).
 - **Cam kết** (cùng khoản): người đó *ước tính tổng thu nhập chịu thuế cả năm sau giảm trừ gia cảnh chưa đến mức phải nộp* và tự chịu trách nhiệm về cam kết; "căn cứ vào cam kết của cá nhân, tổ chức trả thu nhập không khấu trừ thuế". Có cam kết thì không khấu trừ (D09). Rà soát hiện ước tính năm của web và cảnh báo khi vượt; web không tự bỏ cam kết, HR quyết. Cuối năm vẫn nộp danh sách người chưa khấu trừ.
 - HĐ từ 3 tháng: lũy tiến (cùng khoản).
@@ -208,7 +210,7 @@ Mặc định (câu 25): lương 1 ngày và % KPI giữ số đầy đủ. Mọ
 | BH người lao động | 8% / 1,5% / 1% | Luật BHXH 2024 Đ.33 k1; NĐ 188/2025 Đ.6 k1 a (BHYT 4,5%, NLĐ một phần ba); NĐ 374/2025 Đ.4 k1 |
 | BH công ty | 17,5% (3% + 14% + 0,5% TNLĐ-BNN) / 3% / 1% | Luật BHXH 2024 Đ.34 k1; NĐ 58/2020 Đ.4 k1 sửa bởi NĐ 158/2025 Đ.43 k2; NĐ 188/2025 Đ.6 k1 a; NĐ 374/2025 Đ.4 k2 |
 | Trần lương đóng | BHXH, BHYT: 20 × mức tham chiếu, đang bằng lương cơ sở. BHTN: 20 × lương tối thiểu vùng | Luật BHXH 2024 Đ.31 k1 đ, Đ.141 k13; Luật BHYT Đ.14 k5; Luật Việc làm 2025 Đ.34 k2 |
-| KPCĐ | 2% quỹ lương đóng BHXH, kể cả chưa có công đoàn cơ sở; chỉ miễn khi giải thể, phá sản | Luật Công đoàn 2024 Đ.29 k1 b, Đ.30 (VBHN 90/VBHN-VPQH); NĐ 105/2026 Đ.2, Đ.4, Đ.11 |
+| KPCĐ | 2% quỹ lương đóng BHXH, kể cả chưa có công đoàn cơ sở; chỉ miễn khi giải thể, phá sản | Luật Công đoàn 2024 Đ.29 k1 b, Đ.30 (VBHN 90/VBHN-VPQH); NĐ 105/2026 Đ.2, Đ.4, Đ.11. Công ty tạm không tính theo file lương: D03 mặc định tắt (chốt 09/11/2026) |
 | Đoàn phí | 0,5% lương đóng BHXH, tối đa 10% lương cơ sở, chỉ đoàn viên | QĐ 61/QĐ-TLĐ (29/7/2025) |
 | Tỷ lệ thử việc | 90% (luật tối thiểu 85%) | BLLĐ Đ.26 |
 | Thử việc tối đa | 180 ngày quản lý doanh nghiệp, 60 ngày việc cần cao đẳng trở lên, 30 ngày trung cấp, 6 ngày làm việc việc khác | BLLĐ Đ.25 |
@@ -222,16 +224,16 @@ Mặc định (câu 25): lương 1 ngày và % KPI giữ số đầy đủ. Mọ
 | Lương thời gian | Có | Có | **Có** | Chịu thuế |
 | PC trách nhiệm | Có | Có | **Có** (câu 16) | Chịu thuế |
 | Tiền cơm | Có | Có | Không | Miễn tới trần tiền ăn |
-| Xăng xe | Có | Có | Không | **Chịu thuế** (câu 1) |
-| Điện thoại | Có | Có | Không | Miễn tới mức ghi trong HĐLĐ / quy chế, mặc định = mức của người đó (câu 2) |
+| Xăng xe + ĐT | Có | Có | Không | **Miễn toàn bộ**, một khoản như file T10 (17.3 K2, chốt 09/11/2026). Công ty trả riêng: Xăng xe chịu thuế (câu 1), Điện thoại miễn tới mức HĐLĐ / quy chế (câu 2) |
 | Trang phục | Có | Có | Không | Miễn tới trần năm 5.000.000 (câu 2) |
 | Nhà ở / Sinh hoạt | Có | Có | Không | Chịu thuế |
-| Chuyên cần | Có | Có | **Có** (câu 16) | Chịu thuế |
+| Chuyên cần | Có | Có | Tính BH: **Không**; lương theo HĐ: Có (câu 16, K3) | Chịu thuế |
 | KPI 100% | Không (cột riêng) | Theo (19) | Không | Chịu thuế |
 
 - Cờ "chia theo ngày", "× TV" như file T10 (mọi khoản). Mọi khoản chia theo ngày bật "vào lương làm thêm" (câu 20).
-- "Tính BH" và "lương theo HĐ" (dùng cho tiền phép) là hai cờ riêng, cùng mặc định. Căn cứ: lương đóng BH và tiền lương theo HĐ gồm mức lương, phụ cấp lương, khoản bổ sung có mức cụ thể trả mọi kỳ; không gồm cơm, xăng xe, điện thoại, nhà ở, các khoản hỗ trợ khác và thưởng (Luật BHXH 2024 Đ.31 k1 b; NĐ 158/2025 Đ.7 k1; TT 10/2020 Đ.3 k5; CV 1198/CTL&BHXH-BHXH ngày 05/9/2025).
-- Cấu hình T10 "như file HR" dùng cho bộ vàng: một khoản gộp "Xăng xe + ĐT" miễn thuế, cơm và trang phục miễn hết, chỉ lương thời gian tính BH, KPCĐ tắt, khoản (32) là hoàn ứng, cơ sở 10% là (26).
+- "Tính BH" và "lương theo HĐ" (dùng cho tiền phép) là hai cờ riêng, cùng mặc định trừ chuyên cần (vào lương theo HĐ, không vào lương đóng BH: câu 16, K3). Căn cứ: lương đóng BH và tiền lương theo HĐ gồm mức lương, phụ cấp lương, khoản bổ sung có mức cụ thể trả mọi kỳ; không gồm cơm, xăng xe, điện thoại, nhà ở, các khoản hỗ trợ khác và thưởng (Luật BHXH 2024 Đ.31 k1 b; NĐ 158/2025 Đ.7 k1; TT 10/2020 Đ.3 k5; CV 1198/CTL&BHXH-BHXH ngày 05/9/2025).
+- Muốn trả xăng xe và điện thoại riêng: sửa danh sách khoản ở Cấu hình (`khoan.danh-sach`) thành Xăng xe chịu thuế và Điện thoại miễn tới mức (`thue` = `regulated`); vẫn đổi được cách thuế của "Xăng xe + ĐT" cho mọi người hoặc một người (`khoan.xang-dt.thue`).
+- Cấu hình T10 "như file HR" dùng cho bộ vàng: "Xăng xe + ĐT" miễn thuế như mặc định, cơm và trang phục miễn hết, chỉ lương thời gian tính BH, KPCĐ tắt, khoản (32) là hoàn ứng, cơ sở 10% là (26).
 
 ## 6. Cấu hình: mặc định, ghi đè, phiên bản
 
@@ -250,14 +252,14 @@ Mỗi giá trị cấu hình là một dòng: **khoá** (vd `khoan.xang.thue`), 
 |---|---|---|
 | Khoản lương | Tên, mức mặc định, chia theo ngày, × TV, tính BH, lương theo HĐ, vào lương làm thêm, cách thuế, mức miễn hoặc trần năm, thứ tự cột, ngừng từ tháng | Có (mức ở Hồ sơ; cờ ở Cấu hình) |
 | Tham số luật | Mục 5.8 | Có cho vùng lương tối thiểu; còn lại chỉ *Tất cả* |
-| Quy tắc | Tỷ lệ thử việc, giờ một ngày, giờ mỗi công làm thêm ngày nghỉ, hệ số làm thêm, giới hạn giờ năm, ngày chi trả mặc định, tháng đầu trên web, cách % KPI thử việc, KPI chính thức chia theo ngày, Gross gồm KPI, mức KPI khi đổi giữa kỳ | Có |
+| Quy tắc | Tỷ lệ thử việc, giờ một ngày, giờ mỗi công làm thêm ngày nghỉ, hệ số làm thêm, giới hạn giờ năm, ngày chi trả mặc định, tháng đầu trên web, % KPI theo khối (BO công thức, KD HR gõ), KPI chính thức chia theo ngày, Gross gồm KPI, mức KPI khi đổi giữa kỳ | Có |
 | Loại hợp đồng | Đóng BH, cách thuế (lũy tiến / 10%), HĐ dưới 3 tháng, số ngày thử việc mặc định, thứ tự khi xếp dòng | Có |
 | Tuỳ chọn | D01–D12 (mục 9) | Theo cột "Ghi đè" của mục 9 |
 | Khu vực | Vùng lương tối thiểu theo tháng | – |
 
 ### 6.3 Không có ô "Tự động / Thủ công"
 
-Ô nào web tính được (đóng BH tháng này, % KPI thử việc, làm CN, thuế…) luôn hiện số tính ra. HR gõ đè ngay trên ô: bắt buộc lý do; ô có dấu; tooltip ghi số tính và số gõ; Rà soát liệt kê; "Bỏ gõ đè" trả về số tính. Gõ đè chỉ cho tháng đó. Muốn lâu dài thì ghi đè cấu hình cho người đó.
+Ô nào web tính được (đóng BH tháng này, % KPI khối BO, làm CN, thuế…) luôn hiện số tính ra. HR gõ đè ngay trên ô: bắt buộc lý do; ô có dấu; tooltip ghi số tính và số gõ; Rà soát liệt kê; "Bỏ gõ đè" trả về số tính. Gõ đè chỉ cho tháng đó. Muốn lâu dài thì ghi đè cấu hình cho người đó.
 
 ## 7. Theo thời gian: tháng nào dùng cấu hình nào
 
@@ -284,7 +286,7 @@ Mỗi giá trị cấu hình là một dòng: **khoá** (vd `khoan.xang.thue`), 
 
 **R3. Nháp tính theo phiên bản đúng tháng.** Tính lại khi mở, khi bấm Tính lại, khi có phiên bản mới chạm đúng tháng đó. Phiên bản từ tháng sau không đổi nháp tháng trước. Số đổi so với lần tính trước thì thanh báo nói vì sao ("Trần tiền cơm đổi từ 01/10, 3 người đổi thuế"), nhật ký ghi số dòng đổi.
 
-**R4. Duyệt là đóng băng.** Duyệt lưu **bản duyệt lần N** bất biến: từng dòng đủ cột (số đã tròn), số HR gõ và ô gõ đè (số tính, số gõ, lý do), mọi phiên bản đã dùng (giá trị, áp dụng từ, nguồn), ghi đè từng người, các đoạn tách, thông tin người như lúc duyệt, lần chốt kỳ công, ngày chi trả, tháng BH, năm thuế, phiên bản công thức, người duyệt, giờ duyệt. Excel, phiếu, Tổng quan, tổng hợp năm của tháng đó chỉ đọc bản chụp.
+**R4. Duyệt là đóng băng.** Duyệt lưu **bản duyệt lần N** bất biến: từng dòng đủ cột (số đã tròn), số HR gõ và ô gõ đè (số tính, số gõ, lý do), mọi phiên bản đã dùng (giá trị, áp dụng từ, nguồn), ghi đè từng người, các đoạn tách, thông tin người như lúc duyệt, lần chốt kỳ công, ngày chi trả, tháng BH, năm thuế, phiên bản công thức, người duyệt, giờ duyệt. Từ 11/11 mỗi dòng lưu thêm `year` (cộng dồn năm: trước tháng này / tháng này góp), `leavePayout` (tiền phép chưa nghỉ), và bản duyệt lưu `retro` (khoản truy lĩnh / truy thu đã nhận, R6). Excel, phiếu, Tổng quan, tổng hợp năm của tháng đó chỉ đọc bản chụp.
 
 **R5. Phiên bản đã dùng ở tháng đã duyệt thì không sửa, không xoá.** Chỉ thêm phiên bản mới. Gõ sai: **Sửa lỗi** tạo bản thay thế cùng ngày áp dụng (bản cũ ghi "đã thay") rồi chạy R6. Đã dùng thì không xoá, chỉ **Ngừng từ tháng X**. Chưa dùng, hoặc chỉ dùng ở nháp: sửa, xoá tự do.
 
@@ -293,6 +295,13 @@ Mỗi giá trị cấu hình là một dòng: **khoá** (vd `khoan.xang.thue`), 
 - (b) Mở lại tháng đã duyệt gần nhất, khi chưa chuyển khoản (R7).
 - (c) Chỉ ghi nhận: mặc định cho thuế khi luật đổi cả năm, NPT đăng ký muộn; điều chỉnh khi quyết toán.
 
+**Cách làm thật (bước 17, 11/11) — thay cho bước "HR chọn (a)/(b)/(c)" lúc lưu:**
+- (a) là **tự động**: tháng đã duyệt được tính lại "như bây giờ" (đọc lần chốt công mới nhất nếu kỳ công đã chốt lại), so từng ô tiền với bản duyệt. Phần chênh chưa được tháng đã duyệt nào chuyển đi sẽ tự vào **tháng mở kế tiếp**, theo từng người.
+- (b) vẫn là Mở lại (R7). (c) = HR **"Bỏ ra"** khoản đó ở tháng nhận, kèm lý do. HR cũng gõ thay được số web tính (11.4).
+- Lưu ở đâu: khoản đã chuyển nằm trong bản duyệt của tháng nhận (`snapshot.retro`); số HR gõ / bỏ ra nằm ở `payroll_month_inputs.retro` (migration 0049). Không có bảng `payroll_retro`.
+- Giới hạn: chỉ so **6 tháng đã duyệt liền trước** tháng mở; người có chênh nhưng không có dòng lương ở tháng nhận thì chỉ liệt kê, HR xử lý tay; Excel và phiếu lương chưa có dòng riêng cho truy lĩnh (chỉ có ở Ghi chú).
+- **CẦN CHỦ DỰ ÁN CHỐT — thuế của phần truy lĩnh:** (a) ở trên ghi "chịu thuế ở tháng chi". Code đang cộng phần chênh **theo từng ô của tháng gốc** (thu nhập, BH, thuế, chi phí công ty) vào tháng nhận: thuế của phần chênh tính theo biểu của tháng gốc và kê ở tháng chi, **không** gộp vào thu nhập tháng nhận để tính lũy tiến lại. Chưa chốt cách nào đúng.
+
 Tháng gốc mang nhãn "Có thay đổi sau duyệt, xử lý ở T…" trên web, Excel và Tổng quan.
 
 **R7. Mở lại.** Người có quyền Duyệt, có lý do, chỉ tháng đã duyệt gần nhất, chỉ khi chưa đánh dấu Đã chuyển khoản. Về Nháp, tính lại theo R3, hiện chênh so với bản lần N. Duyệt lại thành lần N+1; bản N vẫn tải được từ Nhật ký, mang chữ "đã thay bởi lần N+1". Kỳ công mở lại: lương **nháp** chuyển "Chờ chốt công" (giữ số HR gõ); lương **đã duyệt** không đổi, gắn nhãn "Kỳ công đã mở lại"; chốt lại khác số thì đi R6.
@@ -300,6 +309,8 @@ Tháng gốc mang nhãn "Có thay đổi sau duyệt, xử lý ở T…" trên w
 **R8. Mọi đầu ra nói rõ nó dùng gì.** Excel và phiếu có dấu ở đầu: "Bản duyệt lần N · duyệt lúc … bởi … · tải lúc … bởi …" hoặc "BẢN NHÁP · tính lúc … · số còn đổi". Sheet **Tham số áp dụng** liệt kê kỳ công, ngày chi trả, tháng BH, năm thuế, công chuẩn, lần chốt, phiên bản công thức, từng tham số, khoản, quy tắc, loại HĐ, tuỳ chọn, ghi đè từng người, đoạn tách, ô gõ đè, nhãn hồi tố. Tổng quan tách *Đã duyệt / Nháp / Dự tính*.
 
 **R9. Thứ tự tháng.** Duyệt tháng T khi T−1 còn nháp: **cảnh báo**, không chặn ("Số cộng dồn năm dùng nháp T−1; T−1 đổi thì T hiện chênh và đi R6"). Tháng đầu trên web nhận số dư đầu năm.
+
+**Cộng dồn năm thuế (11/11).** Số cộng dồn năm của tháng M = số dư đầu năm + các tháng lương trước đó cùng năm thuế (năm của ngày chi trả), lấy từ **bản duyệt gần nhất** của từng tháng; tháng còn nháp thì lấy số nháp (Rà soát vàng, 11.3). Các số cộng dồn: trang phục đã miễn, giờ làm thêm, thu nhập chịu thuế (cho ước tính cam kết). Thuế đã khấu trừ và BH đã trừ ghi kèm để làm tổng hợp năm. Dùng ở (33), tiền làm thêm miễn thuế (D05) và ước tính cam kết (5.5).
 
 ## 8. Tự tính, có ô sửa: đối chiếu file T10
 
@@ -321,8 +332,8 @@ Mỗi tuỳ chọn là một dòng cấu hình (mục 6): mặc định cho tấ
 |---|---|---|---|
 | D01 | Làm tròn | Tròn từng ô ngay khi tính (5.7). Khác: như file HR | Không |
 | D02 | Cơ sở và ngưỡng 10% | Mọi khoản thu nhập từ tiền lương của lần chi: (26) + Hỗ trợ, không trừ BH, giảm trừ. Khác: (26) như file T10; chỉ phần chịu thuế (34) | Có |
-| D03 | KPCĐ | 2% × (27) khi tháng có đóng BHXH; chỉ BHYT thì 0 | Không |
-| D04 | BHYT tháng không đóng BHXH vì 14 ngày | Ốm hoặc thai sản từ 14 ngày: 0 (BHXH đóng). Nghỉ không lương, vào hoặc nghỉ giữa tháng: vẫn đóng (như file T10). Khác: không đóng | Có |
+| D03 | KPCĐ | Tắt, như file T10 (chốt 09/11/2026); Rà soát có dòng vàng nhắc Luật Công đoàn 2024 Đ.29 khi đang tắt. Bật: 2% × (27) khi tháng có đóng BHXH; chỉ BHYT thì 0 | Có |
+| D04 | BHYT tháng không đóng BHXH vì 14 ngày | Ốm hoặc thai sản từ 14 ngày: 0 (BHXH đóng). Nghỉ không lương, nghỉ việc giữa tháng: vẫn đóng (như file T10). Tháng HĐ đóng BH bắt đầu mà không đóng BHXH: không đóng (5.4). Khác: không đóng | Có |
 | D05 | Miễn thuế làm thêm | Toàn bộ tiền làm thêm trong 40 giờ/tháng và 200 giờ/năm (NĐ 253 Đ.26 k1); một công ngày nghỉ, lễ = giờ một ngày (8); phần vượt chịu thuế (Đ.26 k3) | Có |
 | D06 | % KPI tháng lên chính thức | HR gõ; web gợi ý Σ(công đoạn × TV đoạn) ÷ chuẩn | Có |
 | D07 | Ngày làm việc cho quy tắc 14 ngày | T2–T6 của tháng dương lịch (Chấm công chỉ lưu số thứ Bảy làm việc, không lưu ngày; đếm T2–T6 chỉ có thể đếm thiếu ngày không hưởng lương, nên không bỏ sót tháng phải đóng). Khác: thêm các thứ Bảy làm việc của khu vực | Có |
@@ -342,6 +353,8 @@ Mỗi tuỳ chọn là một dòng cấu hình (mục 6): mặc định cho tấ
 - `timesheet_closings` (một dòng mỗi lần chốt: `close_no`, lúc, người, lễ, khu vực, công chuẩn) và `timesheet_closing_rows` (mỗi người: mã, tên, chức danh, bộ phận, **khối**, khu vực, `staff_kind_id`, loại, ngày vào, **ngày chính thức**, ngày nghỉ, công chuẩn, `totals`, **mã từng ngày**). `ON DELETE RESTRICT`, không sửa, không xoá (trigger). `closePeriod` ghi thêm một lần chốt mỗi khi chốt; `timesheet_snapshots` giữ như cũ cho Chấm công.
 - Backfill kỳ đang chốt: `close_no = 1`, chép từ snapshot, dựng mã từng ngày từ ô và lễ đã chốt, rồi so lại `timesheetTotals`; lệch thì ghi cờ "không dựng lại được", không đoán.
 - `employees`: thêm khối (BO / KD) và cờ "HR đã xác nhận" cho ngày vào, nghỉ, chính thức.
+- **Khối dùng cho tháng lương (11/11):** tháng nháp, bản chốt chưa có khối thì đọc khối hiện tại của nhân viên, cột Ghi chú của dòng nói rõ; bản chốt có khối thì giữ khối của bản chốt; tháng đã duyệt giữ bản duyệt. Không cần mở lại kỳ công để bổ sung khối.
+- **Màn Chấm công › Nhân viên (11/11):** ô Khối trong form kèm dòng giải thích; cột Khối; lọc Khối (BO / KD / Thiếu khối, `?khoi=none`); đổi khối cho nhiều người; gợi ý theo bộ phận (tên có "kinh doanh" / "sale" → KD, còn lại BO; nhân viên cũ chỉ gợi ý, không tự lưu); `?nv=<id>` mở sẵn form của người đó.
 - `reopenPeriod`: trong cùng giao dịch, báo cho Lương (nháp → Chờ chốt công; đã duyệt → nhãn), ghi một dòng vào nhật ký lương. Người không có quyền Lương chỉ thấy câu chung, không có số.
 - `timesheet_region_zones`: vùng lương tối thiểu theo khu vực, từ tháng.
 
@@ -358,10 +371,10 @@ Mỗi tuỳ chọn là một dòng cấu hình (mục 6): mặc định cho tấ
 | `payroll_bank_accounts` | Ngân hàng, STK mã hoá AES-GCM bằng `PAYROLL_KEY` (biến môi trường), số phiên bản khoá, 4 số cuối lưu riêng, email nhận phiếu, ngày đổi |
 | `payroll_opening` | Số dư đầu năm thuế (theo ngày chi, câu 34): thu nhập chịu thuế, thuế đã khấu trừ, giờ làm thêm năm, trang phục đã trả trong năm, số tháng đã trả |
 | `payroll_periods` | Khoá (năm, tháng); trạng thái `waiting` / `draft` / `approved` / `paid`; ngày chi trả; lần chốt kỳ công đang dùng; bản duyệt hiện tại; ngày chuyển khoản; `row_version` |
-| `payroll_inputs` | Số HR gõ mỗi tháng và ô gõ đè (số tính, số gõ, lý do bắt buộc) |
+| `payroll_inputs` (trong code: `payroll_month_inputs`) | Số HR gõ mỗi tháng và ô gõ đè (số tính, số gõ, lý do bắt buộc). Thêm 11/11: cột `leave_payout` (migration 0048: trống = tự tính, 0 = không trả) và `retro` (migration 0049: số HR gõ thay / bỏ ra cho khoản truy lĩnh web tính) |
 | `payroll_draft_lines` | Kết quả nháp lần tính trước, để R3 so được |
 | `payroll_runs`, `payroll_lines`, `payroll_run_supersessions` | Bản duyệt lần N (ngày chi trả, tháng BH, năm thuế, phiên bản công thức, phiên bản đã dùng, tổng) và từng dòng; bất biến (trigger) |
-| `payroll_retro` | Truy lĩnh / truy thu / điều chỉnh BH / chỉ ghi nhận: tháng gốc, tháng đích, người, số tiền, chịu thuế, lý do, nguyên nhân |
+| ~~`payroll_retro`~~ | **Không tạo** (11/11). Khoản đã chuyển nằm trong bản duyệt của tháng nhận (`snapshot.retro`); số HR gõ nằm ở `payroll_month_inputs.retro` (R6) |
 | `payroll_log` | Nhật ký lương riêng (không dùng `timesheet_log`): nhóm, người làm, việc, chi tiết cũ → mới, tháng ảnh hưởng, lúc. Chỉ thêm |
 
 - Tiền là `bigint` đồng đã tròn; số chưa tròn (lương 1 ngày, %) là `numeric`. Không dùng `real`.
@@ -380,7 +393,10 @@ Mỗi tuỳ chọn là một dòng cấu hình (mục 6): mặc định cho tấ
 - **Tooltip ô tính**: công thức bằng số thật, phiên bản đã dùng ("Trần tiền ăn 1.200.000 · từ 01/07/2026 · NĐ 253"), liên kết "Mở cấu hình". Ô lấy từ Chấm công có liên kết "Xem ở Bảng công".
 - **Ô gõ đè**: dấu tam giác góc ô, tooltip số tính và số gõ, lý do. **Ghi đè cấu hình riêng**: chấm màu, tooltip "Riêng NV A từ T12".
 - Chú giải dưới lưới đếm số ô gõ đè, số người có cấu hình riêng, số cảnh báo.
-- Tháng đã duyệt: dải khoá "Đã duyệt lần N, chỉ xem. Muốn sửa: Mở lại hoặc Truy lĩnh / truy thu ở T+1".
+- Tháng đã duyệt: dải khoá "Đã duyệt lần N, chỉ xem. Muốn sửa: Mở lại hoặc Truy lĩnh / truy thu ở T+1". Khi tính lại "như bây giờ" ra số khác: dải "Số hiện tại khác bản đã duyệt — chênh lệch chuyển sang tháng MM" (R6).
+- **Hộp sửa (24)** có mục "Tiền phép chưa nghỉ": công thức + ô số tiền (trống = tự tính, 0 = không trả; người không nghỉ trong kỳ vẫn nhập được) (5.5).
+- **Ngăn nguồn** của (33), tiền làm thêm và (40) có bảng "Cộng dồn năm thuế" (R9).
+- Ô Khối là liên kết sang form người đó ở Chấm công › Nhân viên (11.3).
 
 ### 11.3 Rà soát
 
@@ -389,7 +405,11 @@ Danh sách cảnh báo, mỗi dòng bấm tới ô. Mức đỏ (phải tích "�
 | Mức | Cảnh báo |
 |---|---|
 | Đỏ | Người có công mà chưa có hồ sơ (dòng 0 đồng); thực nhận âm; lương thời gian dưới lương tối thiểu vùng; thiếu khối hoặc loại HĐ; ngày dùng để tách đoạn, tính BH hoặc 10% chưa được HR xác nhận; tháng đầu trên web chưa xác nhận lần chốt kỳ công; tháng đầu trên web còn mục chưa xác nhận ở danh sách kiểm 17.2; số ngày thử việc vượt mức BLLĐ Đ.25 |
-| Vàng | Lệch hơn 10% so với tháng trước, kèm nguyên nhân đã biết; (17) lớn hơn chuẩn; gõ đè khác số tính; HĐ dưới 3 tháng nhận từ 5 tr mà không có cam kết (sẽ khấu trừ 10%); cam kết có ước tính năm vượt mức; còn phép khi nghỉ việc và hạn trả 14 ngày làm việc; thiếu STK; OT ngày chưa có giờ làm thêm; CN bù ngày thường; làm thêm vượt 40 giờ/tháng hoặc 200 giờ/năm; trang phục chạm trần năm; ghi đè cấu hình trái luật; tháng trước còn nháp; hồi tố chưa xử lý |
+| Vàng | Lệch hơn 10% so với tháng trước, kèm nguyên nhân đã biết; (17) lớn hơn chuẩn; gõ đè khác số tính; HĐ dưới 3 tháng nhận từ 5 tr mà không có cam kết (sẽ khấu trừ 10%); cam kết có ước tính năm vượt mức; còn phép khi nghỉ việc và hạn trả 14 ngày làm việc; thiếu STK; OT ngày chưa có giờ làm thêm; CN bù ngày thường; làm thêm vượt 40 giờ/tháng hoặc 200 giờ/năm; trang phục chạm trần năm; ghi đè cấu hình trái luật; tháng trước còn nháp (chỉ còn hiện khi tháng trước thuộc năm thuế khác); hồi tố chưa xử lý |
+| Vàng (11/11) | Cộng dồn năm: "Tháng MM chưa duyệt — số cộng dồn năm đang lấy bản nháp"; "Tháng MM chưa có bảng lương — số cộng dồn năm chưa gồm tháng này"; "Tháng MM duyệt trước khi web ghi số cộng dồn…". Tiền phép: "Tiền phép chưa nghỉ gõ X thấp hơn / cao hơn số tính Y". Truy lĩnh: "Có truy lĩnh/truy thu từ tháng MM"; "Truy lĩnh / truy thu từ Tmm/yyyy: HR bỏ ra / HR gõ X, số tính Y" |
+
+- **"Thiếu khối" (đỏ)** chỉ còn khi cả bản chốt lẫn nhân viên đều chưa có khối. Cách sửa: Chấm công › Nhân viên › ô Khối, không cần mở lại kỳ công. Dòng này và ô Khối trên lưới mở form người đó ở `/hr/cham-cong/nhan-vien?nv=<id>` (`&khoi=none` lọc "Thiếu khối").
+- `/hr/luong?ky=…&rs=1` mở sẵn Rà soát; đóng thì bỏ `rs`.
 
 ### 11.4 Hộp thoại
 
@@ -399,7 +419,7 @@ Danh sách cảnh báo, mỗi dòng bấm tới ô. Mức đỏ (phải tích "�
 | **Mở lại** | Bản lần N (lúc, bởi, tổng thực nhận); "Sau khi mở: về Nháp, tính lại theo cấu hình của tháng này, gồm X thay đổi hồi tố; bản lần N vẫn giữ"; ô Lý do bắt buộc | – | Đã chuyển khoản (gợi ý nút "Tạo truy lĩnh / truy thu ở T+1"); không phải tháng duyệt gần nhất (ghi tháng gần nhất); không có quyền Duyệt |
 | **Đã chuyển khoản** | Ngày chuyển khoản, số người, tổng thực nhận của bản lần N, ghi chú. Cảnh báo: ngày chuyển khoản qua mốc tham số thuế khác ngày chi trả; có người thiếu hoặc đổi STK sau duyệt | Ngày = ngày chi trả | Chưa duyệt. Sau khi đánh dấu: không mở lại được; "Bỏ đánh dấu" cần lý do, có nhật ký |
 | **Thay đổi chạm tháng đã duyệt** (R6) | Mở khi lưu thay đổi có ngày áp dụng rơi vào tháng đã duyệt, hoặc khi chốt lại kỳ công khác số. Danh sách tháng (trạng thái, số người đổi, tổng chênh); bảng chênh từng người (cột, cũ → mới, chênh thực nhận, chênh BH công ty); chọn (a) / (b) / (c) | (a) truy lĩnh / truy thu / điều chỉnh BH ở tháng nháp kế tiếp; (c) cho thuế đổi cả năm và NPT muộn. Lý do điền sẵn từ thay đổi, sửa được | (b) ẩn khi tháng đã chuyển khoản hoặc không phải tháng gần nhất |
-| **Truy lĩnh / truy thu** (thêm tay trên tháng nháp) | Người, tháng gốc, loại, số tiền, chịu thuế, lý do bắt buộc | Chịu thuế = Có với tiền lương, Không với BH | – (truy thu lớn hơn thực nhận: cảnh báo, gợi ý chia nhiều tháng) |
+| **Truy lĩnh / truy thu** (thêm tay trên tháng nháp) | Người, tháng gốc, loại, số tiền, chịu thuế, lý do bắt buộc. **Hiện có (11/11):** chỉ gõ thay hoặc "Bỏ ra" khoản web tự tính; số gõ vào (32), ngoài thuế và BH, lý do bắt buộc. **Chưa có:** thêm tay một khoản không do web tính | Chịu thuế = Có với tiền lương, Không với BH | – (truy thu lớn hơn thực nhận: cảnh báo, gợi ý chia nhiều tháng) |
 | **Xoá** | Dùng hộp xác nhận chung, nói rõ cái gì bị xoá và ảnh hưởng tháng nào | – | Đã dùng ở tháng duyệt: đổi thành "Ngừng từ tháng" |
 
 Gõ đè ô và nhật ký không dùng modal: gõ đè là ô sửa ngay trên lưới có ô lý do; nhật ký là tab.
@@ -412,6 +432,8 @@ Danh sách người lấy từ Chấm công (lọc đủ như 4.1, thêm "Thiế
 
 Menu trái như Chấm công. Mỗi giá trị hiện: giá trị đang áp, từ tháng, nguồn, nhãn *Sắp áp dụng / Đã thay*, số người có ghi đè (bấm ra danh sách). Chọn "Xem cấu hình áp dụng cho tháng …" thì cả trang hiện đúng phiên bản của tháng đó. Quyền lương cấp ở trang Tài khoản HR, không có mục riêng ở đây.
 
+Dòng nguồn của tham số trên web và sheet "Tham số áp dụng" **ẩn chữ nội bộ** ("spec x.y", "câu N", mã D/R, "(17.3)"); "file T10" ghi thành "Theo file lương của HR"; không còn gì thì ghi "Quy chế công ty" (11/11).
+
 ### 11.7 Phiếu lương
 
 Chọn nhiều người (lọc 4.1), xem cùng lúc, tải Excel (mỗi người một sheet), in vừa trang. Phiếu có thu nhập, làm thêm, khấu trừ, thực nhận (BLLĐ Đ.95 k3), STK 4 số cuối, dấu bản. Tháng nháp: chữ NHÁP chìm trên từng phiếu. Không có khối ký tên.
@@ -422,10 +444,12 @@ Chọn nhiều người (lọc 4.1), xem cùng lúc, tải Excel (mỗi người
 - Mỗi số có nhãn trạng thái: **Đã duyệt** (đặc), **Nháp** (sọc), **Dự tính** (viền chấm). Ba loại cộng riêng; ô tổng năm ghi rõ "Đã duyệt X · Nháp Y · Dự tính Z", không có một số gộp không nhãn.
 - Tháng duyệt đọc bản chụp; nháp là số tạm; tháng chưa chốt công là Dự tính = mức hồ sơ của tháng đó × đủ công, KPI 100%, không làm thêm, tham số của tháng đó. Tháng trước khi có web: "Chưa có dữ liệu".
 - Lọc khối, khu vực theo thuộc tính của chính tháng đó. Bảng tháng có ô chọn để tải 1 hoặc nhiều tháng.
+- **Đã làm (bước 26, 11/11):** địa chỉ `?xem=thang|nam&nam=YYYY`. Xem theo năm là **T1–T12, mỗi tháng một dòng** (không phải mỗi năm một dòng); tổng năm tách "Đã duyệt · n tháng" và "Nháp · n tháng". Tháng chờ chốt công ghi "chưa có số" vì API chưa trả Dự tính. Mỗi số bấm được về dòng tổng Bảng lương của tháng đó.
+- **Chưa làm:** Dự tính, biểu đồ 12 cột, so tháng trước, tooltip truy lĩnh, thưởng T13, ô chọn tháng để tải Excel (L-G03, L-G04, L-G08, L-G09, L-G12, L-G13).
 
 ### 11.9 Nhật ký
 
-Một tab, hiện thẳng trên trang. Lọc `?nhom=bang-luong|ho-so|cau-hinh|tai-xem|quyen|cham-cong`, `?tim=`, theo kỳ, theo người; xem thêm từng 100 dòng. Mỗi dòng: icon theo việc (thêm, sửa, xoá, duyệt, mở lại, chuyển khoản, tải, xem), chip nhóm, câu thường có mã người ("Sửa Tiền cơm của NV A: 1.100.000 → 1.150.000, từ T12/2026"), người làm, dd/mm/yyyy HH:mm, liên kết tới đối tượng. Chi tiết dài mở ngay trong dòng. Từ dòng duyệt tải được bản lần N.
+Một tab, hiện thẳng trên trang. Lọc `?nhom=bang-luong|ho-so|cau-hinh|tai-xem|quyen|cham-cong`, `?tim=`, theo kỳ, theo người; xem thêm từng 100 dòng. Mỗi dòng: icon theo việc (thêm, sửa, xoá, duyệt, mở lại, chuyển khoản, tải, xem), chip nhóm, câu thường có mã người ("Sửa Tiền cơm của NV A: 1.100.000 → 1.150.000, từ T12/2026"), người làm, dd/mm/yyyy HH:mm, liên kết tới đối tượng. Chi tiết dài mở ngay trong dòng. Từ dòng duyệt tải được bản lần N. Lọc "Nhân viên" bằng ô chọn nổi (một người), không dùng select của trình duyệt (11/11).
 
 ### 11.10 Điện thoại (390 px)
 
@@ -436,7 +460,7 @@ Thanh tab cuộn ngang, tab đang chọn luôn trong tầm nhìn. Thanh lọc go
 ### 12.1 Tải
 
 - Tải 1 tháng, nhiều tháng, cả năm; từ Bảng lương, Tổng quan, Phiếu lương (một hộp chung). Mỗi sheet theo bản của đúng tháng đó (Q3).
-- Bố cục theo file HR: nhóm A–H, cột đánh số theo file, dòng tổng, A4 ngang. Nhóm A có một cột cho mỗi khoản lương của tháng đó, theo thứ tự cấu hình (mặc định tách Xăng xe và Điện thoại thành (11a), (11b): 54 cột, câu 3). Dòng xếp theo D13.
+- Bố cục theo file HR: nhóm A–H, cột đánh số theo file, dòng tổng, A4 ngang. Nhóm A có một cột cho mỗi khoản lương của tháng đó, theo thứ tự cấu hình (mặc định một cột (11) Xăng xe + ĐT như file, 17.3 K2; công ty trả riêng thì (11a), (11b), câu 3). Dòng xếp theo D13.
 - Khối ký tên Người lập biểu, Kế toán trưởng, Giám đốc, ngày = ngày chi trả, chỉ trong Excel.
 - Dấu bản (R8), sheet Tham số áp dụng, sheet Tổng hợp khi nhiều tháng (cộng số đã có, không tính lại; tên, khu vực theo tháng gần nhất, ghi chú nếu khác). Tuỳ chọn ẩn nhóm H.
 - Tên file: `Bang-luong-10-2026-lan-2.xlsx`, `Bang-luong-11-2026-NHAP.xlsx`, `Bang-luong-2026-T08-T10.xlsx`.
@@ -445,7 +469,7 @@ Thanh tab cuộn ngang, tab đang chọn luôn trong tầm nhìn. Thanh lọc go
 
 - Đọc file có đúng tiêu đề cột của file HR (dòng tiêu đề và dòng số cột). Nối người theo Mã NV → `employee_id`; mã không có thì gợi ý người gần giống, HR chọn.
 - Ba kiểu nhập: **Đầu vào tháng** ((19), (21)–(24), (32) tách thành hỗ trợ / hoàn ứng / tạm ứng); **Hồ sơ** ((8)–(15), (49)–(51), có ngày hiệu lực); **Số dư đầu năm**.
-- Cột "Xăng xe + ĐT" gộp: mặc định đưa hết vào Xăng xe và cảnh báo "Sửa nếu có Điện thoại".
+- Cột "Xăng xe + ĐT": vào thẳng khoản Xăng xe + ĐT (mặc định). Công ty đã tách hai khoản thì đưa hết vào Xăng xe và cảnh báo "Sửa nếu có Điện thoại".
 - Xem trước: bảng cũ → mới từng ô, lỗi từng dòng. Chưa bấm "Lưu" thì không ghi gì. Lưu là một dòng nhật ký có số ô đổi, mở ra từng ô.
 
 ## 13. Impact Analysis
@@ -512,8 +536,8 @@ Mỗi bước 1 commit, gồm test của bước đó. Bắt đầu bằng test 
 - **Lộ lương**: chặn ở API, không chỉ ẩn nút. Nhật ký, Excel tải về cũng là dữ liệu lương. Dữ liệu thật không vào code, test, docs, commit.
 - **Luật đổi giữa năm** (đã xảy ra 01/7/2026): mọi mức có ngày áp dụng; tháng đã duyệt giữ bản chụp.
 - **Điểm luật văn bản chưa nói rõ** (BH tháng vào, nghỉ giữa tháng; BHYT tháng không đóng BHXH; chuyên cần trong lương đóng BH; cơ sở 10%; mức khoán điện thoại, trang phục): web chạy theo mặc định an toàn ở mục 17, kế toán ký xác nhận ở 17.3 trước khi bỏ Excel.
-- **Khác file T10 về số tiền**: lương đóng BH tăng vì PC trách nhiệm và chuyên cần vào lương đóng; KPCĐ 2%; người HĐ dưới 3 tháng chưa có cam kết bị khấu trừ 10% khi nhận từ 5 tr. Rà soát tháng đầu ghi rõ từng nguyên nhân.
-- **Khác file Excel cũ**: tháng đầu lệch ở chỗ file đang sai hoặc khác luật (KPCĐ, xăng xe, hỗ trợ, lương đóng BH, KPI gõ tay, Gross, làm tròn). Rà soát nói rõ vì sao lệch.
+- **Khác file T10 về số tiền**: lương đóng BH tăng ở người có PC trách nhiệm (vào lương đóng; chuyên cần thì không, như file); người HĐ dưới 3 tháng chưa có cam kết bị khấu trừ 10% khi nhận từ 5 tr. Rà soát tháng đầu ghi rõ từng nguyên nhân.
+- **Khác file Excel cũ**: tháng đầu lệch ở chỗ file đang sai hoặc khác luật (hỗ trợ, lương đóng BH, KPI gõ tay, Gross, làm tròn). Rà soát nói rõ vì sao lệch.
 - **Chấm công chưa lưu lần chốt và mã từng ngày**: Lương phụ thuộc bước 11, 12.
 - **Giờ làm thêm** HR phải gõ; Chấm công chỉ có công.
 - **Chuyển khoản, phiếu email chưa có**: HR dùng file tải về tới spec sau.
@@ -528,22 +552,22 @@ Cột **Mức**: *Luật* = đã đọc văn bản; *File* = theo cách file T10
 
 | # | Quyết định | Căn cứ | Khoá cấu hình / trường | Mức |
 |---|---|---|---|---|
-| 1 | Xăng xe trả cố định hằng tháng: chịu thuế toàn bộ. Có quy chế khoán công tác phí thì đổi cách thuế của khoản | NĐ 253/2026 Đ.8 k3 (phụ cấp chịu thuế trừ danh mục loại trừ, không có xăng xe); Đ.8 k2 đ chỉ có văn phòng phẩm, công tác phí, điện thoại, trang phục; Đ.8 k4 c chỉ có xe đưa đón của đơn vị | `khoan.xang_xe.thue` = chịu thuế | Luật |
-| 2 | Điện thoại: miễn tới mức ghi trong HĐLĐ / quy chế, mặc định = mức của người đó ở hồ sơ. Trang phục bằng tiền: miễn tới 5.000.000/người/năm thuế, cộng dồn. Phần vượt chịu thuế | NĐ 253 Đ.8 k2 đ: mức khoán "phù hợp với việc xác định chi phí được trừ khi tính thuế thu nhập doanh nghiệp"; VBHN 19/VBHN-BTC (gộp NĐ 320/2025) Đ.10 k8 b (khoản trả NLĐ phải ghi điều kiện và mức trong HĐLĐ, thoả ước hoặc quy chế), k8 đ (trang phục bằng tiền tối đa 5 tr/người/năm); điện thoại không có trần số | `khoan.dien_thoai.muc_mien` = mức hồ sơ; `khoan.trang_phuc.tran_nam` = 5.000.000 | Luật; việc HĐLĐ / quy chế ghi mức: 17.3 |
-| 3 | Tách "Xăng xe + ĐT" thành hai khoản, hai cột (Excel 54 cột). Muốn gộp lại thì gộp ở Cấu hình › Khoản lương | Hai khoản khác cách thuế (câu 1, 2). Nhóm A của file T10 có một cột cho mỗi khoản, trừ cột (11) | `khoan.*` (danh mục, thứ tự cột) | Luật, File |
-| 4 | Khoản (32) là dữ kiện từng người: hồ sơ có "khoản (32) định kỳ" (loại, số tiền, từ tháng, đến tháng), điền sẵn vào ô tháng. Ô tháng tách Hỗ trợ / Hoàn ứng / Tạm ứng; khoản mới không chọn loại thì là **Hỗ trợ**: chịu thuế, vào chi phí, vào cơ sở 10%. Hoàn ứng chỉ khi trả lại tiền NLĐ đã chi cho công ty, có chứng từ | NĐ 253 Đ.8 k1, k2 k: mọi khoản NSDLĐ chi cho NLĐ là thu nhập từ tiền lương, trừ danh mục ở Đ.8 k4. File: 2 dòng có (32) đúng bằng phần BH người lao động của dòng đó, không ghi tên khoản | Hồ sơ `khoan_32_dinh_ky`; `thang.khoan_32.loai_mac_dinh` = Hỗ trợ; 17.2 | Dữ kiện, Luật |
-| 5 | % KPI thử việc = công ÷ chuẩn × TV khi HR không gõ; gõ đè có lý do | File: (19) là ô gõ ở 12 dòng; 3 trong 5 dòng thử việc bằng đúng công ÷ chuẩn × 90%, 2 dòng còn lại không ghi lý do | `kpi.pct_thu_viec` = công thức | File |
-| 6 | KPI chính thức: HR gõ %, không chia theo ngày công | File: 7 dòng chính thức gõ %; dòng thiếu công vẫn nhận nguyên % gõ | `kpi.chia_ngay_chinh_thuc` = Không | File |
+| 1 | **Đổi 09/11/2026 (17.3 K2)**: mặc định trả "Xăng xe + ĐT" một khoản, miễn toàn bộ như file. Công ty trả xăng xe riêng, cố định hằng tháng: chịu thuế toàn bộ. Có quy chế khoán công tác phí thì đổi cách thuế của khoản | NĐ 253/2026 Đ.8 k3 (phụ cấp chịu thuế trừ danh mục loại trừ, không có xăng xe); Đ.8 k2 đ chỉ có văn phòng phẩm, công tác phí, điện thoại, trang phục; Đ.8 k4 c chỉ có xe đưa đón của đơn vị | `khoan.xang_xe.thue` = chịu thuế | Luật |
+| 2 | Điện thoại: miễn tới mức ghi trong HĐLĐ / quy chế, mặc định = mức của người đó ở hồ sơ. Trang phục bằng tiền: miễn tới 5.000.000/người/năm thuế, cộng dồn. Phần vượt chịu thuế | NĐ 253 Đ.8 k2 đ: mức khoán "phù hợp với việc xác định chi phí được trừ khi tính thuế thu nhập doanh nghiệp"; VBHN 19/VBHN-BTC (gộp NĐ 320/2025) Đ.10 k8 b (khoản trả NLĐ phải ghi điều kiện và mức trong HĐLĐ, thoả ước hoặc quy chế), k8 đ (trang phục bằng tiền tối đa 5 tr/người/năm); điện thoại không có trần số. Mặc định điện thoại trả gộp trong "Xăng xe + ĐT", miễn toàn bộ (17.3 K2); cách trên áp khi công ty trả điện thoại riêng | `khoan.xang-dt.thue` = miễn; trả riêng: `khoan.dien-thoai.muc-quy-che` = mức hồ sơ; `khoan.trang_phuc.tran_nam` = 5.000.000 | Luật; việc HĐLĐ / quy chế ghi mức: 17.3 |
+| 3 | **Đổi 09/11/2026 (17.3 K2)**: giữ "Xăng xe + ĐT" một khoản, một cột (11) như file. Muốn tách thành hai khoản, hai cột thì tách ở Cấu hình › Khoản lương | Người dùng chốt "như file"; tách khi hai khoản khác cách thuế (câu 1, 2). Nhóm A của file T10 có một cột cho mỗi khoản | `khoan.*` (danh mục, thứ tự cột) | Luật, File |
+| 4 | Khoản (32) là dữ kiện từng người: hồ sơ có "khoản (32) định kỳ" (loại, số tiền, từ tháng, đến tháng), điền sẵn vào ô tháng. Ô tháng tách Hỗ trợ / Hoàn ứng / Tạm ứng; khoản mới không chọn loại thì là **Hỗ trợ**: chịu thuế, vào chi phí, vào cơ sở 10%. Hoàn ứng chỉ khi trả lại tiền NLĐ đã chi cho công ty, có chứng từ. **Thêm 10/11/2026 (theo file T10):** loại "Công ty trả thay BH" (`insurance-paid`): tự tính = BH người lao động của tháng, có từ tháng / đến tháng, áp được cho một hoặc nhiều người; "Tính thuế" mặc định tắt như file; khi tắt, Rà soát báo vàng (không chặn) dẫn NĐ 253 Đ.8; mỗi người mỗi tháng chỉ một khoản loại này | NĐ 253 Đ.8 k1, k2 k: mọi khoản NSDLĐ chi cho NLĐ là thu nhập từ tiền lương, trừ danh mục ở Đ.8 k4. File: 2 dòng có (32) đúng bằng phần BH người lao động của dòng đó, không ghi tên khoản | Hồ sơ `khoan_32_dinh_ky`; `thang.khoan_32.loai_mac_dinh` = Hỗ trợ; 17.2 | Dữ kiện, Luật |
+| 5 | % KPI khi HR không gõ đi theo khối (sửa 10/11): khối BO = công ÷ chuẩn, × TV ở ngày thử việc; khối KD = HR gõ. Gõ đè có lý do | File, soát từng ô 12 dòng: khối BO thử việc 15/22 → 61,36%, 19,5/22 → 79,77%, đúng công ÷ chuẩn × 90% tới số lẻ; khối KD là 0%, 80%, 100% do HR đánh giá, không theo công | "% KPI theo khối" = BO công thức, KD HR gõ; ghi đè cho tất cả hoặc từng người | File |
+| 6 | KPI chính thức: khối KD HR gõ %, không chia theo ngày công. Khối BO: công ÷ chuẩn, đủ công ra 100% (sửa 10/11) | File: dòng chính thức khối KD thiếu công vẫn nhận nguyên % gõ; khối BO chính thức đều đủ công, 100%. BO chính thức thiếu công: mặc định, chưa có dữ liệu thực tế xác nhận | `kpi.chia_ngay_chinh_thuc` = Không; "% KPI theo khối" | File |
 | 7 | Gross (16) = Σ khoản + KPI 100%, chỉ để xem | File: 8/12 dòng gồm KPI; 4 dòng thiếu KPI, không ảnh hưởng tiền | `gross.gom_kpi` = Có | File |
-| 8 | KPCĐ 2% × (27) từ tháng đầu trên web. Tắt phải ghi lý do, Rà soát đỏ | Luật Công đoàn 2024 Đ.29 k1 b (VBHN 90/VBHN-VPQH): "đóng bằng 2% quỹ tiền lương làm căn cứ đóng bảo hiểm xã hội bắt buộc", không điều kiện có công đoàn cơ sở; Đ.30 và NĐ 105/2026 Đ.11 chỉ miễn khi giải thể, phá sản | D03 | Luật |
+| 8 | KPCĐ mặc định **tắt** như file T10 (chốt 09/11/2026, "theo file + tự động"); HR bật cho công ty hoặc từng người thì 2% × (27). Đang tắt: Rà soát vàng, không chặn. Công ty tạm không tính theo file lương | Luật Công đoàn 2024 Đ.29 k1 b (VBHN 90/VBHN-VPQH): "đóng bằng 2% quỹ tiền lương làm căn cứ đóng bảo hiểm xã hội bắt buộc", không điều kiện có công đoàn cơ sở; Đ.30 và NĐ 105/2026 Đ.11 chỉ miễn khi giải thể, phá sản | D03 | Luật |
 | 9 | HĐ thử việc riêng: không BHXH, BHTN. Thử việc ghi trong HĐLĐ: đóng như HĐLĐ. Ai ký loại nào là dữ kiện | NĐ 158/2025 Đ.3 k5: "người lao động làm việc theo hợp đồng thử việc ... không thuộc đối tượng tham gia bảo hiểm xã hội bắt buộc"; Luật Việc làm 2025 Đ.31 k2; Luật BHXH 2024 Đ.2 k1 a. File: 5/5 dòng thử việc không BH | Hồ sơ `loai_hd`, mặc định với loại NV Thử việc = HĐ thử việc riêng; `loai_hd.*.dong_bh`; 17.2 | Luật, Dữ kiện |
-| 10 | Cam kết thuế là dữ kiện từng người. Mặc định không có, nên HĐ dưới 3 tháng chi từ 5 tr bị khấu trừ 10% tới khi HR nhập cam kết | NĐ 253 Đ.50 k2 | Hồ sơ `cam_ket_thue` (năm, ngày ký); 17.2 | Dữ kiện |
+| 10 | Cam kết thuế là dữ kiện từng người. **Đổi 10/11/2026 (chủ dự án: cam kết nằm trong hợp đồng thử việc; file T10 không trừ 10% người thử việc đang làm):** loại HĐ có thuộc tính "Cam kết thuế kèm hợp đồng" (`loai-hd.<id>.cam-ket-kem-hd`), bật sẵn cho HĐ thử việc / dưới 3 tháng, nên mặc định không khấu trừ 10% mà HR không phải nhập gì. Tắt được cho tất cả, một hoặc nhiều người: khi đó trừ 10% tới khi có cam kết ký riêng (nhập từng người hoặc "Thêm cam kết thuế cho nhiều người"). Rà soát (vàng, không chặn): số người đang dựa vào cam kết kèm hợp đồng kèm điều kiện của luật; "Thu nhập ước tính cả năm vượt mức được cam kết — nên khấu trừ 10%"; "Chưa có cam kết thuế — đang khấu trừ 10%"; "Cần ký lại cam kết thuế năm YYYY" ở tháng lương đầu tiên chi trong năm mới. Người đã nghỉ việc vẫn theo D10 (Q4 của bản rà soát BA chưa quyết) | NĐ 253 Đ.50 k2 | Hồ sơ `cam_ket_thue` (năm, ngày ký); 17.2 | Dữ kiện |
 | 11 | Ước tính năm vượt mức: web chỉ cảnh báo, không tự bỏ cam kết | NĐ 253 Đ.50 k2: "Cá nhân làm cam kết phải chịu trách nhiệm về bản cam kết của mình ... Căn cứ vào cam kết của cá nhân, tổ chức trả thu nhập không khấu trừ thuế" | D09 | Luật |
 | 12 | Trả cho người đã chấm dứt HĐ, lần chi từ 5 tr: 10%, mọi loại HĐ | NĐ 253 Đ.50 k2: "(bao gồm cả trường hợp trả tiền lương, thu nhập khác cho người lao động đã chấm dứt hợp đồng lao động) mà mức chi trả thu nhập từ 05 triệu đồng/lần trở lên thì phải khấu trừ ... theo tỷ lệ 10%"; trả lời của Thuế tỉnh Bắc Ninh trên cổng hỏi đáp Bộ Tài chính (câu hỏi 27/8/2026) | D10 | Luật |
 | 13 | Cơ sở 10% = (26) + Hỗ trợ của lần chi, không trừ BH, giảm trừ gia cảnh; ngưỡng 5 tr xét từng lần chi trên cùng cơ sở | NĐ 253 Đ.50 k2: "10% trên thu nhập trước khi trả thu nhập cho cá nhân"; Thuế tỉnh Bắc Ninh: BH, giảm trừ gia cảnh "không trừ khi thực hiện khấu trừ tạm thời theo tỷ lệ 10%". Văn bản không nói có loại khoản miễn thuế ra không, nên lấy cơ sở lớn hơn | D02 | Luật (BH, giảm trừ); Chưa có văn bản (khoản miễn thuế): 17.3 |
 | 14 | Tháng vào, nghỉ, đổi sang / khỏi HĐ đóng BH: đếm ngày không hưởng lương, gồm ngày ngoài HĐ đóng BH; từ 14 thì không đóng BHXH, BHTN, dưới 14 đóng đủ | Luật BHXH 2024 Đ.33 k5: "mà không hưởng tiền lương từ 14 ngày làm việc trở lên trong tháng thì người lao động không phải đóng bảo hiểm xã hội tháng đó"; Luật Việc làm 2025 Đ.33 k4. Không văn bản còn hiệu lực nói riêng tháng vào, nghỉ: QĐ 595/QĐ-BHXH hết hiệu lực 01/5/2026, QĐ 366/QĐ-BHXH không có quy tắc này. Đọc theo chữ thì đóng nhiều tháng hơn cách cũ "làm dưới 14 ngày thì không đóng", nên an toàn hơn | BH-1 (5.4), D07, D15 | Chưa có văn bản (đã tìm Luật BHXH 2024, NĐ 158/2025, QĐ 595, QĐ 366, NĐ 188/2025): 17.3 |
-| 15 | Tháng không đóng BHXH: ốm hoặc thai sản từ 14 ngày thì BHXH đóng BHYT, bảng lương ghi 0; nghỉ không lương, vào hoặc nghỉ giữa tháng thì vẫn đóng BHYT như file T10 | Luật BHYT Đ.12 k2 b sửa bởi Luật 51/2024 và Luật BHXH 2024 Đ.119 k2: người nghỉ ốm, thai sản từ 14 ngày làm việc trong tháng do cơ quan BHXH đóng BHYT. Nghỉ không lương: Luật BHYT Đ.12 k5 c xếp vào nhóm tự đóng nhưng không nói theo tháng; vẫn đóng để thẻ không bị hở | D04 | Luật (ốm, thai sản); Chưa có văn bản (còn lại): 17.3 |
-| 16 | Lương đóng BH = lương thời gian + PC trách nhiệm + chuyên cần (khoản cố định, trả mọi kỳ). Không gồm cơm, xăng xe, điện thoại, nhà ở, trang phục, KPI | Luật BHXH 2024 Đ.31 k1 b; NĐ 158/2025 Đ.7 k1 b (phụ cấp bù "tính chất phức tạp công việc"), c (khoản bổ sung "xác định được mức tiền cụ thể ... trả thường xuyên, ổn định", trừ khoản phụ thuộc năng suất, chất lượng); TT 10/2020 Đ.3 k5 và CV 1198/CTL&BHXH-BHXH (05/9/2025): phúc lợi ghi mục riêng không tính. File: chuyên cần cố định, chia theo ngày như lương, không điều kiện riêng | `khoan.*.tinh_bh` | Luật; cách HĐLĐ ghi chuyên cần: 17.3 |
+| 15 | Tháng không đóng BHXH: ốm hoặc thai sản từ 14 ngày thì BHXH đóng BHYT, bảng lương ghi 0; nghỉ không lương, nghỉ việc giữa tháng thì vẫn đóng BHYT như file T10; tháng HĐ đóng BH bắt đầu mà không đóng BHXH thì không đóng BHYT (sửa 10/11) | Luật BHYT Đ.12 k2 b sửa bởi Luật 51/2024 và Luật BHXH 2024 Đ.119 k2: người nghỉ ốm, thai sản từ 14 ngày làm việc trong tháng do cơ quan BHXH đóng BHYT. Nghỉ không lương: Luật BHYT Đ.12 k5 c xếp vào nhóm tự đóng nhưng không nói theo tháng; vẫn đóng để thẻ không bị hở. Tháng HĐ đóng BH bắt đầu: NĐ 188/2025 Đ.6 k1 a tính BHYT trên tiền lương tháng đóng BHXH, Luật BHXH 2024 Đ.33 k5 cho tháng đó không đóng BHXH nên chưa có căn cứ đóng BHYT; QĐ 366/QĐ-BHXH cần xác nhận với cơ quan BHXH | D04 | Luật (ốm, thai sản); Chưa có văn bản (còn lại): 17.3 |
+| 16 | Lương đóng BH = lương thời gian + PC trách nhiệm. Chuyên cần **không** vào lương đóng BH (chốt 09/11/2026, K3): trả theo tỷ lệ ngày đi làm nên là khoản biến động theo quá trình làm việc. Không gồm cơm, xăng xe, điện thoại, nhà ở, trang phục, KPI. HR bật lại "tính BH" của chuyên cần cho mọi người hoặc một người ở Cấu hình | Luật BHXH 2024 Đ.31 k1 b; NĐ 158/2025 Đ.7 k1 b (phụ cấp bù "tính chất phức tạp công việc"), c (khoản bổ sung "xác định được mức tiền cụ thể ... trả thường xuyên, ổn định", trừ khoản "phụ thuộc hoặc biến động theo năng suất lao động, quá trình làm việc và chất lượng thực hiện công việc"); TT 10/2020 Đ.3 k5 và CV 1198/CTL&BHXH-BHXH (05/9/2025): phúc lợi ghi mục riêng không tính. File T10: lương đóng BH = lương thời gian ở mọi người chính thức, chuyên cần chia theo ngày đi làm | `khoan.*.tinh_bh` | Luật + File; K3 |
 | 17 | "Ngày làm việc" để đếm 14 ngày: T2–T6 | Luật đếm theo ngày làm việc của công ty (ngày nghỉ hằng tuần ghi trong nội quy, BLLĐ Đ.111 k2). Chấm công chỉ lưu số thứ Bảy làm việc, không lưu ngày; đếm T2–T6 chỉ có thể đếm thiếu ngày không hưởng lương, không bỏ sót tháng phải đóng | D07 | Luật |
 | 18 | Tiền phép chưa nghỉ = khoản "lương theo HĐ" (lương thời gian, PC trách nhiệm, chuyên cần) của hồ sơ ngày cuối tháng trước ÷ công chuẩn kỳ trước × ngày còn; miễn thuế | BLLĐ Đ.113 k3; NĐ 145/2020 Đ.67 k3: "tiền lương theo hợp đồng lao động của tháng trước liền kề tháng người lao động thôi việc"; BLLĐ Đ.90 k1; TT 10/2020 Đ.3 k5; NĐ 253 Đ.26 k2 (miễn), k3 (phần vượt chịu thuế). Số chia luật không nói: dùng công chuẩn như (18) của file T10 | D08; `khoan.*.luong_hd` | Luật; số chia: File |
 | 19 | Mỗi công CN tổng 200%, kể cả khi bù ngày thường đã nghỉ | BLLĐ Đ.98 k1 b ("vào ngày nghỉ hằng tuần, ít nhất bằng 200%"); Đ.107 k1 (làm thêm là làm ngoài thời giờ làm việc bình thường theo nội quy); Đ.111 k2. Không điều nào cho bù với ngày thường | D12 | Luật |
@@ -588,9 +612,9 @@ Chỉ những điểm văn bản không nói thẳng và thuộc trách nhiệm 
 | # | Điểm | Vì sao kế toán ký | Mặc định web đang dùng |
 |---|---|---|---|
 | K1 | Ngày trả lương cố định (câu 27) | BLLĐ Đ.97 k2: do công ty và NLĐ thoả thuận | Ngày 05 tháng T+1 |
-| K2 | HĐLĐ hoặc quy chế có ghi mức điện thoại, trang phục (câu 2) | Điều kiện để phần này không chịu thuế (NĐ 253 Đ.8 k2 đ; VBHN 19/VBHN-BTC Đ.10 k8 b) | Điện thoại miễn tới mức ở hồ sơ; trang phục tới 5 tr/năm |
-| K3 | Chuyên cần là khoản cố định, không phụ thuộc đi làm đủ (câu 16) | Công ty kê khai lương đóng BH; NĐ 158/2025 Đ.7 k1 c loại khoản phụ thuộc "quá trình làm việc" | Có tính BH |
-| K4 | BH tháng vào, nghỉ, đổi HĐ giữa tháng và BHYT tháng không đóng BHXH (câu 14, 15) | Không còn văn bản riêng sau QĐ 366/QĐ-BHXH | Đếm ngày không hưởng lương gồm ngày ngoài HĐ, từ 14 thì không đóng BHXH, BHTN; BHYT vẫn đóng trừ ốm, thai sản từ 14 ngày |
+| K2 | "Xăng xe + ĐT" một khoản, miễn thuế toàn bộ như file T10 (câu 1–3); chốt 09/11/2026 ("như file"). HĐLĐ hoặc quy chế ghi mức xăng xe + ĐT, trang phục | Điều kiện để phần này không chịu thuế (NĐ 253 Đ.8 k2 đ; VBHN 19/VBHN-BTC Đ.10 k8 b); xăng xe trả cố định không có trong danh mục loại trừ (Đ.8 k3), công ty chịu trách nhiệm kê khai | Xăng xe + ĐT miễn toàn bộ, chia theo ngày như lương; trang phục tới 5 tr/năm. Tách lại được ở Cấu hình (Xăng xe chịu thuế, Điện thoại miễn tới mức ở hồ sơ) |
+| K3 | Chuyên cần không vào lương đóng BH (câu 16); chốt 09/11/2026 | Công ty kê khai lương đóng BH. Chuyên cần trả theo tỷ lệ ngày đi làm, nên thuộc khoản NĐ 158/2025 Đ.7 k1 c loại ra ("phụ thuộc hoặc biến động theo … quá trình làm việc"); file T10 thật cũng đóng BH trên lương thời gian ở mọi người chính thức | Không tính BH (PC trách nhiệm vẫn tính); bật lại được ở Cấu hình cho mọi người hoặc một người |
+| K4 | BH tháng vào, nghỉ, đổi HĐ giữa tháng và BHYT tháng không đóng BHXH (câu 14, 15) | Không còn văn bản riêng sau QĐ 366/QĐ-BHXH | Đếm ngày không hưởng lương gồm ngày ngoài HĐ, từ 14 thì không đóng BHXH, BHTN; BHYT vẫn đóng trừ ốm, thai sản từ 14 ngày và trừ tháng HĐ đóng BH bắt đầu mà không đóng BHXH (NĐ 188/2025 Đ.6 k1 a, Luật BHXH 2024 Đ.33 k5; QĐ 366/QĐ-BHXH không nói riêng, cần xác nhận với cơ quan BHXH) |
 | K5 | Cơ sở 10% có loại khoản miễn thuế ra không (câu 13) | Công ty là người khấu trừ; NĐ 253 Đ.50 k2 không nói | (26) + Hỗ trợ, không loại khoản nào |
 
 ### 17.4 Nguồn đã đọc
