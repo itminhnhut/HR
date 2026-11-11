@@ -5,7 +5,7 @@ import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
 import { audienceWords, filterBatches, type BatchFilters } from './companyLeave';
 import { YearNav } from './months';
 
-const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
+const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white pl-3 text-sm font-normal';
 const show = (iso: string) => iso.split('-').reverse().slice(0, 2).join('/');
 const timeWords = (from: string, to: string) => `${show(from)}${to !== from ? ` – ${show(to)}` : ''}`;
 

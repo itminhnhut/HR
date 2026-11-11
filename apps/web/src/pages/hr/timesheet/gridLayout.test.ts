@@ -4,7 +4,7 @@ import { centeredScrollLeft, COLUMN_ROOM, describeFailedCells, filterRows, fitCo
 import type { GridRow } from './timesheetModel';
 
 const row = (ten: string, ma: string, regionId: string, bp: string) => ({ id: ma, ten, ma, regionId, bp }) as unknown as GridRow;
-const people = [row('Nguyễn Văn An', 'TF001', 'hcm', 'Kế toán'), row('Lê Văn Cường', 'TF003', 'hn', 'Kinh doanh')];
+const people = [row('Nguyễn Văn An', 'NV01', 'hcm', 'Kế toán'), row('Lê Văn Cường', 'NV03', 'hn', 'Kinh doanh')];
 
 describe('frozen columns', () => {
   it('should keep every info column frozen on a wide screen', () => {
@@ -50,12 +50,12 @@ describe('grid height', () => {
 
 describe('filtering people', () => {
   it('should find a name typed without Vietnamese marks', () => {
-    expect(filterRows(people, { query: 'nguyen', regions: [], depts: [] }).map((r) => r.ma)).toEqual(['TF001']);
-    expect(filterRows(people, { query: 'cuong', regions: [], depts: [] }).map((r) => r.ma)).toEqual(['TF003']);
+    expect(filterRows(people, { query: 'nguyen', regions: [], depts: [] }).map((r) => r.ma)).toEqual(['NV01']);
+    expect(filterRows(people, { query: 'cuong', regions: [], depts: [] }).map((r) => r.ma)).toEqual(['NV03']);
   });
 
   it('should combine search, region and department', () => {
-    expect(filterRows(people, { query: 'van', regions: ['hn'], depts: ['Kinh doanh'] }).map((r) => r.ma)).toEqual(['TF003']);
+    expect(filterRows(people, { query: 'van', regions: ['hn'], depts: ['Kinh doanh'] }).map((r) => r.ma)).toEqual(['NV03']);
     expect(filterRows(people, { query: 'van', regions: ['hn'], depts: ['Kế toán'] })).toEqual([]);
   });
 });
