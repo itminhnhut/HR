@@ -59,7 +59,7 @@ export type KpiPercentSource = 'typed' | 'formula' | 'suggested' | 'missing';
 
 export interface ComponentPaid {
   component: PayComponent;
-  /** The monthly amount of the last segment, the level a `regulated` exemption defaults to. */
+  /** The monthly amount at the period end (last segment), the level a `regulated` exemption defaults to. */
   amount: number;
   /** What was paid of it this month, exact: amount × rate × days ÷ norm, or amount × rate if paid in full. */
   paid: Rational;
@@ -69,7 +69,7 @@ export interface IncomeResult {
   paidDays: number;
   /** (16), for display only. */
   gross: number;
-  /** (18) of the last segment, kept whole; `dailyRates` has one per segment. */
+  /** (18) of the last segment with paid days, kept whole; `dailyRates` has one per segment. */
   dailyRate: Rational;
   dailyRates: Rational[];
   kpiPercent: Rational;
@@ -97,13 +97,24 @@ export interface IncomeResult {
   componentPaid: ComponentPaid[];
 }
 
-const NO_OVERTIME: OvertimeInput = { weekdayHours: 0, restDays: 0, holidayDays: 0 };
+/** A row without overtime. */
+export const NO_OVERTIME: Readonly<OvertimeInput> = { weekdayHours: 0, restDays: 0, holidayDays: 0 };
 
 const lastOf = <T>(list: readonly T[]): T => {
   const last = list[list.length - 1];
   if (last === undefined) throw new Error('Payroll: a row needs at least one pay segment');
   return last;
 };
+
+/**
+ * The segments with paid days, or the last one when none has any. The last segment may have none (a new level or the
+ * official date during leave without pay): it sets the level and status the row ends on, but (18), overtime and the
+ * KPI % go by the days worked.
+ */
+export function workedSegments(segments: readonly PaySegment[]): readonly PaySegment[] {
+  const worked = segments.filter((s) => s.days > 0);
+  return worked.length > 0 ? worked : [lastOf(segments)];
+}
 
 function rateOf(component: PayComponent, segment: PaySegment, probationRate: number): Rational {
   return segment.probation && component.probationRate ? rat(probationRate) : rat(1);
@@ -145,7 +156,8 @@ function kpiPercentOf(input: IncomeInput, config: PayrollConfig): { value: Ratio
   if (input.kpiPercent !== undefined && input.kpiPercent !== null)
     return { value: rat(input.kpiPercent), source: 'typed' };
   if (kpiRuleOf(input.block, config) === 'typed') return missing();
-  const { segments, norm } = input;
+  const { norm } = input;
+  const segments = workedSegments(input.segments);
   const formula = div(sum(segments.map((s) => mul(s.days, s.probation ? config.rules.probationRate : 1))), norm);
   const mixed = segments.some((s) => s.probation) && segments.some((s) => !s.probation);
   if (mixed) return config.options.kpiSplit === 'suggest' ? { value: formula, source: 'suggested' } : missing();
@@ -175,7 +187,7 @@ function overtimePayOf(daily: Rational, overtime: OvertimeInput, config: Payroll
  */
 function kpiBonusOf(input: IncomeInput, kpi: { value: Rational; source: KpiPercentSource }, config: PayrollConfig) {
   const percent = kpi.value;
-  const official = input.segments.every((s) => !s.probation);
+  const official = workedSegments(input.segments).every((s) => !s.probation);
   const byDays = official && kpi.source === 'typed' && config.rules.kpiOfficialByDays;
   const days = input.segments.reduce((acc, s) => acc + s.days, 0);
   return mul(input.kpiAmount, percent, byDays ? div(days, input.norm) : 1);
@@ -188,8 +200,9 @@ export function computeIncome(input: IncomeInput, config: PayrollConfig): Income
   const { components, rules } = config;
   const { segments, norm } = input;
   const last = lastOf(segments);
+  const lastWorked = lastOf(workedSegments(segments));
   const dailyRates = segments.map((s) => dailyRateOf(components, s, norm, rules.probationRate));
-  const dailyRate = lastOf(dailyRates);
+  const dailyRate = dailyRateOf(components, lastWorked, norm, rules.probationRate);
   const fixed = sum(components.filter((c) => !c.perDay).map((c) => paidOf(c, segments, norm, rules.probationRate)));
   const dayPay = cell(add(sum(segments.map((s, i) => mul(dailyRates[i] ?? ZERO, s.days))), fixed));
   const kpi = kpiPercentOf(input, config);
@@ -197,7 +210,7 @@ export function computeIncome(input: IncomeInput, config: PayrollConfig): Income
   const payout = input.leavePayout ?? 0;
   const leavePayout = cell(isLeavePayout(payout) ? payout.amount : payout);
   const otherIncome = add(cell(sum((input.otherIncome ?? []).map((o) => o.amount))), leavePayout);
-  const overtimeDaily = dailyRateOf(components, last, norm, rules.probationRate, (c) => c.overtimeBase);
+  const overtimeDaily = dailyRateOf(components, lastWorked, norm, rules.probationRate, (c) => c.overtimeBase);
   const overtimePay = cell(overtimePayOf(overtimeDaily, input.overtime ?? NO_OVERTIME, config));
   return {
     paidDays: segments.reduce((acc, s) => acc + s.days, 0),

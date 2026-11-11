@@ -30,6 +30,17 @@ describe('row order (D13)', () => {
     // Assert: HCM open-ended BO A, B, KD C; 12 months D, E, F; probation BO G, H, I, KD J; HN K, L
     expect(sorted.map((r) => r.code)).toEqual(GOLDEN_PEOPLE.map((p) => p.id));
   });
+
+  it('should put NV9 before NV10 when everything else is the same', () => {
+    // Arrange
+    const row = (code: string) => ({ code, regionOrder: 0, contractTypeId: 'khong-thoi-han', block: 'BO' });
+
+    // Act
+    const sorted = sortPayrollRows([row('NV10'), row('NV9'), row('NV100')], contractTypesFor([], null, '2026-10'));
+
+    // Assert
+    expect(sorted.map((r) => r.code)).toEqual(['NV9', 'NV10', 'NV100']);
+  });
 });
 
 describe('self-approval (D14)', () => {

@@ -2,6 +2,7 @@ import type { z } from 'zod';
 import {
   CATALOGUE_SETTINGS,
   contractTypeSchema,
+  isInUse,
   payComponentSchema,
   type ContractType,
   type PayComponent,
@@ -103,7 +104,7 @@ function withOverrides<T extends { id: string }>(
 /** The pay components in force for a person in a payroll month, in column order, stopped ones left out. */
 export function componentsFor(rows: readonly SettingRow[], personId: string | null, month: string): PayComponent[] {
   return withOverrides(COMPONENTS, rows, personId, month)
-    .filter((c) => !c.stoppedFrom || c.stoppedFrom > month)
+    .filter((c) => isInUse(c, month))
     .sort((a, b) => a.order - b.order);
 }
 

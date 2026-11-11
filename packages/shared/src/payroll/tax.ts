@@ -1,6 +1,6 @@
 import type { PayrollConfig } from './config.js';
-import { contractCommitment, isShortTermContract, type ContractType } from './defaults-company.js';
-import type { ComponentPaid, IncomeResult, OvertimeInput } from './income.js';
+import { contractCommitment, isShortTermContract, type ComponentTax, type ContractType } from './defaults-company.js';
+import { NO_OVERTIME, type ComponentPaid, type IncomeResult, type OvertimeInput } from './income.js';
 import type { InsuranceResult } from './insurance.js';
 import type { LawParams, TaxBracket } from './params.js';
 import {
@@ -77,18 +77,44 @@ export interface TaxResult {
   commitmentSource: CommitmentSource | null;
 }
 
+type CapKind = Extract<ComponentTax, { kind: 'cap' }>['cap'];
+
+const unknownTax = (value: never): never => {
+  throw new Error(`Payroll: unknown component tax ${JSON.stringify(value)}`);
+};
+
+/** The capped part of one component: the monthly meal cap, or the level in the contract or company rules. */
+function cappedPart(entry: ComponentPaid, cap: CapKind, law: LawParams): Rational {
+  const { component, paid, amount } = entry;
+  switch (cap) {
+    case 'meal':
+      return min(paid, law.mealCap);
+    case 'regulated':
+      return min(paid, component.regulatedCap ?? amount);
+    case 'clothing-year':
+      // One yearly cap shared by every clothing component: `componentsExempt` counts it.
+      return ZERO;
+    default:
+      return unknownTax(cap);
+  }
+}
+
 /**
  * Spec 5.3 (33): the paid part of an exempt component up to its cap: the monthly meal cap; the level in the contract
- * or company rules (the person's own amount unless set); what is left of the yearly clothing cap.
+ * or company rules (the person's own amount unless set). Clothing is counted apart, against the yearly cap.
  */
-function exemptPart(entry: ComponentPaid, law: LawParams, clothingRoom: number): Rational {
-  const { component, paid, amount } = entry;
-  const { tax } = component;
-  if (tax.kind === 'taxable') return ZERO;
-  if (tax.kind === 'exempt') return paid;
-  if (tax.cap === 'meal') return min(paid, law.mealCap);
-  if (tax.cap === 'regulated') return min(paid, component.regulatedCap ?? amount);
-  return min(paid, clothingRoom);
+function exemptPart(entry: ComponentPaid, law: LawParams): Rational {
+  const { tax } = entry.component;
+  switch (tax.kind) {
+    case 'taxable':
+      return ZERO;
+    case 'exempt':
+      return entry.paid;
+    case 'cap':
+      return cappedPart(entry, tax.cap, law);
+    default:
+      return unknownTax(tax);
+  }
 }
 
 function componentsExempt(income: IncomeResult, person: TaxPersonInput, law: LawParams) {
@@ -96,9 +122,10 @@ function componentsExempt(income: IncomeResult, person: TaxPersonInput, law: Law
   const isClothing = (e: ComponentPaid) => e.component.tax.kind === 'cap' && e.component.tax.cap === 'clothing-year';
   const clothingPaid = sum(income.componentPaid.filter(isClothing).map((e) => e.paid));
   const clothingExempt = min(clothingPaid, room);
-  const others = sum(income.componentPaid.filter((e) => !isClothing(e)).map((e) => exemptPart(e, law, room)));
-  const clothing = { exempt: roundDong(clothingExempt), capReached: room > 0 && cmp(clothingPaid, room) >= 0 };
-  return { amount: add(others, clothingExempt), clothing };
+  const others = sum(income.componentPaid.map((e) => exemptPart(e, law)));
+  // Reached when this month's clothing fills what was left, or comes after the cap was used up in an earlier month.
+  const capReached = cmp(clothingPaid, 0) > 0 && cmp(clothingPaid, room) >= 0;
+  return { amount: add(others, clothingExempt), clothing: { exempt: roundDong(clothingExempt), capReached } };
 }
 
 /**
@@ -212,12 +239,7 @@ export function computeTax(
   const { income, insurance, support, person } = args;
   const { law, options } = config;
   const cell = moneyCell(options.rounding);
-  const overtime = overtimeExempt(
-    income,
-    args.overtime ?? { weekdayHours: 0, restDays: 0, holidayDays: 0 },
-    person,
-    config,
-  );
+  const overtime = overtimeExempt(income, args.overtime ?? NO_OVERTIME, person, config);
   const components = componentsExempt(income, person, law);
   const leave = options.leavePayout === 'exempt' ? income.leavePayoutExempt : ZERO;
   // (33) is rounded in both modes: HR's file rounds it inside its formula (spec 5.7).

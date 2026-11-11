@@ -139,6 +139,25 @@ describe('exempt income (33)', () => {
     expect(tax.clothing).toEqual({ exempt: 200_000, capReached: true });
   });
 
+  it('should say the clothing cap is reached when it was used up in an earlier month and clothing is paid again', () => {
+    // Act: profile K full month, the whole 5.000.000 already exempted this year
+    const { tax } = run({ income: { segments: [official(22)] }, person: { clothingExemptBefore: 5_000_000 } });
+
+    // Assert: nothing more exempt, and the cap shows as reached
+    expect(tax.clothing).toEqual({ exempt: 0, capReached: true });
+  });
+
+  it('should not say the clothing cap is reached in a month without clothing pay', () => {
+    // Act
+    const { tax } = run({
+      income: { segments: [official(22, { luong: 10_000_000 })] },
+      person: { clothingExemptBefore: 5_000_000 },
+    });
+
+    // Assert
+    expect(tax.clothing).toEqual({ exempt: 0, capReached: false });
+  });
+
   it('L-D24: should tax fuel pay in full for a company that pays fuel and phone apart', () => {
     // Act
     const { tax } = run({

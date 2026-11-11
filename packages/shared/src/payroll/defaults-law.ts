@@ -15,6 +15,22 @@ export type Zone = (typeof ZONES)[number];
 const zoneMinimums = z.object({ I: money, II: money, III: money, IV: money });
 const insuranceRates = z.object({ social: rate, health: rate, unemployment: rate });
 const bracket = z.object({ upTo: money.nullable(), rate });
+type Bracket = z.infer<typeof bracket>;
+
+const tops = (brackets: readonly Bracket[]) => brackets.flatMap((b) => (b.upTo === null ? [] : [b.upTo]));
+const isRising = (values: readonly number[]) => values.every((v, i) => i === 0 || v > (values[i - 1] ?? -Infinity));
+
+/** The brackets in order: tops strictly rising, the last one open-ended (`upTo: null`) and only the last. */
+const bracketTable = z
+  .array(bracket)
+  .min(1, 'Biểu thuế cần ít nhất một bậc.')
+  .refine((list) => list.slice(0, -1).every((b) => b.upTo !== null), 'Chỉ bậc cuối được để trống mức trên.')
+  .refine((list) => list.length === 0 || list[list.length - 1]?.upTo === null, {
+    message: 'Bậc cuối của biểu thuế không có mức trên (để trống).',
+  })
+  .refine((list) => isRising(tops(list)), {
+    message: 'Mức trên của các bậc phải tăng dần.',
+  });
 
 /** Legal floors that block a setting below them (spec 4.8): probation pay BLLĐ Đ.26, overtime BLLĐ Đ.98. */
 export const LAW_MIN_PROBATION_RATE = 0.85;
@@ -131,7 +147,7 @@ export const LAW_SETTINGS = {
     scope: 'date',
     perPerson: false,
     group: 'tax',
-    schema: z.array(bracket).min(1),
+    schema: bracketTable,
     defaults: [
       {
         from: '2026-01-01',

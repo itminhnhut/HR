@@ -3,12 +3,20 @@ import { KPI_K, PROFILE_K } from '../../test-fixtures/payroll-fixtures.js';
 import { periodDays, type AttendanceCode } from '../timesheet.js';
 import {
   computeIncome,
+  computeLine,
+  contractTypeFor,
+  DEFAULT_COMPONENTS,
+  explainLine,
   payrollConfigFor,
   payrollDates,
   paySegmentsFor,
   roundDong,
   toNumber,
+  type PayrollLine,
+  type PayrollLineInput,
+  type PaySegment,
   type ProfileVersion,
+  type SettingRow,
 } from './index.js';
 
 /**
@@ -221,3 +229,112 @@ describe('a raise during the period (L-B05)', () => {
     ]);
   });
 });
+
+describe('the level in force at the period end (spec 5.6)', () => {
+  const days = periodDays(NOVEMBER.period);
+  const novemberConfig = payrollConfigFor(fixedAttendanceRows(), 'nv', NOVEMBER);
+  // Official and a raise both from Friday 20/11; the tail 20/11–25/11 has 4 weekdays.
+  const raise: ProfileVersion[] = [
+    { from: '2026-01-01', amounts: { luong: 8_000_000, 'chuyen-can': 1_000_000 } },
+    { from: '2026-11-20', amounts: { luong: 10_000_000, 'chuyen-can': 1_200_000 } },
+  ];
+  const tailOnLeave = (day: string, code: AttendanceCode | null) => (day >= '2026-11-20' && code === '1' ? 'KL' : code);
+
+  function lineOf(onLeave: boolean) {
+    const worked = codesOf(days, []);
+    const codes = onLeave ? worked.map((c, i) => tailOnLeave(days[i] ?? '', c)) : worked;
+    const segments = paySegmentsFor({
+      days,
+      codes,
+      paid: onLeave ? 19 : 23,
+      leavePaid: 0,
+      employment: 'official',
+      officialOn: '2026-11-20',
+      profiles: raise,
+    });
+    const input = lineInputOf(segments);
+    return { segments, input, line: computeLine(input, novemberConfig) };
+  }
+
+  it('should end on the new level and official status even when the new level has no paid day', () => {
+    // Act
+    const { segments } = lineOf(true);
+
+    // Assert: the tail is kept with 0 days, so the row ends on it
+    expect(segments.map((s) => [s.from, s.days, s.probation, s.amounts.luong])).toEqual([
+      ['2026-10-26', 19, true, 8_000_000],
+      ['2026-11-20', 0, false, 10_000_000],
+    ]);
+  });
+
+  it('should give the same insurance base, gross and fixed pay with or without leave on the tail', () => {
+    // Act
+    const withLeave = lineOf(true).line;
+    const without = lineOf(false).line;
+
+    // Assert
+    expect(withLeave.amounts).toEqual(without.amounts);
+    expect(toNumber(withLeave.insurance.socialBase)).toBe(toNumber(without.insurance.socialBase));
+    expect(withLeave.cells.gross).toBe(without.cells.gross);
+    expect(fixedPaid(withLeave)).toBe(1_200_000);
+    expect(fixedPaid(without)).toBe(1_200_000);
+  });
+
+  it('should work out the KPI % on the paid days only, as a month without the tail', () => {
+    // Act
+    const { segments } = lineOf(true);
+    const r = computeIncome({ norm: 23, segments, kpiAmount: KPI_K, block: 'BO' }, novemberConfig);
+
+    // Assert: 19 probation days, nothing official was worked
+    expect(r.kpiPercentSource).toBe('formula');
+    expect(toNumber(r.kpiPercent)).toBeCloseTo((19 * novemberConfig.rules.probationRate) / 23, 12);
+  });
+
+  it('should explain (18) by the level of the days worked, as the cell shows it', () => {
+    // Act
+    const { input, line } = lineOf(true);
+    const formula = explainLine(input, line, novemberConfig).cells.dailyRate?.formula;
+
+    // Assert
+    expect(formula).toBe(`8.000.000 × 90% ÷ 23 = ${line.cells.dailyRate.toLocaleString('vi-VN')}`);
+  });
+
+  it('should pay the tail with no paid day nothing by the day', () => {
+    // Act
+    const { line } = lineOf(true);
+
+    // Assert: 19 days at 8 tr × the probation rate ÷ 23, attendance paid in full at the new level, official
+    const daily = (8_000_000 * novemberConfig.rules.probationRate) / 23;
+    expect(roundDong(line.income.dayPay)).toBe(Math.round(daily * 19 + 1_200_000));
+    expect(toNumber(line.income.dailyRate)).toBeCloseTo(daily, 6);
+  });
+});
+
+/** Attendance paid in full (not by the day), × the probation rate on probation. */
+function fixedAttendanceRows(): SettingRow[] {
+  const components = DEFAULT_COMPONENTS.map((c) => (c.id === 'chuyen-can' ? { ...c, perDay: false } : c));
+  return [{ key: 'khoan.danh-sach', employeeId: null, from: '2026-01-01', value: components, source: 'Thử' }];
+}
+
+const fixedPaid = (line: PayrollLine) =>
+  roundDong(line.income.componentPaid.find((e) => e.component.id === 'chuyen-can')?.paid ?? 0);
+
+function lineInputOf(segments: PaySegment[]): PayrollLineInput {
+  const contract = contractTypeFor([], 'khong-thoi-han', 'nv', NOVEMBER.monthKey);
+  return {
+    employeeId: 'nv',
+    income: { norm: 23, segments, kpiAmount: 0 },
+    insurance: {
+      month: {
+        month: '2026-11',
+        codes: {},
+        contracts: [{ from: '2020-01-01', insured: true }],
+        joinedOn: null,
+        leftOn: null,
+      },
+      zone: 'I',
+      unionMember: false,
+    },
+    person: { contract, leftOn: null, dependants: 0, hasCommitment: false },
+  };
+}

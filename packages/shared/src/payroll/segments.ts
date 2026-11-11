@@ -4,7 +4,8 @@ import type { PaySegment } from './income.js';
 /**
  * A period split on the day someone became official and on each new pay level (spec 5.6). The paid days of each part
  * come from the timesheet's `paidBySegment`: leave paid in date order, days above the norm cut at the end, an
- * adjustment on the later part. Every part keeps the period's norm.
+ * adjustment on the later part. Every part keeps the period's norm. A part with no paid day is left out, except the
+ * last one: it pays nothing by the day but sets the level and status the row ends on (insurance, gross, fixed pay).
  */
 
 /** A pay level of one person from a date (`payroll_profile_amounts`). */
@@ -56,7 +57,6 @@ export function paySegmentsFor(args: SegmentArgs): PaySegment[] {
       amounts: profileOn(args.profiles, from),
     };
   });
-  const worked = segments.filter((s) => s.days > 0);
-  const last = segments[segments.length - 1];
-  return worked.length > 0 ? worked : last ? [last] : [];
+  // The last part stays even without a paid day: its level and status are the ones in force at the period end.
+  return segments.filter((s, i) => s.days > 0 || i === segments.length - 1);
 }

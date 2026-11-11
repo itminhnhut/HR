@@ -50,27 +50,6 @@ const lawDef = <K extends LawKey>(key: K) => LAW_SETTINGS[key] as SettingDef<unk
 const law = <K extends LawKey>(rows: readonly SettingRow[], key: K, personId: string | null, date: string) =>
   resolveSetting(rows, lawDef(key), personId, date);
 
-/** Every law parameter in force on one date. */
-export function paramsOn(rows: readonly SettingRow[], date: string, personId: string | null = null) {
-  const pick = <K extends LawKey>(key: K) => law(rows, key, personId, date);
-  return {
-    baseSalary: pick('luat.luong-co-so'),
-    zoneMinimums: pick('luat.luong-toi-thieu-vung'),
-    capMultipliers: pick('luat.he-so-tran'),
-    employeeRates: pick('luat.bh-nld'),
-    companyRates: pick('luat.bh-cty'),
-    unionFund: pick('luat.kpcd'),
-    unionFee: pick('luat.doan-phi'),
-    deductions: pick('luat.giam-tru'),
-    brackets: pick('luat.bieu-thue'),
-    mealCap: pick('luat.tran-tien-an'),
-    clothingCap: pick('luat.tran-trang-phuc'),
-    probationLimits: pick('luat.thu-viec-toi-da'),
-    flat: pick('luat.khau-tru-10'),
-    overtimeLimits: pick('luat.gioi-han-lam-them'),
-  };
-}
-
 export interface TaxBracket {
   upTo: number | null;
   rate: number;
