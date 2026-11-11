@@ -80,10 +80,21 @@ const VIEW = (monthKey: string): PayrollSettingsMonthDto => ({
   ],
 });
 
+const REGION = {
+  id: '11111111-1111-4111-8111-111111111111',
+  name: 'Hồ Chí Minh',
+  saturdays: 2,
+  tone: 'blue' as const,
+  employees: 3,
+  hidden: false,
+  saturdayChanges: [],
+};
+
 function answerReads() {
   spyOnApi('hrMe').mockResolvedValue(ME);
   spyOnApi('hrPayrollMonth').mockResolvedValue(month());
   spyOnApi('hrPayrollProfiles').mockResolvedValue(LIST);
+  spyOnApi('hrRegions').mockResolvedValue([REGION]);
   return spyOnApi('hrPayrollSettingsMonth').mockImplementation(async (m) => VIEW(m));
 }
 
@@ -121,6 +132,70 @@ describe('the Cấu hình tab', () => {
     expect(probation && within(probation).getByText('95%')).toBeTruthy();
     expect(probation && within(probation).getByText('Đã đổi')).toBeTruthy();
     expect(probation && within(probation).getByText(/Mặc định 90% · từ T1\/2026 · BLLĐ Đ.26/)).toBeTruthy();
+  });
+
+  it('F24: should list the minimum-wage zone of each region under Bảo hiểm, vùng I until HR picks one', async () => {
+    // Arrange
+    answerReads();
+
+    // Act
+    open('/hr/luong/cau-hinh?muc=bao-hiem');
+
+    // Assert
+    const zone = (await screen.findByText('Vùng lương tối thiểu · Hồ Chí Minh')).closest('li');
+    expect(zone && within(zone).getAllByText(/Vùng I/).length).toBeGreaterThan(0);
+    expect(zone && within(zone).getByRole('button', { name: 'Đổi Vùng lương tối thiểu · Hồ Chí Minh' })).toBeTruthy();
+  });
+
+  it('F27: should add a pay component from the month viewed, last in the list, with an id made from its name', async () => {
+    // Arrange
+    answerReads();
+    const add = spyOnApi('hrPayrollAddSetting').mockImplementation(async (input) => saved(input));
+    open('/hr/luong/cau-hinh?muc=khoan-luong');
+
+    // Act
+    fireEvent.click(await screen.findByRole('button', { name: 'Thêm khoản lương' }));
+    const form = screen.getByRole('form', { name: 'Thêm khoản lương từ T11/2026' });
+    fireEvent.change(within(form).getByRole('textbox', { name: 'Tên khoản lương' }), {
+      target: { value: 'PC độc hại' },
+    });
+    fireEvent.change(within(form).getByRole('textbox', { name: 'Mức điền sẵn' }), { target: { value: '500.000' } });
+    fireEvent.click(within(form).getByRole('checkbox', { name: 'Chia theo ngày công' }));
+    fireEvent.click(within(form).getByRole('button', { name: 'Lưu' }));
+
+    // Assert
+    await waitFor(() => expect(add).toHaveBeenCalledTimes(1));
+    const input = add.mock.calls[0]?.[0];
+    const list = Array.isArray(input?.value) ? (input.value as { id: string; order: number }[]) : [];
+    expect(input).toMatchObject({ key: 'khoan.danh-sach', from: '2026-11' });
+    expect(list.map((c) => c.id).slice(-2)).toEqual(['chuyen-can', 'pc-doc-hai']);
+    expect(list.at(-1)).toMatchObject({
+      name: 'PC độc hại',
+      perDay: false,
+      insured: false,
+      contractPay: false,
+      tax: { kind: 'taxable' },
+      defaultAmount: 500_000,
+      stoppedFrom: null,
+    });
+  });
+
+  it('F27: should offer Đổi tên and Ngừng dùng on a pay component, and stop it from the month viewed', async () => {
+    // Arrange
+    answerReads();
+    const add = spyOnApi('hrPayrollAddSetting').mockImplementation(async (input) => saved(input));
+    open('/hr/luong/cau-hinh?muc=khoan-luong');
+
+    // Act
+    fireEvent.click(await screen.findByRole('button', { name: 'Ngừng dùng Tiền cơm' }));
+    const ask = screen.getByRole('alertdialog', { name: 'Ngừng dùng Tiền cơm' });
+    fireEvent.click(within(ask).getByRole('button', { name: 'Ngừng dùng từ T11/2026' }));
+
+    // Assert
+    await waitFor(() =>
+      expect(add).toHaveBeenCalledWith({ key: 'khoan.com.ngung', from: '2026-11', value: '2026-11', source: '' }),
+    );
+    expect(screen.getByRole('button', { name: 'Đổi tên Tiền cơm' })).toBeTruthy();
   });
 
   it('should narrow to "Chỉ mục đã đổi" and keep it in the address', async () => {

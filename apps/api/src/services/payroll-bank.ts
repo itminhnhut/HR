@@ -17,13 +17,20 @@ import { actorOf } from './timesheet-people.js';
 
 type Account = typeof payrollBankAccounts.$inferSelect;
 
-const masked = (last4: string) => `••••${last4}`;
+/** "••••1234": how an account number is written everywhere but the payroll workbook. */
+export const masked = (last4: string) => `••••${last4}`;
+
+/** The account in force on `day`: the newest one changed on or before it (R1); undefined when none was. */
+export function accountOn<T extends { changedOn: string }>(accounts: readonly T[], day: string): T | undefined {
+  return accounts
+    .filter((a) => a.changedOn <= day)
+    .reduce<T | undefined>((best, a) => (!best || a.changedOn > best.changedOn ? a : best), undefined);
+}
 
 export const bankDtoOf = (a: Account): PayrollBankAccountDto => ({
   id: a.id,
   bank: a.bank,
   last4: a.last4,
-  payslipEmail: a.payslipEmail,
   changedOn: a.changedOn,
 });
 
@@ -68,7 +75,7 @@ export async function addBankAccount(
     throw invalid(Object.values(errors)[0] ?? 'Kiểm tra lại tài khoản.', errors);
   }
   const sealer = keyOf(key);
-  const { bank, accountNumber, payslipEmail, changedOn } = parsed.data;
+  const { bank, accountNumber, changedOn } = parsed.data;
   return db.transaction(async (tx) => {
     const t = payrollBankAccounts;
     const [taken] = await tx
@@ -84,7 +91,6 @@ export async function addBankAccount(
         accountCipher: sealAccount(accountNumber, sealer),
         keyVersion: sealer.version,
         last4: accountNumber.slice(-4),
-        payslipEmail: payslipEmail ?? null,
         changedOn,
         createdBy: actorOf(hr),
       })

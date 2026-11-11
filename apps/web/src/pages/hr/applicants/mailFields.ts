@@ -13,6 +13,7 @@ const FRAME: Record<TemplateKey, Key[]> = {
   rejection: SIGNATURE,
   rejection_interview: SIGNATURE,
   call: ['duration', ...SIGNATURE],
+  payslip: SIGNATURE,
 };
 
 /** Left empty, the frame reads wrong or leaves a hole. The others have a default, or are optional like the job title and alias. */

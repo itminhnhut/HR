@@ -1,6 +1,9 @@
 import {
   CATALOGUE_SETTINGS,
+  componentsFor,
   contractCommitment,
+  contractTypesFor,
+  isInUse,
   PAYROLL_SETTINGS,
   payrollSettingDef,
   resolveSetting,
@@ -12,6 +15,7 @@ import {
   type PayrollSettingViewLineDto,
   type SettingDefault,
 } from '@careers/shared';
+import type { PayrollRates } from '../payrollModel';
 
 /**
  * What the Cấu hình tab shows (spec 6, 11.6): every setting with its default (engine or law, with the legal source),
@@ -68,9 +72,9 @@ export const COMPONENT_FLAGS = {
   thue: 'Cách thuế',
   'tinh-bh': 'Tính BH',
   'chia-theo-ngay': 'Chia theo ngày công',
-  'thu-viec': '× tỷ lệ thử việc',
-  'luong-theo-hd': 'Lương theo HĐ',
-  'vao-lam-them': 'Vào lương làm thêm',
+  'thu-viec': 'Nhân tỷ lệ lương thử việc',
+  'luong-theo-hd': 'Tính vào lương theo HĐ (trả phép chưa nghỉ)',
+  'vao-lam-them': 'Tính vào đơn giá làm thêm',
   'muc-mac-dinh': 'Mức mặc định (điền sẵn hồ sơ mới)',
   'muc-quy-che': 'Mức miễn theo quy chế',
 } as const satisfies Record<string, string>;
@@ -117,12 +121,22 @@ function engineDefaults(key: string): readonly SettingDefault<unknown>[] {
   return entries.find(([k]) => k === key)?.[1].defaults ?? [];
 }
 
+/**
+ * A label as HR reads it (F13): the builders' codes in it ("D03 KPCĐ", "… (BH-1)") mean nothing to HR and are left
+ * out; the setting's key, shown on hover, still tells a developer which one it is.
+ */
+export const shownLabel = (label: string) =>
+  label
+    .replace(/^D\d{2}\s+/, '')
+    .replace(/\s*\(BH-\d\)/g, '')
+    .trim();
+
 function itemOf(line: PayrollSettingViewLineDto, extra: Partial<ConfigItem> = {}): ConfigItem {
   const def = payrollSettingDef(line.key);
   const fallback = [...engineDefaults(line.key)].reverse().find((d) => d.from <= line.readOn) ?? null;
   const base: ConfigItem = {
     key: line.key,
-    label: line.label,
+    label: shownLabel(line.label),
     group: groupOf(line.key),
     entry: null,
     scope: def?.scope ?? 'month',
@@ -165,11 +179,38 @@ function entryItems<T extends { id: string; name: string }>(
 
 const allRows = (view: PayrollSettingsMonthDto) => view.lines.flatMap((l) => l.rows);
 
-export function buildItems(view: PayrollSettingsMonthDto): ConfigItem[] {
+export const zoneKey = (regionId: string) => `khu-vuc.${regionId}.vung`;
+
+/**
+ * The minimum-wage zone of each region (F24): `khu-vuc.<id>.vung`, vùng I until HR sets one. It decides the floor of
+ * the insurance salary and the cap of BHTN, so it sits with Bảo hiểm, one item per region of Chấm công.
+ */
+function zoneItems(
+  view: PayrollSettingsMonthDto,
+  lines: ReadonlyMap<string, PayrollSettingViewLineDto>,
+  regions: readonly { id: string; name: string }[],
+): ConfigItem[] {
+  return regions.map((region) => {
+    const key = zoneKey(region.id);
+    const line = lines.get(key) ?? EMPTY_LINE(key, view.month);
+    const fallback = { value: 'I', from: view.month, source: 'Mặc định khi chưa chọn vùng' };
+    return itemOf(
+      { ...line, label: `Vùng lương tối thiểu · ${region.name}` },
+      { group: 'bao-hiem', scope: 'month', perPerson: false, fallback },
+    );
+  });
+}
+
+export function buildItems(
+  view: PayrollSettingsMonthDto,
+  regions: readonly { id: string; name: string }[] = [],
+): ConfigItem[] {
   const lines = new Map(view.lines.map((l) => [l.key, l]));
   const rows = allRows(view);
   const components = resolveSetting(rows, CATALOGUE_SETTINGS['khoan.danh-sach'], null, view.month);
   const contracts = resolveSetting(rows, CATALOGUE_SETTINGS['loai-hd.danh-sach'], null, view.month);
+  const componentsNow = componentsFor(rows, null, view.month);
+  const contractsNow = contractTypesFor(rows, null, view.month);
   const simple = view.lines
     .filter((l) => !CATALOGUES.has(l.key) && l.area !== 'khu-vuc' && l.key.split('.').length === 2)
     .map((l) => itemOf(l));
@@ -177,9 +218,13 @@ export function buildItems(view: PayrollSettingsMonthDto): ConfigItem[] {
     ...entryItems(view, lines, {
       prefix: 'khoan',
       group: 'khoan-luong',
+      // As the engine reads the month: a component stopped by then is gone, a renamed one shows its new name.
       entries: {
         ...components,
-        value: components.value.filter((c) => !c.stoppedFrom || c.stoppedFrom > view.month),
+        value: components.value.flatMap((c) => {
+          const now = componentsNow.find((x) => x.id === c.id);
+          return now ? [{ ...c, name: now.name }] : [];
+        }),
       },
       flags: COMPONENT_FLAGS,
       field: (flag) => COMPONENT_FIELD[flag as keyof typeof COMPONENT_FLAGS],
@@ -192,13 +237,46 @@ export function buildItems(view: PayrollSettingsMonthDto): ConfigItem[] {
       // A type stored before "Cam kết thuế kèm hợp đồng" existed reads as the engine reads it.
       entries: {
         ...contracts,
-        value: contracts.value.map((t) => ({ ...t, commitmentIncluded: contractCommitment(t) })),
+        value: contracts.value.map((t) => {
+          const now = contractsNow.find((x) => x.id === t.id) ?? t;
+          const stopped = isInUse(now, view.month) ? '' : ` · đã ngừng dùng từ ${fromWords(now.stoppedFrom ?? '')}`;
+          return { ...t, name: `${now.name}${stopped}`, commitmentIncluded: contractCommitment(t) };
+        }),
       },
       flags: CONTRACT_FLAGS,
       field: (flag) => CONTRACT_FIELD[flag as keyof typeof CONTRACT_FLAGS],
     }),
     ...simple,
+    ...zoneItems(view, lines, regions),
   ];
+}
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
+
+function threeRates(value: unknown): PayrollRates['employee'] | null {
+  if (!isRecord(value)) return null;
+  const { social, health, unemployment } = value;
+  if (typeof social !== 'number' || typeof health !== 'number' || typeof unemployment !== 'number') return null;
+  return { social, health, unemployment };
+}
+
+function bracketsOf(value: unknown): PayrollRates['brackets'] {
+  if (!Array.isArray(value)) return undefined;
+  const list: unknown[] = value;
+  const tops = list.map((b) => (isRecord(b) ? b.upTo : undefined));
+  const isKnown = (top: unknown): top is number | null => top === null || typeof top === 'number';
+  return tops.every(isKnown) ? tops.map((upTo) => ({ upTo })) : undefined;
+}
+
+/** The insurance rates for everyone in the month viewed (F02): the grid's headings read "BHXH (8%)" as HR's file. */
+export function monthRates(view: PayrollSettingsMonthDto): PayrollRates | undefined {
+  const items = buildItems(view);
+  const valueOf = (key: string) => items.find((i) => i.key === key)?.value;
+  const employee = threeRates(valueOf('luat.bh-nld'));
+  const company = threeRates(valueOf('luat.bh-cty'));
+  const unionFund = valueOf('luat.kpcd');
+  if (!employee || !company || typeof unionFund !== 'number') return undefined;
+  return { employee, company, unionFund, brackets: bracketsOf(valueOf('luat.bieu-thue')) };
 }
 
 /** Changed for everyone in the month viewed, or someone has their own, or a newer version is waiting. */

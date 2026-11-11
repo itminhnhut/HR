@@ -5,6 +5,7 @@ import { ErrorState } from '../../../../ui/feedback';
 import { Input } from '../../../../vendor/shadcn-grid/components/ui/input';
 import { errorMessage } from '../../parts';
 import { showWhenOffScreen } from '../../timesheet/ConfigTab';
+import { useRegions } from '../../timesheet/queries';
 import { TabSkeleton } from '../../timesheet/skeletons';
 import { monthKeyOf } from '../payrollModel';
 import { PeriodControl } from '../PeriodControl';
@@ -20,6 +21,8 @@ import {
   type ConfigGroup,
   type ConfigItem,
 } from './configModel';
+import { AddEntry, EntryActions } from './CatalogueEditor';
+import { entryIdOf } from './catalogueModel';
 import { useSettingsMonth } from './configQueries';
 import { SettingItem } from './SettingItem';
 
@@ -111,6 +114,14 @@ function headingOf(item: ConfigItem, isSearching: boolean): string {
   return isSearching ? group : '';
 }
 
+/** Đổi tên / Ngừng dùng of the pay component or contract type a section is about. */
+function HeadingActions({ item, month }: { item: ConfigItem | undefined; month: string }) {
+  const id = item ? entryIdOf(item.key) : null;
+  if (!item?.entry || !id || (item.group !== 'khoan-luong' && item.group !== 'loai-hd')) return null;
+  const name = item.entry.split(' · đã ngừng dùng')[0] ?? item.entry;
+  return <EntryActions kind={item.group === 'khoan-luong' ? 'khoan' : 'loai-hd'} id={id} name={name} month={month} />;
+}
+
 function ItemList(p: { items: readonly ConfigItem[]; month: string; isSearching: boolean; focusKey: string | null }) {
   const people = useProfiles().data?.people ?? [];
   const [openKey, setOpenKey] = useState<string | null>(p.focusKey);
@@ -127,7 +138,12 @@ function ItemList(p: { items: readonly ConfigItem[]; month: string; isSearching:
     <div className="flex flex-col gap-3">
       {sections.map((s, i) => (
         <section key={`${s.heading}-${i}`} aria-label={s.heading || 'Mục cấu hình'} className="ts-card overflow-hidden">
-          {s.heading && <h3 className="m-0 border-b bg-slate-50 px-4 py-2 text-sm font-semibold">{s.heading}</h3>}
+          {s.heading && (
+            <h3 className="m-0 flex flex-wrap items-center gap-2 border-b bg-slate-50 px-4 py-2 text-sm font-semibold">
+              <span className="min-w-0 flex-1">{s.heading}</span>
+              <HeadingActions item={s.items[0]} month={p.month} />
+            </h3>
+          )}
           <ul className="m-0 list-none p-0">
             {s.items.map((item) => (
               <SettingItem
@@ -191,7 +207,9 @@ export function PayrollConfigTab() {
   const { address, onlyChanged, focusKey } = config;
   const month = monthKeyOf(address.period.year, address.period.month);
   const view = useSettingsMonth(month);
-  const items = useMemo(() => (view.data ? buildItems(view.data) : []), [view.data]);
+  // Chấm công's regions: each has its own minimum-wage zone (Bảo hiểm).
+  const regions = useRegions().data;
+  const items = useMemo(() => (view.data ? buildItems(view.data, regions ?? []) : []), [view.data, regions]);
   const group = items.find((i) => i.key === focusKey)?.group ?? config.group;
   const query = address.filters.query;
   const shown = useMemo(() => filterItems(items, { group, query, onlyChanged }), [items, group, query, onlyChanged]);
@@ -206,14 +224,18 @@ export function PayrollConfigTab() {
           <ErrorState onRetry={() => void view.refetch()} message={errorMessage(view.error)} />
         </div>
       );
+    const kind = group === 'khoan-luong' ? 'khoan' : group === 'loai-hd' ? 'loai-hd' : null;
     return (
-      <ItemList
-        key={`${month}-${group}-${focusKey ?? ''}`}
-        items={shown}
-        month={month}
-        isSearching={query.trim() !== ''}
-        focusKey={focusKey}
-      />
+      <>
+        <ItemList
+          key={`${month}-${group}-${focusKey ?? ''}`}
+          items={shown}
+          month={month}
+          isSearching={query.trim() !== ''}
+          focusKey={focusKey}
+        />
+        {kind && !query.trim() && <AddEntry key={`${kind}-${month}`} kind={kind} view={view.data} />}
+      </>
     );
   };
   return (

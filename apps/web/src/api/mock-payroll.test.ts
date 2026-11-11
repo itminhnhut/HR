@@ -230,3 +230,48 @@ describe('Duyệt, Mở lại, Đã chuyển khoản on the demo month', () => {
     await expect(bad).rejects.toMatchObject({ status: 422 });
   });
 });
+
+describe('the demo payroll export', () => {
+  // The demo keeps bank accounts in Hồ sơ lương, seeded the first time it is read.
+  beforeEach(async () => {
+    await payrollMockApi.hrPayrollProfiles();
+  });
+
+  it('should answer the payroll file with every row, the sheet filled and the whole account number', async () => {
+    // Act
+    const answer = await payrollMockApi.hrPayrollExport({ months: ['2026-10'], kind: 'payroll' });
+
+    // Assert
+    const [first] = answer.months;
+    expect(first?.month.lines).toHaveLength(12);
+    expect(first?.month.lines.every((l) => l.sheet !== undefined)).toBe(true);
+    expect(first?.month.lines[0]?.sheet?.bankAccount).toMatch(/^\d{10}$/);
+  });
+
+  it('should keep the account masked in the month and in payslips, and answer only the people asked for', async () => {
+    // Act
+    const month = await golden();
+    const slips = await payrollMockApi.hrPayrollExport({
+      months: ['2026-10'],
+      employeeIds: ['nv-a'],
+      kind: 'payslips',
+    });
+
+    // Assert
+    expect(month.lines[0]?.sheet?.bankAccount).toBe('••••4567');
+    expect(slips.months[0]?.month.lines.map((l) => [l.employeeId, l.sheet?.bankAccount])).toEqual([
+      ['nv-a', '••••4567'],
+    ]);
+  });
+
+  it('should refuse a month still waiting for the timesheet close, in Vietnamese', async () => {
+    // Act
+    const refused = payrollMockApi.hrPayrollExport({ months: ['2026-11'], kind: 'payroll' });
+
+    // Assert
+    await expect(refused).rejects.toMatchObject({
+      status: 409,
+      message: 'T11/2026 đang chờ chốt công, chưa có số để tải.',
+    });
+  });
+});

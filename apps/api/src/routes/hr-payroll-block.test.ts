@@ -20,7 +20,7 @@ beforeEach(async () => {
   await flow.reset();
 });
 
-const BLOCK_NOTE = 'Khối lấy từ hồ sơ nhân viên (lần chốt công chưa có khối)';
+const BLOCK_NOTE = 'Khối lấy từ hồ sơ nhân viên';
 const AMOUNTS = { luong: 12_000_000, com: 1_100_000 };
 
 const monthOf = () => flow.payroll<PayrollMonthDto>('GET', '/months/2026-11');
@@ -65,7 +65,7 @@ describe('Khối of a draft month', () => {
     // Assert
     expect(lineOf(month, person).block).toBeNull();
     expect(missingBlock(month, person)).toHaveLength(1);
-    expect(lineOf(month, person).note).not.toContain(BLOCK_NOTE);
+    expect(lineOf(month, person).blockFromPerson).toBeUndefined();
   });
 
   it('should read the block HR gave the person after the close: BO probation gets the formula %', async () => {
@@ -86,7 +86,18 @@ describe('Khối of a draft month', () => {
     expect(missingBlock(month, person)).toEqual([]);
     expect(line.cells.kpiPercent).toBeGreaterThan(0);
     expect(line.cells.kpiPercent).toBeLessThan(1);
-    expect(line.note).toContain(BLOCK_NOTE);
+    // F19: said on the row's own mark and once for the month in Rà soát, never in the note Excel and payslips print.
+    expect(line.blockFromPerson).toBe(true);
+    expect(line.note).not.toContain(BLOCK_NOTE);
+    expect(month.review.filter((r) => r.code === 'block-from-person')).toEqual([
+      {
+        level: 'yellow',
+        code: 'block-from-person',
+        employeeId: null,
+        cell: null,
+        message: 'Lần chốt công này chưa ghi khối: đang dùng khối hiện tại ở Chấm công › Nhân viên.',
+      },
+    ]);
   });
 
   it('should keep the block of the close when HR changes the person afterwards', async () => {
@@ -102,7 +113,7 @@ describe('Khối of a draft month', () => {
     // Assert
     expect(line.block).toBe('KD');
     expect(line.cells.kpiPercent).toBe(0);
-    expect(line.note).not.toContain(BLOCK_NOTE);
+    expect(line.blockFromPerson).toBeUndefined();
   });
 
   it('should keep the approved snapshot when the block changes after approval', async () => {

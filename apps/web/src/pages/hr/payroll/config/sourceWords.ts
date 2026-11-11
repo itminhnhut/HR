@@ -8,6 +8,8 @@ export const COMPANY_RULE = 'Quy chế công ty';
 export const HR_FILE = 'Theo file lương của HR';
 
 const INTERNAL = [
+  // "spec Lương" with no section: the builders' own document, so the company's rule.
+  /\bspec\s+Lương\b/giu,
   /\bspec\s+\d+(?:\.\d+)*/gi,
   /(?<![\p{L}\d])câu\s+\d+(?:\s*,\s*\d+)*(?![\p{L}\d])/giu,
   /\(\s*\d+(?:\.\d+)+\s*\)/g,

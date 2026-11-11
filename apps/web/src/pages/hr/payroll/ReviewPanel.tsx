@@ -1,5 +1,5 @@
 import type { ReviewItem } from '@careers/shared';
-import { ArrowRight, CheckCircle2, CircleAlert, TriangleAlert } from 'lucide-react';
+import { CheckCircle2, ChevronRight, CircleAlert, TriangleAlert } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router';
 import type { PayrollMonthDto } from '../../../api';
@@ -10,59 +10,113 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../../../vendor/shadcn-grid/components/ui/dialog';
-import { blockLink, FILTER_PARAMS, isBlockReview } from './payrollModel';
+import { reviewHint, reviewRows, reviewTarget, type ReviewRow, type ReviewTarget } from './reviewModel';
 
-/** Rà soát (spec 11.3): the engine's warnings for the month, red first; a person's warning links to their row. */
+/** Rà soát (spec 11.3): the engine's warnings for the month, red first; each one opens the place that fixes it. */
 
 const LEVELS = [
   { level: 'red', title: 'Đỏ: phải tích "Đã xem" khi Duyệt', icon: CircleAlert, tone: 'text-red-600' },
   { level: 'yellow', title: 'Vàng: nên xem, không chặn', icon: TriangleAlert, tone: 'text-amber-600' },
 ] as const;
 
-/** The grid address showing only this person, on the Bảng lương tab, keeping the month. */
-function rowLink(search: string, employeeId: string) {
-  const next = new URLSearchParams(search);
-  next.delete('rs');
-  next.set(FILTER_PARAMS.people, employeeId);
-  return { pathname: '/hr/luong', search: `?${next.toString()}` };
+/** The warning, and under it what to do about it when the warning does not say (F07). */
+function Words({ message, code }: { message: string; code: string }) {
+  const hint = reviewHint(code);
+  return (
+    <span className="flex min-w-0 flex-1 flex-col">
+      <span>{message}</span>
+      {hint && <span className="text-xs text-slate-500">{hint}</span>}
+    </span>
+  );
 }
+
+const GO = 'inline-flex shrink-0 items-center gap-0.5 text-xs font-medium whitespace-nowrap text-blue-700';
+
+/** One yellow warning several people share: one row, the people behind it on a click (F06). */
+function Group({
+  row,
+  nameOf,
+  targetOf,
+  onClose,
+}: {
+  row: Extract<ReviewRow, { kind: 'group' }>;
+  nameOf: (employeeId: string) => string;
+  targetOf: (item: ReviewItem) => ReviewTarget | null;
+  onClose: () => void;
+}) {
+  return (
+    <li className="border-b last:border-b-0">
+      <details className="group">
+        <summary className={`${ROW} cursor-pointer list-none hover:bg-slate-50`}>
+          <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-slate-500 group-open:rotate-90" />
+          <Words message={row.message} code={row.code} />
+          <span className="shrink-0 rounded-full bg-amber-100 px-2 text-xs font-semibold text-amber-900">
+            {`${row.items.length} người`}
+          </span>
+        </summary>
+        <ul className="m-0 flex list-none flex-col p-0 pb-1 pl-8">
+          {row.items.map((item) => {
+            const target = targetOf(item);
+            const name = nameOf(item.employeeId ?? '');
+            return (
+              <li key={item.employeeId} className="text-sm">
+                {target ? (
+                  <Link
+                    to={target.to}
+                    onClick={onClose}
+                    className="flex min-h-9 items-center gap-2 px-2 text-slate-800 no-underline hover:bg-slate-50"
+                  >
+                    <span className="flex-1 font-medium">{name}</span>
+                    <span className={GO}>
+                      {target.words}
+                      <ChevronRight aria-hidden="true" className="size-3.5" />
+                    </span>
+                  </Link>
+                ) : (
+                  <span className="flex min-h-9 items-center px-2">{name}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </details>
+    </li>
+  );
+}
+
+const ROW = 'flex min-h-11 items-center gap-x-2 px-2 py-1.5 text-sm text-slate-800 max-sm:flex-wrap';
 
 function Item({
   item,
   who,
-  block,
-  search,
+  target,
   onClose,
 }: {
   item: ReviewItem;
   who: string | null;
-  /** The person's block on the month's line: a Khối warning opens the person's form in Chấm công → Nhân viên. */
-  block: string | null;
-  search: string;
+  /** Where the warning is fixed; null: nothing to open. */
+  target: ReviewTarget | null;
   onClose: () => void;
 }) {
-  if (!item.employeeId) {
-    return (
-      <li className="flex min-h-11 items-center gap-2 border-b px-2 py-1.5 text-sm last:border-b-0">
+  const body = (
+    <>
+      {item.employeeId ? (
+        <span className="shrink-0 font-semibold max-sm:w-full">{who ?? item.employeeId}</span>
+      ) : (
         <span className="shrink-0 rounded bg-slate-100 px-1.5 text-xs font-semibold text-slate-600">Cả tháng</span>
-        <span className="flex-1">{item.message}</span>
-      </li>
-    );
-  }
+      )}
+      <Words message={item.message} code={item.code} />
+    </>
+  );
+  if (!target) return <li className={`border-b last:border-b-0 ${ROW}`}>{body}</li>;
   return (
     <li className="border-b last:border-b-0">
-      <Link
-        to={
-          isBlockReview(item.code)
-            ? blockLink({ employeeId: item.employeeId, block })
-            : rowLink(search, item.employeeId)
-        }
-        onClick={onClose}
-        className="flex min-h-11 items-center gap-x-2 px-2 py-1.5 text-sm text-slate-800 no-underline hover:bg-slate-50 max-sm:flex-wrap"
-      >
-        <span className="shrink-0 font-semibold max-sm:w-full">{who ?? item.employeeId}</span>
-        <span className="flex-1">{item.message}</span>
-        <ArrowRight className="size-4 shrink-0 text-blue-600" />
+      <Link to={target.to} onClick={onClose} className={`${ROW} no-underline hover:bg-slate-50`}>
+        {body}
+        <span className={GO}>
+          {target.words}
+          <ChevronRight aria-hidden="true" className="size-3.5" />
+        </span>
       </Link>
     </li>
   );
@@ -81,6 +135,12 @@ export function ReviewPanel({
 }) {
   const close = useRef<HTMLButtonElement>(null);
   const names = new Map(month.lines.map((l) => [l.employeeId, `${l.fullName} · ${l.code}`]));
+  const targetOf = (item: ReviewItem) =>
+    reviewTarget(item, {
+      monthKey: month.monthKey,
+      search,
+      block: month.lines.find((l) => l.employeeId === item.employeeId)?.block ?? null,
+    });
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent initialFocus={close} className="sm:max-w-2xl">
@@ -104,16 +164,25 @@ export function ReviewPanel({
                     {`${title} (${items.length})`}
                   </h3>
                   <ul className="m-0 flex list-none flex-col p-0">
-                    {items.map((item, i) => (
-                      <Item
-                        key={`${item.code}-${item.employeeId ?? ''}-${i}`}
-                        item={item}
-                        who={item.employeeId ? (names.get(item.employeeId) ?? null) : null}
-                        block={month.lines.find((l) => l.employeeId === item.employeeId)?.block ?? null}
-                        search={search}
-                        onClose={onClose}
-                      />
-                    ))}
+                    {reviewRows(items).map((row, i) =>
+                      row.kind === 'group' ? (
+                        <Group
+                          key={`${row.code}-${i}`}
+                          row={row}
+                          nameOf={(id) => names.get(id) ?? id}
+                          targetOf={targetOf}
+                          onClose={onClose}
+                        />
+                      ) : (
+                        <Item
+                          key={`${row.item.code}-${row.item.employeeId ?? ''}-${i}`}
+                          item={row.item}
+                          who={row.item.employeeId ? (names.get(row.item.employeeId) ?? null) : null}
+                          target={targetOf(row.item)}
+                          onClose={onClose}
+                        />
+                      ),
+                    )}
                   </ul>
                 </section>
               );

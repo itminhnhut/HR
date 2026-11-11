@@ -28,7 +28,7 @@ import { fieldErrorsOf, usePrefill, useProfileSave } from './profileQueries';
 
 export interface Catalogue {
   components: readonly { id: string; name: string }[];
-  contractTypes: readonly { id: string; name: string }[];
+  contractTypes: readonly { id: string; name: string; stopped?: boolean }[];
 }
 
 const SELECT = 'ts-field h-9 w-full min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
@@ -131,11 +131,14 @@ function LevelForm(p: {
           onChange={(e) => set({ contractTypeId: e.target.value })}
           className={SELECT}
         >
-          {p.catalogue.contractTypes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
+          {/* A type HR stopped using is offered no more; the one this level already has stays. */}
+          {p.catalogue.contractTypes
+            .filter((t) => !t.stopped || t.id === draft.contractTypeId)
+            .map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
         </select>
       </ProfileField>
       <ProfileField

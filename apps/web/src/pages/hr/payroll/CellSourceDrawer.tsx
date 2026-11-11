@@ -10,7 +10,8 @@ import { errorMessage } from '../parts';
 import { buildItems } from './config/configModel';
 import { useSettingsMonth } from './config/configQueries';
 import { SettingItem } from './config/SettingItem';
-import { RULE_14_WORDS, settingKeysOf, sourceOf, type ProfilePart } from './cellSources';
+import { cellPartsOf, noteFor, type CellPart } from './cellParts';
+import { cellSearch, RULE_14_WORDS, settingKeysOf, sourceOf, type ProfilePart } from './cellSources';
 import { YearToDate } from './LeavePayoutParts';
 import { monthLockOf } from './monthInputsModel';
 import { formatValue, levelsSearch, payrollBands } from './payrollModel';
@@ -39,8 +40,52 @@ function Block({ icon: Icon, title, children }: { icon: typeof Calculator; title
   );
 }
 
-function HowComputed({ line, cell }: { line: PayrollLineDto; cell: PayrollCellKey }) {
+const PART_LINK = 'text-blue-700 no-underline decoration-dotted underline-offset-2 hover:underline';
+
+/** "Trong đó" (F08): the cells a total adds up; each opens its own sources, a pay component the pay levels. */
+function Parts({ line, cell, month }: { line: PayrollLineDto; cell: PayrollCellKey; month: PayrollMonthDto }) {
+  const { pathname, search } = useLocation();
+  const parts = useMemo(() => {
+    const columns = payrollBands(month.components).flatMap((b) => b.columns);
+    return cellPartsOf(cell, line, columns, month.components);
+  }, [cell, line, month.components]);
+  if (parts.length === 0) return null;
+  const linkOf = (part: CellPart) => {
+    if (part.cell === null) return levelsSearch(search, line.employeeId);
+    return sourceOf(part.cell) ? cellSearch(search, line.employeeId, part.cell) : null;
+  };
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="m-0 text-xs font-semibold text-slate-600">Trong đó (bấm từng dòng để xem nguồn):</p>
+      <ul aria-label="Trong đó" className="m-0 flex list-none flex-col p-0 text-sm">
+        {parts.map((part) => {
+          const to = linkOf(part);
+          return (
+            <li key={part.id} className="flex items-baseline gap-2 border-b border-dashed py-1 last:border-b-0">
+              <span aria-hidden="true" className="w-3 shrink-0 text-center text-slate-500">
+                {part.sign}
+              </span>
+              <span className="min-w-0 flex-1">
+                {to ? (
+                  <Link to={{ pathname, search: to }} className={PART_LINK}>
+                    {part.label}
+                  </Link>
+                ) : (
+                  `${part.label} (gõ trên lưới)`
+                )}
+              </span>
+              <span className="shrink-0 tabular-nums">{formatValue('money', part.value)}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function HowComputed({ line, cell, month }: { line: PayrollLineDto; cell: PayrollCellKey; month: PayrollMonthDto }) {
   const explain = line.explain[cell];
+  const note = noteFor(cell, line.note);
   const override = line.overrides.find((o) => o.cell === cell);
   const own = line.personSettings.filter((s) => s.cells.includes(cell));
   return (
@@ -48,6 +93,7 @@ function HowComputed({ line, cell }: { line: PayrollLineDto; cell: PayrollCellKe
       <p className="m-0 rounded-md bg-slate-50 px-3 py-2 text-sm break-words tabular-nums">
         {explain?.formula ?? 'Chưa có công thức cho ô này.'}
       </p>
+      <Parts line={line} cell={cell} month={month} />
       {override && (
         <p className="m-0 text-sm">{`HR gõ đè ${formatValue('money', override.typed)} (số tính ${formatValue('money', override.computed)}) · ${override.reason}`}</p>
       )}
@@ -58,7 +104,7 @@ function HowComputed({ line, cell }: { line: PayrollLineDto; cell: PayrollCellKe
         >{`Riêng ${line.fullName} từ ${s.from}: ${s.text}`}</p>
       ))}
       {sourceOf(cell)?.hasRule14 && <p className="m-0 text-xs text-slate-600">{RULE_14_WORDS}</p>}
-      {line.note && <p className="m-0 text-xs text-slate-600">{`Ghi chú: ${line.note}`}</p>}
+      {note && <p className="m-0 text-xs text-slate-600">{`Ghi chú: ${note}`}</p>}
     </Block>
   );
 }
@@ -213,7 +259,7 @@ export function CellSourceDrawer(p: {
             <p className="m-0 p-5 text-sm text-slate-600">Người này không có dòng ở tháng đang xem.</p>
           ) : (
             <>
-              <HowComputed line={line} cell={p.cell} />
+              <HowComputed line={line} cell={p.cell} month={p.month} />
               <YearToDate cell={p.cell} year={line.year} />
               <fieldset disabled={!!lock} className={READ_ONLY}>
                 <Settings line={line} cell={p.cell} month={p.month} />

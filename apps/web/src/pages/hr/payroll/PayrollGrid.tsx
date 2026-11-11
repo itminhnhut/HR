@@ -3,6 +3,8 @@ import type { PayrollLineDto, PayrollMonthDto } from '../../../api';
 import { DataGrid } from '../../../vendor/shadcn-grid/components/data-grid/data-grid';
 import { useDataGrid } from '../../../vendor/shadcn-grid/hooks/use-data-grid';
 import { useGridHeight } from '../timesheet/gridHooks';
+import { monthRates } from './config/configModel';
+import { useSettingsMonth } from './config/configQueries';
 import { monthLockOf } from './monthInputsModel';
 import { makePayrollColumns, payrollPins } from './payrollColumns';
 import {
@@ -30,7 +32,10 @@ export function PayrollGrid({ month, lines }: { month: PayrollMonthDto; lines: r
     [month.regions, month.contractTypes],
   );
   const rows = useMemo(() => gridRowsOf(lines, names), [lines, names]);
-  const bands = useMemo(() => payrollBands(month.components), [month.components]);
+  // The rates in the headings come with the month's settings; until then (or without them) the bare names show.
+  const settings = useSettingsMonth(month.monthKey).data;
+  const rates = useMemo(() => (settings ? monthRates(settings) : undefined), [settings]);
+  const bands = useMemo(() => payrollBands(month.components, rates), [month.components, rates]);
   const totals = useMemo(() => columnTotals(lines, bands), [lines, bands]);
   const groupLabels = useMemo(
     () => gridRowsOf(month.lines, names).flatMap((r) => (r.kind === 'group' ? [r.label] : [])),

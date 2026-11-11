@@ -8,6 +8,7 @@ import {
   breakdownOf,
   gridLink,
   OVERVIEW_DIMENSIONS,
+  NET_PAY_WORDS,
   OVERVIEW_MEASURES,
   reviewLink,
   sumsOf,
@@ -58,7 +59,7 @@ function Card({
 
 function Cards({ sums, to }: { sums: OverviewSums; to: string }) {
   return (
-    <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-7">
+    <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-8">
       <Card to={to} label="Số người" hint="dòng lương" value={`${sums.people} người`} />
       {OVERVIEW_MEASURES.map((m) => (
         <Card
@@ -220,6 +221,7 @@ export function MonthOverview({ month, filters }: { month: PayrollMonthDto; filt
         <p className="m-0 text-sm text-slate-600">{`Đang lọc: ${lines.length}/${month.lines.length} người. Mỗi số là tổng các dòng đang lọc, bằng dòng tổng của Bảng lương.`}</p>
       )}
       <Cards sums={sumsOf(lines)} to={gridLink(month.monthKey, filters)} />
+      <p className="m-0 text-xs text-slate-600">{NET_PAY_WORDS}</p>
       <Review month={month} filters={filters} />
       {lines.length === 0 ? (
         <p className="m-0 py-6 text-center text-sm text-slate-600">Không có dòng lương nào khớp bộ lọc.</p>

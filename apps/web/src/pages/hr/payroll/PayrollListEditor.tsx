@@ -6,8 +6,9 @@ import type { PayrollCashItemDto, PayrollLineDto, PayrollMonthInputsInput, Payro
 import { Popover, PopoverContent, PopoverTrigger } from '../../../vendor/shadcn-grid/components/ui/popover';
 import type { PayrollMonthContext } from './PayrollCell';
 import { cellSearch } from './cellSources';
-import { cellLabel, InputValue, saveError } from './inputParts';
+import { cellLabel, INPUT_LOOK, InputValue, saveError } from './inputParts';
 import { leavePayoutInput } from './leavePayoutModel';
+import { cashSplit } from './monthInputsModel';
 import { LeavePayoutBox } from './LeavePayoutParts';
 import type { PayrollColumnSpec } from './payrollModel';
 import { useSaveMonthInputs } from './queries';
@@ -79,6 +80,13 @@ function listOf(field: ListField, drafts: readonly Draft[]): { input: PayrollMon
   }));
   return { input: { otherIncome } };
 }
+
+/** What the lines in the form add to (32), an amount still being typed counted as far as it reads. */
+const cashOf = (line: PayrollLineDto, drafts: readonly Draft[]) =>
+  cashSplit(
+    line,
+    drafts.map((d) => ({ kind: d.kind, amount: Number.isFinite(moneyOf(d.amount)) ? moneyOf(d.amount) : 0 })),
+  );
 
 const FIELD = 'ts-field h-8 min-w-0 rounded-md border bg-white px-2 text-sm';
 const BUTTON =
@@ -184,12 +192,16 @@ function ListForm({
     <form onSubmit={submit} aria-label={title} className="flex flex-col gap-2">
       <p className="m-0 text-sm font-semibold text-slate-800">{title}</p>
       {field === 'cash' ? (
-        <RecurringHint employeeId={line.employeeId} onOpen={onDone} />
+        <RecurringPart line={line} onOpen={onDone} />
       ) : (
         <p className="m-0 text-xs text-slate-500">Riêng tháng này, mỗi dòng có lý do.</p>
       )}
       {hasPayout && <LeavePayoutBox payout={payout} text={payoutText} onText={setPayoutText} />}
-      {drafts.length === 0 && <p className="m-0 text-xs text-slate-500">Chưa có dòng nào.</p>}
+      {drafts.length === 0 && (
+        <p className="m-0 text-xs text-slate-500">
+          {field === 'cash' ? 'Chưa có dòng riêng tháng này.' : 'Chưa có dòng nào.'}
+        </p>
+      )}
       <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
         {drafts.map((d, i) => (
           <DraftRow
@@ -202,6 +214,7 @@ function ListForm({
           />
         ))}
       </ul>
+      {field === 'cash' && <CashTotal line={line} drafts={drafts} />}
       {error && (
         <p role="alert" className="m-0 text-xs font-medium text-red-700">
           {error}
@@ -229,20 +242,38 @@ function ListForm({
   );
 }
 
-/** (32): this month's lines here; the recurring ones open over the grid with the formula, to add, edit or stop. */
-function RecurringHint({ employeeId, onOpen }: { employeeId: string; onOpen: () => void }) {
+/**
+ * (32), the part HR does not type here (F09): the recurring items of Hồ sơ lương, read only, with the way to them —
+ * they open over the grid with the formula, to add, edit or stop. Then the heading of this month's own lines.
+ */
+function RecurringPart({ line, onOpen }: { line: PayrollLineDto; onOpen: () => void }) {
   const { pathname, search } = useLocation();
+  const { recurring } = cashSplit(line, []);
   return (
-    <p className="m-0 text-xs text-slate-500">
-      Riêng tháng này, cộng thêm{' '}
-      <Link
-        to={{ pathname, search: cellSearch(search, employeeId, 'cash') }}
-        onClick={onOpen}
-        className="inline-flex min-h-8 items-center font-medium text-blue-700 underline underline-offset-2 max-sm:min-h-11"
-      >
-        khoản định kỳ ở Hồ sơ lương
-      </Link>
-      .
+    <>
+      <p className="m-0 flex flex-wrap items-center justify-between gap-x-2 rounded-md bg-slate-50 px-2 py-1 text-xs text-slate-700">
+        <span>
+          Định kỳ từ Hồ sơ lương: <strong className="tabular-nums">{moneyText(recurring)}</strong>
+        </span>
+        <Link
+          to={{ pathname, search: cellSearch(search, line.employeeId, 'cash') }}
+          onClick={onOpen}
+          className="inline-flex min-h-8 items-center font-medium text-blue-700 underline underline-offset-2 max-sm:min-h-11"
+        >
+          Sửa ở Hồ sơ lương ›
+        </Link>
+      </p>
+      <p className="m-0 text-xs font-semibold text-slate-700">Riêng tháng này</p>
+    </>
+  );
+}
+
+function CashTotal({ line, drafts }: { line: PayrollLineDto; drafts: readonly Draft[] }) {
+  const { recurring, typed, total } = cashOf(line, drafts);
+  return (
+    <p className="m-0 border-t pt-1.5 text-xs text-slate-700 tabular-nums">
+      {`Tổng (32) = định kỳ ${moneyText(recurring)} + riêng tháng này ${moneyText(typed)} = `}
+      <strong>{moneyText(total)}</strong>
     </p>
   );
 }
@@ -264,7 +295,7 @@ export function PayrollListCell({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger
         aria-label={`Sửa ${label} của ${line.fullName}`}
-        className="-my-1 flex h-full min-h-7 w-full cursor-pointer items-center justify-end rounded border border-transparent bg-transparent px-1 text-right text-sm tabular-nums hover:border-blue-300 hover:bg-white"
+        className={`-my-1 flex h-full min-h-7 w-full cursor-pointer items-center justify-end rounded px-1 text-right text-sm tabular-nums ${INPUT_LOOK}`}
         render={<button type="button" />}
       >
         <InputValue line={line} column={column} />

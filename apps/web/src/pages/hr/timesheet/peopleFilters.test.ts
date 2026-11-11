@@ -12,7 +12,7 @@ const kinds: StaffKindDto[] = [
 const person = (id: string, over: Partial<EmployeeDto>): EmployeeDto => ({
   id, code: id.toUpperCase(), fullName: `Người ${id}`, department: 'Kinh doanh', title: '', regionId: 'hcm', employment: 'official',
   staffKindId: null, joinedOn: '2025-01-01', officialOn: null, leftOn: null, openingLeave: 0,
-  block: null, joinedOnConfirmed: false, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
+  email: null, block: null, joinedOnConfirmed: false, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
 });
 const people = [
   person('a', { fullName: 'Nguyễn Thị Hương', code: 'NV01', title: 'Kế toán trưởng', department: 'Kế toán' }),

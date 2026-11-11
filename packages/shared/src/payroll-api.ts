@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import type { PayrollCellExplains, PayrollCellKey, PayrollPersonSetting, ReviewItem } from './payroll/index.js';
+import type {
+  PayrollCellExplains,
+  PayrollCellKey,
+  PayrollPersonSetting,
+  ReviewItem,
+  SettingRow,
+  TaxMethod,
+} from './payroll/index.js';
 import { KPI_PERCENT_MAX } from './payroll/inputs.js';
 import { PAYROLL_CASH_KINDS, type PayrollCashKind } from './payroll-profile.js';
 import type { RegionTone } from './timesheet.js';
@@ -226,6 +233,33 @@ export interface PayrollRetroOutDto {
   net: number;
 }
 
+/** The version of the payroll formulas a month was computed with, printed on "Tham số áp dụng" (R8). */
+export const PAYROLL_FORMULA_VERSION = 'luong-2026.11';
+
+/**
+ * What HR's payroll sheet and the payslip print of a person beyond the grid (spec 12.1, 11.7), as the month has it:
+ * kept in the approval snapshot from 11/11/2026 on. In `GET /months/:YYYY-MM` the account is masked ("••••1234");
+ * only `POST /export` carries the whole number.
+ */
+export interface PayrollLineSheetDto {
+  /** (4) Chức danh, from the timesheet close. */
+  title: string;
+  /** (7) Số người phụ thuộc on the pay date. */
+  dependants: number;
+  /** How (40) was withheld; null on a row without a profile. */
+  taxMethod: TaxMethod | null;
+  /** What was paid of each pay component this month, by component id, in whole dong. */
+  paid: Record<string, number>;
+  /** The periods of a month split on a new level or the official day (spec 5.6); absent when not split. */
+  segments?: { from: string; to: string; amounts: Record<string, number> }[];
+  /** (49) Email nhận phiếu lương of the person (Chấm công › Nhân viên); null when none. */
+  payslipEmail: string | null;
+  /** (51) */
+  bankName: string | null;
+  /** (50): "••••1234" in the month response, the whole number in the export only; null without an account. */
+  bankAccount: string | null;
+}
+
 /** One row of the payroll month, in D13 order. Money is whole dong; (19) is a fraction (0,8 for 80%). */
 export interface PayrollLineDto {
   employeeId: string;
@@ -236,6 +270,11 @@ export interface PayrollLineDto {
   /** Empty for someone in the close without a profile. */
   contractTypeId: string;
   block: 'BO' | 'KD' | null;
+  /**
+   * The close had no block, so `block` is the person's of today (Chấm công › Nhân viên); absent otherwise. It marks
+   * the Khối cell only: it is no longer written into `note`, which goes to the Excel file and the payslip.
+   */
+  blockFromPerson?: boolean;
   probation: boolean;
   /** Công chuẩn of the person's region for the period. */
   norm: number;
@@ -259,6 +298,8 @@ export interface PayrollLineDto {
   leavePayout?: PayrollLeavePayoutDto | null;
   /** Σ of the truy lĩnh / truy thu inside this row's (42) (`PayrollMonthDto.retro`); absent or 0: none. */
   retroNet?: number;
+  /** Absent on a snapshot approved before the web kept it; `POST /export` then fills it with today's values. */
+  sheet?: PayrollLineSheetDto;
 }
 
 /** `GET /api/hr/payroll/months/:YYYY-MM` (spec 10.2, 11.2): the month as the engine computes it. */
@@ -277,7 +318,8 @@ export interface PayrollMonthDto {
   /** Pay components of this month, in column order (group A). */
   components: { id: string; name: string }[];
   regions: { id: string; name: string; tone: RegionTone }[];
-  contractTypes: { id: string; name: string }[];
+  /** `stopped`: "Ngừng dùng" by this month — kept for the people on it, not offered for a new pay level. */
+  contractTypes: { id: string; name: string; stopped?: boolean }[];
   lines: PayrollLineDto[];
   /** The total row (D01): Σ of the cells in the month's rounding. */
   totals: Partial<Record<PayrollCellKey, number>>;
@@ -287,6 +329,53 @@ export interface PayrollMonthDto {
   retro?: PayrollRetroItemDto[];
   /** Only on an approved or paid month read now: it computes differently, the difference goes to `month`. */
   retroOut?: PayrollRetroOutDto | null;
+  /** Lần chốt kỳ công the month reads; null while waiting, absent on a snapshot approved before the web kept it. */
+  closingNo?: number | null;
+  /** `PAYROLL_FORMULA_VERSION` when the month was computed; absent on an older snapshot. */
+  formulaVersion?: string;
+}
+
+/** What a download is: the payroll workbook, or payslips. */
+export const PAYROLL_EXPORT_KINDS = ['payroll', 'payslips'] as const;
+export type PayrollExportKind = (typeof PAYROLL_EXPORT_KINDS)[number];
+
+/**
+ * `POST /api/hr/payroll/export` (spec 12.1, 11.7; L-F06): the months of one download, oldest first in the answer.
+ * `employeeIds`: only these people (payslips of some); absent: everyone of each month.
+ */
+export const payrollExportSchema = z.object({
+  months: z
+    .array(z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Tháng dạng YYYY-MM.'))
+    .min(1, 'Chọn ít nhất một tháng.')
+    .max(12, 'Mỗi lần tải nhiều nhất 12 tháng.'),
+  employeeIds: z.array(z.string().uuid()).min(1, 'Chọn ít nhất một người.').optional(),
+  kind: z.enum(PAYROLL_EXPORT_KINDS, { message: 'Chọn loại file.' }),
+});
+export type PayrollExportRequest = z.input<typeof payrollExportSchema>;
+
+/** One month of a download: an approved or paid month is its approval snapshot, a draft is computed now. */
+export interface PayrollExportMonthDto {
+  /**
+   * The month as `GET /months/:YYYY-MM` answers it, with only the people asked for, and on every line `sheet` filled:
+   * `sheet.bankAccount` is the WHOLE account number here. `totals` stays the whole month's total row.
+   */
+  month: PayrollMonthDto;
+  /**
+   * How many people the whole month has. More than `month.lines` when only some were asked for: the file then says
+   * "Đã lọc: n/N người" and totals its own rows, so a partial file is never read as the full payroll.
+   */
+  peopleTotal: number;
+  closingNo: number | null;
+  formulaVersion: string;
+  /** Every configuration row the month resolves its settings from (`payrollConfigFor(settings, null, dates)`). */
+  settings: SettingRow[];
+  /** Lines to print on "Tham số áp dụng": e.g. settings read by the month's dates, not kept at the approval. */
+  notes: string[];
+}
+
+export interface PayrollExportDto {
+  kind: PayrollExportKind;
+  months: PayrollExportMonthDto[];
 }
 
 /** HR's amount over one adjustment of the month (0: left out); the reason is required. */

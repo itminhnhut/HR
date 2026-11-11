@@ -187,7 +187,7 @@ export function SettingItem(p: {
           <ChevronDown className={`mt-0.5 size-4 shrink-0 text-slate-400 ${p.isOpen ? 'rotate-180' : ''}`} />
           <span className="flex min-w-0 flex-col gap-0.5">
             {/* Over the grid there is no heading per component: the item names its own. */}
-            <span className="text-sm font-medium">
+            <span title={item.key} className="text-sm font-medium">
               {p.person && item.entry ? `${item.entry} · ${item.label}` : item.label}
             </span>
             <Summary item={item} />

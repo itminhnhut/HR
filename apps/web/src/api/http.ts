@@ -71,6 +71,7 @@ import { ApiError, type Api, type CvInput } from './types';
  *   GET    /hr/timesheet/absence-files/:id   → the file (inline, private, no-store)
  *   DELETE /hr/timesheet/absence-files/:id   → AbsenceFileDto[]
  *   GET    /hr/payroll/months/:YYYY-MM → PayrollMonthDto   403 no payroll right (no numbers), 404 { error: valid range }
+ *   POST   /hr/payroll/export { months, employeeIds?, kind } → PayrollExportDto   403, 404 out of range, 409 waiting / no rows
  *   POST   /hr/payroll/months/:YYYY-MM/approve { acknowledgedRed } → PayrollMonthDto   403 no approve right, 409 not a draft, 422 red not acknowledged
  *   POST   /hr/payroll/months/:YYYY-MM/reopen  { reason } → PayrollMonthDto   403 no approve right, 409 paid / not the latest approved, 422 { fieldErrors.reason }
  *   POST   /hr/payroll/months/:YYYY-MM/paid    { paidOn, note? } → PayrollMonthDto   409 not approved, 422 { fieldErrors.paidOn }
@@ -304,6 +305,10 @@ export const httpApi: Api = {
     return request(`/hr/payroll/log?${query}`);
   },
   hrPayrollMonth: (year, month) => request(payrollMonthPath(year, month)),
+  hrPayrollExport: (input) => request('/hr/payroll/export', send('POST', input)),
+  hrPayrollPayslips: (monthKey) => request(`/hr/payroll/months/${monthKey}/payslips`),
+  hrPayrollPayslipsMark: (monthKey, input) => request(`/hr/payroll/months/${monthKey}/payslips/mark`, send('POST', input)),
+  hrPayrollPayslipSend: (monthKey, input) => request(`/hr/payroll/months/${monthKey}/payslips/send`, send('POST', input)),
   hrPayrollApprove: (year, month, input) => request(`${payrollMonthPath(year, month)}/approve`, { method: 'POST', body: JSON.stringify(input) }),
   hrPayrollReopen: (year, month, input) => request(`${payrollMonthPath(year, month)}/reopen`, { method: 'POST', body: JSON.stringify(input) }),
   hrPayrollMarkPaid: (year, month, input) => request(`${payrollMonthPath(year, month)}/paid`, { method: 'POST', body: JSON.stringify(input) }),

@@ -61,6 +61,7 @@ export const templateKey = pgEnum('template_key', [
   'rejection',
   'rejection_interview',
   'call',
+  'payslip',
 ]);
 export const contactChannel = pgEnum('contact_channel', ['gmail', 'mailto', 'copy', 'copy_html']);
 export const applicationStatus = pgEnum('application_status', [
@@ -687,6 +688,8 @@ export const employees = pgTable(
     openingLeave: real('opening_leave').notNull().default(0),
     /** Khối (spec-luong.md 10.1); null until HR sets it. Each close keeps the one it had. */
     block: text('block').$type<EmployeeBlock>(),
+    /** Email nhận phiếu lương; null until HR types it. Lowercase. */
+    email: text('email'),
     /** HR checked the date: dates typed in from the old sheets are not until then (spec-luong.md 4.20). */
     joinedOnConfirmed: boolean('joined_on_confirmed').notNull().default(false),
     officialOnConfirmed: boolean('official_on_confirmed').notNull().default(false),
@@ -1072,3 +1075,4 @@ export const payrollLog = pgTable(
 );
 
 export * from './schema-payroll.js';
+export * from './schema-payslips.js';

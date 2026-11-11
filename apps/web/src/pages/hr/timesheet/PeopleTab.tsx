@@ -17,13 +17,14 @@ import { DateField } from './DateField';
 import { DepartmentField } from './DepartmentField';
 import { ConfirmDialog, Field } from './dialogs';
 import { blockToSave, type BlockChoice, type BulkBlockResult } from './employeeBlock';
+import { confirmsToSave, DATE_FLAGS, DateConfirm, type DateKey } from './DateConfirm';
 import { LeaveJobDialog } from './LeaveJobDialog';
 import { PeopleFilterBar, PeopleSearch } from './PeopleFilterBar';
 import { employmentNow, filterPeople, hasLeftBy, startFiltersOf, type PeopleFilters } from './peopleFilters';
 import { useDepartments, useEmployees, useRegions, useStaffKinds } from './queries';
 import { TabSkeleton } from './skeletons';
 
-type Form = { code: string; fullName: string; department: string; title: string; regionId: string; staffKindId: string; joinedOn: string; officialOn: string; leftOn: string; openingLeave: string; block: string; isBlockTouched: boolean };
+type Form = { code: string; fullName: string; department: string; title: string; regionId: string; staffKindId: string; joinedOn: string; officialOn: string; leftOn: string; openingLeave: string; block: string; email: string; isBlockTouched: boolean; joinedOnConfirmed: boolean; officialOnConfirmed: boolean; leftOnConfirmed: boolean };
 
 const toForm = (e: EmployeeDto | null, regionId: string, kinds: readonly StaffKindDto[]): Form => ({
   code: e?.code ?? '',
@@ -37,8 +38,18 @@ const toForm = (e: EmployeeDto | null, regionId: string, kinds: readonly StaffKi
   leftOn: e?.leftOn ?? '',
   openingLeave: String(e?.openingLeave ?? 0).replace('.', ','),
   block: e?.block ?? '',
+  email: e?.email ?? '',
   isBlockTouched: false,
+  joinedOnConfirmed: e?.joinedOnConfirmed ?? false,
+  officialOnConfirmed: e?.officialOnConfirmed ?? false,
+  leftOnConfirmed: e?.leftOnConfirmed ?? false,
 });
+
+const DATES: readonly { key: DateKey; label: string }[] = [
+  { key: 'joinedOn', label: 'Ngày vào' },
+  { key: 'officialOn', label: 'Ngày chính thức' },
+  { key: 'leftOn', label: 'Ngày nghỉ việc' },
+];
 
 const blockChoiceOf = (form: Form, isNew: boolean): BlockChoice => ({ isNew, isTouched: form.isBlockTouched, picked: form.block, department: form.department });
 
@@ -61,6 +72,11 @@ function PersonFields({ form, set, errors, placeholder, departments, kinds, regi
     set('block', block);
     set('isBlockTouched', true);
   };
+  // A date that changes is no longer the one HR confirmed.
+  const setDate = (key: DateKey, value: string) => {
+    if (value !== form[key]) set(DATE_FLAGS[key], false);
+    set(key, value);
+  };
   const regionItems = regions.map((r) => ({ value: r.id, label: r.name }));
   return (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -80,11 +96,19 @@ function PersonFields({ form, set, errors, placeholder, departments, kinds, regi
           <SelectContent>{kinds.map((k) => <SelectItem key={k.id} value={k.id}>{k.name}</SelectItem>)}</SelectContent>
         </Select>
       </Field>
-      <DateField label="Ngày vào" value={form.joinedOn} error={errors.joinedOn} onChange={(v) => set('joinedOn', v)} />
-      <DateField label="Ngày chính thức" value={form.officialOn} error={errors.officialOn} onChange={(v) => set('officialOn', v)} />
-      <DateField label="Ngày nghỉ việc" value={form.leftOn} error={errors.leftOn} onChange={(v) => set('leftOn', v)} />
+      {DATES.map(({ key, label }) => (
+        <div key={key} className="flex flex-col gap-1">
+          <DateField label={label} value={form[key]} error={errors[key]} onChange={(v) => setDate(key, v)} />
+          <DateConfirm label={label} date={form[key]} isConfirmed={form[DATE_FLAGS[key]]} onChange={(next) => set(DATE_FLAGS[key], next)} />
+        </div>
+      ))}
+      <p className="m-0 text-xs text-slate-500 sm:col-span-2">Bảng lương dùng ba ngày này để tách lương thử việc / chính thức và tính BH. Đổi ngày thì phải tích xác nhận lại.</p>
       <Field label="Phép tồn ban đầu" error={errors.openingLeave}><Input aria-label="Phép tồn ban đầu" inputMode="decimal" value={form.openingLeave} onChange={(e) => set('openingLeave', e.target.value)} /></Field>
       <BlockField choice={blockChoiceOf(form, isNew)} error={errors.block} onPick={pickBlock} />
+      <div className="flex flex-col gap-1 sm:col-span-2">
+        <Field label="Email nhận phiếu lương" error={errors.email}><Input aria-label="Email nhận phiếu lương" type="email" inputMode="email" autoComplete="off" value={form.email} placeholder="ten@congty.vn" onChange={(e) => set('email', e.target.value)} /></Field>
+        <p className="m-0 text-xs text-slate-500">Phiếu lương hằng tháng gửi tới địa chỉ này. Để trống thì người này không nhận được phiếu lương qua email.</p>
+      </div>
     </div>
   );
 }
@@ -140,8 +164,10 @@ function PersonDialog({ open, editing, people, regions, departments, kinds, onCl
     joinedOn: form.joinedOn || null,
     officialOn: form.officialOn || null,
     leftOn: form.leftOn || null,
+    ...confirmsToSave(form),
     openingLeave: Number(form.openingLeave.replace(',', '.')) || 0,
     block: blockToSave(blockChoiceOf(form, !editing)),
+    email: form.email.trim() || null,
   });
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -163,7 +189,7 @@ function PersonDialog({ open, editing, people, regions, departments, kinds, onCl
 }
 
 const show = (d: string | null) => (d ? d.split('-').reverse().join('/') : '-');
-const HEADS = ['Mã NV', 'Họ và tên', 'Bộ phận', 'Khối', 'Chức danh', 'Khu vực', 'Loại NV', 'Ngày vào', 'Ngày nghỉ việc'];
+const HEADS = ['Mã NV', 'Họ và tên', 'Bộ phận', 'Khối', 'Chức danh', 'Email nhận phiếu lương', 'Khu vực', 'Loại NV', 'Ngày vào', 'Ngày nghỉ việc'];
 
 const ROW_ACTION = 'inline-flex h-8 items-center justify-center gap-1.5 rounded-md border bg-white px-2 text-xs font-medium whitespace-nowrap hover:bg-slate-50 max-2xl:size-8 max-2xl:px-0 max-md:size-11';
 
@@ -188,6 +214,9 @@ function PersonRow({ person, regions, kinds, today, isPicked, isChecked, onPick,
       <td className="p-2"><CopyValue text={person.department} label="bộ phận"><span className="pr-7">{person.department || '-'}</span></CopyValue></td>
       <td className="p-2"><button type="button" aria-label={`Sửa khối ${person.fullName}`} title="Bấm để sửa khối" onClick={onEdit} className="rounded-full border-0 bg-transparent p-0 hover:opacity-80"><BlockBadge block={person.block} /></button></td>
       <td className="p-2"><CopyValue text={person.title} label="chức danh"><span className="pr-7">{person.title || '-'}</span></CopyValue></td>
+      <td className="p-2">{person.email
+        ? <CopyValue text={person.email} label="email"><span className="pr-7">{person.email}</span></CopyValue>
+        : <button type="button" aria-label={`Thêm email ${person.fullName}`} title="Bấm để nhập email nhận phiếu lương" onClick={onEdit} className="inline-flex h-6 items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 text-xs font-medium whitespace-nowrap text-amber-900 hover:opacity-80">Thiếu email</button>}</td>
       <td className="max-w-36 p-2"><RegionBadge regionId={person.regionId} regions={regions} /></td>
       <td className="p-2">
         {hasLeft
@@ -211,7 +240,7 @@ function PeopleTable({ people, regions, kinds, today, pickedId, checked, onPick,
   const isAllChecked = people.every((p) => checked.includes(p.id));
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[1240px] border-collapse text-sm whitespace-nowrap">
+      <table className="w-full min-w-[1440px] border-collapse text-sm whitespace-nowrap">
         <thead><tr className="border-b text-left"><th className="w-9 px-2"><input type="checkbox" aria-label="Chọn tất cả nhân viên đang hiện" checked={isAllChecked} onChange={(e) => onCheck(people.map((p) => p.id), e.target.checked)} className="size-4 align-middle" /></th>{HEADS.map((h) => <th key={h} className="h-10 px-2 font-medium">{h}</th>)}<th aria-label="Sửa" className="sticky right-0 bg-white" /></tr></thead>
         <tbody>
           {people.map((p) => <PersonRow key={p.id} person={p} regions={regions} kinds={kinds} today={today} isPicked={p.id === pickedId} isChecked={checked.includes(p.id)} onPick={() => onPick(p.id)} onCheck={(isOn) => onCheck([p.id], isOn)} onEdit={() => onEdit(p)} onLeaveJob={() => onLeaveJob(p)} />)}

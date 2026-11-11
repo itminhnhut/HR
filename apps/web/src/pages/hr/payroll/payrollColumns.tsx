@@ -1,9 +1,12 @@
 import {
   Banknote,
   Calculator,
-  HandCoins,
+  Clock,
+  Coins,
+  CirclePlus,
   Info,
   Landmark,
+  Pencil,
   ReceiptText,
   ShieldCheck,
   StickyNote,
@@ -16,7 +19,9 @@ import type { PayrollLineDto, PayrollMonthDto } from '../../../api';
 import { FitText } from '../timesheet/columns';
 import { CopyValue } from '../timesheet/CopyValue';
 import { fitColumnWidth, textMeasurer } from '../timesheet/gridLayout';
+import { PAYSLIP_LINK_WIDTH, PayslipLink } from './download/PayslipDrawer';
 import { PayrollInputCell } from './PayrollInputCell';
+import { BracketCell, DependantsCell } from './PayrollSheetCells';
 import {
   BlockCell,
   CodeCell,
@@ -29,6 +34,7 @@ import {
 import {
   columnTotals,
   formatValue,
+  printedNote,
   type PayrollBand,
   type PayrollBandId,
   type PayrollColumnSpec,
@@ -42,8 +48,10 @@ const BAND_ICON: Record<PayrollBandId, LucideIcon> = {
   more: Info,
   A: Banknote,
   B: Calculator,
-  C: ShieldCheck,
-  D: HandCoins,
+  B2: Clock,
+  B3: CirclePlus,
+  C: Coins,
+  D: ShieldCheck,
   E: ReceiptText,
   F: Wallet,
   G: Landmark,
@@ -72,11 +80,19 @@ const band = (label: string, tone: string, Icon: LucideIcon, stickyLeft?: number
     );
   };
 
-const head = (spec: PayrollColumnSpec) =>
+/** `canType`: a month input still open carries a small pencil next to its number (F10). */
+const head = (spec: PayrollColumnSpec, canType: boolean) =>
   function Head() {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center text-xs leading-4 font-medium whitespace-nowrap">
-        {spec.no && <span className="text-[11px] text-slate-400 tabular-nums">({spec.no})</span>}
+      <div
+        title={spec.title}
+        className="flex h-full w-full flex-col items-center justify-center text-xs leading-4 font-medium whitespace-nowrap"
+      >
+        {spec.no && (
+          <span className="inline-flex items-center gap-0.5 text-[11px] text-slate-400 tabular-nums">
+            {canType && <Pencil aria-label="Cột gõ được" className="size-2.5 text-blue-500" />}({spec.no})
+          </span>
+        )}
         <span>{spec.label}</span>
       </div>
     );
@@ -95,7 +111,8 @@ function widthOf(
     ...lines.map((l) => formatValue(spec.kind, spec.value(l))),
     ...(total === undefined ? [] : [formatValue(spec.kind, total)]),
   ];
-  const valueWidth = fitColumnWidth(texts, { min: 72, max: 200, measure });
+  // A typed cell shows a pencil before its number.
+  const valueWidth = fitColumnWidth(texts, { min: 72, max: 200, measure }) + (spec.input ? 16 : 0);
   return Math.max(valueWidth, Math.ceil(measure(spec.label) * 0.86) + 28);
 }
 
@@ -111,12 +128,19 @@ function infoRenderer(id: string, month: PayrollMonthDto): (line: PayrollLineDto
   const renderers: Record<string, (l: PayrollLineDto, stt: number) => ReactNode> = {
     stt: (_l, stt) => <span className="block text-center text-sm text-slate-600">{stt}</span>,
     ma: (l) => <CodeCell line={l} />,
-    ten: (l) => textCell(l.fullName, 'họ tên', 'text-sm font-medium'),
+    ten: (l) => (
+      <span className="flex min-w-0 items-center gap-1">
+        <span className="min-w-0 flex-1">{textCell(l.fullName, 'họ tên', 'text-sm font-medium')}</span>
+        <PayslipLink line={l} />
+      </span>
+    ),
+    cd: (l) => textCell(l.sheet?.title ?? '', 'chức danh'),
+    npt: (l) => <DependantsCell line={l} />,
     bp: (l) => textCell(l.department, 'bộ phận'),
     kv: (l) => <RegionChip regionId={l.regionId} regions={month.regions} />,
     hd: (l) => <ContractChip name={contract(l)} isProbation={l.probation} />,
     khoi: (l) => <BlockCell line={l} />,
-    ghiChu: (l) => textCell(l.note, 'ghi chú', 'text-xs text-slate-600'),
+    ghiChu: (l) => textCell(printedNote(l.note), 'ghi chú', 'text-xs text-slate-600'),
   };
   return renderers[id] ?? (() => null);
 }
@@ -142,10 +166,13 @@ const INFO_WIDTH: Record<string, number> = {
   stt: 52,
   ma: 96,
   ten: 168,
+  cd: 120,
   bp: 120,
+  npt: 64,
+  bracket: 72,
   kv: 88,
   hd: 152,
-  khoi: 72,
+  khoi: 116,
   ghiChu: 240,
 };
 
@@ -193,12 +220,13 @@ function columnOf(spec: PayrollColumnSpec, ctx: ColumnContext) {
     accessorFn: (r: PayrollGridRow) => r.id,
     size,
     ...plain,
-    header: head(spec),
+    header: head(spec, !!spec.input && !context.isLocked),
     meta: { label: spec.label, cellClass: tint },
     cell: ({ row }: CellArgs) => {
       const r = row.original;
       if (r.kind === 'total' && spec.kind !== 'info') return <TotalCell column={spec} value={totals[spec.id]} />;
       if (r.kind !== 'line') return <SpecialCell row={r} id={spec.id} />;
+      if (spec.id === 'bracket') return <BracketCell line={r.line} bracket={spec.value(r.line)} />;
       if (spec.kind === 'info') return render(r.line, r.stt);
       return spec.input ? (
         <PayrollInputCell line={r.line} column={spec} month={context} />
@@ -237,12 +265,17 @@ export function makePayrollColumns(args: PayrollColumnsArgs) {
         month.lines.map((l) => l.fullName),
         NAME_FONT,
         INFO_WIDTH.ten,
-      ),
+      ) + PAYSLIP_LINK_WIDTH,
     ),
     bp: textWidth(
       month.lines.map((l) => l.department),
       TEXT_FONT,
       INFO_WIDTH.bp,
+    ),
+    cd: textWidth(
+      month.lines.map((l) => l.sheet?.title ?? ''),
+      TEXT_FONT,
+      INFO_WIDTH.cd,
     ),
   };
   const ctx = (tint: string): ColumnContext => ({

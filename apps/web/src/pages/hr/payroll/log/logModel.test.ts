@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PayrollLogLineDto } from '../../../../api';
-import { linksOf, logFiltersFrom, logQueryOf, type LogPerson } from './logModel';
+import { linksOf, logFiltersFrom, logQueryOf, shownAction, shownDetail, type LogPerson } from './logModel';
 
 /** What a line of Nhật ký lương points at, and what the address asks the API for (spec 4.4, 11.9; L-L11, L-I09). */
 
@@ -150,5 +150,42 @@ describe('the filters of the log in the address', () => {
     // Assert
     expect(approvals).toEqual({ isApprovalOnly: true, month: '2026-11', offset: 0 });
     expect(unknown).toEqual({ month: '2026-11', offset: 0 });
+  });
+});
+
+describe('a log line in the words of HR (F18)', () => {
+  it('should name the contract type and the pay components of a new level, and leave the amounts of 0 out', () => {
+    // Arrange
+    const detail =
+      'Thêm hồ sơ của NV01 NV A, từ 26/09/2026: loại HĐ thu-viec, luong 6.000.000, trach-nhiem 0, com 1.200.000, xang-dt 0, KPI 0';
+
+    // Act + Assert
+    expect(shownDetail(detail)).toBe(
+      'Thêm hồ sơ của NV01 NV A, từ 26/09/2026: HĐ thử việc · Lương thời gian 6.000.000 · Tiền cơm 1.200.000',
+    );
+  });
+
+  it('should name what changed in a level, keeping a change to or from 0', () => {
+    // Arrange
+    const detail = 'Sửa hồ sơ của NV01 NV A, từ 26/09/2026: loại HĐ thu-viec → khong-thoi-han, com 0 → 1.200.000';
+
+    // Act + Assert
+    expect(shownDetail(detail)).toBe(
+      'Sửa hồ sơ của NV01 NV A, từ 26/09/2026: HĐ thử việc → HĐLĐ không xác định thời hạn · Tiền cơm 0 → 1.200.000',
+    );
+  });
+
+  it('should keep an id it does not know, and every other kind of line as written', () => {
+    // Act + Assert
+    expect(shownDetail('Thêm hồ sơ của NV01 NV A, từ 26/09/2026: loại HĐ thoi-vu, pc-doc-hai 500.000')).toBe(
+      'Thêm hồ sơ của NV01 NV A, từ 26/09/2026: loại HĐ thoi-vu · pc-doc-hai 500.000',
+    );
+    expect(shownDetail('NV10 NV J: % KPI trống → 0%')).toBe('NV10 NV J: % KPI trống → 0%');
+  });
+
+  it('should call the month inputs "Gõ số trên bảng lương"', () => {
+    // Act + Assert
+    expect(shownAction('Sửa đầu vào tháng')).toBe('Gõ số trên bảng lương');
+    expect(shownAction('Duyệt')).toBe('Duyệt');
   });
 });

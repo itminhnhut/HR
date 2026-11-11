@@ -25,11 +25,11 @@ describe('payroll catalogue without stored rows', () => {
     expect(amounts).toEqual({
       luong: 0,
       'trach-nhiem': 0,
-      com: 1_100_000,
+      com: 1_200_000,
       'xang-dt': 0,
-      'trang-phuc': 350_000,
+      'trang-phuc': 400_000,
       'nha-o': 0,
-      'chuyen-can': 1_000_000,
+      'chuyen-can': 1_200_000,
     });
   });
 

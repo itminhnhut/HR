@@ -13,9 +13,15 @@ export interface OverviewSums {
   employeeInsurance: number;
   companyInsurance: number;
   tax: number;
+  /** (32): without it the figures before "Thực nhận" do not add up to it (F23). */
+  cash: number;
   netPay: number;
   totalCost: number;
 }
+
+/** How the figures add up, said once under them. */
+export const NET_PAY_WORDS =
+  'Thực nhận (42) = Tổng thu nhập (26) − BH người lao động − Thuế TNCN (40) − Đoàn phí (31) + Hỗ trợ / tạm ứng (32)';
 
 export type OverviewMeasureId = Exclude<keyof OverviewSums, 'people'>;
 
@@ -35,6 +41,7 @@ export const OVERVIEW_MEASURES: readonly {
   },
   { id: 'companyInsurance', label: 'BH công ty', columns: '(47)', cells: ['companyTotal'] },
   { id: 'tax', label: 'Thuế TNCN', columns: '(40)', cells: ['tax'] },
+  { id: 'cash', label: 'Hỗ trợ / tạm ứng', columns: '(32)', cells: ['cash'] },
   { id: 'netPay', label: 'Thực nhận', columns: '(42)', cells: ['netPay'] },
   { id: 'totalCost', label: 'Tổng chi phí', columns: '(48)', cells: ['totalCost'] },
 ];
@@ -45,6 +52,7 @@ const EMPTY_SUMS: OverviewSums = {
   employeeInsurance: 0,
   companyInsurance: 0,
   tax: 0,
+  cash: 0,
   netPay: 0,
   totalCost: 0,
 };

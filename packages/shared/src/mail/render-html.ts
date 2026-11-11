@@ -6,6 +6,7 @@ import { MAIL_COMPANY, MAIL_FONT, MAIL_LOGO_URLS } from './company.js';
 import { hrEmailOf, interviewPartsOf, isInterviewMail, telHref } from './details.js';
 import { blocksHtml, paragraphsHtml, type TextStyle } from './inline.js';
 import { mailtoHref, signatureRow } from './signature.js';
+import { PAYSLIP_FOOTER } from './render-text.js';
 import type { MailContent, MailDetails } from './types.js';
 
 /** Fixed per template: HR edits the wording, never the frame. */
@@ -35,6 +36,11 @@ const HEADINGS: Record<TemplateKey, { title: string; subtitle: string; documentT
     subtitle: 'PHONE SCREENING',
     documentTitle: 'Thư hẹn trao đổi qua điện thoại',
   },
+  payslip: {
+    title: 'PHIẾU LƯƠNG',
+    subtitle: 'PAYSLIP',
+    documentTitle: 'Phiếu lương',
+  },
 };
 
 const RESPONSIVE_CSS = `@media only screen and (max-width:600px) {
@@ -54,6 +60,7 @@ const RESPONSIVE_CSS = `@media only screen and (max-width:600px) {
 /** The preview line of an inbox. */
 function preheader(key: TemplateKey, details: MailDetails): string {
   const job = details.jobTitle.trim();
+  if (key === 'payslip') return `Phòng Nhân sự ${MAIL_COMPANY.name} gửi phiếu lương.`;
   if (key === 'rejection') return `Cảm ơn bạn đã ứng tuyển vị trí ${job} tại ${MAIL_COMPANY.name}.`;
   if (key === 'rejection_interview') return `Cảm ơn bạn đã tham gia phỏng vấn vị trí ${job} tại ${MAIL_COMPANY.name}.`;
   if (key === 'call') {
@@ -120,13 +127,17 @@ function answerRow(key: TemplateKey, details: MailDetails): string {
 
 const FOOTER_LINK = 'color:#ffffff;text-decoration:underline;';
 
-function footerRow(): string {
+function footerRow(key: TemplateKey): string {
   const { name, tagline, hrEmail, hotline, website, careersSite, careersUrl, privacyPage, privacyUrl } = MAIL_COMPANY;
   const quiet = 'color:#ffe3e6;text-decoration:none;';
+  const reason =
+    key === 'payslip'
+      ? escapeHtml(PAYSLIP_FOOTER)
+      : `Bạn nhận thư này vì đã ứng tuyển tại ${escapeHtml(name)}. Xem chính sách dữ liệu tại <a href="${escapeHtml(privacyUrl)}" style="${FOOTER_LINK}">${escapeHtml(privacyPage)}</a>`;
   return `<tr><td class="px" bgcolor="#C8102E" style="background:#C8102E;padding:14px 40px;font-size:12px;color:#ffe3e6;line-height:1.7;">
   <b style="color:#ffffff;">${escapeHtml(name.toUpperCase())}</b> &nbsp;·&nbsp; ${escapeHtml(tagline)}<br>
   Email: <a href="${escapeHtml(mailtoHref(hrEmail))}" style="${quiet}">${escapeHtml(hrEmail)}</a> &nbsp;|&nbsp; Hotline: <a href="${escapeHtml(telHref(hotline))}" style="${quiet}">${escapeHtml(hotline)}</a> &nbsp;|&nbsp; Website: <a href="https://${escapeHtml(website)}" style="${quiet}">${escapeHtml(website)}</a> &nbsp;|&nbsp; Tuyển dụng ${escapeHtml(name)}: <a href="${escapeHtml(careersUrl)}" style="${FOOTER_LINK}">${escapeHtml(careersSite)}</a>
-  <div style="font-size:11px;line-height:1.5;margin-top:6px;">Bạn nhận thư này vì đã ứng tuyển tại ${escapeHtml(name)}. Xem chính sách dữ liệu tại <a href="${escapeHtml(privacyUrl)}" style="${FOOTER_LINK}">${escapeHtml(privacyPage)}</a></div>
+  <div style="font-size:11px;line-height:1.5;margin-top:6px;">${reason}</div>
 </td></tr>`;
 }
 
@@ -175,7 +186,7 @@ export function renderMailHtml(
     titleRow(content.key, details.jobTitle),
     ...contentRows(content, details),
     signatureRow(details, logos.mark),
-    footerRow(),
+    footerRow(content.key),
   ];
   return withMailFont(`<!DOCTYPE html>
 <html lang="vi"><head>

@@ -18,6 +18,7 @@ import {
   copyValue,
   formatValue,
   isBlockFromPerson,
+  isTotalled,
   levelsSearch,
   regionShort,
   timesheetLink,
@@ -417,11 +418,12 @@ export function CodeCell({ line }: { line: PayrollLineDto }) {
 
 /** A cell of the total row: the column's sum over the rows shown, empty where a total means nothing. */
 export function TotalCell({ column, value }: { column: PayrollColumnSpec; value: number | undefined }): ReactNode {
-  if (value === undefined || column.kind !== 'money') return null;
+  if (value === undefined || !isTotalled(column)) return null;
+  const label = `tổng (${column.no ?? ''}) ${column.label}`;
   return (
-    <CopyValue inGrid side="left" text={copyValue('money', value)} label={`tổng (${column.no ?? ''}) ${column.label}`}>
+    <CopyValue inGrid side="left" text={copyValue(column.kind, value)} label={label}>
       <span className="block w-full text-right text-sm font-bold text-slate-900 tabular-nums">
-        {formatValue('money', value)}
+        {formatValue(column.kind, value)}
       </span>
     </CopyValue>
   );

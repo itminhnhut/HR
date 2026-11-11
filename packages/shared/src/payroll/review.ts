@@ -20,6 +20,8 @@ export interface ReviewMonthInput {
   firstWebMonth: boolean;
   /** HR confirmed the timesheet closing this first month uses. */
   closingConfirmed: boolean;
+  /** People whose block is read from the person because the timesheet close carries none. */
+  blockFromPerson?: number;
   /** Items of the checklist before the first month (spec 17.2) not confirmed yet. */
   checklistPending?: number;
   /**
@@ -36,6 +38,16 @@ const YEAR_OPEN_WORDS = {
   waiting: 'chưa có bảng lương — số cộng dồn năm chưa gồm tháng này',
   partial: 'duyệt trước khi web ghi số cộng dồn — trang phục đã miễn và ngày làm thêm của tháng này chưa được cộng',
 } as const;
+
+const BLOCK_NOW = 'đang dùng khối hiện tại ở Chấm công › Nhân viên';
+
+/** One line for the month, not one per person: the close was made before HR gave people their block. */
+function blockItems(month: ReviewMonthInput): string[] {
+  const count = month.blockFromPerson ?? 0;
+  if (count === 0) return [];
+  if (count >= month.rows.length) return [`Lần chốt công này chưa ghi khối: ${BLOCK_NOW}.`];
+  return [`Lần chốt công này chưa ghi khối của ${count} người: ${BLOCK_NOW}.`];
+}
 
 function monthItems(month: ReviewMonthInput): ReviewItem[] {
   const item = (level: ReviewItem['level'], code: string, message: string): ReviewItem => ({
@@ -80,6 +92,7 @@ function monthItems(month: ReviewMonthInput): ReviewItem[] {
           ),
         ]
       : []),
+    ...blockItems(month).map((message) => item('yellow', 'block-from-person', message)),
     ...(month.previousMonthDraft
       ? [item('yellow', 'previous-month-draft', 'Tháng trước còn nháp; số cộng dồn năm dùng nháp')]
       : []),

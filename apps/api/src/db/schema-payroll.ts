@@ -189,6 +189,7 @@ export const payrollBankAccounts = pgTable(
     accountCipher: text('account_cipher').notNull(),
     keyVersion: integer('key_version').notNull(),
     last4: text('last4').notNull(),
+    /** No longer read or written (migration 0051 copied it to `employees.email`); kept so no data is lost. */
     payslipEmail: text('payslip_email'),
     changedOn: date('changed_on').notNull(),
     createdBy: createdBy(),

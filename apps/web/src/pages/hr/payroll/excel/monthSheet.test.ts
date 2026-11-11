@@ -12,8 +12,10 @@ import {
   goldenExportMonth,
   goldenSplitMonth,
 } from './goldenExport.fixture';
+import { COMPANY_ADDRESS } from './excelStyle';
 import { buildPayrollBook } from './payrollBook';
 import { payrollFileName } from './format';
+import { isEngineLine } from './rows';
 import type { PayrollDownload, PayrollExportMonth } from './types';
 
 /**
@@ -212,10 +214,7 @@ describe('payroll Excel, one month (spec 12.1)', () => {
   it('L-F17: should total each column on the TỔNG CỘNG row as the screen does, to the dong', async () => {
     // Arrange
     const month = goldenExportMonth();
-    const screen = payrollTotals(
-      month.rows.map((r) => r.line),
-      'cell',
-    );
+    const screen = payrollTotals(month.rows.map((r) => r.line).filter(isEngineLine), 'cell');
 
     // Act
     const sheet = await openSheet(month);
@@ -299,14 +298,38 @@ describe('payroll Excel, one month (spec 12.1)', () => {
     expect(sheet.getCell('H2').value).toBe('BẢNG LƯƠNG THÁNG 10/2026');
   });
 
-  it('L-F23, L-L34: should end the sheet with the signature block, dated on the pay date', async () => {
+  it('F29: should say under the title that the file is filtered, and label the total row for the people in it', async () => {
+    // Arrange: one person of the golden month, as a filtered download answers it.
+    const whole = goldenExportMonth();
+    const partial = { shown: 1, total: whole.rows.length };
+    const month = {
+      ...whole,
+      rows: whole.rows.slice(0, 1),
+      totals: undefined,
+      partial,
+      labels: [`Đã lọc: 1/${whole.rows.length} người`],
+    };
+
+    // Act
+    const sheet = await openSheet(month);
+
+    // Assert
+    expect(sheet.getCell('H4').value).toBe(`Đã lọc: 1/${whole.rows.length} người`);
+    const totalRow = 10 + 1;
+    expect(sheet.getCell(totalRow, 1).value).toBe(`TỔNG CỘNG (đã lọc 1/${whole.rows.length} người)`);
+    const net = columnOf('42');
+    expect(sheet.getCell(totalRow, net).value).toBe(sheet.getCell(10, net).value);
+  });
+
+  it('L-F23, L-L34, F17: should end the sheet with the signature block, the day left to be written when signing', async () => {
     // Act
     const sheet = await openSheet(goldenExportMonth());
 
     // Assert
     const kt = columnOf('27');
     const gd = columnOf('41');
-    expect(sheet.getCell(TOTAL_ROW + 2, gd).value).toBe('TP. Hồ Chí Minh, ngày 05 tháng 11 năm 2026');
+    expect(sheet.getCell(TOTAL_ROW + 2, gd).value).toBe('TP. Hồ Chí Minh, ngày ...... tháng ...... năm 2026');
+    expect(sheet.getCell('A5').value).toBe(COMPANY_ADDRESS);
     expect([3, kt, gd].map((c) => sheet.getCell(TOTAL_ROW + 3, c).value)).toEqual([
       'NGƯỜI LẬP BIỂU',
       'KẾ TOÁN TRƯỞNG',

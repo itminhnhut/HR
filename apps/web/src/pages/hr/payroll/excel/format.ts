@@ -43,10 +43,13 @@ export function stampText(stamp: PayrollStamp, download: PayrollDownload): strin
   return `${versionText(rest)} · ${fetched} · đã thay bởi lần ${supersededBy}`;
 }
 
-/** `TP. Hồ Chí Minh, ngày 05 tháng 11 năm 2026` from the pay date (L-F23). */
+/**
+ * `TP. Hồ Chí Minh, ngày ...... tháng ...... năm 2026`, as HR's file: the day and the month are left to be written by
+ * hand when the sheet is signed, which may not be the pay date; the year is the pay date's (L-F23, F17).
+ */
 export function signatureDate(payDate: string): string {
-  const [y = '', m = '', d = ''] = payDate.split('-');
-  return `TP. Hồ Chí Minh, ngày ${pad(Number(d))} tháng ${pad(Number(m))} năm ${y}`;
+  const [y = ''] = payDate.split('-');
+  return `TP. Hồ Chí Minh, ngày ...... tháng ...... năm ${y}`;
 }
 
 const versionSuffix = (stamp: PayrollStamp) => (stamp.kind === 'draft' ? 'NHAP' : `lan-${stamp.round}`);

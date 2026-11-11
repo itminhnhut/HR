@@ -75,8 +75,9 @@ function writeFoot(sheet: Worksheet, slip: Payslip, start: number): void {
   Object.assign(sheet.getCell(start, 1), { ...style, value: 'THỰC NHẬN' });
   Object.assign(sheet.getCell(start, 2), { ...style, value: null });
   Object.assign(sheet.getCell(start, 3), { ...style, value: slip.netPay, numFmt: MONEY_FORMAT });
-  text(sheet, `A${start + 1}`, `Chuyển khoản: ${slip.bank}`);
-  slip.notes.forEach((note, i) => text(sheet, `A${start + 2 + i}`, note, { italic: true, size: 9 }));
+  if (slip.bank !== null) text(sheet, `A${start + 1}`, `Chuyển khoản: ${slip.bank}`);
+  const notes = start + (slip.bank === null ? 1 : 2);
+  slip.notes.forEach((note, i) => text(sheet, `A${notes + i}`, note, { italic: true, size: 9 }));
 }
 
 function addPayslipSheet(book: Workbook, slip: Payslip, taken: Set<string>): void {

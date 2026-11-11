@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, type PayrollLineDto, type PayrollMonthDto } from '../../../api';
 import { spyOnApi } from '../../../test/apiSpy';
 import { TooltipProvider } from '../../../vendor/shadcn-grid/components/ui/tooltip';
-import { monthLockOf } from './monthInputsModel';
+import { cashSplit, monthLockOf } from './monthInputsModel';
 import { PayrollInputCell } from './PayrollInputCell';
 import { payrollBands, type PayrollColumnSpec } from './payrollModel';
 import { month, person } from './payrollTestData';
@@ -79,8 +79,8 @@ describe('typing (19) % KPI in the grid', () => {
     show('19');
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % KPI của NV C' }));
-    const input = screen.getByRole('textbox', { name: '(19) % KPI của NV C, tính bằng %' });
+    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % đánh giá KPI của NV C' }));
+    const input = screen.getByRole('textbox', { name: '(19) % đánh giá KPI của NV C, tính bằng %' });
     fireEvent.change(input, { target: { value: '80' } });
     fireEvent.keyDown(input, { key: 'Enter' });
 
@@ -97,7 +97,7 @@ describe('typing (19) % KPI in the grid', () => {
     show('19');
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % KPI của NV C' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % đánh giá KPI của NV C' }));
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '90' } });
     fireEvent.keyDown(input, { key: 'Escape' });
@@ -115,7 +115,7 @@ describe('typing (19) % KPI in the grid', () => {
     show('19');
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % KPI của NV C' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % đánh giá KPI của NV C' }));
     const input = screen.getByRole('textbox');
     fireEvent.change(input, { target: { value: '250' } });
     fireEvent.keyDown(input, { key: 'Enter' });
@@ -133,7 +133,7 @@ describe('typing (19) % KPI in the grid', () => {
     show('19', typed);
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % KPI của NV C' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Sửa (19) % đánh giá KPI của NV C' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Về số tính' }));
 
     // Assert
@@ -193,6 +193,9 @@ describe('the (32) editor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sửa (32) Hỗ trợ / hoàn / tạm ứng của NV C' }));
     const form = await screen.findByRole('form', { name: '(32) Hỗ trợ / hoàn / tạm ứng · NV C' });
     fireEvent.click(within(form).getByRole('button', { name: 'Thêm dòng' }));
+    // F09: the recurring part, read only, with the way to it; nothing typed for this month yet.
+    expect(within(form).getByText(/Định kỳ từ Hồ sơ lương/)).toBeTruthy();
+    expect(within(form).getByRole('link', { name: 'Sửa ở Hồ sơ lương ›' })).toBeTruthy();
     const kind = within(form).getByRole('combobox', { name: 'Loại dòng 1' });
     fireEvent.change(within(form).getByRole('textbox', { name: 'Số tiền dòng 1' }), { target: { value: '1.000.000' } });
     fireEvent.change(kind, { target: { value: 'advance' } });
@@ -210,6 +213,26 @@ describe('the (32) editor', () => {
       }),
     );
     expect(await screen.findByText('-1.000.000')).toBeTruthy();
+  });
+
+  it('F09: should show the recurring part of (32) read only, then the lines of this month and the total', () => {
+    // Arrange: (32) holds 630.000 of recurring items and a 500.000 advance typed for this month.
+    const line = person({
+      fullName: 'NV C',
+      cells: { cash: 130_000 } as PayrollLineDto['cells'],
+      inputs: { ...EMPTY_MONTH_INPUTS, cash: [{ kind: 'advance', amount: 500_000, reason: 'Ứng lương' }] },
+    });
+
+    // Act
+    const split = cashSplit(line, [{ kind: 'advance', amount: 500_000 }]);
+    const withMore = cashSplit(line, [
+      { kind: 'advance', amount: 500_000 },
+      { kind: 'support', amount: 200_000 },
+    ]);
+
+    // Assert
+    expect(split).toEqual({ recurring: 630_000, typed: -500_000, total: 130_000 });
+    expect(withMore.total).toBe(330_000);
   });
 
   it('should ask for a tax choice and a reason before sending (24)', async () => {

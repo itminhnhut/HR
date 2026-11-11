@@ -215,6 +215,61 @@ describe('L-M09 HR leaves an adjustment out or types over it', () => {
   });
 });
 
+describe('C03 a truy lĩnh / truy thu HR adds by hand', () => {
+  it('should pay an amount for a month the web computed no difference for, outside tax and insurance', async () => {
+    // Arrange: nothing changed after November was approved, so December carries nothing by itself.
+    const { b } = await approvedNovember();
+    const before = lineOf(await monthOf('2026-12'), b);
+
+    // Act
+    const noReason = await typeInputs(
+      '2026-12',
+      b,
+      { retro: [{ origin: '2026-10', amount: 500_000, reason: '' }] },
+      422,
+    );
+    await typeInputs('2026-12', b, { retro: [{ origin: '2026-10', amount: 500_000, reason: 'Bù lương tháng 10' }] });
+    const december = await monthOf('2026-12');
+
+    // Assert
+    const line = lineOf(december, b);
+    expect(noReason).toMatchObject({ fieldErrors: expect.any(Object) });
+    expect(onlyRetro(december, b)).toMatchObject({
+      origin: '2026-10',
+      computed: 0,
+      typed: 500_000,
+      amount: 500_000,
+      placed: true,
+      reason: 'Bù lương tháng 10',
+      cells: {},
+    });
+    expect(line.cells.netPay - before.cells.netPay).toBe(500_000);
+    expect(line.cells.cash - before.cells.cash).toBe(500_000);
+    expect([line.cells.taxable, line.cells.socialBase]).toEqual([before.cells.taxable, before.cells.socialBase]);
+    expect(line.retroNet).toBe(500_000);
+    expect(december.review.find((i) => i.code === 'retro-typed')).toMatchObject({ level: 'yellow', employeeId: b.id });
+    const log = await flow.payroll<PayrollLogPageDto>('GET', '/log?ky=2026-12&nhom=bang-luong');
+    expect(log.lines[0]?.detail).toMatch(/NV02.*truy lĩnh \/ truy thu.*T10\/2026.*Bù lương tháng 10/);
+  });
+
+  it('should take money back with a negative amount, and go when the line is removed', async () => {
+    // Arrange
+    const { b } = await approvedNovember();
+    const before = lineOf(await monthOf('2026-12'), b);
+
+    // Act
+    const taken = await typeInputs('2026-12', b, {
+      retro: [{ origin: '2026-09', amount: -200_000, reason: 'Thu lại tạm ứng thừa' }],
+    });
+    const back = await typeInputs('2026-12', b, { retro: [] });
+
+    // Assert
+    expect((taken.line?.cells.netPay ?? 0) - before.cells.netPay).toBe(-200_000);
+    expect(back.line?.cells.netPay).toBe(before.cells.netPay);
+    expect(retroOf(await monthOf('2026-12'), b)).toEqual([]);
+  });
+});
+
 describe('L-M08 once the receiving month is approved', () => {
   it('should keep the adjustment in its approval and not propose it again', async () => {
     // Arrange

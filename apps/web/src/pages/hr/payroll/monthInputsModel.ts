@@ -9,7 +9,10 @@ import type { PayrollInputField } from './payrollModel';
 
 /** The month inputs of the grid without React: typed or not, what a typed text sends, the row after a save. */
 
-export type PayrollNumberField = Extract<PayrollInputField, 'kpiPercent' | 'overtimeHours' | 'restDays' | 'holidayDays'>;
+export type PayrollNumberField = Extract<
+  PayrollInputField,
+  'kpiPercent' | 'overtimeHours' | 'restDays' | 'holidayDays'
+>;
 
 export const isNumberField = (field: PayrollInputField): field is PayrollNumberField =>
   field !== 'otherIncome' && field !== 'cash';
@@ -68,4 +71,20 @@ export function monthLockOf(status: PayrollMonthDto['status']): string | null {
   if (status === 'approved') return 'Tháng đã duyệt, chỉ xem. Muốn sửa: Mở lại, hoặc truy lĩnh / truy thu ở tháng sau.';
   if (status === 'paid') return 'Tháng đã chuyển khoản, chỉ xem. Sửa bằng truy lĩnh / truy thu ở tháng sau.';
   return null;
+}
+
+const signedCash = (item: { kind: string; amount: number }) => (item.kind === 'advance' ? -item.amount : item.amount);
+
+/**
+ * (32) = the recurring items of Hồ sơ lương + this month's lines, an advance taken off (F09). The recurring part is
+ * what the saved row's (32) holds beyond the lines saved with it, so "Công ty trả thay BH" is counted in it.
+ */
+export function cashSplit(
+  line: { cells: { cash: number }; inputs: { cash: readonly { kind: string; amount: number }[] } },
+  items: readonly { kind: string; amount: number }[],
+): { recurring: number; typed: number; total: number } {
+  const saved = line.inputs.cash.reduce((sum, c) => sum + signedCash(c), 0);
+  const recurring = line.cells.cash - saved;
+  const typed = items.reduce((sum, c) => sum + signedCash(c), 0);
+  return { recurring, typed, total: recurring + typed };
 }

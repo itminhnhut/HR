@@ -30,6 +30,8 @@ export interface Flow {
   payroll<T>(method: string, path: string, body?: unknown, expected?: number): Promise<T>;
   /** The status and the error code, when the answer is the point of the test. */
   attempt(method: string, path: string, body?: unknown): Promise<{ status: number; code?: string }>;
+  /** The same for any address of the API (`/api/hr/payroll/…`), for answers that are not 200. */
+  attemptAt(method: string, fullPath: string, body?: unknown): Promise<{ status: number; code?: string }>;
   addPerson(over?: Record<string, unknown>): Promise<EmployeeDto>;
   updatePerson(person: EmployeeDto, over: Record<string, unknown>): Promise<EmployeeDto>;
   period(year: number, month: number): Promise<TimesheetDto>;
@@ -83,8 +85,11 @@ export async function createFlow(): Promise<Flow> {
     },
     call,
     payroll,
-    async attempt(method, path, body) {
-      const res = await request(method, path, body);
+    attempt(method, path, body) {
+      return flow.attemptAt(method, `/api/hr/timesheet${path}`, body);
+    },
+    async attemptAt(method, fullPath, body) {
+      const res = await t.send(method, fullPath, body, { cookie });
       const text = await res.text();
       let code: string | undefined;
       try {

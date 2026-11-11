@@ -54,7 +54,7 @@ export const profile = (over: Partial<PayrollProfileDto> = {}): PayrollProfileDt
   dependants: [{ id: 'd-1', fromMonth: '2026-01', toMonth: '2026-12', count: 2 }],
   commitments: [{ id: 'c-1', year: 2026, signedOn: '2026-01-05' }],
   recurring: [],
-  bankAccounts: [{ id: 'b-1', bank: 'Ngân hàng Demo', last4: '4567', payslipEmail: null, changedOn: '2026-09-26' }],
+  bankAccounts: [{ id: 'b-1', bank: 'Ngân hàng Demo', last4: '4567', changedOn: '2026-09-26' }],
   openings: [],
   overrides: [],
   ...over,

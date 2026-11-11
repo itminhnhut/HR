@@ -1,6 +1,6 @@
 import type { Workbook, Worksheet } from 'exceljs';
 import { GROUP_LABELS, payrollColumns, type ColumnGroup, type PayrollColumn } from './columns';
-import { BOX, COMPANY, fill, headCell, NUMBER_FORMATS, RED, SERIF, text, WHITE } from './excelStyle';
+import { BOX, COMPANY, COMPANY_ADDRESS, fill, headCell, NUMBER_FORMATS, RED, SERIF, text, WHITE } from './excelStyle';
 import { sheetName, signatureDate, stampText } from './format';
 import { columnTotals, orderedRows } from './rows';
 import type { PayrollDownload, PayrollExportMonth } from './types';
@@ -20,6 +20,7 @@ const INFO_COLUMN = 8;
 function writeTop(sheet: Worksheet, month: PayrollExportMonth, download: PayrollDownload): void {
   const { dates, stamp, norms, labels = [] } = month;
   text(sheet, 'A4', COMPANY, { bold: true, size: 12 });
+  text(sheet, 'A5', COMPANY_ADDRESS);
   text(sheet, 'D4', 'Tháng lương:', { bold: true });
   text(sheet, 'F4', `${dates.month}/${dates.year}`, { bold: true, color: { argb: RED } });
   norms.forEach(({ region, norm }, i) => {
@@ -77,11 +78,15 @@ function writeRows(sheet: Worksheet, columns: readonly PayrollColumn[], month: P
   return FIRST_ROW + rows.length;
 }
 
+/** A filtered file never reads as the whole payroll: its total row says whose total it is. */
+const totalWords = (month: PayrollExportMonth) =>
+  month.partial ? `TỔNG CỘNG (đã lọc ${month.partial.shown}/${month.partial.total} người)` : 'TỔNG CỘNG';
+
 function writeTotals(sheet: Worksheet, columns: readonly PayrollColumn[], month: PayrollExportMonth, row: number) {
   const totals = columnTotals(columns, month);
   columns.forEach((column, i) => {
     Object.assign(sheet.getCell(row, i + 1), {
-      value: i === 0 ? 'TỔNG CỘNG' : totals[i],
+      value: i === 0 ? totalWords(month) : totals[i],
       fill: fill(RED),
       border: BOX,
       font: { name: SERIF, bold: true, color: { argb: WHITE } },

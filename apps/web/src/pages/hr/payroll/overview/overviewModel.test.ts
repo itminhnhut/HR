@@ -77,6 +77,7 @@ describe('sumsOf', () => {
       employeeInsurance: 1_050_000,
       companyInsurance: 2_150_000,
       tax: 900_000,
+      cash: 0,
       netPay: 14_050_000,
       totalCost: 18_150_000,
     });
@@ -89,6 +90,7 @@ describe('sumsOf', () => {
       employeeInsurance: 0,
       companyInsurance: 0,
       tax: 0,
+      cash: 0,
       netPay: 0,
       totalCost: 0,
     });

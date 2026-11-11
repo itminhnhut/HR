@@ -9,6 +9,7 @@ import { googleVerifier, type GoogleVerifier } from './lib/google.js';
 import { vercelBlobImageStore, type ImageStore } from './lib/image-store.js';
 import { companyName, envValue } from './lib/env-value.js';
 import { isValidIndexNowKey } from './lib/indexnow.js';
+import { mailerFromEnv } from './lib/mailer.js';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -117,5 +118,6 @@ export function createProductionApp(local: LocalOverrides = {}) {
     now: () => new Date(),
     fetch: (url, init) => fetch(url, init),
     readRealtime: realtimeReader(() => new Date()),
+    mailer: mailerFromEnv(process.env, (url, init) => fetch(url, init), () => new Date()),
   });
 }

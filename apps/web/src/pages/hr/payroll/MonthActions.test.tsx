@@ -131,6 +131,12 @@ describe('Duyệt', () => {
     const dialog = await screen.findByRole('dialog');
     const confirm = within(dialog).getByRole('button', { name: 'Duyệt tháng' }) as HTMLButtonElement;
     const wasDisabled = confirm.disabled;
+    // F21: plain words, the pay date leads to where it is changed, Rà soát opens from the tick's row.
+    expect(within(dialog).getByText(/số của tháng này được khoá lại và không tự đổi nữa/)).toBeTruthy();
+    expect(within(dialog).getByRole('link', { name: 'Đổi ›' }).getAttribute('href')).toBe(
+      '/hr/luong/cau-hinh?ky=2026-10&muc=quy-tac&khoa=quy-tac.ngay-chi-tra',
+    );
+    expect(within(dialog).getByRole('button', { name: 'Mở Rà soát ›' })).toBeTruthy();
     fireEvent.click(within(dialog).getByRole('checkbox', { name: /Đã xem 1 cảnh báo đỏ/ }));
     fireEvent.click(confirm);
 
@@ -238,7 +244,10 @@ describe('Rà soát', () => {
     fireEvent.click(within(dialog).getByRole('link', { name: /NV J/ }));
 
     // Assert
-    expect(within(header()).getByRole('button', { name: /Rà soát/ }).textContent).toContain('2');
+    // F06: red and yellow are counted apart on the button.
+    const chips = within(header()).getByRole('button', { name: /Rà soát/ });
+    expect(within(chips).getByTitle(/1 cảnh báo đỏ/).textContent).toBe('1');
+    expect(within(chips).getByTitle(/1 cảnh báo vàng/).textContent).toBe('1');
     expect(items[0]).toContain('xác nhận lại lần chốt kỳ công');
     expect(items[1]).toContain('% KPI gõ 0%');
     await waitFor(() => expect(address()).toBe('/hr/luong?ky=2026-10&nv=nv-j'));

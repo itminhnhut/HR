@@ -162,7 +162,8 @@ export const payrollBankSchema = z.object({
     .string()
     .transform((v) => v.replace(/\s+/g, ''))
     .pipe(z.string().regex(/^\d{6,19}$/, 'Số tài khoản gồm 6–19 chữ số.')),
-  payslipEmail: z.string().trim().email('Email không hợp lệ.').nullish(),
+  /** No longer kept here: the payslip email is the person's own (Chấm công › Nhân viên). An old client may still send it. */
+  payslipEmail: z.unknown().optional(),
   changedOn: day,
 });
 export type PayrollBankInput = z.input<typeof payrollBankSchema>;
@@ -172,7 +173,6 @@ export interface PayrollBankAccountDto {
   id: string;
   bank: string;
   last4: string;
-  payslipEmail: string | null;
   changedOn: string;
 }
 
@@ -207,6 +207,8 @@ export interface PayrollPersonDto {
   block: EmployeeBlock | null;
   joinedOn: string | null;
   leftOn: string | null;
+  /** Email nhận phiếu lương, typed in Chấm công › Nhân viên; null or absent when none. */
+  email?: string | null;
 }
 
 export interface PayrollProfileListDto {

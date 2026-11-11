@@ -3,6 +3,7 @@ import {
   employmentOn,
   explainLine,
   payrollConfigFor,
+  roundDong,
   toNumber,
   type PayrollCellKey,
   type EmployeeBlock,
@@ -10,6 +11,7 @@ import {
   type PayrollDates,
   type PayrollLine,
   type PayrollLineDto,
+  type PayrollLineSheetDto,
   type PayrollMonthInputsDto,
   type PayrollOverrideDto,
   type PayrollProfileMonthDto,
@@ -19,6 +21,7 @@ import {
   type TimesheetClosingRowDto,
   type Zone,
 } from '@careers/shared';
+import { masked } from './payroll-bank.js';
 import { leavePayoutDtoOf, type LeaveBase, type LeaveItem } from './payroll-leave-payout.js';
 import {
   closingTotalsOf,
@@ -40,6 +43,10 @@ export interface PersonFacts {
   facts: PayrollProfileMonthDto | null;
   zone: Zone;
   hasBankAccount: boolean;
+  /** Email nhận phiếu lương typed in Chấm công › Nhân viên; null when none. */
+  email: string | null;
+  /** The account in force on the pay date, without its number: bank and last four digits. */
+  bank: { bank: string; last4: string } | null;
   /** "Ngày vào 07/10/2026" for each date of the row HR has not confirmed (spec 11.3). */
   unconfirmedDates: string[];
   /** What HR typed for the person this month. */
@@ -62,7 +69,6 @@ export interface BuiltLine {
 
 export const NO_PROFILE_NOTE = 'Chưa có hồ sơ lương';
 /** Ghi chú of a line whose block is the person's of today: the close was made before HR gave one. */
-export const BLOCK_FROM_PERSON_NOTE = 'Khối lấy từ hồ sơ nhân viên (lần chốt công chưa có khối)';
 
 const ZERO_CELLS = (): Record<PayrollCellKey, number> => ({
   kpiBonus: 0,
@@ -112,6 +118,19 @@ function personOf(row: TimesheetClosingRowDto, config: PayrollConfig) {
   };
 }
 
+/** What HR's sheet and the payslip print beyond the grid (spec 12.1, 11.7); the account is its last four digits. */
+function sheetOf(row: TimesheetClosingRowDto, person: PersonFacts, line: PayrollLine | null): PayrollLineSheetDto {
+  return {
+    title: row.title,
+    dependants: person.facts?.dependants ?? 0,
+    taxMethod: line?.tax.method ?? null,
+    paid: Object.fromEntries((line?.income.componentPaid ?? []).map((c) => [c.component.id, roundDong(c.paid)])),
+    payslipEmail: person.email,
+    bankName: person.bank?.bank ?? null,
+    bankAccount: person.bank ? masked(person.bank.last4) : null,
+  };
+}
+
 function reviewOf(
   row: TimesheetClosingRowDto,
   person: PersonFacts,
@@ -158,6 +177,7 @@ function reviewOf(
       hasCommitment,
       commitmentYear: facts?.lastCommitmentYear ?? null,
       hasBankAccount: person.hasBankAccount,
+      hasPayslipEmail: Boolean(person.email),
     },
     previous: null,
   };
@@ -175,6 +195,7 @@ function zeroLine(row: TimesheetClosingRowDto, person: PersonFacts, config: Payr
     personSettings: [],
     note: NO_PROFILE_NOTE,
     inputs: person.inputs,
+    sheet: sheetOf(row, person, null),
   };
   const review = reviewOf(row, person, config, { line: null, contractTypeId: null });
   return { dto, line: null, review, regionId: row.regionId };
@@ -213,12 +234,16 @@ function overridesOf(
  * Spec 10.1: the block is the close's. A close made before HR gave the person a block has none; the month then reads
  * the person's block of today instead of making HR reopen the timesheet. A block the close has always wins.
  */
-function withBlock(row: TimesheetClosingRowDto, person: PersonFacts): { row: TimesheetClosingRowDto; note: string } {
-  if (row.block || !person.currentBlock) return { row, note: '' };
-  return { row: { ...row, block: person.currentBlock }, note: BLOCK_FROM_PERSON_NOTE };
+function withBlock(
+  row: TimesheetClosingRowDto,
+  person: PersonFacts,
+): { row: TimesheetClosingRowDto; fromPerson: boolean } {
+  if (row.block || !person.currentBlock) return { row, fromPerson: false };
+  return { row: { ...row, block: person.currentBlock }, fromPerson: true };
 }
 
-const joinNotes = (...notes: string[]) => notes.filter(Boolean).join('; ');
+/** Said on the Khối cell and once in Rà soát, never in the row's note: the note is printed on Excel and payslips. */
+const blockMark = (fromPerson: boolean) => (fromPerson ? { blockFromPerson: true } : {});
 
 /** One person of the close: the engine's row, its tooltips and what Rà soát reads. */
 export function buildLine(
@@ -227,7 +252,7 @@ export function buildLine(
   rows: readonly SettingRow[],
   dates: PayrollDates,
 ): BuiltLine {
-  const { row, note: blockNote } = withBlock(closingRow, person);
+  const { row, fromPerson } = withBlock(closingRow, person);
   const config = payrollConfigFor(rows, row.employeeId, dates);
   const { facts } = person;
   if (!facts) return zeroLine(row, person, config);
@@ -260,10 +285,12 @@ export function buildLine(
     explain: explain.cells,
     overrides: overridesOf(person.inputs, line, computedDaysOf(row, config), leave),
     personSettings: explain.personSettings,
-    note: joinNotes(explain.note, blockNote),
+    ...blockMark(fromPerson),
+    note: explain.note,
     inputs: person.inputs,
     year: { before: yearBefore, month: yearPartOfLine(line) },
     leavePayout: leave ? leavePayoutDtoOf(leave, line, config) : null,
+    sheet: sheetOf(row, person, line),
   };
   const computed = {
     line,

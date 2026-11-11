@@ -18,6 +18,7 @@ import type { Db } from '../db/index.js';
 import { employees, payrollSettings } from '../db/schema.js';
 import { HttpError, invalid, notFound } from '../lib/http-error.js';
 import { isUuid } from '../lib/request.js';
+import { stillUsedWarnings } from './payroll-catalogue-use.js';
 import { writePayrollLog } from './payroll-log.js';
 import { approvedMonths, usedConflict } from './payroll-months.js';
 import { gapIfRemoved, monthsDecidedBy, type Row } from './payroll-versions.js';
@@ -128,7 +129,10 @@ export async function addSetting(db: Db, raw: unknown, hr: HrMe, now: Date): Pro
   const value = input.stop ? null : parseValue(def, input.value);
   const scope = await scopeWords(db, employeeId);
   const approved = await approvedMonths(db);
-  const warnings = lawGuards(def.key, value, input.source, input.from, approved);
+  const warnings = [
+    ...lawGuards(def.key, value, input.source, input.from, approved),
+    ...(input.stop || employeeId ? [] : await stillUsedWarnings(db, def.key)),
+  ];
   return db.transaction(async (tx) => {
     const rows = await loadRows(tx, def.key);
     sameDateConflict(rows, def.key, employeeId, input.from);

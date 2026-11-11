@@ -29,3 +29,4 @@ export * from './payroll-settings.js';
 export * from './payroll-profile.js';
 export * from './timesheet-closings.js';
 export * from './payroll/index.js';
+export * from './payroll-payslips.js';

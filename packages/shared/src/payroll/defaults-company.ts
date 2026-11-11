@@ -75,8 +75,8 @@ const CONTRACT_PAY = { insured: true, contractPay: true } as const;
 const ATTENDANCE_PAY = { insured: false, contractPay: true } as const;
 
 /**
- * Spec 5.9 (bản 08/11 sau khi chốt mục 17). Default amounts only prefill a new profile; the amounts here are the
- * illustrative ones of the test catalogue.
+ * Spec 5.9 (bản 08/11 sau khi chốt mục 17). Default amounts only prefill a new profile and never change a month that
+ * exists; they are the amounts of HR's October file (meal 1.200.000, attendance 1.200.000, clothing 400.000).
  *
  * Fuel and phone are one component exempt in full, as HR's October file pays them (spec 17.3 K2, chốt 09/11/2026: "như
  * file"). A company paying them apart replaces it in `khoan.danh-sach` with a taxable "Xăng xe" and an "Điện thoại"
@@ -85,11 +85,11 @@ const ATTENDANCE_PAY = { insured: false, contractPay: true } as const;
 export const DEFAULT_COMPONENTS: readonly PayComponent[] = [
   component('luong', 'Lương thời gian', 1, CONTRACT_PAY),
   component('trach-nhiem', 'PC trách nhiệm', 2, CONTRACT_PAY),
-  component('com', 'Tiền cơm', 3, { tax: { kind: 'cap', cap: 'meal' }, defaultAmount: 1_100_000 }),
+  component('com', 'Tiền cơm', 3, { tax: { kind: 'cap', cap: 'meal' }, defaultAmount: 1_200_000 }),
   component('xang-dt', 'Xăng xe + ĐT', 4, { tax: { kind: 'exempt' } }),
-  component('trang-phuc', 'Trang phục', 5, { tax: { kind: 'cap', cap: 'clothing-year' }, defaultAmount: 350_000 }),
+  component('trang-phuc', 'Trang phục', 5, { tax: { kind: 'cap', cap: 'clothing-year' }, defaultAmount: 400_000 }),
   component('nha-o', 'Nhà ở / Sinh hoạt', 6),
-  component('chuyen-can', 'Chuyên cần', 7, { ...ATTENDANCE_PAY, defaultAmount: 1_000_000 }),
+  component('chuyen-can', 'Chuyên cần', 7, { ...ATTENDANCE_PAY, defaultAmount: 1_200_000 }),
 ];
 
 export const contractTypeSchema = z.object({
@@ -105,8 +105,36 @@ export const contractTypeSchema = z.object({
    * typing one (HR's October file; NĐ 253 Đ.50 k2). Left out: on for a short-term type, off for the others.
    */
   commitmentIncluded: z.boolean().optional(),
+  /**
+   * "Ngừng dùng từ tháng" (`YYYY-MM`): from that month the type is no longer offered for a new pay level. People
+   * already on it keep it and are still paid by it; nothing is ever deleted. Left out or null: in use.
+   */
+  stoppedFrom: z.string().nullable().optional(),
 });
 export type ContractType = z.infer<typeof contractTypeSchema>;
+
+/** Still offered in `month` ("YYYY-MM"): not stopped, or stopped from a later month. */
+export const isInUse = (entry: { stoppedFrom?: string | null }, month: string): boolean =>
+  !entry.stoppedFrom || entry.stoppedFrom > month;
+
+/**
+ * The id of a new pay component or contract type: its name without accents, in lower case, words joined by "-";
+ * a number is added when another entry already has it ("pc-doc-hai", "pc-doc-hai-2"). An id never changes after.
+ */
+export function catalogueId(name: string, taken: readonly string[]): string {
+  const base =
+    name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[đĐ]/g, 'd')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'khoan';
+  if (!taken.includes(base)) return base;
+  let n = 2;
+  while (taken.includes(`${base}-${n}`)) n += 1;
+  return `${base}-${n}`;
+}
 
 /** A type withheld 10% unless there is a commitment: under 3 months, or taxed flat (NĐ 253 Đ.50 k2). */
 export const isShortTermContract = (t: Pick<ContractType, 'shortTerm' | 'taxMethod'>): boolean =>

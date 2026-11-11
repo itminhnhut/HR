@@ -10,12 +10,20 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { useId, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import { api, type PayrollMonthDto } from '../../../api';
 import { OUTLINE, WithReason } from '../timesheet/gridParts';
+import { BulkInputsButton } from './BulkInputs';
 import { ApproveDialog, PaidDialog, ReopenDialog } from './monthDialogs';
-import { dayMonthOf, monthActions, monthStatusLabel, reviewCounts, type MonthAction } from './monthActionsModel';
+import {
+  dayMonthOf,
+  monthActions,
+  monthStatusLabel,
+  payDateLink,
+  reviewCounts,
+  type MonthAction,
+} from './monthActionsModel';
 import { usePayrollAction } from './queries';
 import { ReviewPanel } from './ReviewPanel';
 
@@ -48,10 +56,14 @@ export function MonthStatus({ month }: { month: PayrollMonthDto }) {
         <look.icon className="size-3.5" />
         {monthStatusLabel(month)}
       </span>
-      <span className="inline-flex items-center gap-1 text-xs whitespace-nowrap text-slate-600">
+      <Link
+        to={payDateLink(month.monthKey)}
+        title="Ngày chi trả quyết định thuế tính theo tháng nào. Bấm để đổi ở Cấu hình › Quy tắc."
+        className="inline-flex items-center gap-1 text-xs whitespace-nowrap text-slate-600 no-underline hover:text-blue-700 hover:underline"
+      >
         <CalendarDays className="size-3.5" />
         {`Chi trả ${dayMonthOf(month.payDate)}/${month.payDate.slice(0, 4)}`}
-      </span>
+      </Link>
     </>
   );
 }
@@ -93,13 +105,26 @@ function ActionButton({
 
 function ReviewButton({ month, onClick }: { month: PayrollMonthDto; onClick: () => void }) {
   const counts = reviewCounts(month.review);
-  const badge = counts.red > 0 ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-900';
+  const chip = 'rounded-full px-1.5 text-xs font-semibold';
   return (
     <button type="button" onClick={onClick} className={OUTLINE}>
       <CheckCircle2 className="size-4 text-blue-600" />
       Rà soát
-      {month.review.length > 0 && (
-        <span className={`rounded-full px-1.5 text-xs font-semibold ${badge}`}>{month.review.length}</span>
+      {counts.red > 0 && (
+        <span
+          title={`${counts.red} cảnh báo đỏ: phải tích "Đã xem" khi Duyệt`}
+          className={`${chip} bg-red-100 text-red-800`}
+        >
+          {counts.red}
+        </span>
+      )}
+      {counts.yellow > 0 && (
+        <span
+          title={`${counts.yellow} cảnh báo vàng: nên xem, không chặn`}
+          className={`${chip} bg-amber-100 text-amber-900`}
+        >
+          {counts.yellow}
+        </span>
       )}
     </button>
   );
@@ -165,6 +190,7 @@ export function MonthActions({ month, approver, canApprove, search }: MonthActio
   return (
     <>
       {month.status !== 'waiting' && <ReviewButton month={month} onClick={() => show('review')} />}
+      <BulkInputsButton month={month} search={search} />
       {monthActions(month, canApprove).map(({ action, disabledReason }) => (
         <ActionButton key={action} action={action} reason={disabledReason} onClick={() => show(action)} />
       ))}
@@ -177,6 +203,7 @@ export function MonthActions({ month, approver, canApprove, search }: MonthActio
           isBusy={state.approve.isPending}
           error={state.approve.error}
           onApprove={actions.approve}
+          onReview={() => show('review')}
         />
       )}
       {open === 'reopen' && (

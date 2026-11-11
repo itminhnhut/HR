@@ -22,6 +22,8 @@ import { GOLDEN_PEOPLE, type GoldenPerson } from '../../../../packages/shared/te
 import { GOLDEN_MONTH, goldenInput } from '../../../../packages/shared/test-fixtures/payroll-golden-inputs';
 import { DEMO_HR } from './demo-accounts';
 import { nextInputs, parseInputs, seededInputs, typedOverrides, withInputs, withProfile } from './mock-payroll-inputs';
+import { exportMockApi, mockSheet } from './mock-payroll-export';
+import { payslipsMockApi } from './mock-payroll-payslips';
 import { payrollLogMockApi, writeMockPayrollLog } from './mock-payroll-log';
 import { profileMockApi } from './mock-payroll-profiles';
 import { settingsMockApi } from './mock-payroll-settings';
@@ -124,6 +126,7 @@ function lineOf(person: GoldenPerson, index: number, typed: InputsByPerson, prof
     personSettings: explain.personSettings,
     note: explain.note,
     inputs,
+    sheet: mockSheet(line, profiles[employeeId]),
   };
   return { line, dto, review: reviewRowOf(person, input, line, { employeeId, restDaysTyped: inputs.restDays }) };
 }
@@ -259,28 +262,33 @@ function lastMonth(): string {
   return keyOf(Math.floor(ahead / 12), (ahead % 12) + 1);
 }
 
+/** Bảng lương of one month: the golden month, or a later one still waiting for the timesheet close. */
+async function payrollMonth(year: number, month: number): Promise<PayrollMonthDto> {
+  const me = requireHr(load());
+  if (me.canPayroll === false) return fail(403, 'Bạn không có quyền xem lương.');
+  const key = keyOf(year, month);
+  const last = lastMonth();
+  if (key < FIRST_MONTH || key > last)
+    return fail(404, `Có bảng lương từ ${monthName(FIRST_MONTH)} đến ${monthName(last)}.`);
+  if (key === FIRST_MONTH) return delay(withState(load(), key));
+  return delay({
+    ...monthShell(year, month),
+    status: 'waiting',
+    computedAt: null,
+    lines: [],
+    totals: {},
+    review: [],
+  });
+}
+
 export const payrollMockApi = {
   ...profileMockApi(() => goldenMonth(inputsOf(load(), FIRST_MONTH)).lines),
   ...settingsMockApi,
   ...payrollLogMockApi,
 
-  async hrPayrollMonth(year: number, month: number): Promise<PayrollMonthDto> {
-    const me = requireHr(load());
-    if (me.canPayroll === false) return fail(403, 'Bạn không có quyền xem lương.');
-    const key = keyOf(year, month);
-    const last = lastMonth();
-    if (key < FIRST_MONTH || key > last)
-      return fail(404, `Có bảng lương từ ${monthName(FIRST_MONTH)} đến ${monthName(last)}.`);
-    if (key === FIRST_MONTH) return delay(withState(load(), key));
-    return delay({
-      ...monthShell(year, month),
-      status: 'waiting',
-      computedAt: null,
-      lines: [],
-      totals: {},
-      review: [],
-    });
-  },
+  hrPayrollMonth: payrollMonth,
+  ...exportMockApi(payrollMonth, () => settingsMockApi.hrPayrollSettings()),
+  ...payslipsMockApi(payrollMonth),
 
   /** Đầu vào tháng of one person: partial, lists replaced whole; 409 once approved or paid, 422 as the API checks. */
   async hrPayrollSaveInputs(

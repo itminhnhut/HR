@@ -8,7 +8,7 @@ const SMALL =
   'inline-flex min-h-9 items-center rounded-md border bg-white px-2.5 text-xs font-medium hover:bg-slate-50 max-sm:min-h-11';
 
 export function PeoplePicker(p: {
-  people: readonly PayrollPersonDto[];
+  people: readonly Pick<PayrollPersonDto, 'employeeId' | 'code' | 'fullName'>[];
   picked: readonly string[];
   onChange: (next: string[]) => void;
 }) {

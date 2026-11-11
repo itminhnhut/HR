@@ -13,6 +13,7 @@ export function drawerContextOf(args: {
   /** "YYYY-MM" of the pay month whose level to mark (`phan=muc`), or null. */
   levelsOf: string | null;
   regions: readonly { id: string; name: string }[] | undefined;
+  focus?: DrawerContext['focus'];
 }): DrawerContext {
   const { month, today, levelsOf, regions } = args;
   return {
@@ -23,6 +24,7 @@ export function drawerContextOf(args: {
     today,
     month: payrollMonthOf(today),
     levelsOf,
+    focus: args.focus ?? null,
     regionName: (id) => regions?.find((r) => r.id === id)?.name ?? month?.regions.find((r) => r.id === id)?.name ?? id,
   };
 }

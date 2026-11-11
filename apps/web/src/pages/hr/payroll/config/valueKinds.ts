@@ -130,7 +130,10 @@ function enumValues(key: string): readonly string[] {
 /** `khoan.com.thue` → `thue`: an attribute is typed the same for every entry. */
 const attributeOf = (key: string) => (key.split('.').length === 3 ? (key.split('.')[2] ?? key) : key);
 
+const ZONE_OPTIONS = ['I', 'II', 'III', 'IV'].map((value) => ({ value, label: `Vùng ${value}` }));
+
 export function kindOf(key: string): ValueKind | null {
+  if (key.startsWith('khu-vuc.')) return { kind: 'choice', options: ZONE_OPTIONS };
   const k = attributeOf(key);
   if (k === 'thue') return { kind: 'tax' };
   if (MONEY_KEYS.has(k)) return { kind: 'money' };
@@ -174,7 +177,9 @@ export function valueWords(key: string, value: unknown): string {
   if (kind?.kind === 'tax') return TAX_OPTIONS.find((o) => o.value === taxCode(value))?.label ?? '—';
   if (kind?.kind === 'month' && typeof value === 'string') return fromWords(value);
   if (kind?.kind === 'number' && typeof value === 'number') return describeValue(value);
-  if (kind?.kind === 'choice' && typeof value === 'string') return words(value);
+  if (kind?.kind === 'choice' && typeof value === 'string') {
+    return kind.options.find((o) => o.value === value)?.label ?? words(value);
+  }
   if (kind?.kind === 'fields' && isRecord(value)) {
     return kind.fields.map((x) => `${x.label} ${numberWords(x.kind, value[x.field])}`).join(' · ');
   }

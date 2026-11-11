@@ -70,6 +70,10 @@ function calloutBody(content: MailContent): string {
   return (content.key === 'call' ? [first, callExampleText(), ...rest] : [first, ...rest]).join('\n\n');
 }
 
+/** Under a payslip mail, in place of the line about having applied. */
+export const PAYSLIP_FOOTER =
+  'Thư này chỉ dành cho người nhận. Nếu nhận nhầm, vui lòng báo phòng Nhân sự và xoá thư.';
+
 /** The same mail as plain text, for Gmail links, mail apps and Zalo. */
 export function renderMailText(content: MailContent, details: MailDetails): string {
   const callout = [content.calloutTitle.trim(), calloutBody(content)].filter(Boolean).join('\n');
@@ -80,7 +84,9 @@ export function renderMailText(content: MailContent, details: MailDetails): stri
     callout,
     content.closing.trim(),
     signatureText(details),
-    `Bạn nhận thư này vì đã ứng tuyển tại ${MAIL_COMPANY.name}. Xem chính sách dữ liệu tại ${MAIL_COMPANY.privacyPage}`,
+    content.key === 'payslip'
+      ? PAYSLIP_FOOTER
+      : `Bạn nhận thư này vì đã ứng tuyển tại ${MAIL_COMPANY.name}. Xem chính sách dữ liệu tại ${MAIL_COMPANY.privacyPage}`,
   ]
     .filter(Boolean)
     .join('\n\n');

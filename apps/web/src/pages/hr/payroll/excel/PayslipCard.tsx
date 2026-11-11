@@ -7,6 +7,7 @@ import type { Payslip, PayslipLine, PayslipSection } from './payslip';
  */
 
 const show = (line: PayslipLine) => {
+  if (line.amount === null) return '';
   if (line.format === 'money') return money(line.amount);
   if (line.format === 'percent') return percent(line.amount);
   return `${decimal(line.amount)}${line.format === 'hours' ? ' giờ' : ''}`;
@@ -76,7 +77,7 @@ export function PayslipCard({ slip }: { slip: Payslip }) {
           {money(slip.netPay)}
         </span>
       </p>
-      <p className="m-0 text-xs text-slate-600">Chuyển khoản: {slip.bank}</p>
+      {slip.bank !== null && <p className="m-0 text-xs text-slate-600">Chuyển khoản: {slip.bank}</p>}
       {slip.notes.map((note) => (
         <p key={note} className="m-0 text-xs italic text-slate-500">
           {note}

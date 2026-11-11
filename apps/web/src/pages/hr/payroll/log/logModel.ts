@@ -1,4 +1,10 @@
-import { PAYROLL_LOG_AREAS, PAYROLL_SETTING_DEFS, type PayrollCellKey } from '@careers/shared';
+import {
+  DEFAULT_COMPONENTS,
+  DEFAULT_CONTRACT_TYPES,
+  PAYROLL_LOG_AREAS,
+  PAYROLL_SETTING_DEFS,
+  type PayrollCellKey,
+} from '@careers/shared';
 import type { PayrollLogArea, PayrollLogLineDto, PayrollLogQuery } from '../../../../api';
 
 /**
@@ -131,4 +137,45 @@ export function linksOf(line: PayrollLogLineDto, people: readonly LogPerson[], p
       ? [{ kind: 'month' as const, label: `Bảng lương ${monthWords(line.month)}`, to: `${BASE}?ky=${line.month}` }]
       : []),
   ];
+}
+
+/** The action as HR reads it (F18): the builders' name of the month inputs says nothing to HR. */
+const ACTION_WORDS: Readonly<Record<string, string>> = { 'Sửa đầu vào tháng': 'Gõ số trên bảng lương' };
+export const shownAction = (action: string) => ACTION_WORDS[action] ?? action;
+
+const NAMES: ReadonlyMap<string, string> = new Map(
+  [...DEFAULT_COMPONENTS, ...DEFAULT_CONTRACT_TYPES].map((entry) => [entry.id, entry.name]),
+);
+
+/** "trach-nhiem 0", "KPI 0": nothing paid; a change to or from 0 ("com 0 → 1.200.000") is kept. */
+const isZeroPart = (part: string) => / 0$/.test(part) && !part.includes('→');
+
+/** "luong 6.000.000" → "Lương thời gian 6.000.000"; "loại HĐ thu-viec" → "HĐ thử việc"; an id nobody knows stays. */
+function partWords(part: string): string {
+  const contract = /^loại HĐ (\S+)(.*)$/.exec(part);
+  if (contract) {
+    const [, id = '', rest = ''] = contract;
+    const after = / → (\S+)$/.exec(rest);
+    const to = after ? ` → ${NAMES.get(after[1] ?? '') ?? after[1]}` : rest;
+    return NAMES.has(id) ? `${NAMES.get(id)}${to}` : `loại HĐ ${id}${to}`;
+  }
+  const [id = '', ...rest] = part.split(' ');
+  const name = NAMES.get(id);
+  return name ? [name, ...rest].join(' ') : part;
+}
+
+/**
+ * A pay level in the log in HR's words (F18): the API writes the ids of the contract type and the pay components
+ * ("loại HĐ thu-viec, luong 6.000.000, trach-nhiem 0"); here they read by name and the amounts of 0 are left out.
+ * Only the lines about a level ("… hồ sơ của …: …") are touched.
+ */
+export function shownDetail(detail: string): string {
+  const at = detail.indexOf(': ');
+  if (at < 0 || !/hồ sơ của /.test(detail.slice(0, at))) return detail;
+  const parts = detail
+    .slice(at + 2)
+    .split(', ')
+    .filter((part) => !isZeroPart(part))
+    .map(partWords);
+  return parts.length > 0 ? `${detail.slice(0, at)}: ${parts.join(' · ')}` : detail;
 }

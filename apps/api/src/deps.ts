@@ -7,6 +7,7 @@ import type { GoogleVerifier } from './lib/google.js';
 import type { ImageStore } from './lib/image-store.js';
 import type { RealtimeReader } from './lib/ga-realtime.js';
 import type { FetchFn } from './lib/indexnow.js';
+import type { Mailer } from './lib/mailer.js';
 
 export interface AppConfig {
   /** Public FRONTEND origin, used in share pages and the sitemap. */
@@ -48,4 +49,6 @@ export interface Deps {
   fetch: FetchFn;
   /** "Đang truy cập" on the HR overview. */
   readRealtime: RealtimeReader;
+  /** Mail the server sends by itself (payslips); null or absent: not configured, HR sends from their own mailbox. */
+  mailer?: Mailer | null;
 }

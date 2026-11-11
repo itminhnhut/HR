@@ -16,9 +16,14 @@ import { payrollBands } from './payrollModel';
 
 export type RetroKind = 'Truy lĩnh' | 'Truy thu' | 'Điều chỉnh';
 
-/** By the difference of (42): more to receive, some to give back, or cells that move without it (company insurance). */
-export const retroKindOf = (item: Pick<PayrollRetroItemDto, 'computed'>): RetroKind =>
-  item.computed > 0 ? 'Truy lĩnh' : item.computed < 0 ? 'Truy thu' : 'Điều chỉnh';
+/**
+ * By the difference of (42): more to receive, some to give back, or cells that move without it (company insurance).
+ * One HR added by hand has nothing computed: it goes by the amount typed (C03).
+ */
+export const retroKindOf = (item: Pick<PayrollRetroItemDto, 'computed'> & { typed?: number | null }): RetroKind => {
+  const amount = item.computed !== 0 ? item.computed : (item.typed ?? 0);
+  return amount > 0 ? 'Truy lĩnh' : amount < 0 ? 'Truy thu' : 'Điều chỉnh';
+};
 
 /** "2026-11" → "T11/2026". */
 export const monthName = (key: string) => `T${Number(key.slice(5))}/${key.slice(0, 4)}`;

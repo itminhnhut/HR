@@ -1,7 +1,7 @@
-import { roundDong, type PayrollLine } from '@careers/shared';
+import { roundDong } from '@careers/shared';
 import { dayText, monthKeyText, versionText } from './format';
 import { orderedRows } from './rows';
-import type { PayrollCash, PayrollExportMonth, PayrollExportRow } from './types';
+import type { PayrollAdjustment, PayrollCash, PayrollExportLine, PayrollExportMonth, PayrollExportRow } from './types';
 
 export { payslipFileName } from './format';
 
@@ -16,7 +16,8 @@ export interface PayslipLine {
   label: string;
   /** The monthly level of a component, beside what was paid of it. */
   base?: number | null;
-  amount: number;
+  /** Null: the month does not say what was paid of this line; the cell stays empty. */
+  amount: number | null;
   format: PayslipFormat;
   /** "of which" lines under another line. */
   isDetail?: boolean;
@@ -41,7 +42,8 @@ export interface Payslip {
   info: [label: string, value: string][];
   sections: PayslipSection[];
   netPay: number;
-  bank: string;
+  /** Null when the month carries no bank details: no transfer line. */
+  bank: string | null;
   notes: string[];
 }
 
@@ -52,7 +54,7 @@ const moneyLine = (label: string, amount: number, extra: Partial<PayslipLine> = 
   ...extra,
 });
 
-function daysSection(line: PayrollLine, norm: number): PayslipSection {
+function daysSection(line: PayrollExportLine, norm: number): PayslipSection {
   return {
     title: 'Ngày công',
     lines: [
@@ -64,7 +66,7 @@ function daysSection(line: PayrollLine, norm: number): PayslipSection {
   };
 }
 
-function overtimeSection(line: PayrollLine): PayslipSection {
+function overtimeSection(line: PayrollExportLine): PayslipSection {
   const { weekdayHours, restDays, holidayDays } = line.overtime;
   return {
     title: 'Làm thêm',
@@ -81,8 +83,11 @@ function incomeSection(row: PayrollExportRow): PayslipSection {
   const leave = roundDong(line.income.leavePayout);
   // A component the person has no level of stays off the payslip.
   const components = line.income.componentPaid
-    .filter((c) => c.amount !== 0 || roundDong(c.paid) !== 0)
-    .map((c) => moneyLine(c.component.name, roundDong(c.paid), { base: c.amount }));
+    .filter((c) => c.amount !== 0 || (c.paid !== null && roundDong(c.paid) !== 0))
+    .map((c) => ({
+      ...moneyLine(c.component.name, 0, { base: c.amount }),
+      amount: c.paid === null ? null : roundDong(c.paid),
+    }));
   const details = [
     ...(leave > 0 ? [moneyLine('Tiền phép chưa nghỉ', leave, { isDetail: true })] : []),
     ...adjustments.map((a) =>
@@ -104,13 +109,13 @@ function incomeSection(row: PayrollExportRow): PayslipSection {
   };
 }
 
-const TAX_LABEL: Record<PayrollLine['tax']['method'], string> = {
+const TAX_LABEL: Record<NonNullable<PayrollExportLine['tax']['method']>, string> = {
   progressive: 'Thuế TNCN (lũy tiến)',
   flat10: 'Thuế TNCN (khấu trừ 10%)',
   none: 'Thuế TNCN (có cam kết, không khấu trừ)',
 };
 
-function deductionSection(line: PayrollLine): PayslipSection {
+function deductionSection(line: PayrollExportLine): PayslipSection {
   const c = line.cells;
   return {
     title: 'Khấu trừ',
@@ -120,14 +125,14 @@ function deductionSection(line: PayrollLine): PayslipSection {
       moneyLine('BHYT', c.health),
       moneyLine('BHTN', c.unemployment),
       moneyLine('Đoàn phí công đoàn', c.unionFee),
-      moneyLine(TAX_LABEL[line.tax.method], c.tax),
+      moneyLine(line.tax.method ? TAX_LABEL[line.tax.method] : 'Thuế TNCN', c.tax),
       moneyLine('Tổng khấu trừ', c.totalDeductions, { isTotal: true }),
     ],
   };
 }
 
 /** (32) on its own lines when HR typed it apart (câu 4); an advance is taken off. */
-function cashSection(line: PayrollLine, cash: PayrollCash | undefined): PayslipSection {
+function cashSection(line: PayrollExportLine, cash: PayrollCash | undefined): PayslipSection {
   const lines = cash
     ? [
         moneyLine('Hỗ trợ', cash.support),
@@ -139,9 +144,21 @@ function cashSection(line: PayrollLine, cash: PayrollCash | undefined): PayslipS
   return { title: 'Khoản khác (32)', lines };
 }
 
+/** Truy lĩnh / truy thu of earlier months paid with this one: named, so a net pay that moved explains itself. */
+function retroSection(retro: readonly PayrollAdjustment[]): PayslipSection[] {
+  if (retro.length === 0) return [];
+  const lines = retro.map((a) =>
+    moneyLine(`${a.amount < 0 ? 'Truy thu' : 'Truy lĩnh'} ${monthKeyText(a.originMonth)} · ${a.reason}`, a.amount),
+  );
+  return [{ title: 'Truy lĩnh / truy thu (đã tính trong Thực nhận)', lines }];
+}
+
 const lastFour = (account: string | null) => (account ? `****${account.replace(/\s/g, '').slice(-4)}` : 'Chưa có STK');
 
-function headOf(month: PayrollExportMonth) {
+/** What a payslip reads of its month: no configuration, so the month on screen can make one too. */
+export type PayslipMonth = Pick<PayrollExportMonth, 'dates' | 'stamp' | 'norms' | 'isBankUnknown'>;
+
+function headOf(month: PayslipMonth) {
   const { dates, stamp } = month;
   const round = stamp.kind === 'approved' ? stamp.round : 0;
   return {
@@ -153,7 +170,7 @@ function headOf(month: PayrollExportMonth) {
   };
 }
 
-export function payslipOf(month: PayrollExportMonth, row: PayrollExportRow): Payslip {
+export function payslipOf(month: PayslipMonth, row: PayrollExportRow): Payslip {
   const { person, line } = row;
   const norm = month.norms.find((n) => n.region === person.region)?.norm ?? 0;
   const { period, payDate } = month.dates;
@@ -165,7 +182,7 @@ export function payslipOf(month: PayrollExportMonth, row: PayrollExportRow): Pay
     info: [
       ['Mã NV', person.code],
       ['Họ và tên', person.name],
-      ['Chức danh', person.title],
+      ...(person.title === null ? [] : [['Chức danh', person.title] satisfies [string, string]]),
       ['Bộ phận', person.block ?? ''],
       ['Khu vực', person.region],
       ['Loại hợp đồng', person.contractName],
@@ -178,9 +195,10 @@ export function payslipOf(month: PayrollExportMonth, row: PayrollExportRow): Pay
       incomeSection(row),
       deductionSection(line),
       cashSection(line, row.cash),
+      ...retroSection(row.retro ?? []),
     ],
     netPay: line.cells.netPay,
-    bank: `${person.bankName ?? 'Chưa có ngân hàng'} · ${lastFour(person.bankAccount)}`,
+    bank: month.isBankUnknown ? null : `${person.bankName ?? 'Chưa có ngân hàng'} · ${lastFour(person.bankAccount)}`,
     notes: [line.insurance.status.note].filter((n) => n.length > 0),
   };
 }

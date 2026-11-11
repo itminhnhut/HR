@@ -1,7 +1,7 @@
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import type { PayrollPersonCheckDto, PayrollProfileDto } from '@careers/shared';
 import { ArrowRight, Check, ClipboardList, ExternalLink, IdCard, Settings, Trash2, UserRound } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { api } from '../../../../api';
@@ -26,6 +26,35 @@ export interface DrawerContext {
   regionName: (id: string) => string;
   /** From the grid's group A (`?phan=muc`): the pay month whose level to mark, the drawer opening on the levels. */
   levelsOf: string | null;
+  /**
+   * From a cell of the list (`?phan=<part>&them=1`): the section the drawer opens on, and whether its add form is
+   * already open because the value is missing.
+   */
+  focus?: { part: ProfilePartId; isAdding: boolean } | null;
+}
+
+/** The parts of a profile a link can open, by their name in the address, and the section each one is. */
+export const PROFILE_PARTS = {
+  muc: 'ho-so-muc',
+  npt: 'ho-so-npt',
+  'cam-ket': 'ho-so-cam-ket',
+  'dinh-ky': 'ho-so-khoan-32',
+  'ngan-hang': 'ho-so-ngan-hang',
+} as const;
+export type ProfilePartId = keyof typeof PROFILE_PARTS;
+export const isProfilePart = (value: string | null): value is ProfilePartId =>
+  value !== null && Object.keys(PROFILE_PARTS).includes(value);
+
+/** Brings the section into view once the profile is on screen, the first field of an open add form focused. */
+function useFocusPart(focus: DrawerContext['focus'], isReady: boolean) {
+  const part = focus?.part;
+  const isAdding = focus?.isAdding ?? false;
+  useEffect(() => {
+    if (!isReady || !part) return;
+    const section = document.getElementById(PROFILE_PARTS[part]);
+    section?.scrollIntoView?.({ block: 'start' });
+    if (isAdding) section?.querySelector<HTMLElement>('form input, form select, input, select')?.focus();
+  }, [isReady, part, isAdding]);
 }
 
 function Fact({ label, value }: { label: string; value: string }) {
@@ -123,12 +152,75 @@ function CheckRow({
   );
 }
 
+/** Every open item of the person at once (F15): HR has read the whole person, so one click, asked once. */
+function ConfirmAll({
+  employeeId,
+  name,
+  items,
+}: {
+  employeeId: string;
+  name: string;
+  items: readonly PayrollPersonCheckDto[];
+}) {
+  const [isAsking, setIsAsking] = useState(false);
+  const confirmAll = useProfileSave(
+    employeeId,
+    async () => {
+      for (const i of items) await api.hrPayrollConfirmCheck({ item: i.item, employeeId, confirmed: true });
+      return items.length;
+    },
+    (count) => `Đã xác nhận ${count} mục của ${name}.`,
+  );
+  const run = () => {
+    setIsAsking(false);
+    confirmAll.mutate(undefined, { onError: (e) => toast.error(errorMessage(e)) });
+  };
+  return (
+    <>
+      <button
+        type="button"
+        disabled={confirmAll.isPending || isAsking}
+        onClick={() => setIsAsking(true)}
+        className="ts-field mt-2 inline-flex items-center gap-1.5 rounded-md border border-green-600 bg-white px-3 text-sm font-medium text-green-800 hover:bg-green-50 disabled:opacity-50"
+      >
+        <Check className="size-4 text-green-600" />
+        {confirmAll.isPending ? 'Đang xác nhận…' : `Đã kiểm cả ${items.length} mục của người này`}
+      </button>
+      {isAsking && (
+        <div
+          role="alertdialog"
+          aria-label="Xác nhận đã kiểm"
+          className="mt-2 flex flex-wrap items-center gap-2 rounded-md border border-amber-300 bg-white px-3 py-2 text-sm"
+        >
+          <span className="min-w-0 flex-1 basis-56">{`Xác nhận đã kiểm ${items.length} mục của ${name}?`}</span>
+          <button
+            type="button"
+            onClick={() => setIsAsking(false)}
+            className="ts-field rounded-md border bg-white px-3 text-sm font-medium hover:bg-slate-50"
+          >
+            Huỷ
+          </button>
+          <button
+            type="button"
+            onClick={run}
+            className="ts-field rounded-md border border-green-700 bg-green-700 px-3 text-sm font-medium text-white hover:bg-green-800"
+          >
+            Xác nhận
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
 function MissingList({
   employeeId,
+  name,
   items,
   catalogue,
 }: {
   employeeId: string;
+  name: string;
   items: readonly PayrollPersonCheckDto[];
   catalogue: Catalogue;
 }) {
@@ -139,12 +231,15 @@ function MissingList({
         <ClipboardList className="size-4" />
         {`Còn thiếu: ${items.length} mục trước tháng lương đầu`}
       </h3>
-      <p className="m-0 text-xs text-amber-900/80">Bấm một mục để tới ô nhập; xong thì bấm Đã kiểm.</p>
+      <p className="m-0 text-xs text-amber-900/80">
+        Bấm một mục để tới ô nhập; xong thì bấm Đã kiểm. Đã xem hết cả người: bấm nút ở cuối danh sách.
+      </p>
       <ul className="m-0 mt-1 list-none p-0">
         {items.map((i) => (
           <CheckRow key={i.item} employeeId={employeeId} item={i} catalogue={catalogue} />
         ))}
       </ul>
+      {items.length > 1 && <ConfirmAll employeeId={employeeId} name={name} items={items} />}
     </section>
   );
 }
@@ -213,20 +308,27 @@ function Body({
   onClose: () => void;
 }) {
   const profile = useProfile(employeeId);
+  useFocusPart(context.focus, profile.isSuccess);
+  const adds = (part: ProfilePartId) => context.focus?.part === part && context.focus.isAdding;
   if (profile.isPending) return <p className="m-0 p-5 text-sm text-slate-500">Đang tải hồ sơ…</p>;
   if (profile.isError)
     return <ErrorState onRetry={() => void profile.refetch()} message={errorMessage(profile.error)} />;
   const p = profile.data;
   return (
     <>
-      <MissingList employeeId={employeeId} items={row?.open ?? []} catalogue={context.catalogue} />
+      <MissingList
+        employeeId={employeeId}
+        name={row?.fullName ?? 'người này'}
+        items={row?.open ?? []}
+        catalogue={context.catalogue}
+      />
       <PersonInfo profile={p} row={row} regionName={context.regionName} />
       <LevelSection profile={p} catalogue={context.catalogue} focusMonth={context.levelsOf} />
-      <DependantsSection profile={p} month={context.month} />
-      <CommitmentsSection profile={p} today={context.today} />
-      <RecurringSection profile={p} month={context.month} />
+      <DependantsSection profile={p} month={context.month} startAdding={adds('npt')} />
+      <CommitmentsSection profile={p} today={context.today} startAdding={adds('cam-ket')} />
+      <RecurringSection profile={p} month={context.month} startAdding={adds('dinh-ky')} />
       <OpeningSection profile={p} today={context.today} />
-      <BankSection profile={p} today={context.today} />
+      <BankSection profile={p} today={context.today} startAdding={adds('ngan-hang')} />
       <Overrides profile={p} />
       <DeleteProfile profile={p} onDeleted={onClose} />
     </>

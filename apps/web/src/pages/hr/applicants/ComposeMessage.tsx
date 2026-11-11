@@ -3,7 +3,7 @@ import {
   CONTACT_CHANNEL_LABEL,
   formatTimestamp,
   googleCalendarUrl,
-  TEMPLATE_KEYS,
+  APPLICANT_TEMPLATE_KEYS,
   TEMPLATE_LABEL,
   type ApplicationDetailDto,
   type MessageTemplate,
@@ -34,7 +34,7 @@ const interviewModeOf = (key: TemplateKey) =>
 function TemplateSelect({ value, onChange }: { value: TemplateKey; onChange: (key: TemplateKey) => void }) {
   return (
     <SelectField label="Mẫu thư" value={value} onChange={(e) => onChange(e.target.value as TemplateKey)}>
-      {TEMPLATE_KEYS.map((k) => (
+      {APPLICANT_TEMPLATE_KEYS.map((k) => (
         <option key={k} value={k}>
           {TEMPLATE_LABEL[k]}
         </option>

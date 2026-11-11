@@ -1,6 +1,6 @@
-import type { PayComponent, PayrollConfig, PayrollLine, PayrollMoneyCell } from '@careers/shared';
+import type { PayComponent, PayrollConfig, PayrollMoneyCell } from '@careers/shared';
 import { percent } from './format';
-import type { PayrollExportRow } from './types';
+import type { PayrollExportLine, PayrollExportRow } from './types';
 
 /**
  * The columns of HR's payroll workbook (spec 12.1): groups A–H, numbered as the file numbers them. Group A has one
@@ -53,7 +53,7 @@ const COMPONENT_NUMBERS: Readonly<Record<string, string>> = {
   'chuyen-can': '14',
 };
 
-function componentNumbers(components: readonly PayComponent[]): string[] {
+export function componentNumbers(components: readonly { id: string }[]): string[] {
   return components.reduce<string[]>((acc, c) => {
     const known = COMPONENT_NUMBERS[c.id];
     if (known) return [...acc, known];
@@ -66,13 +66,13 @@ function componentNumbers(components: readonly PayComponent[]): string[] {
 
 type Spec = [key: string, number: string, header: string, format: CellFormat, isTotalled: boolean];
 
-const cellOf = (line: PayrollLine, key: string): number => {
+const cellOf = (line: PayrollExportLine, key: string): number => {
   const cells: Readonly<Record<string, number>> = line.cells;
   return cells[key] ?? 0;
 };
 
 /** (39): the bracket the person's (38) reaches, only when the month's tax is progressive. */
-function bracketOf(line: PayrollLine, config: PayrollConfig): number {
+function bracketOf(line: PayrollExportLine, config: PayrollConfig): number {
   const assessable = line.cells.assessable;
   if (line.tax.method !== 'progressive' || assessable <= 0) return 0;
   const index = config.law.brackets.findIndex((b) => b.upTo === null || assessable <= b.upTo);
@@ -209,5 +209,5 @@ export function payrollColumns(config: PayrollConfig, options: { hideBank?: bool
 /** The money cells the engine totals itself (D01: Σ cells, or Tròn(Σ đủ) "as HR's file"). */
 export const isEngineTotal = (
   key: string,
-  totals: Readonly<Record<string, number>>,
-): key is PayrollMoneyCell | 'gross' => key in totals;
+  totals: Readonly<Record<string, number | undefined>>,
+): key is PayrollMoneyCell | 'gross' => totals[key] !== undefined;

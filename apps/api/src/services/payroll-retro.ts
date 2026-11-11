@@ -227,6 +227,38 @@ export async function retroItemsOf(
   );
 }
 
+/**
+ * Truy lĩnh / truy thu HR adds by hand (C03): an amount typed for a month the web computed no difference of — pay
+ * forgotten before the web, money to take back. It is HR's own number, so it moves (32) and (42) only, as an amount
+ * typed over a computed one does; it carries no cells, so a later difference of that month is never reduced by it.
+ */
+export function manualRetroItems(
+  people: readonly { employeeId: string; code: string; fullName: string }[],
+  typed: (employeeId: string) => readonly PayrollRetroInputDto[],
+  computed: readonly PayrollRetroItemDto[],
+): PayrollRetroItemDto[] {
+  const isComputed = (employeeId: string, origin: string) =>
+    computed.some((c) => c.employeeId === employeeId && c.origin === origin);
+  return people.flatMap((person) =>
+    typed(person.employeeId)
+      .filter((input) => input.amount !== 0 && !isComputed(person.employeeId, input.origin))
+      .map((input) => ({
+        employeeId: person.employeeId,
+        code: person.code,
+        fullName: person.fullName,
+        origin: input.origin,
+        originApproval: null,
+        cells: {},
+        computed: 0,
+        typed: input.amount,
+        reason: input.reason,
+        amount: input.amount,
+        placed: true,
+        causes: [],
+      })),
+  );
+}
+
 /** What the row's cells move by: every cell of a computed item; (32) and (42) alone for an amount HR typed. */
 const movesOf = (item: PayrollRetroItemDto): Cells =>
   item.typed === null ? item.cells : { cash: item.typed, netPay: item.typed };

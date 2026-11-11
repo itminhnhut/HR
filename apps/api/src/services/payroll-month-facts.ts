@@ -17,6 +17,7 @@ import {
   payrollRecurringItems,
   payrollTaxCommitments,
 } from '../db/schema.js';
+import { accountOn } from './payroll-bank.js';
 import { regionalMinimum } from './payroll-catalogue.js';
 import { leaveBaseOf } from './payroll-leave-payout.js';
 import type { PersonFacts } from './payroll-month-lines.js';
@@ -60,7 +61,12 @@ async function load(db: Reader, ids: string[], dates: PayrollDates) {
     db.select().from(payrollRecurringItems).where(inArray(payrollRecurringItems.employeeId, ids)),
     db.select().from(payrollOpening).where(inArray(payrollOpening.employeeId, ids)),
     db
-      .select({ employeeId: payrollBankAccounts.employeeId })
+      .select({
+        employeeId: payrollBankAccounts.employeeId,
+        bank: payrollBankAccounts.bank,
+        last4: payrollBankAccounts.last4,
+        changedOn: payrollBankAccounts.changedOn,
+      })
       .from(payrollBankAccounts)
       .where(inArray(payrollBankAccounts.employeeId, ids)),
     db.select().from(employees).where(inArray(employees.id, ids)),
@@ -124,6 +130,8 @@ export async function peopleFactsOf(
         facts: facts.versions.length > 0 ? facts : null,
         zone: regionalMinimum(rows, { id, regionId: row.regionId }, dates.insuranceDate)?.zone ?? 'I',
         hasBankAccount: all.banks.some((b) => b.employeeId === id),
+        email: employee?.email ?? null,
+        bank: accountOn(mine(all.banks, id), dates.payDate) ?? null,
         unconfirmedDates: unconfirmedDatesOf(row, employee, dates),
         inputs: typedInputsOf(all.typed.find((t) => t.employeeId === id)),
         currentBlock: employee?.block ?? null,

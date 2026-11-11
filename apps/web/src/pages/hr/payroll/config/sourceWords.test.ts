@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { shownSource } from './sourceWords';
+import { shownLabel } from './configModel';
+import { COMPANY_RULE, shownSource } from './sourceWords';
 
 describe('shownSource', () => {
   it('should keep a law citation as it is', () => {
@@ -15,6 +16,12 @@ describe('shownSource', () => {
     expect(shownSource('câu 9, 32, 33')).toBe('Quy chế công ty');
     expect(shownSource('spec 5.7, câu 25')).toBe('Quy chế công ty');
     expect(shownSource('D13, R6')).toBe('Quy chế công ty');
+  });
+
+  it('F13: should call the builders own document "Quy chế công ty", with or without a section number', () => {
+    // Act + Assert
+    expect(shownSource('spec Lương')).toBe(COMPANY_RULE);
+    expect(shownSource('spec 5.9')).toBe(COMPANY_RULE);
   });
 
   it('should keep the law and drop the internal reference next to it', () => {
@@ -35,5 +42,15 @@ describe('shownSource', () => {
   it('should leave what HR typed, and an empty source empty', () => {
     expect(shownSource('Quyết định 12/QĐ-GĐ ngày 01/10/2026')).toBe('Quyết định 12/QĐ-GĐ ngày 01/10/2026');
     expect(shownSource('')).toBe('');
+  });
+});
+
+describe('shownLabel', () => {
+  it('F13: should leave the builders codes out of a setting name', () => {
+    expect(shownLabel('D03 KPCĐ')).toBe('KPCĐ');
+    expect(shownLabel('Đếm 14 ngày cho tháng vào, nghỉ giữa tháng (BH-1)')).toBe(
+      'Đếm 14 ngày cho tháng vào, nghỉ giữa tháng',
+    );
+    expect(shownLabel('Giảm trừ gia cảnh')).toBe('Giảm trừ gia cảnh');
   });
 });

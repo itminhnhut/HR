@@ -139,7 +139,6 @@ describe('L-B24 bank account', () => {
       id: expect.any(String),
       bank: 'Ngân hàng Thử',
       last4: '8901',
-      payslipEmail: null,
       changedOn: '2026-11-01',
     });
     const [row] = await flow.t.db.select().from(payrollBankAccounts).where(eq(payrollBankAccounts.id, saved.id));

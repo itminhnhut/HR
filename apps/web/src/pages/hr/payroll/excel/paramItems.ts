@@ -47,8 +47,8 @@ function periodItems(month: PayrollExportMonth): ParamItem[] {
     item('insurance', 'Tháng BH', `${dates.insuranceMonth.slice(5)}/${dates.insuranceMonth.slice(0, 4)}`),
     item('tax-year', 'Năm thuế', String(dates.taxYear)),
     item('norms', 'Công chuẩn', norms.map((n) => `${n.region} ${n.norm}`).join(' · ')),
-    item('closing', 'Lần chốt kỳ công', `Lần ${closingNo}`),
-    item('formula', 'Phiên bản công thức', formulaVersion),
+    item('closing', 'Lần chốt kỳ công', closingNo === null ? '—' : `Lần ${closingNo}`),
+    item('formula', 'Phiên bản công thức', formulaVersion ?? '—'),
     item('version', 'Bản', versionText(stamp)),
   ];
   const labelled = labels.length > 0 ? [{ key: 'nhan', section: 'Nhãn', label: 'Nhãn', text: labels.join('\n') }] : [];

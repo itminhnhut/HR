@@ -1,6 +1,7 @@
 import { groupThousands } from '@careers/shared';
 import { Banknote, CheckCircle2, LockOpen } from 'lucide-react';
 import { useRef, useState, type ReactNode, type Ref } from 'react';
+import { Link } from 'react-router';
 import type { PayrollMonthDto } from '../../../api';
 import {
   Dialog,
@@ -13,7 +14,7 @@ import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
 import { errorMessage } from '../parts';
 import { DateField } from '../timesheet/DateField';
 import { Field } from '../timesheet/dialogs';
-import { canApproveNow, dayMonthOf, reviewCounts, timeAndDay } from './monthActionsModel';
+import { canApproveNow, dayMonthOf, payDateLink, reviewCounts, timeAndDay } from './monthActionsModel';
 
 /** The three month dialogs of spec 11.4: Duyệt, Mở lại, Đã chuyển khoản. Each one says what it is about to change. */
 
@@ -109,7 +110,13 @@ export function ApproveDialog({
   error,
   onClose,
   onApprove,
-}: ActionDialogProps & { approver: string; onApprove: (acknowledgedRed: boolean) => void }) {
+  onReview,
+}: ActionDialogProps & {
+  approver: string;
+  onApprove: (acknowledgedRed: boolean) => void;
+  /** Opens Rà soát in place of this dialog, so "Đã xem" is ticked after looking. */
+  onReview: () => void;
+}) {
   const [hasSeenRed, setHasSeenRed] = useState(false);
   const counts = reviewCounts(month.review);
   const isReady = canApproveNow(month.review, hasSeenRed);
@@ -122,22 +129,41 @@ export function ApproveDialog({
             <Fact label="Cảnh báo còn lại">{`${counts.red} đỏ · ${counts.yellow} vàng`}</Fact>
             <Fact label="Tổng thực nhận">{dong(month.totals.netPay)}</Fact>
             <Fact label="Tổng chi phí">{dong(month.totals.totalCost)}</Fact>
-            <Fact label="Ngày chi trả">{fullDay(month.payDate)}</Fact>
+            <Fact label="Ngày chi trả">
+              {fullDay(month.payDate)}{' '}
+              <Link
+                to={payDateLink(month.monthKey)}
+                title="Ngày chi trả quyết định thuế tính theo tháng nào. Đổi ở Cấu hình › Quy tắc."
+                className="text-xs font-medium whitespace-nowrap text-blue-700"
+              >
+                Đổi ›
+              </Link>
+            </Fact>
             <Fact label="Người duyệt">{approver}</Fact>
           </Facts>
           <p className="m-0 text-sm text-slate-600">
-            Duyệt lưu bản chụp bất biến của tháng. Sau đó muốn sửa phải Mở lại hoặc truy lĩnh / truy thu ở tháng sau.
+            Duyệt xong, số của tháng này được khoá lại và không tự đổi nữa. Muốn sửa: bấm Mở lại, hoặc để web tự tính
+            Truy lĩnh / truy thu vào tháng sau.
           </p>
           {counts.red > 0 && (
-            <label className="flex min-h-11 items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 text-sm font-medium text-red-900">
-              <input
-                type="checkbox"
-                checked={hasSeenRed}
-                onChange={(e) => setHasSeenRed(e.target.checked)}
-                className="size-4 accent-red-600"
-              />
-              {`Đã xem ${counts.red} cảnh báo đỏ ở Rà soát`}
-            </label>
+            <div className="flex min-h-11 flex-wrap items-center gap-x-3 rounded-md border border-red-200 bg-red-50 px-3 text-sm font-medium text-red-900">
+              <label className="flex min-h-11 flex-1 items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={hasSeenRed}
+                  onChange={(e) => setHasSeenRed(e.target.checked)}
+                  className="size-4 accent-red-600"
+                />
+                {`Đã xem ${counts.red} cảnh báo đỏ ở Rà soát`}
+              </label>
+              <button
+                type="button"
+                onClick={onReview}
+                className="min-h-9 border-0 bg-transparent p-0 text-sm font-semibold whitespace-nowrap text-red-900 underline underline-offset-2"
+              >
+                Mở Rà soát ›
+              </button>
+            </div>
           )}
           <Failure error={error} />
           <Footer cancel={cancel} onCancel={onClose}>

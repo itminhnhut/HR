@@ -1,6 +1,7 @@
 import type { PayrollBankAccountDto, PayrollBankInput, PayrollOpeningDto, PayrollProfileDto } from '@careers/shared';
 import { Eye, EyeOff, Landmark, PiggyBank } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { api, type PayrollOpeningInput } from '../../../../api';
 import { Input } from '../../../../vendor/shadcn-grid/components/ui/input';
@@ -165,7 +166,7 @@ export function OpeningSection({ profile, today }: { profile: PayrollProfileDto;
   );
 }
 
-type BankDraft = { bank: string; accountNumber: string; payslipEmail: string; changedOn: string };
+type BankDraft = { bank: string; accountNumber: string; changedOn: string };
 
 function BankForm({ employeeId, start, onDone }: { employeeId: string; start: BankDraft; onDone: () => void }) {
   const [d, setD] = useState<BankDraft>(start);
@@ -179,7 +180,7 @@ function BankForm({ employeeId, start, onDone }: { employeeId: string; start: Ba
     },
   );
   const errors = fieldErrorsOf(save.error);
-  const submit = () => save.mutate({ ...d, payslipEmail: d.payslipEmail.trim() || null });
+  const submit = () => save.mutate(d);
   return (
     <EntryForm label="Thêm tài khoản" isBusy={save.isPending} error={save.error} onSave={submit} onCancel={onDone}>
       <ProfileField label="Ngân hàng" error={errors.bank} source="manual">
@@ -203,15 +204,6 @@ function BankForm({ employeeId, start, onDone }: { employeeId: string; start: Ba
           value={d.accountNumber}
           onChange={(e) => set({ accountNumber: e.target.value })}
           className="bg-white tabular-nums"
-        />
-      </ProfileField>
-      <ProfileField label="Email nhận phiếu lương" error={errors.payslipEmail}>
-        <Input
-          aria-label="Email nhận phiếu lương"
-          type="email"
-          value={d.payslipEmail}
-          onChange={(e) => set({ payslipEmail: e.target.value })}
-          className="bg-white"
         />
       </ProfileField>
       <DateField
@@ -261,9 +253,18 @@ function RevealButton({
   );
 }
 
-export function BankSection({ profile, today }: { profile: PayrollProfileDto; today: string }) {
+export function BankSection({
+  profile,
+  today,
+  startAdding = false,
+}: {
+  profile: PayrollProfileDto;
+  today: string;
+  /** Opened from "Thiếu" in the list: the add form is already there. */
+  startAdding?: boolean;
+}) {
   const id = profile.person.employeeId;
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAdding, setIsAdding] = useState(startAdding);
   const [shown, setShown] = useState<Record<string, string>>({});
   const [removing, setRemoving] = useState<PayrollBankAccountDto | null>(null);
   const remove = useProfileSave(
@@ -276,7 +277,6 @@ export function BankSection({ profile, today }: { profile: PayrollProfileDto; to
   const start: BankDraft = {
     bank: latest?.bank ?? '',
     accountNumber: '',
-    payslipEmail: latest?.payslipEmail ?? '',
     changedOn: today,
   };
   const show = (accountId: string, number: string | null) =>
@@ -290,6 +290,16 @@ export function BankSection({ profile, today }: { profile: PayrollProfileDto; to
       onAdd={isAdding ? undefined : () => setIsAdding(true)}
       addLabel="Thêm tài khoản"
     >
+      <p className="m-0 text-sm text-slate-600">
+        Email nhận phiếu lương:{' '}
+        {profile.person.email ? (
+          <strong className="font-medium text-slate-900">{profile.person.email}</strong>
+        ) : (
+          <span className="font-medium text-red-600">chưa có</span>
+        )}
+        {' · '}
+        <Link to={`/hr/cham-cong/nhan-vien?nv=${encodeURIComponent(id)}`}>Sửa email ở Chấm công › Nhân viên</Link>
+      </p>
       {isAdding && <BankForm employeeId={id} start={start} onDone={() => setIsAdding(false)} />}
       {rows.length === 0 && !isAdding && <Empty>Chưa có số tài khoản: Rà soát sẽ báo thiếu STK.</Empty>}
       <ul className="m-0 list-none p-0">
@@ -302,7 +312,7 @@ export function BankSection({ profile, today }: { profile: PayrollProfileDto; to
                 {a.bank} <span className="tabular-nums">{shown[a.id] ?? `••••${a.last4}`}</span>
               </>
             }
-            sub={[`Từ ${showDay(a.changedOn)}`, a.payslipEmail].filter(Boolean).join(' · ')}
+            sub={`Từ ${showDay(a.changedOn)}`}
             extra={
               <RevealButton employeeId={id} account={a} shown={shown[a.id] ?? null} onShown={(n) => show(a.id, n)} />
             }

@@ -2,7 +2,7 @@ import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '../../../../api';
 import { spyOnApi } from '../../../../test/apiSpy';
-import { address, open } from '../payrollTestData';
+import { address, month, open, person } from '../payrollTestData';
 import { answerReads, LEVEL, profile } from './profileTestData';
 
 /** Hồ sơ lương (spec 11.5, 17.2). Cases: docs/test-cases-luong.md L-B01, L-B06, L-B24, L-B28, L-L17. */
@@ -31,8 +31,8 @@ describe('the list', () => {
 
     // Assert
     await waitFor(() => expect(rows()).toEqual(['Mở hồ sơ NV A', 'Mở hồ sơ NV J', 'Mở hồ sơ NV M']));
-    const missing = screen.getByRole('button', { name: 'Mở hồ sơ NV M' });
-    expect(within(missing).getByText('Thiếu hồ sơ')).toBeTruthy();
+    const missing = screen.getByRole('button', { name: 'Mở hồ sơ NV M' }).closest('li');
+    expect(missing && within(missing).getByText('Thiếu hồ sơ')).toBeTruthy();
     expect(screen.getByText(/1 người có trong Chấm công, chưa có hồ sơ lương/)).toBeTruthy();
   });
 
@@ -101,6 +101,89 @@ describe('the drawer', () => {
     expect(await within(box).findByText('Còn thiếu: 2 mục trước tháng lương đầu')).toBeTruthy();
     expect(within(box).getByText('Số dư đầu năm:')).toBeTruthy();
     expect(within(box).getByRole('link', { name: /Sửa ở Chấm công/ })).toBeTruthy();
+  });
+
+  it('F15: should confirm every open item of the person in one go, after asking once', async () => {
+    // Arrange
+    answerReads();
+    const confirm = spyOnApi('hrPayrollConfirmCheck').mockResolvedValue({
+      id: 'check-1',
+      item: 'so-du-dau-nam',
+      employeeId: 'nv-a',
+      closingId: null,
+      confirmed: true,
+      confirmedAt: '2026-11-08T03:00:00.000Z',
+      confirmedBy: 'Phòng Nhân sự',
+    });
+    open('/hr/luong/ho-so?ky=2026-10&hs=nv-a');
+    const box = await drawer();
+
+    // Act
+    fireEvent.click(await within(box).findByRole('button', { name: 'Đã kiểm cả 2 mục của người này' }));
+    const ask = within(box).getByRole('alertdialog', { name: 'Xác nhận đã kiểm' });
+    expect(ask.textContent).toMatch(/^Xác nhận đã kiểm 2 mục của /);
+    expect(confirm).not.toHaveBeenCalled();
+    fireEvent.click(within(ask).getByRole('button', { name: 'Xác nhận' }));
+
+    // Assert
+    await waitFor(() => expect(confirm).toHaveBeenCalledTimes(2));
+    expect(confirm.mock.calls.every(([input]) => input.employeeId === 'nv-a' && input.confirmed)).toBe(true);
+  });
+
+  it('F28: should open the bank section with the add form shown when "Thiếu" is clicked in Tài khoản', async () => {
+    // Arrange: NV A is paid this month and has no bank account.
+    answerReads();
+    const noAccount = person({
+      employeeId: 'nv-a',
+      sheet: {
+        title: '',
+        dependants: 1,
+        taxMethod: 'progressive',
+        paid: {},
+        payslipEmail: null,
+        bankName: null,
+        bankAccount: null,
+      },
+    });
+    spyOnApi('hrPayrollMonth').mockResolvedValue(month({ lines: [noAccount] }));
+    open('/hr/luong/ho-so?ky=2026-10');
+
+    // Act
+    const cells = await screen.findAllByRole('button', {
+      name: /^Tài khoản của NV A: Thiếu\. Thêm tài khoản ngân hàng/,
+    });
+    fireEvent.click(cells[0] as HTMLElement);
+
+    // Assert
+    const bank = await within(await drawer()).findByRole('region', { name: 'Ngân hàng' });
+    expect(await within(bank).findByRole('textbox', { name: 'Số tài khoản' })).toBeTruthy();
+    expect(address()).toBe('/hr/luong/ho-so?ky=2026-10&hs=nv-a&phan=ngan-hang&them=1');
+  });
+
+  it('F28: should open the dependants of the person, nothing being added, from a number of dependants', async () => {
+    // Arrange
+    answerReads();
+    const paid = person({
+      employeeId: 'nv-a',
+      sheet: {
+        title: '',
+        dependants: 2,
+        taxMethod: 'progressive',
+        paid: {},
+        payslipEmail: null,
+        bankName: null,
+        bankAccount: '••••1234',
+      },
+    });
+    spyOnApi('hrPayrollMonth').mockResolvedValue(month({ lines: [paid] }));
+    open('/hr/luong/ho-so?ky=2026-10');
+
+    // Act
+    fireEvent.click((await screen.findAllByRole('button', { name: /^NPT của NV A: 2\./ }))[0] as HTMLElement);
+
+    // Assert
+    await drawer();
+    expect(address()).toBe('/hr/luong/ho-so?ky=2026-10&hs=nv-a&phan=npt');
   });
 
   it('should start a new level from the latest one and send it by month, with a toast', async () => {
@@ -211,6 +294,32 @@ describe('the drawer', () => {
     const field = (await within(box).findByText(message)).closest('label');
     expect(field?.hasAttribute('data-invalid')).toBe(true);
     expect(within(field ?? box).getByLabelText('Số tài khoản')).toBeTruthy();
+  });
+
+  it("should keep the payslip email out of the bank form: it is the person's own, edited in Chấm công › Nhân viên", async () => {
+    // Arrange
+    answerReads();
+    const add = spyOnApi('hrPayrollAddBank').mockResolvedValue({
+      id: 'b-2',
+      bank: 'Ngân hàng Thử',
+      last4: '8901',
+      changedOn: '2026-10-01',
+    });
+    open('/hr/luong/ho-so?ky=2026-10&hs=nv-a');
+    const bank = await within(await drawer()).findByRole('region', { name: 'Ngân hàng' });
+
+    // Act
+    fireEvent.click(await within(bank).findByRole('button', { name: 'Thêm tài khoản' }));
+    fireEvent.change(within(bank).getByLabelText('Ngân hàng'), { target: { value: 'Ngân hàng Thử' } });
+    fireEvent.change(within(bank).getByLabelText('Số tài khoản'), { target: { value: '012345678901' } });
+    fireEvent.click(within(bank).getByRole('button', { name: 'Lưu' }));
+
+    // Assert
+    expect(within(bank).queryByLabelText('Email nhận phiếu lương')).toBeNull();
+    const link = within(bank).getByRole('link', { name: 'Sửa email ở Chấm công › Nhân viên' });
+    expect(link.getAttribute('href')).toBe('/hr/cham-cong/nhan-vien?nv=nv-a');
+    await waitFor(() => expect(add).toHaveBeenCalled());
+    expect(Object.keys(add.mock.calls[0]?.[1] ?? {}).sort()).toEqual(['accountNumber', 'bank', 'changedOn']);
   });
 
   it('L-B24: should show only the last four digits until "Hiện đủ", which asks the API (logged)', async () => {

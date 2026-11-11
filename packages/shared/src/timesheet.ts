@@ -380,6 +380,12 @@ const halfSteps = z.number().finite().refine((n) => Number.isInteger(n * 2), 'Nh
 export const EMPLOYEE_BLOCKS = ['BO', 'KD'] as const;
 export type EmployeeBlock = (typeof EMPLOYEE_BLOCKS)[number];
 
+/** Trimmed and lowercase; '' and null both mean "no address", left out means "keep what is saved". */
+const employeeEmail = z
+  .union([z.literal(''), z.string().trim().toLowerCase().max(200).email('Email không đúng dạng, ví dụ ten@congty.vn.')])
+  .nullish()
+  .transform((v) => (v === undefined ? undefined : v || null));
+
 export const employeeInputSchema = z
   .object({
     code: z.string().trim().min(1, 'Nhập mã nhân viên.').max(20),
@@ -396,6 +402,8 @@ export const employeeInputSchema = z
     openingLeave: halfSteps.min(0, 'Phép không được âm.').max(365).default(0),
     /** Left out: kept as it is. Null: none yet. */
     block: z.enum(EMPLOYEE_BLOCKS, { message: 'Chọn khối BO hoặc KD.' }).nullish(),
+    /** Email nhận phiếu lương. Left out: kept as it is. Empty or null: none. */
+    email: employeeEmail,
     /** HR checked the date (spec-luong.md 4.20). Left out: kept while the date stays, dropped when it changes. */
     joinedOnConfirmed: z.boolean().optional(),
     officialOnConfirmed: z.boolean().optional(),
@@ -669,6 +677,8 @@ export interface EmployeeDto {
   leftOn: string | null;
   openingLeave: number;
   block: EmployeeBlock | null;
+  /** Email nhận phiếu lương; null when HR has not typed one. */
+  email: string | null;
   /** Whether HR confirmed each date; dates typed in from the old sheets are not (spec-luong.md 4.20). */
   joinedOnConfirmed: boolean;
   officialOnConfirmed: boolean;

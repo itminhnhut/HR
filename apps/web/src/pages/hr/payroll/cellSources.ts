@@ -52,6 +52,11 @@ const KPI_RULES = [
 
 const formulaOnly: CellSource = { settings: () => [], profile: [] };
 
+/** D01: each cell rounded as it is computed, or the totals rounded "as HR's file". */
+const ROUNDING = 'tuy-chon.d01';
+/** A total of other cells: the only setting it reads itself is how the month rounds (C04). */
+const rounded: CellSource = { settings: () => [ROUNDING], profile: [] };
+
 export const CELL_SOURCES: Partial<Record<PayrollCellKey, CellSource>> = {
   dailyRate: {
     settings: (_line, ids) => [...perComponent(ids, 'chia-theo-ngay', 'thu-viec'), 'quy-tac.ty-le-thu-viec'],
@@ -63,12 +68,15 @@ export const CELL_SOURCES: Partial<Record<PayrollCellKey, CellSource>> = {
     settings: (_line, ids) => [
       'quy-tac.he-so-lam-them',
       'quy-tac.gio-mot-ngay',
+      // How many hours a rest-day or holiday "công" stands for.
+      'quy-tac.gio-cong-ngay-nghi',
       'tuy-chon.d12',
       ...perComponent(ids, 'vao-lam-them'),
     ],
     profile: ['muc'],
   },
-  income: formulaOnly,
+  // (26) adds cells up: what it reads itself is whether Gross counts KPI, and how the month rounds.
+  income: { settings: () => ['quy-tac.gross-gom-kpi', ROUNDING], profile: [] },
   socialBase: {
     settings: (line, ids) => [
       ...perComponent(ids, 'tinh-bh'),
@@ -97,20 +105,22 @@ export const CELL_SOURCES: Partial<Record<PayrollCellKey, CellSource>> = {
       contract(line, 'cam-ket-kem-hd'),
       'luat.bieu-thue',
       'luat.khau-tru-10',
+      // The pay date decides the tax month and the law in force.
+      'quy-tac.ngay-chi-tra',
       'tuy-chon.d02',
       'tuy-chon.d09',
       'tuy-chon.d10',
     ],
     profile: ['cam-ket', 'muc'],
   },
-  totalDeductions: formulaOnly,
-  netPay: formulaOnly,
+  totalDeductions: rounded,
+  netPay: rounded,
   companySocial: insurance('luat.bh-cty'),
   companyHealth: insurance('luat.bh-cty', ['tuy-chon.d04']),
   companyUnemployment: insurance('luat.bh-cty'),
   unionFund: insurance('luat.kpcd', ['tuy-chon.d03']),
   companyTotal: formulaOnly,
-  totalCost: formulaOnly,
+  totalCost: rounded,
 };
 
 export const sourceOf = (cell: PayrollCellKey | undefined): CellSource | undefined =>

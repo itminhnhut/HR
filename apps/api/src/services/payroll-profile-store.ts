@@ -25,6 +25,7 @@ export const personDtoOf = (p: Employee): PayrollPersonDto => ({
   block: p.block,
   joinedOn: p.joinedOn,
   leftOn: p.leftOn,
+  email: p.email,
 });
 
 /** Every level of the given people, oldest first, with their amounts. */

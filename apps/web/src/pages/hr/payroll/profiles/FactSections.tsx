@@ -51,8 +51,8 @@ const recurringSub = (r: PayrollRecurringDto) =>
 const SELECT = 'ts-field h-9 w-full min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
 
 /** Which row is open in the form ('new' for an added one) and which one waits for "Xoá?". */
-function useRows<T extends Row>(employeeId: string, kind: PayrollFactKind, what: string) {
-  const [editing, setEditing] = useState<T | 'new' | null>(null);
+function useRows<T extends Row>(employeeId: string, kind: PayrollFactKind, what: string, startAdding = false) {
+  const [editing, setEditing] = useState<T | 'new' | null>(startAdding ? 'new' : null);
   const [removing, setRemoving] = useState<T | null>(null);
   const remove = useProfileSave(
     employeeId,
@@ -116,9 +116,18 @@ function DependantForm({
   );
 }
 
-export function DependantsSection({ profile, month }: { profile: PayrollProfileDto; month: string }) {
+export function DependantsSection({
+  profile,
+  month,
+  startAdding = false,
+}: {
+  profile: PayrollProfileDto;
+  month: string;
+  /** Opened from a "–" in the list: the add form is already there. */
+  startAdding?: boolean;
+}) {
   const id = profile.person.employeeId;
-  const s = useRows<PayrollDependantDto>(id, 'dependants', 'người phụ thuộc');
+  const s = useRows<PayrollDependantDto>(id, 'dependants', 'người phụ thuộc', startAdding);
   const rows = profile.dependants;
   return (
     <Section
@@ -197,9 +206,17 @@ function CommitmentForm({
   );
 }
 
-export function CommitmentsSection({ profile, today }: { profile: PayrollProfileDto; today: string }) {
+export function CommitmentsSection({
+  profile,
+  today,
+  startAdding = false,
+}: {
+  profile: PayrollProfileDto;
+  today: string;
+  startAdding?: boolean;
+}) {
   const id = profile.person.employeeId;
-  const s = useRows<PayrollCommitmentDto>(id, 'commitments', 'cam kết');
+  const s = useRows<PayrollCommitmentDto>(id, 'commitments', 'cam kết', startAdding);
   const rows = [...profile.commitments].sort((a, b) => b.year - a.year);
   return (
     <Section
@@ -316,9 +333,17 @@ function RecurringForm({
   );
 }
 
-export function RecurringSection({ profile, month }: { profile: PayrollProfileDto; month: string }) {
+export function RecurringSection({
+  profile,
+  month,
+  startAdding = false,
+}: {
+  profile: PayrollProfileDto;
+  month: string;
+  startAdding?: boolean;
+}) {
   const id = profile.person.employeeId;
-  const s = useRows<PayrollRecurringDto>(id, 'recurring', 'khoản (32)');
+  const s = useRows<PayrollRecurringDto>(id, 'recurring', 'khoản (32)', startAdding);
   const rows = profile.recurring;
   return (
     <Section

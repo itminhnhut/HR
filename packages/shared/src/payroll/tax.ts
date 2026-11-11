@@ -153,7 +153,7 @@ export function taxMethodOf(person: TaxPersonInput, config: PayrollConfig): { me
   const paidAfterLeaving = !!person.leftOn && config.dates.payDate > person.leftOn;
   const shortTerm = isShortTermContract(person.contract);
   const leavingRule = afterLeaving === 'flat10-all' || (afterLeaving === 'flat10-short-only' && shortTerm);
-  if (paidAfterLeaving && leavingRule) return { method: 'flat10', reason: 'Chi sau ngày nghỉ việc (D10)' };
+  if (paidAfterLeaving && leavingRule) return { method: 'flat10', reason: 'Chi sau ngày nghỉ việc' };
   if (!shortTerm) return { method: 'progressive', reason: 'HĐ từ 3 tháng: lũy tiến' };
   const source = commitmentSourceOf(person);
   if (source && commitment === 'no-withholding') return { method: 'none', reason: commitmentWords(source, person) };

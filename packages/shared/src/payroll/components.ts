@@ -35,6 +35,7 @@ export const CONTRACT_ATTRIBUTES = {
   'duoi-3-thang': 'shortTerm',
   'ngay-thu-viec': 'probationDays',
   'cam-ket-kem-hd': 'commitmentIncluded',
+  ngung: 'stoppedFrom',
 } as const satisfies Record<string, keyof ContractType>;
 
 interface Catalogue<T extends { id: string }> {

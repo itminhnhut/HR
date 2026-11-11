@@ -4,12 +4,14 @@ import { hrOf } from '../lib/hr-auth.js';
 import { payrollOf, requirePayroll } from '../lib/payroll-auth.js';
 import { readJson } from '../lib/request.js';
 import { listFirstMonthChecks, setFirstMonthCheck } from '../services/payroll-checks.js';
+import { exportPayrollMonths } from '../services/payroll-export.js';
 import { readPayrollLog } from '../services/payroll-log.js';
 import { payrollMonthOf } from '../services/payroll-month.js';
 import { approveMonth, markMonthPaid, reopenMonth, type MonthActionArgs } from '../services/payroll-month-actions.js';
 import { accessOf, listPayrollRights, setPayrollRights } from '../services/payroll-rights.js';
 import { saveTypedInputs } from '../services/payroll-typed-inputs.js';
 import { hrPayrollConfigRoutes } from './hr-payroll-config.js';
+import { hrPayrollPayslipRoutes } from './hr-payroll-payslips.js';
 import { hrPayrollProfileRoutes } from './hr-payroll-profiles.js';
 
 /** Lương (spec-luong.md). Mounted at /api/hr/payroll behind requireHr; every route needs the payroll right. */
@@ -71,5 +73,16 @@ hrPayrollRoutes.put('/months/:month/lines/:employeeId/inputs', async (c) => {
   return c.json(await saveTypedInputs(db, { key, employeeId, raw: await readJson(c), hr: hrOf(c), now: now() }));
 });
 
+/**
+ * Tải Excel bảng lương / phiếu lương (spec 12.1, 11.7): the months of one download with what the sheet prints. The
+ * only answer with whole account numbers (payroll workbook); each call writes one line in the payroll log (L-F06).
+ */
+hrPayrollRoutes.post('/export', async (c) => {
+  const { db, now, config } = c.get('deps');
+  const args = { raw: await readJson(c), hr: hrOf(c), now: now(), key: config.payrollKey };
+  return c.json(await exportPayrollMonths(db, args));
+});
+
 hrPayrollRoutes.route('/', hrPayrollConfigRoutes);
+hrPayrollRoutes.route('/', hrPayrollPayslipRoutes);
 hrPayrollRoutes.route('/', hrPayrollProfileRoutes);

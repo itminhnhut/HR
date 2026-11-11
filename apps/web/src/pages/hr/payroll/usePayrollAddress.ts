@@ -49,6 +49,9 @@ export function usePayrollAddress() {
     /** One computed cell's sources open over the grid (`tinh` the cell, `nguoi` the person). */
     sourceCell: isCellKey(cell) ? cell : null,
     sourcePerson: params.get('nguoi'),
+    /** Phiếu lương of one person open over the grid (`phieu`). */
+    payslipId: params.get('phieu'),
+    closePayslip: () => write((next) => next.delete('phieu')),
     closeSource: () =>
       write((next) => {
         next.delete('tinh');

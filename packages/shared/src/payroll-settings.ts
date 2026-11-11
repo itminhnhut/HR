@@ -88,6 +88,7 @@ export type PayrollComponent = z.infer<typeof payrollComponentSchema>;
 export const payrollContractTypeSchema = contractTypeSchema.extend({
   id: slug,
   name: z.string().trim().min(1, 'Nhập tên loại hợp đồng.').max(80),
+  stoppedFrom: z.string().regex(PAYROLL_MONTH).nullable().optional(),
 });
 export type PayrollContractType = z.infer<typeof payrollContractTypeSchema>;
 

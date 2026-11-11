@@ -57,6 +57,10 @@ export function monthStatusLabel(month: MonthState): string {
   return a ? `Đã duyệt lần ${a.no} · ${timeAndDay(a.at)} · bởi ${a.by}` : 'Đã duyệt';
 }
 
+/** Where the pay date is changed (F21): Cấu hình › Quy tắc, on "Ngày chi trả", for the month viewed. */
+export const payDateLink = (monthKey: string) =>
+  `/hr/luong/cau-hinh?ky=${monthKey}&muc=quy-tac&khoa=${encodeURIComponent('quy-tac.ngay-chi-tra')}`;
+
 export function reviewCounts(items: readonly ReviewItem[]): { red: number; yellow: number } {
   const red = items.filter((i) => i.level === 'red').length;
   return { red, yellow: items.length - red };

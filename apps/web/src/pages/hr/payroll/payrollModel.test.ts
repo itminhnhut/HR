@@ -9,6 +9,7 @@ import {
   gridRowsOf,
   monthFromParam,
   payrollBands,
+  taxBracketOf,
   regionShort,
   timesheetLink,
 } from './payrollModel';
@@ -86,9 +87,35 @@ describe('the columns, in the order of HR file', () => {
     ]);
 
     // Assert
-    expect(bands.map((b) => b.id)).toEqual(['info', 'more', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']);
+    expect(bands.map((b) => b.id)).toEqual(['info', 'more', 'A', 'B', 'B2', 'B3', 'C', 'D', 'E', 'F', 'G', 'H']);
+    // F01: the letters and the columns under each are those of HR's file.
+    const numbersOf = (id: string) => bands.find((b) => b.id === id)?.columns.map((c) => c.no);
+    expect(bands.slice(3).map((b) => b.label)).toEqual([
+      'B · CHẤM CÔNG & ĐÁNH GIÁ',
+      'B2 · LÀM THÊM GIỜ',
+      'B3 · KHÁC',
+      'C · THU NHẬP',
+      'D · KHẤU TRỪ NGƯỜI LAO ĐỘNG',
+      'E · THUẾ TNCN',
+      'F · THANH TOÁN',
+      'G · CHI PHÍ CÔNG TY',
+      'H · GHI CHÚ',
+    ]);
+    expect(numbersOf('B')).toEqual([null, '17', '18', '19', '20']);
+    expect(numbersOf('B2')).toEqual(['21', '22', '23']);
+    expect(numbersOf('B3')).toEqual(['24']);
+    expect(numbersOf('C')).toEqual(['25', '26']);
+    expect(numbersOf('D')).toEqual(['27', '28', '29', '30', '31', '32']);
     const numbers = bands.flatMap((b) => b.columns.map((c) => c.no)).filter((n): n is string => n !== null);
+    // C05: the fixed columns and the file's (5) carry the file's numbers too.
     expect(numbers).toEqual([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
       '8',
       '11a',
       '11b',
@@ -116,6 +143,7 @@ describe('the columns, in the order of HR file', () => {
       '36',
       '37',
       '38',
+      '39',
       '40',
       '41',
       '42',
@@ -126,6 +154,106 @@ describe('the columns, in the order of HR file', () => {
       '47',
       '48',
     ]);
+  });
+
+  it('F02: should name the columns as HR file does, with the insurance rates of the month in the headings', () => {
+    // Arrange
+    const rates = {
+      employee: { social: 0.08, health: 0.015, unemployment: 0.01 },
+      company: { social: 0.175, health: 0.03, unemployment: 0.01 },
+      unionFund: 0.02,
+    };
+
+    // Act
+    const columns = payrollBands([], rates).flatMap((b) => b.columns);
+    const labelOf = (no: string) => columns.find((c) => c.no === no)?.label;
+
+    // Assert
+    expect(['15', '17', '19', '47'].map(labelOf)).toEqual([
+      'Thưởng KPI (100%)',
+      'Ngày công thực tế',
+      '% đánh giá KPI',
+      'Tổng BH + KPCĐ Cty',
+    ]);
+    expect(['28', '29', '30'].map(labelOf)).toEqual(['BHXH (8%)', 'BHYT (1,5%)', 'BHTN (1%)']);
+    expect(['43', '44', '45', '46'].map(labelOf)).toEqual([
+      'BHXH Cty (17,5%)',
+      'BHYT Cty (3%)',
+      'BHTN Cty (1%)',
+      'KPCĐ (2%)',
+    ]);
+    expect(columns.find((c) => c.no === '15')?.title).toBe('Thưởng KPI / Hiệu suất (100%)');
+  });
+
+  it('F03: should show the title, the dependants and the tax bracket of HR file, the info columns in its order', () => {
+    // Act
+    const bands = payrollBands([]);
+
+    // Assert
+    expect(bands.find((b) => b.id === 'more')?.columns.map((c) => c.label)).toEqual([
+      'Chức danh',
+      'Bộ phận (khối)',
+      'Loại HĐ',
+      'Khu vực',
+      'Số NPT',
+      'Phòng ban',
+    ]);
+    expect(bands.find((b) => b.id === 'E')?.columns.map((c) => c.no)).toEqual([
+      '33',
+      '34',
+      '35',
+      '36',
+      '37',
+      '38',
+      '39',
+      '40',
+    ]);
+  });
+
+  it('F03: should give the bracket (38) reaches only when the tax of the month is progressive', () => {
+    // Arrange
+    const brackets = [{ upTo: 10_000_000 }, { upTo: 30_000_000 }, { upTo: null }];
+    const person = (assessable: number, taxMethod: 'progressive' | 'flat10') =>
+      line({
+        cells: { assessable } as PayrollLineDto['cells'],
+        sheet: { title: '', dependants: 0, taxMethod, paid: {}, payslipEmail: null, bankName: null, bankAccount: null },
+      });
+
+    // Act + Assert
+    expect(taxBracketOf(person(10_000_000, 'progressive'), brackets)).toBe(1);
+    expect(taxBracketOf(person(10_000_001, 'progressive'), brackets)).toBe(2);
+    expect(taxBracketOf(person(90_000_000, 'progressive'), brackets)).toBe(3);
+    expect(taxBracketOf(person(0, 'progressive'), brackets)).toBe(0);
+    expect(taxBracketOf(person(20_000_000, 'flat10'), brackets)).toBe(0);
+    expect(taxBracketOf(person(20_000_000, 'progressive'), undefined)).toBe(0);
+  });
+
+  it('F27: should number a component HR added after Chuyên cần (14a), (14b), the columns of HR file keeping theirs', () => {
+    // Act
+    const bands = payrollBands([
+      { id: 'luong', name: 'Lương thời gian' },
+      { id: 'chuyen-can', name: 'Chuyên cần' },
+      { id: 'pc-doc-hai', name: 'PC độc hại' },
+      { id: 'pc-xa-nha', name: 'PC xa nhà' },
+    ]);
+
+    // Assert
+    expect(bands.find((b) => b.id === 'A')?.columns.map((c) => [c.no, c.label])).toEqual([
+      ['8', 'Lương thời gian'],
+      ['14', 'Chuyên cần'],
+      ['14a', 'PC độc hại'],
+      ['14b', 'PC xa nhà'],
+      ['15', 'Thưởng KPI (100%)'],
+      ['16', 'Gross thoả thuận'],
+    ]);
+  });
+
+  it('F02: should leave the rate out of a heading while the rates of the month are not read', () => {
+    // Act
+    const columns = payrollBands([]).flatMap((b) => b.columns);
+
+    // Assert
+    expect(columns.find((c) => c.no === '28')?.label).toBe('BHXH');
   });
 
   it('L-L11: should link the norm, the days and rest-day, holiday cells to the timesheet, and nothing HR types', () => {
@@ -255,6 +383,26 @@ describe('the total row', () => {
     expect(totals.kpiPercent).toBeUndefined();
   });
 
+  it('F04: should total the overtime hours and the rest-day and holiday days as HR file does, not (17) or (19)', () => {
+    // Arrange
+    const bands = payrollBands([]);
+    const cells = (over: Partial<PayrollLineDto['cells']>) => over as PayrollLineDto['cells'];
+    const shown = [
+      line({ cells: cells({ overtimeHours: 0.1, restDays: 1, holidayDays: 0.5, paidDays: 22, kpiPercent: 1 }) }),
+      line({ cells: cells({ overtimeHours: 0.2, restDays: 0.5, holidayDays: 0, paidDays: 20, kpiPercent: 0.8 }) }),
+    ];
+
+    // Act
+    const totals = columnTotals(shown, bands);
+
+    // Assert
+    expect(totals.overtimeHours).toBe(0.3);
+    expect(totals.restDays).toBe(1.5);
+    expect(totals.holidayDays).toBe(0.5);
+    expect(totals.paidDays).toBeUndefined();
+    expect(totals.kpiPercent).toBeUndefined();
+  });
+
   it('L-L13: should give every money column of the file a total', () => {
     // Arrange
     const bands = payrollBands([{ id: 'luong', name: 'Lương thời gian' }]);
@@ -295,7 +443,9 @@ describe('the total row', () => {
       '47',
       '48',
     ]);
-    expect(money.every((c) => totals[c.id] === 0)).toBe(true);
+    // F16: every money column but (18), a daily rate, which HR's file leaves empty on the total row.
+    expect(money.filter((c) => c.no !== '18').every((c) => totals[c.id] === 0)).toBe(true);
+    expect(totals.dailyRate).toBeUndefined();
   });
 });
 

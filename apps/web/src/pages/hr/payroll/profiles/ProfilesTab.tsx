@@ -1,5 +1,5 @@
 import type { PayrollChecklistDto, PayrollPersonDto } from '@careers/shared';
-import { ChevronRight, ClipboardList, FileSpreadsheet, UserPlus, Users } from 'lucide-react';
+import { ClipboardList, FileSpreadsheet, UserPlus, Users } from 'lucide-react';
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import type { PayrollMonthDto } from '../../../../api';
@@ -9,11 +9,11 @@ import { useEmployees, useRegions } from '../../timesheet/queries';
 import { TabSkeleton } from '../../timesheet/skeletons';
 import { BulkFacts } from './BulkFacts';
 import { drawerContextOf } from './GridProfileDrawer';
-import { ProfileDrawer } from './ProfileDrawer';
+import { isProfilePart, ProfileDrawer, type ProfilePartId } from './ProfileDrawer';
+import { LIST_COLS, PersonRow } from './ProfileListRow';
 import { ProfileFilterBar } from './ProfileFilterBar';
 import {
   filterProfiles,
-  hasLeftBy,
   monthWords,
   PROFILE_PARAMS,
   profileFiltersOf,
@@ -21,58 +21,10 @@ import {
   showDay,
   statusParam,
   type ProfileFilters,
-  type ProfileRow,
 } from './profileModel';
 import { useChecklist, useProfiles } from './profileQueries';
 
 /** Hồ sơ lương (spec 11.5): everyone from Chấm công with their profile state; a person opens in the drawer. */
-
-const BADGE = 'inline-flex h-6 items-center rounded-full px-2 text-xs font-medium whitespace-nowrap';
-
-function Badges({ row, today }: { row: ProfileRow; today: string }) {
-  return (
-    <span className="flex flex-wrap items-center gap-1.5">
-      {row.hasProfile ? (
-        <span className={`${BADGE} bg-green-50 text-green-700`}>Có hồ sơ</span>
-      ) : (
-        <span className={`${BADGE} bg-red-100 text-red-700`}>Thiếu hồ sơ</span>
-      )}
-      {row.hasOverrides && <span className={`${BADGE} bg-violet-50 text-violet-700`}>Cấu hình riêng</span>}
-      {row.open.length > 0 && (
-        <span className={`${BADGE} bg-amber-50 text-amber-800`}>{`Còn thiếu ${row.open.length} mục`}</span>
-      )}
-      {hasLeftBy(row, today) && <span className={`${BADGE} bg-slate-100 text-slate-700`}>Đã nghỉ</span>}
-    </span>
-  );
-}
-
-function PersonRow({ row, today, onOpen }: { row: ProfileRow; today: string; onOpen: () => void }) {
-  return (
-    <li className="border-b last:border-b-0">
-      <button
-        type="button"
-        onClick={onOpen}
-        aria-label={`Mở hồ sơ ${row.fullName}`}
-        className="grid min-h-14 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-3 py-2 text-left hover:bg-blue-50 md:grid-cols-[5rem_minmax(0,1.4fr)_minmax(0,1fr)_3.5rem_6rem_minmax(0,1.6fr)_auto]"
-      >
-        <span className="text-sm text-slate-600 tabular-nums max-md:hidden">{row.code}</span>
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium">{row.fullName}</span>
-          <span className="truncate text-xs text-slate-600 md:hidden">
-            {[row.code, row.department, row.block].filter(Boolean).join(' · ')}
-          </span>
-        </span>
-        <span className="truncate text-sm max-md:hidden">{row.department || '–'}</span>
-        <span className="text-sm max-md:hidden">{row.block ?? '–'}</span>
-        <span className="text-sm tabular-nums max-md:hidden">{showDay(row.joinedOn)}</span>
-        <span className="max-md:order-last max-md:col-span-2">
-          <Badges row={row} today={today} />
-        </span>
-        <ChevronRight className="size-4 text-slate-400" />
-      </button>
-    </li>
-  );
-}
 
 const MISSING_SHOWN = 5;
 
@@ -131,7 +83,9 @@ function ChecklistBanner({ checklist }: { checklist: PayrollChecklistDto | undef
   );
 }
 
-const HEADS = ['Mã NV', 'Họ và tên', 'Bộ phận', 'Khối', 'Ngày vào', 'Hồ sơ'];
+const HEADS = ['Mã NV', 'Họ và tên', 'Bộ phận', 'Khối', 'Ngày vào'];
+/** Read off the person's row of the payroll month viewed; "–" for someone without a row in it. */
+const FACT_HEADS = ['Gross', 'NPT', 'Thuế', '(32) định kỳ', 'Tài khoản'];
 
 function useProfileAddress() {
   const [params, setParams] = useSearchParams();
@@ -155,16 +109,20 @@ function useProfileAddress() {
       if (patch.onlyMissing !== undefined) put(next, PROFILE_PARAMS.missing, patch.onlyMissing ? '1' : null);
     }, patch.query !== undefined);
   const { open: _, ...filterNames } = PROFILE_PARAMS;
+  const part = params.get('phan');
   return {
     filters: profileFiltersOf(params),
     openId: params.get(PROFILE_PARAMS.open),
     isLevels: params.get('phan') === 'muc',
+    /** `phan=<part>&them=1`: the part of the profile a cell of the list opened, its add form shown. */
+    focus: isProfilePart(part) ? { part, isAdding: params.get('them') === '1' } : null,
     change,
     clear: () => write((next) => Object.values(filterNames).forEach((n) => next.delete(n))),
-    open: (id: string | null) =>
+    open: (id: string | null, at?: { part: ProfilePartId; isAdding: boolean }) =>
       write((next) => {
         put(next, PROFILE_PARAMS.open, id);
-        next.delete('phan');
+        put(next, 'phan', id && at ? at.part : null);
+        put(next, 'them', id && at?.isAdding ? '1' : null);
       }),
   };
 }
@@ -213,11 +171,13 @@ export function ProfilesTab({ period, month, today, onPeriod }: ProfilesTabProps
       </>
     );
   const shown = filterProfiles(rows, address.filters, today);
+  const monthKey = `${period.year}-${String(period.month).padStart(2, '0')}`;
   const context = drawerContextOf({
     month,
     today,
-    levelsOf: address.isLevels ? `${period.year}-${String(period.month).padStart(2, '0')}` : null,
+    levelsOf: address.isLevels ? monthKey : null,
     regions: regions.data,
+    focus: address.focus,
   });
   return (
     <>
@@ -235,11 +195,7 @@ export function ProfilesTab({ period, month, today, onPeriod }: ProfilesTabProps
             Nhân viên{' '}
             <span className="rounded-full bg-slate-100 px-2 text-sm font-medium text-slate-600">{shown.length}</span>
           </h2>
-          <BulkFacts
-            people={list.data.people}
-            month={`${period.year}-${String(period.month).padStart(2, '0')}`}
-            today={today}
-          />
+          <BulkFacts people={list.data.people} month={monthKey} today={today} />
           <button
             type="button"
             disabled
@@ -252,11 +208,17 @@ export function ProfilesTab({ period, month, today, onPeriod }: ProfilesTabProps
         </div>
         <div
           aria-hidden="true"
-          className="grid grid-cols-[5rem_minmax(0,1.4fr)_minmax(0,1fr)_3.5rem_6rem_minmax(0,1.6fr)_auto] gap-x-3 border-b px-3 py-2 text-xs font-medium text-slate-500 max-md:hidden"
+          className={`grid gap-x-3 border-b px-3 py-2 text-xs font-medium text-slate-500 max-md:hidden ${LIST_COLS}`}
         >
           {HEADS.map((h) => (
             <span key={h}>{h}</span>
           ))}
+          {FACT_HEADS.map((h) => (
+            <span key={h} title={`Theo bảng lương ${monthWords(monthKey)}`} className="max-xl:hidden">
+              {h}
+            </span>
+          ))}
+          <span>Hồ sơ</span>
           <span className="w-4" />
         </div>
         {shown.length === 0 ? (
@@ -264,14 +226,14 @@ export function ProfilesTab({ period, month, today, onPeriod }: ProfilesTabProps
         ) : (
           <ul className="m-0 list-none p-0">
             {shown.map((r) => (
-              <PersonRow key={r.employeeId} row={r} today={today} onOpen={() => address.open(r.employeeId)} />
+              <PersonRow key={r.employeeId} row={r} today={today} onOpen={(at) => address.open(r.employeeId, at)} />
             ))}
           </ul>
         )}
       </section>
       {address.openId && (
         <ProfileDrawer
-          key={address.openId}
+          key={`${address.openId}-${address.focus?.part ?? ''}-${address.focus?.isAdding ? 1 : 0}`}
           employeeId={address.openId}
           row={rows.find((r) => r.employeeId === address.openId)}
           context={context}

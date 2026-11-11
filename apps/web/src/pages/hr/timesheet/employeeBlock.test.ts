@@ -6,7 +6,7 @@ import { blockToSave, bulkResultWords, changeBlocks, inputWithBlock, suggestBloc
 const person = (id: string, over: Partial<EmployeeDto> = {}): EmployeeDto => ({
   id, code: id.toUpperCase(), fullName: `Người ${id}`, department: 'Kế toán', title: 'Nhân viên', regionId: 'hcm', employment: 'official',
   staffKindId: 'k1', joinedOn: '2025-01-01', officialOn: '2025-03-01', leftOn: null, openingLeave: 1.5,
-  block: null, joinedOnConfirmed: true, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
+  email: null, block: null, joinedOnConfirmed: true, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
 });
 
 describe('suggesting a block from the department', () => {

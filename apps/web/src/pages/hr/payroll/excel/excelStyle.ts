@@ -10,6 +10,9 @@ export const PALE_YELLOW = 'FFFFF2CC';
 export const GREY = 'FFD9D9D9';
 export const SERIF = 'Times New Roman';
 export const COMPANY = 'CÔNG TY TNHH TOP FLOW';
+/** The line under the company name in HR's file (cell A5). */
+export const COMPANY_ADDRESS =
+  'Văn phòng 1, Tầng 09, Tòa nhà Pearl Plaza, 561A Điện Biên Phủ, P. Thạnh Mỹ Tây, TP. HCM';
 
 export const fill = (argb: string) => ({ type: 'pattern' as const, pattern: 'solid' as const, fgColor: { argb } });
 const THIN = { style: 'thin' as const, color: { argb: 'FF8A8A8A' } };

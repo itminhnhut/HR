@@ -141,7 +141,13 @@ describe('a period that cannot show a payroll', () => {
     open('/hr/luong?ky=2026-11');
 
     // Assert
-    expect(await screen.findByText('Chờ chốt công, gõ trước KPI và tạm ứng được.')).toBeTruthy();
+    // F14: nothing to type in yet, so the banner says the next step and links to the timesheet of that period.
+    expect(await screen.findByText(/Kỳ công 26\/10 – 25\/11 chưa chốt\. Bước tiếp: vào Chấm công/)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Mở Chấm công kỳ này ›' }).getAttribute('href')).toBe(
+      '/hr/cham-cong?ky=2026-11',
+    );
+    expect(screen.getByText('Chưa có bảng lương vì kỳ công chưa chốt.')).toBeTruthy();
+    expect(screen.queryByText(/gõ trước KPI/)).toBeNull();
   });
 
   it('L-L07: should call a month still ahead "Dự tính"', async () => {

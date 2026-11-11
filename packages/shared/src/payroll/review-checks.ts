@@ -61,7 +61,8 @@ export interface ReviewRowInput {
    * `hasCommitment`: a signed commitment for this month's tax year. `commitmentYear`: the latest tax year, up to this
    * month's, the person signed one for; null without any.
    */
-  person: { hasCommitment: boolean; commitmentYear: number | null; hasBankAccount: boolean };
+  /** `hasPayslipEmail`: an address to mail the payslip to; left out where nobody asks (no warning). */
+  person: { hasCommitment: boolean; commitmentYear: number | null; hasBankAccount: boolean; hasPayslipEmail?: boolean };
   /** Net pay of the last approved month and what is known to have changed; null for the first month on the web. */
   previous: { netPay: number; causes: readonly string[] } | null;
 }
@@ -317,6 +318,9 @@ const historyChecks: Check = ({ line, previous, person }) => {
         ]
       : []),
     ...(person.hasBankAccount ? [] : [yellow('missing-bank-account', null, 'Thiếu số tài khoản')]),
+    ...(person.hasPayslipEmail === false
+      ? [yellow('missing-payslip-email', null, 'Thiếu email nhận phiếu lương')]
+      : []),
   ];
 };
 

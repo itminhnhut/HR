@@ -91,7 +91,6 @@ function seedProfiles(lines: Lines): Record<string, MockPayrollProfile> {
                 id: 'bank-1',
                 bank: 'Ngân hàng Demo',
                 last4: FAKE_ACCOUNT.slice(-4),
-                payslipEmail: null,
                 changedOn: START,
                 accountNumber: FAKE_ACCOUNT,
               },
@@ -346,7 +345,6 @@ export function profileMockApi(lines: Lines) {
             id: uid('bank'),
             bank: data.bank,
             last4: data.accountNumber.slice(-4),
-            payslipEmail: data.payslipEmail ?? null,
             changedOn: data.changedOn,
             accountNumber: data.accountNumber,
           };

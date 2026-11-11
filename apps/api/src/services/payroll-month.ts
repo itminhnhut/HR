@@ -1,4 +1,5 @@
 import {
+  PAYROLL_FORMULA_VERSION,
   payrollConfigFor,
   payrollDates,
   payrollTotals,
@@ -12,6 +13,7 @@ import {
   type PayrollPeriodStatus,
   type PayrollRetroItemDto,
   type TimesheetRegionDto,
+  isInUse,
 } from '@careers/shared';
 import { and, asc, desc, eq } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
@@ -24,7 +26,7 @@ import { buildLine, type BuiltLine, type PersonFacts } from './payroll-month-lin
 import type { Reader } from './payroll-profile-store.js';
 import { loadRows } from './payroll-settings.js';
 import { payDayFor, type Row } from './payroll-versions.js';
-import { retroDiffsFor, retroItemsOf, retroOutOf, withRetro } from './payroll-retro.js';
+import { manualRetroItems, retroDiffsFor, retroItemsOf, retroOutOf, withRetro } from './payroll-retro.js';
 import { approvedSnapshotOf, yearSoFarOf, type YearSoFar } from './payroll-year.js';
 import { monthWords } from './payroll-words.js';
 import { readClosing } from './timesheet-closings.js';
@@ -147,7 +149,11 @@ function shellOf(dates: PayrollDates, config: PayrollConfig, stored: Stored | un
     approval: approvalOf(stored),
     paidOn: stored?.paidOn ?? null,
     components: config.components.map((c) => ({ id: c.id, name: c.name })),
-    contractTypes: config.contractTypes.map((t) => ({ id: t.id, name: t.name })),
+    contractTypes: config.contractTypes.map((t) => ({
+      id: t.id,
+      name: t.name,
+      ...(isInUse(t, dates.monthKey) ? {} : { stopped: true }),
+    })),
   };
 }
 
@@ -175,6 +181,7 @@ async function reviewOf(db: Db, { built, closing, dates, first, year, retro }: R
   const previousNamed = year.openMonths.some((m) => m.month === keyOf(indexOf(dates.year, dates.month) - 1).slice(5));
   return reviewPayroll({
     rows: built.map((b) => b.review),
+    blockFromPerson: built.filter((b) => b.dto.blockFromPerson).length,
     previousMonthDraft: !previousNamed && (await previousIsDraft(db, dates, first)),
     yearOpenMonths: year.openMonths,
     retroFrom: [...new Set(retro.map((r) => r.origin))].sort().map((origin) => origin.slice(5)),
@@ -247,12 +254,12 @@ async function retroOf(
 ): Promise<PayrollRetroItemDto[]> {
   if (isApproved(stored?.status)) return (await approvedSnapshotOf(ctx.db, stored))?.retro ?? [];
   const diffs = await retroDiffsFor(ctx.db, { first: ctx.first, dates, recompute: recomputeOf(ctx) });
-  if (diffs.length === 0) return [];
-  return retroItemsOf(ctx.db, {
-    diffs,
-    typed: (id) => facts.get(id)?.inputs.retro ?? [],
-    placed: new Set(built.flatMap((b) => (b.line ? [b.dto.employeeId] : []))),
-  });
+  const typed = (id: string) => facts.get(id)?.inputs.retro ?? [];
+  const paid = built.flatMap((b) => (b.line ? [b.dto] : []));
+  const placed = new Set(paid.map((p) => p.employeeId));
+  const computed = diffs.length === 0 ? [] : await retroItemsOf(ctx.db, { diffs, typed, placed });
+  // What HR added by hand for a month with no computed difference comes after the computed ones.
+  return [...computed, ...manualRetroItems(paid, typed, computed)];
 }
 
 /** Computed from the close, the profiles and the config (R3): a draft, or a month still waiting for its close. */
@@ -278,7 +285,15 @@ async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, ag
   const regions = await regionsOf(db, closing);
   const shell = { ...shellOf(dates, config, stored), regions };
   if (!closing) {
-    const dto: PayrollMonthDto = { ...shell, status: 'waiting', computedAt: null, lines: [], totals: {}, review: [] };
+    const dto: PayrollMonthDto = {
+      ...shell,
+      status: 'waiting',
+      computedAt: null,
+      lines: [],
+      totals: {},
+      review: [],
+      closingNo: null,
+    };
     return { dto, closingId: null };
   }
   const draftOf = async (earlier: string, soFar: YearSoFar) => (await computeMonth(ctx, earlier, soFar)).dto;
@@ -303,6 +318,8 @@ async function computeMonth(ctx: LiveContext, key: string, known?: YearSoFar, ag
     totals: payrollTotals(lines, config.options.rounding),
     review: again ? [] : await reviewOf(db, { built, closing, dates, first, year: yearSoFar, retro }),
     retro,
+    closingNo: closing.closing.closeNo,
+    formulaVersion: PAYROLL_FORMULA_VERSION,
   };
   return { dto, closingId: closing.closing.id };
 }
@@ -326,6 +343,12 @@ async function retroOutFor(db: Db, key: string, frozen: PayrollMonthDto, now: Da
   const rows = await loadRows(db);
   const ctx: LiveContext = { db, rows, first: firstMonth(rows), now, again: new Map() };
   return retroOutOf(db, key, frozen, recomputeOf(ctx));
+}
+
+/** An approved month as it would compute today (R6), for what its approval did not keep; nothing is written. */
+export async function monthAsNow(db: Db, key: string, now: Date): Promise<PayrollMonthDto> {
+  const rows = await loadRows(db);
+  return recomputeOf({ db, rows, first: firstMonth(rows), now, again: new Map() })(key);
 }
 
 /** `GET /months/:YYYY-MM`: an approved or paid month reads its approval snapshot, any other month is computed. */

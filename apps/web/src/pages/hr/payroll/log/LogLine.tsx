@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router';
 import type { PayrollLogLineDto } from '../../../../api';
-import type { LogGroup, LogLink } from './logModel';
+import { shownAction, shownDetail, type LogGroup, type LogLink } from './logModel';
 
 /** One line of Nhật ký lương (spec 11.9): an icon by what was done, the group, who, when, old → new, and its links. */
 
@@ -150,7 +150,7 @@ export function LogLine({ line, links }: { line: PayrollLogLineDto; links: reado
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="font-semibold">{line.action}</span>
+          <span className="font-semibold">{shownAction(line.action)}</span>
           {group && (
             <span
               className={`inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-medium whitespace-nowrap ${group.tone}`}
@@ -170,7 +170,7 @@ export function LogLine({ line, links }: { line: PayrollLogLineDto; links: reado
             </span>
           </span>
         </div>
-        <LogDetail detail={line.detail} />
+        <LogDetail detail={shownDetail(line.detail)} />
         <LogLinks links={links} />
       </div>
     </li>

@@ -12,7 +12,7 @@ import { PeopleTab } from './PeopleTab';
 const region: TimesheetRegionDto = { id: '11111111-1111-4111-8111-111111111111', name: 'HCM', saturdays: 2, tone: 'blue', employees: 3, hidden: false, saturdayChanges: [] };
 const person = (id: string, fullName: string, over: Partial<EmployeeDto> = {}): EmployeeDto => ({
   id, code: id, fullName, department: 'Kế toán', title: '', regionId: region.id, employment: 'official', staffKindId: null, joinedOn: '2025-01-06', officialOn: null, leftOn: null, openingLeave: 0,
-  block: null, joinedOnConfirmed: false, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
+  email: null, block: null, joinedOnConfirmed: false, officialOnConfirmed: false, leftOnConfirmed: false, ...over,
 });
 const PEOPLE = [person('A', 'Người Thử A', { block: 'BO' }), person('B', 'Người Thử B', { block: 'KD', department: 'Kinh doanh' }), person('C', 'Người Thử C', { department: 'Phòng Kinh Doanh 2' })];
 

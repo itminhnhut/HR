@@ -1,4 +1,15 @@
-import { ChartPie, ChevronRight, History, Home, IdCard, Settings, Sheet, Wallet, type LucideIcon } from 'lucide-react';
+import {
+  ChartPie,
+  ChevronRight,
+  History,
+  Home,
+  IdCard,
+  ReceiptText,
+  Settings,
+  Sheet,
+  Wallet,
+  type LucideIcon,
+} from 'lucide-react';
 import { useLayoutEffect, useMemo, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import { Toaster } from 'sonner';
@@ -19,24 +30,29 @@ import { MonthActions, MonthStatus } from './MonthActions';
 import { PayrollGridTab } from './PayrollGridTab';
 import { PayrollConfigTab } from './config/PayrollConfigTab';
 import { PayrollLogTab } from './log/PayrollLogTab';
+import { PayrollDownload } from './download/PayrollDownload';
+import { PayslipDrawer } from './download/PayslipDrawer';
 import { CellSourceDrawer } from './CellSourceDrawer';
 import { GridProfileDrawer } from './profiles/GridProfileDrawer';
 import { OverviewTab } from './overview/OverviewTab';
 import { ProfilesTab } from './profiles/ProfilesTab';
 import { filterLines } from './payrollModel';
 import { usePayrollMonth } from './queries';
+import { PayslipsTab } from './payslips/PayslipsTab';
+import { PayslipTabCount } from './payslips/PayslipTabCount';
 import { usePayrollAddress } from './usePayrollAddress';
 
-/** Lương (spec 11.1): one header, five tabs, one filter bar; the pay month and the filters stay in the address. */
+/** Lương (spec 11.1): one header, six tabs, one filter bar; the pay month and the filters stay in the address. */
 
 const BASE = '/hr/luong';
 const TABS: {
-  id: 'grid' | 'profiles' | 'settings' | 'overview' | 'log';
+  id: 'grid' | 'payslips' | 'profiles' | 'settings' | 'overview' | 'log';
   label: string;
   icon: LucideIcon;
   path: string;
 }[] = [
   { id: 'grid', label: 'Bảng lương', icon: Sheet, path: BASE },
+  { id: 'payslips', label: 'Phiếu lương', icon: ReceiptText, path: `${BASE}/phieu-luong` },
   { id: 'profiles', label: 'Hồ sơ lương', icon: IdCard, path: `${BASE}/ho-so` },
   { id: 'settings', label: 'Cấu hình', icon: Settings, path: `${BASE}/cau-hinh` },
   { id: 'overview', label: 'Tổng quan', icon: ChartPie, path: `${BASE}/tong-quan` },
@@ -94,6 +110,7 @@ function Heading({ tab, search, aside }: { tab: Tab | null; search: string; asid
             >
               <t.icon className="size-4" />
               {t.label}
+              {t.id === 'payslips' && <PayslipTabCount />}
             </Link>
           ))}
         </nav>
@@ -104,7 +121,8 @@ function Heading({ tab, search, aside }: { tab: Tab | null; search: string; asid
 }
 
 /** The month's chip on every tab (spec 11.1); its buttons on Bảng lương (spec 11.2). Same query as the body. */
-function MonthHeader({ isGrid, approver, canApprove }: { isGrid: boolean; approver: string; canApprove: boolean }) {
+function MonthHeader(p: { isGrid: boolean; hasDownload: boolean; approver: string; canApprove: boolean }) {
+  const { isGrid, approver, canApprove } = p;
   const address = usePayrollAddress();
   const { choice } = address;
   const sheet = usePayrollMonth(choice.ok ? { year: choice.year, month: choice.month } : null);
@@ -115,6 +133,7 @@ function MonthHeader({ isGrid, approver, canApprove }: { isGrid: boolean; approv
       {isGrid && (
         <MonthActions month={sheet.data} approver={approver} canApprove={canApprove} search={address.search} />
       )}
+      {p.hasDownload && <PayrollDownload key={sheet.data.monthKey} month={sheet.data} />}
     </section>
   );
 }
@@ -200,6 +219,14 @@ function PayrollBody({ tab }: { tab: Tab }) {
             onClose={address.closeProfile}
           />
         )}
+        {address.payslipId && (
+          <PayslipDrawer
+            key={address.payslipId}
+            month={sheet.data}
+            employeeId={address.payslipId}
+            onClose={address.closePayslip}
+          />
+        )}
         {address.sourceCell && address.sourcePerson && (
           <CellSourceDrawer
             key={`${address.sourceCell}-${address.sourcePerson}`}
@@ -229,7 +256,8 @@ function PayrollBody({ tab }: { tab: Tab }) {
         onQuery={address.setQuery}
         onClear={address.clearFilters}
       />
-      {tab.id === 'grid' ? (
+      {tab.id === 'payslips' && (month ? <PayslipsTab month={month} filters={filters} /> : notReady())}
+      {tab.id === 'payslips' ? null : tab.id === 'grid' ? (
         grid()
       ) : (
         <OverviewTab payYear={address.period.year} filters={filters} month={month} fallback={notReady()} />
@@ -273,6 +301,7 @@ export function PayrollPage() {
               canPayroll && (
                 <MonthHeader
                   isGrid={tab?.id === 'grid'}
+                  hasDownload={tab?.id === 'grid' || tab?.id === 'overview'}
                   approver={me.data?.name ?? me.data?.email ?? ''}
                   canApprove={me.data?.canApprovePayroll === true}
                 />

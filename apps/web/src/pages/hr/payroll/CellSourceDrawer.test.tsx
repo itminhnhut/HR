@@ -125,6 +125,20 @@ describe('the sources drawer', () => {
     expect(document.querySelector('[data-payroll-grid]')).toBeTruthy();
   });
 
+  it('F08: should list the cells (41) adds up, each a link to the sources of that cell', async () => {
+    // Arrange
+    answerAll();
+
+    // Act
+    open('/hr/luong?ky=2026-10&tinh=totalDeductions&nguoi=nv-a');
+
+    // Assert
+    const parts = within(await screen.findByRole('dialog')).getByRole('list', { name: 'Trong đó' });
+    const health = within(parts).getByRole('link', { name: /\(29\) BHYT/ });
+    expect(health.getAttribute('href')).toBe('/hr/luong?ky=2026-10&tinh=health&nguoi=nv-a');
+    expect(within(parts).getAllByRole('listitem')).toHaveLength(5);
+  });
+
   it('should open (29) on the insurance settings without leaving the tab, and close back to the grid', async () => {
     // Arrange
     answerAll();

@@ -60,6 +60,39 @@ export interface ProfileRow extends ProfileListPerson {
   title: string;
   officialOn: string | null;
   open: PayrollPersonCheckDto[];
+  /** What the payroll month viewed says of the person at a glance (F20); null without a row in that month. */
+  summary: ProfileSummary | null;
+}
+
+/** The person's row of the month viewed, in a few words: pay, dependants, tax, recurring (32), bank account. */
+export interface ProfileSummary {
+  gross: number;
+  /** Null on a month approved before the web kept these. */
+  dependants: number | null;
+  tax: string;
+  /** The part of (32) that comes from the recurring items of the profile. */
+  recurring: number;
+  /** "••••1234", "Thiếu", or "–" when the month does not say. */
+  account: string;
+}
+
+const TAX_WORDS: Readonly<Record<string, string>> = {
+  progressive: 'Luỹ tiến',
+  flat10: 'Khấu trừ 10%',
+  none: 'Có cam kết',
+};
+
+export function summaryOf(line: PayrollLineDto | undefined): ProfileSummary | null {
+  if (!line) return null;
+  const typed = line.inputs.cash.reduce((sum, c) => sum + (c.kind === 'advance' ? -c.amount : c.amount), 0);
+  const method = line.sheet?.taxMethod;
+  return {
+    gross: line.cells.gross ?? 0,
+    dependants: line.sheet?.dependants ?? null,
+    tax: method ? (TAX_WORDS[method] ?? '–') : '–',
+    recurring: (line.cells.cash ?? 0) - typed,
+    account: line.sheet ? (line.sheet.bankAccount ?? 'Thiếu') : '–',
+  };
 }
 
 /** Department and region come from Chấm công; on the demo (no Chấm công) from the payroll month's lines. */
@@ -80,11 +113,21 @@ export function profileRowsOf(
       title: e?.title ?? '',
       officialOn: e?.officialOn ?? null,
       open: checks.filter((i) => !i.confirmed),
+      summary: summaryOf(line),
     };
   });
 }
 
 export const hasLeftBy = (p: { leftOn: string | null }, today: string) => !!p.leftOn && p.leftOn <= today;
+
+/**
+ * "Đang làm" keeps someone who has left but still has a row in the payroll month viewed (F20): HR is paying them
+ * this month, so their profile must be at hand. "Đã nghỉ" is everyone who has left.
+ */
+const isOfStatus = (r: ProfileRow, status: 'working' | 'left', today: string) => {
+  const hasLeft = hasLeftBy(r, today);
+  return status === 'left' ? hasLeft : !hasLeft || r.summary !== null;
+};
 
 export function filterProfiles(rows: readonly ProfileRow[], f: ProfileFilters, today: string): ProfileRow[] {
   const picked = (list: readonly string[], value: string) => list.length === 0 || list.includes(value);
@@ -92,7 +135,7 @@ export function filterProfiles(rows: readonly ProfileRow[], f: ProfileFilters, t
     (r) =>
       picked(f.depts, r.department) &&
       picked(f.blocks, r.block ?? '') &&
-      (f.status === 'all' || (f.status === 'left') === hasLeftBy(r, today)) &&
+      (f.status === 'all' || isOfStatus(r, f.status, today)) &&
       (!f.onlyMissing || !r.hasProfile) &&
       matchesQuery(`${r.fullName} ${r.code} ${r.title}`, f.query),
   );

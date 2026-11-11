@@ -107,7 +107,7 @@ describe('L-B01, L-B15 a person in Chấm công without a profile', () => {
     const prefill = await flow.payroll<PayrollProfilePrefillDto>('GET', `/profiles/${newcomer.id}/prefill`);
 
     // Assert
-    expect(prefill.amounts).toMatchObject({ luong: 0, com: 1_100_000, 'chuyen-can': 1_000_000 });
+    expect(prefill.amounts).toMatchObject({ luong: 0, com: 1_200_000, 'chuyen-can': 1_200_000 });
   });
 
   it('L-B15: should suggest the official date as the day joined plus the probation days', async () => {

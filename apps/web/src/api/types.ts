@@ -1,4 +1,10 @@
 import type {
+  PayslipListDto,
+  PayslipMarkInput,
+  PayslipSendInput,
+  PayslipSendResultDto,
+} from '@careers/shared';
+import type {
   ApplicationDetailDto,
   ApplicationFields,
   ApplicationsResponse,
@@ -95,6 +101,8 @@ import type {
 } from '@careers/shared';
 
 import type {
+  PayrollExportDto,
+  PayrollExportRequest,
   PayrollMonthDto,
   PayrollMonthInputsInput,
   PayrollMonthInputsResultDto,
@@ -106,6 +114,9 @@ export type {
   PayrollLogLineDto,
   PayrollLogPageDto,
   PayrollCashItemDto,
+  PayrollExportDto,
+  PayrollExportMonthDto,
+  PayrollExportRequest,
   PayrollLineDto,
   PayrollMonthDto,
   PayrollMonthInputsDto,
@@ -317,6 +328,17 @@ export interface Api {
   hrPayrollLog(query: PayrollLogQuery): Promise<PayrollLogPageDto>;
   /** Bảng lương of one month. 403 without the payroll right; 404 with the valid range outside it. */
   hrPayrollMonth(year: number, month: number): Promise<PayrollMonthDto>;
+  /**
+   * The months of one download with what the file prints beyond the grid; the payroll file carries the whole account
+   * number. 403 without the payroll right, 404 outside the range, 409 a month waiting for the close or without rows.
+   */
+  hrPayrollExport(input: PayrollExportRequest): Promise<PayrollExportDto>;
+  /** Phiếu lương of a month "YYYY-MM": each person's address and whether the payslip was sent. */
+  hrPayrollPayslips(monthKey: string): Promise<PayslipListDto>;
+  /** "Đánh dấu đã gửi" (or taking it back). 409 unless the month is approved or paid. */
+  hrPayrollPayslipsMark(monthKey: string, input: PayslipMarkInput): Promise<PayslipListDto>;
+  /** "Gửi tự động" of one person with their file. 409 mail not configured, a draft month or no email. */
+  hrPayrollPayslipSend(monthKey: string, input: PayslipSendInput): Promise<PayslipSendResultDto>;
   /** Duyệt a draft. 403 without the approve right, 409 not a draft, 422 a red warning not acknowledged. */
   hrPayrollApprove(year: number, month: number, input: PayrollApproveInput): Promise<PayrollMonthDto>;
   /** Mở lại the latest approved month. 403 without the approve right, 409 paid or not the latest, 422 no reason. */

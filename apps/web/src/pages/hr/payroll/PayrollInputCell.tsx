@@ -14,7 +14,7 @@ import {
   type PayrollNumberField,
 } from './monthInputsModel';
 import { CellTip, PayrollValueCell, type PayrollMonthContext } from './PayrollCell';
-import { cellLabel, InputValue, saveError } from './inputParts';
+import { cellLabel, INPUT_LOOK, InputValue, saveError } from './inputParts';
 import { PayrollListCell } from './PayrollListEditor';
 import { copyValue, type PayrollColumnSpec } from './payrollModel';
 import { useSaveMonthInputs } from './queries';
@@ -40,8 +40,7 @@ export function PayrollInputCell({ line, column, month }: CellProps) {
 }
 
 /** The cell's line is 20px tall: the 28px box reaches 4px above and below it, so its number stays on the row's line. */
-const CELL_BUTTON =
-  '-my-1 flex h-full min-h-7 w-full cursor-text items-center justify-end rounded border border-transparent bg-transparent px-1 text-right text-sm tabular-nums hover:border-blue-300 hover:bg-white focus-visible:border-blue-500 focus-visible:outline-none';
+const CELL_BUTTON = `-my-1 flex h-full min-h-7 w-full cursor-text items-center justify-end rounded px-1 text-right text-sm tabular-nums focus-visible:border-solid focus-visible:border-blue-500 focus-visible:outline-none ${INPUT_LOOK}`;
 
 function NumberDisplay({ line, column, month, onEdit }: CellProps & { onEdit: () => void }) {
   const own = line.personSettings.filter((s) => !!column.cell && s.cells.includes(column.cell));
