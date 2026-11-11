@@ -1,4 +1,10 @@
-import type { HrMe, PayrollAccessDto, PayrollLogPageDto, PayrollRightsDto, TimesheetLogPageDto } from '@careers/shared';
+import type {
+  HrMe,
+  PayrollAccessDto,
+  PayrollLogPageDto,
+  PayrollRightsListDto,
+  TimesheetLogPageDto,
+} from '@careers/shared';
 import { eq, sql } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
@@ -222,9 +228,9 @@ describe('L-H05 giving and taking the right', () => {
 
     // Assert
     expect(listed.status).toBe(200);
-    expect(
-      (await json<PayrollRightsDto[]>(listed)).map((r) => [r.email, r.canPayroll, r.canApprovePayroll, r.isMe]),
-    ).toEqual([
+    const list = await json<PayrollRightsListDto>(listed);
+    expect(list.open).toBe(false);
+    expect(list.accounts.map((r) => [r.email, r.canPayroll, r.canApprovePayroll, r.isMe])).toEqual([
       [HR_EMAIL, true, true, true],
       [OTHER, false, false, false],
     ]);
@@ -454,6 +460,58 @@ describe('Lương open to every HR account while PAYROLL_ADMINS names nobody', (
     expect(me.canPayroll).toBe(true);
     expect(me.canApprovePayroll).toBe(true);
     expect(access.status).toBe(200);
+  });
+
+  it('should refuse to change rights while Lương is open to everyone, storing and logging nothing', async () => {
+    // Arrange
+    t.deps.config.payrollAdmins = [PAYROLL_OPEN];
+    const cookie = await loginHr(t);
+    await loginHr(t, OTHER);
+
+    // Act
+    const res = await as(cookie).call('PUT', `/payroll/rights/${await idOf(OTHER)}`, {
+      canPayroll: true,
+      canApprovePayroll: true,
+    });
+
+    // Assert
+    expect(res.status).toBe(409);
+    expect(await json<{ code: string; error: string }>(res)).toMatchObject({
+      code: 'payroll_open',
+      error: 'Lương đang mở cho mọi tài khoản HR, chưa cần phân quyền',
+    });
+    expect(await rightsOf(OTHER)).toEqual({ canPayroll: false, canApprovePayroll: false });
+    expect(await t.db.select().from(payrollLog)).toEqual([]);
+  });
+
+  it('should not let an HR account raise its own stored rights while Lương is open', async () => {
+    // Arrange
+    t.deps.config.payrollAdmins = [PAYROLL_OPEN];
+    const cookie = await loginHr(t);
+
+    // Act
+    const res = await as(cookie).call('PUT', `/payroll/rights/${await idOf(HR_EMAIL)}`, {
+      canPayroll: true,
+      canApprovePayroll: true,
+    });
+
+    // Assert
+    expect(res.status).toBe(409);
+    expect(await rightsOf(HR_EMAIL)).toEqual({ canPayroll: false, canApprovePayroll: false });
+    expect(await t.db.select().from(payrollLog)).toEqual([]);
+  });
+
+  it('should tell the rights list that Lương is open to every HR account', async () => {
+    // Arrange
+    t.deps.config.payrollAdmins = [PAYROLL_OPEN];
+    const cookie = await loginHr(t);
+
+    // Act
+    const res = await as(cookie).call('GET', '/payroll/rights');
+
+    // Assert
+    expect(res.status).toBe(200);
+    expect((await json<PayrollRightsListDto>(res)).open).toBe(true);
   });
 
   it('should still ask for a sign-in first', async () => {

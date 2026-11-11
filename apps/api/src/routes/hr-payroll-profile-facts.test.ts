@@ -8,6 +8,7 @@ import type {
 import { eq } from 'drizzle-orm';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { payrollBankAccounts, payrollLog } from '../db/schema.js';
+import { payrollKeyFromSecret } from '../lib/payroll-crypto.js';
 import { givePayrollRight } from '../test/payroll-flow.js';
 import { createFlow, type Flow } from '../test/timesheet-flow.js';
 
@@ -172,6 +173,33 @@ describe('L-B24 bank account', () => {
     const lines = await flow.t.db.select().from(payrollLog);
     expect(lines.map((l) => [l.area, l.detail])).toContainEqual(['tai-xem', 'Xem đủ STK của NV02 NV B: ••••8901']);
     expect(JSON.stringify(lines)).not.toContain('012345678901');
+  });
+
+  it('should answer 409 and log nothing when the number was sealed under an older session secret', async () => {
+    // Arrange
+    flow.t.deps.config.payrollKey = payrollKeyFromSecret('an-old-session-secret-for-tests-only-x');
+    const saved = await flow.payroll<PayrollBankAccountDto>(
+      'POST',
+      path('/bank'),
+      { bank: 'Ngân hàng Thử', accountNumber: '012345678901', changedOn: '2026-11-01' },
+      201,
+    );
+    flow.t.deps.config.payrollKey = payrollKeyFromSecret('a-new-session-secret-for-tests-only-yy');
+
+    // Act
+    const refused = await flow.payroll<{ code: string; error: string }>(
+      'POST',
+      path(`/bank/${saved.id}/reveal`),
+      undefined,
+      409,
+    );
+
+    // Assert
+    expect(refused).toMatchObject({
+      code: 'payroll_key_mismatch',
+      error: 'Số tài khoản này lưu bằng khoá cũ, cần nhập lại',
+    });
+    expect((await flow.t.db.select().from(payrollLog)).map((l) => l.area)).not.toContain('tai-xem');
   });
 
   it('L-B24: should refuse a number that is not 6–19 digits, and saving without the encryption key', async () => {

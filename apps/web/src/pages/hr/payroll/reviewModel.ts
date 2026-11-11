@@ -35,7 +35,13 @@ const PROFILE_CODES = new Set([
   'probation-no-commitment',
 ]);
 /** Fixed on the person's pay levels (contract type, probation days, the dates of a level). */
-const LEVEL_CODES = new Set(['default-official-contract', 'missing-contract', 'profile-gap', 'probation-too-long']);
+const LEVEL_CODES = new Set([
+  'default-official-contract',
+  'missing-contract',
+  'unknown-contract',
+  'profile-gap',
+  'probation-too-long',
+]);
 
 const gridSearch = (search: string, change: (next: URLSearchParams) => void) => {
   const next = new URLSearchParams(search);

@@ -1,5 +1,5 @@
 import { PAYROLL_OPEN } from './services/payroll-rights.js';
-import { payrollKeyFrom, payrollKeyFromSecret } from './lib/payroll-crypto.js';
+import { payrollKeyOf, type PayrollKey } from './lib/payroll-crypto.js';
 import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { createGaRealtimeReader, gaRealtimeConfig, type RealtimeReader } from './lib/ga-realtime.js';
@@ -86,6 +86,19 @@ export const payrollAdminsOrOpen = (value: string | undefined): string[] => {
   return named.length > 0 ? named : [PAYROLL_OPEN];
 };
 
+/** The bank-account key; see payrollKeyOf for when there is none. */
+function payrollKey(secret: string, isRealDb: boolean): PayrollKey | null {
+  const key = payrollKeyOf({
+    payrollKey: process.env.PAYROLL_KEY,
+    payrollKeyVersion: process.env.PAYROLL_KEY_VERSION,
+    sessionSecret: secret,
+    isPublicSecret: secret === LOCAL_DEV_SECRET,
+    isRealDb,
+  });
+  if (!key) console.warn('SESSION_SECRET is the local default with a real DATABASE_URL: bank account numbers are off.');
+  return key;
+}
+
 /** "Đang truy cập": off until the Google Analytics settings exist. */
 function realtimeReader(now: () => Date): RealtimeReader {
   const config = gaRealtimeConfig(process.env);
@@ -105,19 +118,18 @@ export interface LocalOverrides {
 export function createProductionApp(local: LocalOverrides = {}) {
   const useLocal: LocalOverrides = onVercel ? {} : local;
   const isProduction = process.env.VERCEL_ENV === 'production';
+  const secret = sessionSecret();
   return createApp({
     db: useLocal.db ?? createNeonDb(requireEnv('DATABASE_URL')),
     config: {
       siteUrl: siteUrl(),
       companyName: companyName(process.env),
       isProduction,
-      sessionSecret: sessionSecret(),
+      sessionSecret: secret,
       secureCookies: onVercel,
       indexNowKey: indexNowKey(isProduction),
       payrollAdmins: payrollAdminsOrOpen(process.env.PAYROLL_ADMINS),
-      payrollKey:
-        payrollKeyFrom(process.env.PAYROLL_KEY, process.env.PAYROLL_KEY_VERSION) ??
-        payrollKeyFromSecret(sessionSecret()),
+      payrollKey: payrollKey(secret, !useLocal.db),
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
     paperStore: useLocal.paperStore ?? vercelBlobPaperStore,

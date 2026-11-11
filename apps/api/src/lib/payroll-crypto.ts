@@ -49,3 +49,27 @@ export function payrollKeyFromSecret(sessionSecret: string): PayrollKey {
   const key = createHash('sha256').update(`payroll-bank-account:${sessionSecret}`).digest();
   return { version: DERIVED_KEY_VERSION, key };
 }
+
+/** What decides the bank-account key at start-up (main.ts). */
+export interface PayrollKeySource {
+  /** PAYROLL_KEY and PAYROLL_KEY_VERSION as set, or undefined. */
+  payrollKey: string | undefined;
+  payrollKeyVersion: string | undefined;
+  sessionSecret: string;
+  /** The secret is the one written in the code (local dev fallback), so anyone could make the key from it. */
+  isPublicSecret: boolean;
+  /** Accounts land in a real database (DATABASE_URL), not the local in-process PGlite. */
+  isRealDb: boolean;
+}
+
+/**
+ * PAYROLL_KEY when set, else the key made from the session secret. Null (saving or showing a number answers 503) only
+ * when that secret is the public local one and the database is real, so real accounts are never sealed with a key
+ * anyone can make.
+ */
+export function payrollKeyOf(source: PayrollKeySource): PayrollKey | null {
+  const set = payrollKeyFrom(source.payrollKey, source.payrollKeyVersion);
+  if (set) return set;
+  if (source.isPublicSecret && source.isRealDb) return null;
+  return payrollKeyFromSecret(source.sessionSecret);
+}

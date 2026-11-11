@@ -383,6 +383,11 @@ export interface PayrollRetroInputDto {
   origin: string;
   amount: number;
   reason: string;
+  /**
+   * Set by the API on save: typed over a difference the web computed (not added by hand). Once that difference is
+   * gone the amount is not paid (no double payment); absent on an amount added by hand, or saved before this was kept.
+   */
+  overComputed?: boolean;
 }
 
 /** (24) Thu nhập khác, one line typed for this month (L-D11): a reason and a tax choice are required. */

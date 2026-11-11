@@ -14,10 +14,11 @@ import { eq, inArray } from 'drizzle-orm';
 import type { Db } from '../db/index.js';
 import { employees, payrollBankAccounts, timesheetClosings } from '../db/schema.js';
 import { HttpError, invalid } from '../lib/http-error.js';
-import { openAccount, type PayrollKey } from '../lib/payroll-crypto.js';
-import { accountOn, masked } from './payroll-bank.js';
+import type { PayrollKey } from '../lib/payroll-crypto.js';
+import { accountOn, masked, NEEDS_RETYPE, openSealed } from './payroll-bank.js';
 import { writePayrollLog } from './payroll-log.js';
-import { monthAsNow, payrollMonthOf, storedOf } from './payroll-month.js';
+import { monthAsNow, payrollMonthOf } from './payroll-month.js';
+import { storedOf } from './payroll-month-index.js';
 import { loadRows } from './payroll-settings.js';
 import { monthWords } from './payroll-words.js';
 import { actorOf } from './timesheet-people.js';
@@ -106,15 +107,10 @@ function accountFor(sheet: PayrollLineSheetDto, mine: readonly Account[], payDat
   return named ?? accountOn(mine, payDate);
 }
 
-function opened(account: Account, key: PayrollKey | null): string {
-  if (!key) throw new HttpError(503, 'Chưa cài khoá mã hoá STK (PAYROLL_KEY).', {}, 'payroll_key_missing');
-  if (account.keyVersion !== key.version) {
-    throw conflict(`Tài khoản mã hoá bằng khoá phiên bản ${account.keyVersion}.`, 'payroll_key_version');
-  }
-  return openAccount(account.accountCipher, key);
-}
-
-/** The whole account number on every line that has an account, for the payroll workbook only. */
+/**
+ * The whole account number on every line that has an account, for the payroll workbook only. A number the key in use
+ * cannot open prints NEEDS_RETYPE, so one old row does not stop the month.
+ */
 async function withAccounts(db: Db, month: PayrollMonthDto, key: PayrollKey | null): Promise<PayrollMonthDto> {
   const ids = month.lines.filter((l) => l.sheet?.bankAccount).map((l) => l.employeeId);
   if (ids.length === 0) return month;
@@ -125,7 +121,7 @@ async function withAccounts(db: Db, month: PayrollMonthDto, key: PayrollKey | nu
     const mine = accounts.filter((a) => a.employeeId === line.employeeId);
     const account = accountFor(sheet, mine, month.payDate);
     if (!account) return line;
-    const whole = { bankName: account.bank, bankAccount: opened(account, key) };
+    const whole = { bankName: account.bank, bankAccount: openSealed(account, key) ?? NEEDS_RETYPE };
     return { ...line, sheet: { ...sheet, ...whole } };
   });
   return { ...month, lines };

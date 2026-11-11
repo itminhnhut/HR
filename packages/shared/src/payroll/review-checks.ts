@@ -46,6 +46,8 @@ export interface ReviewRowInput {
     unconfirmedDates: readonly string[];
     /** Probation days of the person's contract and the most BLLĐ Đ.25 allows for the job. */
     probation?: { days: number; limit: number } | null;
+    /** The contract type id of the person's level when the month's config does not know it: a zero row. */
+    unknownContract?: string | null;
   };
   profile: { exists: boolean; gap: { from: string; to: string } | null };
   inputs: {
@@ -56,6 +58,8 @@ export interface ReviewRowInput {
     leavePayoutTyped?: { computed: number; typed: number } | null;
     /** Truy lĩnh / truy thu HR typed over or left out (typed 0), by the month "MM/YYYY" they come from. */
     retroTyped?: readonly { origin: string; computed: number; typed: number }[];
+    /** Months "MM/YYYY" whose amount HR typed over a computed difference that is gone: left out, not paid. */
+    retroStale?: readonly string[];
   };
   /**
    * `hasCommitment`: a signed commitment for this month's tax year. `commitmentYear`: the latest tax year, up to this
@@ -102,6 +106,9 @@ const profileChecks: Check = ({ profile, label, employment }) => [
     ? [red('profile-gap', 'paidDays', `${ddmm(profile.gap.from)}–${ddmm(profile.gap.to)} có công nhưng chưa có mức`)]
     : []),
   ...(employment.contractTypeId ? [] : [red('missing-contract', null, 'Thiếu loại HĐ')]),
+  ...(employment.unknownContract
+    ? [red('unknown-contract', null, `Loại HĐ của mức lương không còn trong cấu hình: ${employment.unknownContract}`)]
+    : []),
   ...(employment.defaultedContract
     ? [
         yellow(
@@ -359,9 +366,12 @@ const leavePayoutChecks: Check = ({ inputs }) => {
   return [yellow('leave-payout-typed', 'otherIncome', `Tiền phép chưa nghỉ gõ ${dong(typed.typed)} ${words}`)];
 };
 
-/** HR's amount in place of a computed truy lĩnh / truy thu: the difference stays unpaid or uncollected. */
-const retroChecks: Check = ({ inputs }) =>
-  (inputs.retroTyped ?? [])
+/**
+ * HR's amount in place of a computed truy lĩnh / truy thu: the difference stays unpaid or uncollected. An amount typed
+ * over a difference that is gone is not paid at all.
+ */
+const retroChecks: Check = ({ inputs }) => [
+  ...(inputs.retroTyped ?? [])
     .filter((r) => r.typed !== r.computed)
     .map((r) => {
       const typed = r.typed === 0 ? 'HR bỏ ra' : `HR gõ ${dong(r.typed)}`;
@@ -370,7 +380,15 @@ const retroChecks: Check = ({ inputs }) =>
         'netPay',
         `Truy lĩnh / truy thu từ T${r.origin}: ${typed}, số tính ${dong(r.computed)}`,
       );
-    });
+    }),
+  ...(inputs.retroStale ?? []).map((origin) =>
+    yellow(
+      'retro-typed-stale',
+      'netPay',
+      `Truy lĩnh / truy thu từ T${origin}: Khoản gõ đè không còn chênh lệch — đã bỏ qua`,
+    ),
+  ),
+];
 
 export const ROW_CHECKS: readonly Check[] = [
   profileChecks,

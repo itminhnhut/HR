@@ -5,9 +5,11 @@ import {
   type HrMe,
   type PayrollCashItemDto,
   type PayrollMonthInputsDto,
+  type PayrollMonthDto,
   type PayrollMonthInputsResultDto,
   type PayrollOtherIncomeDto,
   type PayrollRetroInputDto,
+  type PayrollRetroItemDto,
   type PayrollCashKind,
 } from '@careers/shared';
 import { and, eq } from 'drizzle-orm';
@@ -93,6 +95,34 @@ function checkKpi(values: Values, kpiAmount: number | undefined) {
   if (error) throw invalid(error, { kpiPercent: error });
 }
 
+/**
+ * Each amount marked when it is typed over a difference the month computes (a computed item has cells; one added
+ * by hand has none), or was marked so before: it is never paid as one added by hand once that difference is gone.
+ */
+function markedRetro(
+  typed: readonly PayrollRetroInputDto[],
+  before: readonly PayrollRetroInputDto[],
+  items: readonly PayrollRetroItemDto[],
+): PayrollRetroInputDto[] {
+  const isOver = (origin: string) =>
+    items.some((i) => i.origin === origin && Object.keys(i.cells).length > 0) ||
+    before.some((b) => b.origin === origin && b.overComputed);
+  return typed.map(({ overComputed: _o, ...input }) =>
+    isOver(input.origin) ? { ...input, overComputed: true } : input,
+  );
+}
+
+/** 409 once the month is approved or paid: it is only read. */
+function checkOpen(month: Pick<PayrollMonthDto, 'status'>, key: string) {
+  if (month.status !== 'approved' && month.status !== 'paid') return;
+  throw new HttpError(
+    409,
+    `${monthWords(key)} đã duyệt, chỉ xem. Muốn sửa: Mở lại hoặc truy lĩnh / truy thu ở tháng sau.`,
+    {},
+    'payroll_month_locked',
+  );
+}
+
 export interface SaveTypedInputsArgs {
   key: string;
   employeeId: string;
@@ -107,14 +137,7 @@ export async function saveTypedInputs(db: Db, args: SaveTypedInputsArgs): Promis
   const patch = parse(args.raw);
   const person = await personOf(db, employeeId);
   const month = await payrollMonthOf(db, key, now);
-  if (month.status === 'approved' || month.status === 'paid') {
-    throw new HttpError(
-      409,
-      `${monthWords(key)} đã duyệt, chỉ xem. Muốn sửa: Mở lại hoặc truy lĩnh / truy thu ở tháng sau.`,
-      {},
-      'payroll_month_locked',
-    );
-  }
+  checkOpen(month, key);
   const where = { year: month.year, month: month.month, employeeId: person.id };
   await db.transaction(async (tx) => {
     const {
@@ -123,7 +146,9 @@ export async function saveTypedInputs(db: Db, args: SaveTypedInputsArgs): Promis
       ...stored
     } = typedInputsOf(await storedOf(tx, where.year, where.month, where.employeeId));
     const before: Values = { ...stored, leavePayout: stored.leavePayout ?? null, retro: stored.retro ?? [] };
-    const after: Values = { ...before, ...patch };
+    const mine = (month.retro ?? []).filter((i) => i.employeeId === person.id);
+    const retro = patch.retro ? markedRetro(patch.retro, before.retro, mine) : before.retro;
+    const after: Values = { ...before, ...patch, retro };
     if (patch.kpiPercent !== undefined) {
       checkKpi(after, month.lines.find((l) => l.employeeId === person.id)?.kpiAmount);
     }

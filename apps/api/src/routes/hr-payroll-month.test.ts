@@ -183,6 +183,86 @@ describe('people without a profile, people not in the close (L-C24, L-B13, L-B25
     );
   });
 
+  it('should warn in red about days worked before the first pay level, which are paid nothing', async () => {
+    // Arrange: NV D joins on 28/10, inside the period, but the first level starts on 01/11.
+    await givePayrollRight(flow);
+    const d = await flow.addPerson({ code: 'NV04', fullName: 'NV D', joinedOn: '2026-10-28' });
+    await addProfile(d, { effectiveOn: '2026-11-01', contractTypeId: 'khong-thoi-han', amounts: { luong: 9_000_000 } });
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    const line = month.lines.find((l) => l.employeeId === d.id);
+    expect(line?.cells.netPay).toBeGreaterThan(0);
+    expect(month.review).toContainEqual(
+      expect.objectContaining({
+        level: 'red',
+        code: 'profile-gap',
+        employeeId: d.id,
+        cell: 'paidDays',
+        message: '28/10–31/10 có công nhưng chưa có mức',
+      }),
+    );
+  });
+
+  it('should not warn about a gap for someone whose level starts before the period', async () => {
+    // Arrange
+    const { a } = await hireCompany();
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    expect(month.review.filter((i) => i.code === 'profile-gap' && i.employeeId === a.id)).toEqual([]);
+  });
+
+  it('should name a level whose contract type the month does not know, not call it a missing profile', async () => {
+    // Arrange
+    await givePayrollRight(flow);
+    const e = await flow.addPerson({ code: 'NV05', fullName: 'NV E', joinedOn: '2025-03-01' });
+    await addProfile(e, { effectiveOn: '2025-03-01', contractTypeId: 'hd-cu', amounts: { luong: 9_000_000 } });
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    const line = month.lines.find((l) => l.employeeId === e.id);
+    expect(line?.note).toBe('Loại HĐ hd-cu không còn trong cấu hình');
+    expect(line?.cells.netPay).toBe(0);
+    const mine = month.review.filter((i) => i.employeeId === e.id);
+    expect(mine).toContainEqual(
+      expect.objectContaining({
+        level: 'red',
+        code: 'unknown-contract',
+        message: 'Loại HĐ của mức lương không còn trong cấu hình: hd-cu',
+      }),
+    );
+    expect(mine.map((i) => i.code)).not.toContain('missing-profile');
+    expect(mine.map((i) => i.code)).not.toContain('missing-contract');
+  });
+
+  it('should warn about a missing account when the only one starts after the pay date', async () => {
+    // Arrange: November is paid on 05/12; NV A's account is used from 01/2027, NV B's from 01/11.
+    const { a, b } = await hireCompany();
+    const account = { bank: 'Ngân hàng Thử', accountNumber: '0123 4567 8901' };
+    await flow.payroll('POST', `/profiles/${a.id}/bank`, { ...account, changedOn: '2027-01-01' }, 201);
+    await flow.payroll('POST', `/profiles/${b.id}/bank`, { ...account, changedOn: '2026-11-01' }, 201);
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    const missing = month.review.filter((i) => i.code === 'missing-bank-account').map((i) => i.employeeId);
+    expect(missing).toContain(a.id);
+    expect(missing).not.toContain(b.id);
+    expect(month.lines.find((l) => l.employeeId === a.id)?.sheet?.bankName).toBeNull();
+  });
+
   it('L-C24, L-B13: should leave out someone who left before the period even with a profile', async () => {
     // Arrange
     const { i } = await hireCompany();
@@ -207,6 +287,65 @@ describe('people without a profile, people not in the close (L-C24, L-B13, L-B25
 
     // Assert
     expect(month.lines[0]?.fullName).toBe('NV A');
+  });
+});
+
+describe('Rà soát against the month before and the law (spec 11.3)', () => {
+  it('should flag a net pay more than 10% off the approved month before', async () => {
+    // Arrange: November approved, then NV A's pay goes from 9 to 15 million from the December period on.
+    const { a, b } = await hireCompany();
+    await closeNovember();
+    await flow.payroll('POST', '/months/2026-11/approve', { acknowledgedRed: true });
+    const raised = { luong: 15_000_000, com: 1_100_000, 'chuyen-can': 1_000_000 };
+    await addProfile(a, { effectiveOn: '2026-11-26', contractTypeId: 'khong-thoi-han', amounts: raised });
+    await flow.at('2026-12-26');
+    await flow.close(2026, 12);
+
+    // Act
+    const december = await monthOf('2026-12');
+
+    // Assert
+    const change = december.review.filter((i) => i.code === 'change-over-10');
+    expect(change.map((i) => i.employeeId)).toContain(a.id);
+    expect(change.find((i) => i.employeeId === a.id)?.message).toMatch(/^Thực nhận lệch \+\d+% so với tháng trước$/);
+    expect(change.map((i) => i.employeeId)).not.toContain(b.id);
+  });
+
+  it('câu 33: should flag probation days beyond what BLLĐ Đ.25 allows the job', async () => {
+    // Arrange: NV F on a 90-day probation, not a job managing the business (60 days at most).
+    await givePayrollRight(flow);
+    const f = await flow.addPerson({ code: 'NV06', fullName: 'NV F', employment: 'probation', joinedOn: '2026-10-01' });
+    const level = { effectiveOn: '2026-10-01', contractTypeId: 'thu-viec', amounts: { luong: 6_000_000 } };
+    await addProfile(f, { ...level, probationDays: 90 });
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    expect(month.review).toContainEqual(
+      expect.objectContaining({
+        level: 'red',
+        code: 'probation-too-long',
+        employeeId: f.id,
+        message: 'Thử việc 90 ngày, vượt 60 ngày (BLLĐ Đ.25)',
+      }),
+    );
+  });
+
+  it('câu 33: should allow 180 probation days to a job managing the business', async () => {
+    // Arrange
+    await givePayrollRight(flow);
+    const f = await flow.addPerson({ code: 'NV06', fullName: 'NV F', employment: 'probation', joinedOn: '2026-10-01' });
+    const level = { effectiveOn: '2026-10-01', contractTypeId: 'thu-viec', amounts: { luong: 6_000_000 } };
+    await addProfile(f, { ...level, probationDays: 90, managesBusiness: true });
+    await closeNovember();
+
+    // Act
+    const month = await monthOf('2026-11');
+
+    // Assert
+    expect(month.review.filter((i) => i.code === 'probation-too-long')).toEqual([]);
   });
 });
 

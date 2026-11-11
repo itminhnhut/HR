@@ -34,9 +34,36 @@ export const bankDtoOf = (a: Account): PayrollBankAccountDto => ({
   changedOn: a.changedOn,
 });
 
+/** No key at all (see main.ts): saving, showing or exporting a whole number answers 503. */
 function keyOf(key: PayrollKey | null): PayrollKey {
-  if (!key) throw new HttpError(503, 'Chưa cài khoá mã hoá STK (PAYROLL_KEY).', {}, 'payroll_key_missing');
+  if (!key) {
+    throw new HttpError(503, 'Chưa cài khoá mã hoá STK (SESSION_SECRET hoặc PAYROLL_KEY).', {}, 'payroll_key_missing');
+  }
   return key;
+}
+
+/** What the payroll workbook prints instead of a number the key in use cannot open. */
+export const NEEDS_RETYPE = 'Cần nhập lại số TK';
+
+export const keyMismatch = () =>
+  new HttpError(409, 'Số tài khoản này lưu bằng khoá cũ, cần nhập lại', {}, 'payroll_key_mismatch');
+
+/**
+ * The whole number of a stored account; null when it was sealed under another key (another key version, or the same
+ * version 0 derived from an earlier SESSION_SECRET, which only shows as a failed GCM check). 503 without any key.
+ */
+export function openSealed(
+  account: Pick<Account, 'accountCipher' | 'keyVersion'>,
+  key: PayrollKey | null,
+): string | null {
+  const opener = keyOf(key);
+  if (account.keyVersion !== opener.version) return null;
+  try {
+    return openAccount(account.accountCipher, opener);
+  } catch (error: unknown) {
+    if (error instanceof Error) return null;
+    throw error;
+  }
 }
 
 export async function bankAccountsOf(db: Pick<Db, 'select'>, employeeId: string): Promise<PayrollBankAccountDto[]> {
@@ -118,7 +145,7 @@ export async function deleteBankAccount(db: Db, employeeId: string, id: string, 
   });
 }
 
-/** "Hiện đủ": the whole number, once, with a line in the log that it was seen. */
+/** "Hiện đủ": the whole number, once, with a line in the log that it was seen; 409 when it must be typed again. */
 export async function revealBankAccount(
   db: Db,
   employeeId: string,
@@ -129,11 +156,8 @@ export async function revealBankAccount(
 ): Promise<{ accountNumber: string }> {
   const person = await personOf(db, employeeId);
   const row = await accountOf(db, person, id);
-  const opener = keyOf(key);
-  if (row.keyVersion !== opener.version) {
-    throw new HttpError(409, `Tài khoản mã hoá bằng khoá phiên bản ${row.keyVersion}.`, {}, 'payroll_key_version');
-  }
-  const accountNumber = openAccount(row.accountCipher, opener);
+  const accountNumber = openSealed(row, key);
+  if (accountNumber === null) throw keyMismatch();
   await log(db, hr, now, 'tai-xem', 'Xem', `Xem đủ STK của ${personWords(person)}: ${masked(row.last4)}`);
   return { accountNumber };
 }
