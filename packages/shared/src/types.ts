@@ -370,6 +370,10 @@ export interface HrMe {
   jobTitle: string | null;
   /** Filled into templates as {Tên gọi khác}, e.g. "Ms. Lee"; the mail signature shows it in brackets. */
   alias: string | null;
+  /** Lương: Xem, sửa (spec-luong.md 2 (1)). Absent means no right: the menu stays hidden. */
+  canPayroll?: boolean;
+  /** Lương: Duyệt; needs `canPayroll`. */
+  canApprovePayroll?: boolean;
 }
 
 export interface CandidateMe {

@@ -274,6 +274,83 @@
       "when": 1794157082668,
       "tag": "0038_absence_batches",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1794210278001,
+      "tag": "0039_payroll_rights",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1794210289788,
+      "tag": "0040_timesheet_closings",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794210290375,
+      "tag": "0041_payroll_timesheet_link",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1794210290937,
+      "tag": "0042_payroll_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1794210291490,
+      "tag": "0043_payroll_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1794212535991,
+      "tag": "0044_payroll_period_state",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1794214327805,
+      "tag": "0045_payroll_month_inputs",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1794215127460,
+      "tag": "0046_payroll_runs",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1794324121884,
+      "tag": "0047_payroll_insurance_paid",
+      "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1794327222164,
+      "tag": "0048_payroll_leave_payout",
+      "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794365680436,
+      "tag": "0049_payroll_retro_inputs",
+      "breakpoints": true
     }
   ]
 }

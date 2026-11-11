@@ -376,6 +376,10 @@ const isoDay = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Ngày không hợp lệ.
 const optionalDay = z.union([isoDay, z.literal('')]).nullish().transform((v) => v || null);
 const halfSteps = z.number().finite().refine((n) => Number.isInteger(n * 2), 'Nhập theo bước 0,5.');
 
+/** Khối of a person (spec-luong.md 10.1): back office or sales. Payroll groups by it, as of each close. */
+export const EMPLOYEE_BLOCKS = ['BO', 'KD'] as const;
+export type EmployeeBlock = (typeof EMPLOYEE_BLOCKS)[number];
+
 export const employeeInputSchema = z
   .object({
     code: z.string().trim().min(1, 'Nhập mã nhân viên.').max(20),
@@ -390,6 +394,12 @@ export const employeeInputSchema = z
     officialOn: optionalDay,
     leftOn: optionalDay,
     openingLeave: halfSteps.min(0, 'Phép không được âm.').max(365).default(0),
+    /** Left out: kept as it is. Null: none yet. */
+    block: z.enum(EMPLOYEE_BLOCKS, { message: 'Chọn khối BO hoặc KD.' }).nullish(),
+    /** HR checked the date (spec-luong.md 4.20). Left out: kept while the date stays, dropped when it changes. */
+    joinedOnConfirmed: z.boolean().optional(),
+    officialOnConfirmed: z.boolean().optional(),
+    leftOnConfirmed: z.boolean().optional(),
   })
   .refine((v) => !v.joinedOn || !v.leftOn || v.leftOn >= v.joinedOn, {
     path: ['leftOn'],
@@ -658,6 +668,11 @@ export interface EmployeeDto {
   officialOn: string | null;
   leftOn: string | null;
   openingLeave: number;
+  block: EmployeeBlock | null;
+  /** Whether HR confirmed each date; dates typed in from the old sheets are not (spec-luong.md 4.20). */
+  joinedOnConfirmed: boolean;
+  officialOnConfirmed: boolean;
+  leftOnConfirmed: boolean;
   /** Something HR must act on after this save, such as days already paid after a last day. */
   warning?: string;
 }
@@ -754,6 +769,8 @@ export interface TimesheetDto {
   regions: TimesheetRegionDto[];
   holidays: TimesheetHolidayDto[];
   rows: TimesheetRowDto[];
+  /** After a reopen or a close, what Lương makes of it, in words without any figure (spec-luong.md 10.1). */
+  payrollNotice?: string;
 }
 
 /** The tab a line of the log came from. */

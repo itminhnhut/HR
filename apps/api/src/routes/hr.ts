@@ -18,9 +18,11 @@ import {
   updateMyProfile,
 } from '../services/hr-users.js';
 import { listMessageTemplates, resetMessageTemplate, saveMessageTemplate } from '../services/message-templates.js';
+import { payrollRightsOf } from '../services/payroll-rights.js';
 import { hrApplicationRoutes } from './hr-applications.js';
 import { hrJobRoutes } from './hr-jobs.js';
 import { hrNewsRoutes } from './hr-news.js';
+import { hrPayrollRoutes } from './hr-payroll.js';
 import { hrReviewRoutes } from './hr-reviews.js';
 import { hrSourceRoutes } from './hr-sources.js';
 import { hrTimesheetRoutes } from './hr-timesheet.js';
@@ -35,10 +37,13 @@ hrRoutes.post('/auth/login', async (c) => {
   return c.json<HrMe>(toHrMe(user));
 });
 
+/** Carries the payroll rights too (same rule as GET /payroll/access), so the web shows "Lương" only to those who have it. */
 hrRoutes.get('/me', async (c) => {
   const me = await currentHr(c);
   if (!me) throw new HttpError(401, 'Chưa đăng nhập.');
-  return c.json(me);
+  const { db, config, now } = c.get('deps');
+  const rights = await payrollRightsOf(db, me, config.payrollAdmins, now());
+  return c.json<HrMe>({ ...me, ...rights });
 });
 
 hrRoutes.post('/logout', (c) => {
@@ -54,6 +59,7 @@ signedIn.route('/news', hrNewsRoutes);
 signedIn.route('/reviews', hrReviewRoutes);
 signedIn.route('/sources', hrSourceRoutes);
 signedIn.route('/timesheet', hrTimesheetRoutes);
+signedIn.route('/payroll', hrPayrollRoutes);
 signedIn.get('/dashboard', async (c) => {
   const { db, now } = c.get('deps');
   const { from, to } = c.req.query();

@@ -8,7 +8,7 @@ import { ErrorState, LoadingStatus } from '../../ui/feedback';
 import { Icon, LogoMark } from '../../ui/icons';
 import { Logo } from '../../ui/Logo';
 import { IconTile } from './design/IconTile';
-import { HR_SECTIONS, isSectionActive, sectionOf, type HrSection } from './design/sections';
+import { isSectionActive, sectionOf, visibleSections, type HrSection } from './design/sections';
 import { TONE } from './design/tone';
 import { useAdminTheme } from './design/useAdminTheme';
 
@@ -98,7 +98,7 @@ function Brand() {
   );
 }
 
-function Sidebar({ email, newCount }: { email: string; newCount: number }) {
+function Sidebar({ email, newCount, sections }: { email: string; newCount: number; sections: readonly HrSection[] }) {
   return (
     <div className="hidden w-[248px] shrink-0 border-r border-line bg-white lg:block">
       <aside className="sticky top-0 flex h-dvh flex-col gap-6 overflow-y-auto px-3 py-5">
@@ -106,7 +106,7 @@ function Sidebar({ email, newCount }: { email: string; newCount: number }) {
           <Brand />
         </Link>
         <nav aria-label="Quản trị" className="flex flex-col gap-1">
-          {HR_SECTIONS.map((item) => (
+          {sections.map((item) => (
             <NavLink key={item.to} item={item} newCount={newCount} />
           ))}
         </nav>
@@ -119,7 +119,7 @@ function Sidebar({ email, newCount }: { email: string; newCount: number }) {
   );
 }
 
-function TopBar({ email, newCount }: { email: string; newCount: number }) {
+function TopBar({ email, newCount, sections }: { email: string; newCount: number; sections: readonly HrSection[] }) {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const section = sectionOf(pathname);
@@ -157,7 +157,7 @@ function TopBar({ email, newCount }: { email: string; newCount: number }) {
               <Icon name="x" size={18} />
             </button>
           </div>
-          {HR_SECTIONS.map((item) => (
+          {sections.map((item) => (
             <NavLink key={item.to} item={item} newCount={newCount} onNavigate={close} />
           ))}
           <div className="mt-auto flex flex-col gap-1 border-t border-line pt-2">
@@ -171,14 +171,15 @@ function TopBar({ email, newCount }: { email: string; newCount: number }) {
 }
 
 /** Signed-in shell. Only rendered once useHrMe confirmed a session. */
-function Shell({ email }: { email: string }) {
+function Shell({ email, canPayroll }: { email: string; canPayroll: boolean }) {
   const jobs = useHrJobs();
   const newCount = jobs.data?.newApplications ?? 0;
   // Master-detail: from 1024px this page is exactly the window and nothing outside its panes can scroll.
   const isWindowSized = !!useMatch('/hr/ho-so');
   const { pathname } = useLocation();
-  // 31 cột ngày cần cả màn hình: trang này có thanh logo và đường dẫn riêng thay cho menu.
-  if (pathname.startsWith('/hr/cham-cong')) {
+  const sections = visibleSections(canPayroll);
+  // 31 cột ngày, hay hơn 50 cột lương, cần cả màn hình: các trang này có thanh logo và đường dẫn riêng thay cho menu.
+  if (pathname.startsWith('/hr/cham-cong') || pathname.startsWith('/hr/luong')) {
     return (
       <div data-clarity-mask="true" className="min-h-dvh bg-mist text-navy">
         <SkipLink />
@@ -196,8 +197,8 @@ function Shell({ email }: { email: string }) {
       className={`flex min-h-dvh flex-col bg-mist text-navy lg:flex-row ${isWindowSized ? 'relative lg:h-dvh lg:overflow-hidden' : ''}`}
     >
       <SkipLink />
-      <Sidebar email={email} newCount={newCount} />
-      <TopBar email={email} newCount={newCount} />
+      <Sidebar email={email} newCount={newCount} sections={sections} />
+      <TopBar email={email} newCount={newCount} sections={sections} />
       <main
         id="hr-noi-dung"
         className={`flex min-w-0 flex-1 flex-col px-4 pb-10 pt-6 sm:px-6 ${isWindowSized ? 'relative gap-2 lg:h-dvh lg:overflow-hidden lg:p-4' : 'gap-6 lg:p-10'}`}
@@ -222,7 +223,7 @@ export function HrLayout() {
   if (me.isPending) return <LoadingStatus />;
   if (me.isError) return <ErrorState onRetry={() => me.refetch()} />;
   if (!me.data) return <Navigate to="/hr/dang-nhap" replace />;
-  return <Shell email={me.data.email} />;
+  return <Shell email={me.data.email} canPayroll={me.data.canPayroll === true} />;
 }
 
 export default HrLayout;

@@ -70,8 +70,36 @@ import { ApiError, type Api, type CvInput } from './types';
  *   POST   /hr/timesheet/absences/:id/files  (multipart "file", one a request) → AbsenceFileDto[]   400 { code } bad file, 409 too_many_files
  *   GET    /hr/timesheet/absence-files/:id   → the file (inline, private, no-store)
  *   DELETE /hr/timesheet/absence-files/:id   → AbsenceFileDto[]
+ *   GET    /hr/payroll/months/:YYYY-MM → PayrollMonthDto   403 no payroll right (no numbers), 404 { error: valid range }
+ *   POST   /hr/payroll/months/:YYYY-MM/approve { acknowledgedRed } → PayrollMonthDto   403 no approve right, 409 not a draft, 422 red not acknowledged
+ *   POST   /hr/payroll/months/:YYYY-MM/reopen  { reason } → PayrollMonthDto   403 no approve right, 409 paid / not the latest approved, 422 { fieldErrors.reason }
+ *   POST   /hr/payroll/months/:YYYY-MM/paid    { paidOn, note? } → PayrollMonthDto   409 not approved, 422 { fieldErrors.paidOn }
+ *   PUT    /hr/payroll/months/:YYYY-MM/lines/:employeeId/inputs  partial inputs → { inputs, line }   409 payroll_month_locked, 422 { fieldErrors }
+ *   GET    /hr/payroll/profiles  → PayrollProfileListDto  |  GET /hr/payroll/profiles/:id → PayrollProfileDto  |  DELETE → { ok }
+ *   GET    /hr/payroll/profiles/:id/prefill → PayrollProfilePrefillDto
+ *   POST   /hr/payroll/profiles/:id/versions  |  PUT …/versions/:vid  PayrollProfileVersionInput → PayrollProfileVersionSavedDto   422 { fieldErrors }
+ *   DELETE /hr/payroll/profiles/:id/versions/:vid → { ok }
+ *   POST   /hr/payroll/profiles/:id/(dependants|commitments|recurring)  |  PUT …/:fid  |  DELETE …/:fid   422 { fieldErrors }
+ *   PUT    /hr/payroll/profiles/:id/opening/:year  PayrollOpeningInput → PayrollOpeningDto  |  DELETE → { ok }
+ *   POST   /hr/payroll/profiles/:id/bank  PayrollBankInput → PayrollBankAccountDto (last 4 only)  |  DELETE …/bank/:bid
+ *   POST   /hr/payroll/profiles/:id/bank/:bid/reveal → { accountNumber }   logged
+ *   GET    /hr/payroll/first-month-checklist → PayrollChecklistDto  |  PUT /hr/payroll/first-month-checks { item, employeeId, confirmed }
+ *   GET    /hr/payroll/settings?key=&nguoi= → PayrollSettingDto[]  |  GET /hr/payroll/settings/month?thang=YYYY-MM&nguoi= → PayrollSettingsMonthDto
+ *   POST   /hr/payroll/settings  PayrollSettingInput → PayrollSettingSavedDto   422 { fieldErrors }, 409 same date
+ *   PUT    /hr/payroll/settings/:id  |  DELETE /hr/payroll/settings/:id   409 used by an approved month
+ *   POST   /hr/payroll/settings/:id/correct { value, source } → PayrollSettingSavedDto   "Sửa lỗi"
  */
 const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+const profilePath = (employeeId: string, rest = '') => `/hr/payroll/profiles/${encodeURIComponent(employeeId)}${rest}`;
+const send = (method: 'POST' | 'PUT', input: unknown): RequestInit => ({ method, body: JSON.stringify(input) });
+const saveTo = (employeeId: string, path: string, id: string | null, input: unknown) =>
+  request<never>(profilePath(employeeId, id ? `/${path}/${encodeURIComponent(id)}` : `/${path}`), send(id ? 'PUT' : 'POST', input));
+const settingPath = (id = '', rest = '') => `/hr/payroll/settings${id ? `/${encodeURIComponent(id)}` : ''}${rest}`;
+const settingQuery = (pairs: Record<string, string | undefined>) => {
+  const text = new URLSearchParams(Object.entries(pairs).filter((e): e is [string, string] => !!e[1])).toString();
+  return text ? `?${text}` : '';
+};
+const payrollMonthPath = (year: number, month: number) => `/hr/payroll/months/${year}-${String(month).padStart(2, '0')}`;
 
 async function request<T>(path: string, init: RequestInit = {}, allow401 = false): Promise<T> {
   const isForm = init.body instanceof FormData;
@@ -270,6 +298,40 @@ export const httpApi: Api = {
     request(`/hr/applications/${encodeURIComponent(id)}/cv`, { method: 'PUT', body: cvForm(cv) }),
   hrTimesheet: (year, month) => request(`/hr/timesheet/periods/${year}/${month}`),
   hrTimesheetYear: (year) => request(`/hr/timesheet/years/${year}`),
+  hrPayrollLog: (q) => {
+    const asked = { tu: String(q.offset), nhom: q.area, ky: q.month, ma: q.personCode, ai: q.actor, loai: q.isApprovalOnly ? 'duyet' : undefined, tim: q.search };
+    const query = new URLSearchParams(Object.entries(asked).flatMap(([name, value]) => (value ? [[name, value]] : [])));
+    return request(`/hr/payroll/log?${query}`);
+  },
+  hrPayrollMonth: (year, month) => request(payrollMonthPath(year, month)),
+  hrPayrollApprove: (year, month, input) => request(`${payrollMonthPath(year, month)}/approve`, { method: 'POST', body: JSON.stringify(input) }),
+  hrPayrollReopen: (year, month, input) => request(`${payrollMonthPath(year, month)}/reopen`, { method: 'POST', body: JSON.stringify(input) }),
+  hrPayrollMarkPaid: (year, month, input) => request(`${payrollMonthPath(year, month)}/paid`, { method: 'POST', body: JSON.stringify(input) }),
+  hrPayrollSaveInputs: (monthKey, employeeId, input) =>
+    request(`/hr/payroll/months/${encodeURIComponent(monthKey)}/lines/${encodeURIComponent(employeeId)}/inputs`, send('PUT', input)),
+  hrPayrollProfiles: () => request('/hr/payroll/profiles'),
+  hrPayrollProfile: (employeeId) => request(profilePath(employeeId)),
+  hrPayrollProfilePrefill: (employeeId) => request(profilePath(employeeId, '/prefill')),
+  hrPayrollDeleteProfile: (employeeId) => request(profilePath(employeeId), { method: 'DELETE' }),
+  hrPayrollSaveLevel: (employeeId, id, input) => saveTo(employeeId, 'versions', id, input),
+  hrPayrollDeleteLevel: (employeeId, id) => request(profilePath(employeeId, `/versions/${encodeURIComponent(id)}`), { method: 'DELETE' }),
+  hrPayrollSaveDependant: (employeeId, id, input) => saveTo(employeeId, 'dependants', id, input),
+  hrPayrollSaveCommitment: (employeeId, id, input) => saveTo(employeeId, 'commitments', id, input),
+  hrPayrollSaveRecurring: (employeeId, id, input) => saveTo(employeeId, 'recurring', id, input),
+  hrPayrollDeleteFact: (employeeId, kind, id) => request(profilePath(employeeId, `/${kind}/${encodeURIComponent(id)}`), { method: 'DELETE' }),
+  hrPayrollSaveOpening: (employeeId, taxYear, input) => request(profilePath(employeeId, `/opening/${taxYear}`), send('PUT', input)),
+  hrPayrollDeleteOpening: (employeeId, taxYear) => request(profilePath(employeeId, `/opening/${taxYear}`), { method: 'DELETE' }),
+  hrPayrollAddBank: (employeeId, input) => request(profilePath(employeeId, '/bank'), send('POST', input)),
+  hrPayrollDeleteBank: (employeeId, id) => request(profilePath(employeeId, `/bank/${encodeURIComponent(id)}`), { method: 'DELETE' }),
+  hrPayrollRevealBank: (employeeId, id) => request(profilePath(employeeId, `/bank/${encodeURIComponent(id)}/reveal`), { method: 'POST' }),
+  hrPayrollChecklist: () => request('/hr/payroll/first-month-checklist'),
+  hrPayrollConfirmCheck: (input) => request('/hr/payroll/first-month-checks', send('PUT', input)),
+  hrPayrollSettings: (filter = {}) => request(`${settingPath()}${settingQuery({ key: filter.key, nguoi: filter.employeeId })}`),
+  hrPayrollSettingsMonth: (month, employeeId) => request(`${settingPath('month')}${settingQuery({ thang: month, nguoi: employeeId })}`),
+  hrPayrollAddSetting: (input) => request(settingPath(), send('POST', input)),
+  hrPayrollEditSetting: (id, input) => request(settingPath(id), send('PUT', input)),
+  hrPayrollDeleteSetting: (id) => request(settingPath(id), { method: 'DELETE' }),
+  hrPayrollCorrectSetting: (id, input) => request(settingPath(id, '/correct'), send('POST', input)),
   hrSaveHolidayRange: (input) => request('/hr/timesheet/holidays/range', { method: 'POST', body: JSON.stringify(input) }),
   hrDeleteHolidayRange: (from, to) => request(`/hr/timesheet/holidays/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`, { method: 'DELETE' }),
   hrAllAbsences: (year) => request(`/hr/timesheet/absences?year=${year}`),

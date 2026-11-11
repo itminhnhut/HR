@@ -38,6 +38,7 @@ import {
   updateRegion,
 } from '../services/timesheet-people.js';
 import { readLog } from '../services/timesheet-log.js';
+import { listClosings } from '../services/timesheet-closings.js';
 import { addDepartment, addStaffKind, listDepartments, removeDepartment, removeStaffKind, renameDepartment, updateStaffKind } from '../services/timesheet-config.js';
 import { addAbsenceKind, addApprover, listApprovers, removeApprover, listAbsenceKinds, listAbsences, listAbsencesOfYear, leaveBalanceFor, registerAbsence, removeAbsence, removeAbsenceKind, removeSheetLeave, updateAbsence, updateAbsenceKind, withHolidaysApplied, setNeedsPaper } from '../services/timesheet-absences.js';
 
@@ -254,3 +255,5 @@ hrTimesheetRoutes.post('/:id/reopen', async (c) => {
 });
 hrTimesheetRoutes.get('/log', async (c) => c.json(await readLog(c.get('deps').db, c.req.query())));
 hrTimesheetRoutes.get('/:id/log', async (c) => c.json(await periodLog(c.get('deps').db, c.req.param('id'))));
+/** Every close of the period, kept as it was (spec-luong.md 10.1). */
+hrTimesheetRoutes.get('/:id/closings', async (c) => c.json(await listClosings(c.get('deps').db, c.req.param('id'))));

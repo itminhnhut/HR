@@ -1,3 +1,4 @@
+import type { PayrollKey } from './lib/payroll-crypto.js';
 import type { Db } from './db/index.js';
 import type { CvStore } from './lib/cv-store.js';
 import type { PaperStore } from './lib/paper-store.js';
@@ -18,6 +19,13 @@ export interface AppConfig {
   secureCookies: boolean;
   /** IndexNow key (production only); null turns the pings and the /<key>.txt file off. */
   indexNowKey: string | null;
+  /**
+   * PAYROLL_ADMINS: sign-in emails (lowercase) given both payroll rights while nobody has any payroll right.
+   * Ignored once someone has it (spec-luong.md 10.2).
+   */
+  payrollAdmins: readonly string[];
+  /** PAYROLL_KEY: seals bank account numbers (spec-luong.md 10.2). Null: saving an account answers 503. */
+  payrollKey: PayrollKey | null;
 }
 
 /**

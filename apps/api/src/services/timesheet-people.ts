@@ -167,7 +167,19 @@ const toEmployee = (e: typeof employees.$inferSelect): EmployeeDto => ({
   officialOn: e.officialOn,
   leftOn: e.leftOn,
   openingLeave: e.openingLeave,
+  block: e.block,
+  joinedOnConfirmed: e.joinedOnConfirmed,
+  officialOnConfirmed: e.officialOnConfirmed,
+  leftOnConfirmed: e.leftOnConfirmed,
 });
+
+/** A confirmed date stays confirmed while it stays; a new date is confirmed only by the save that says so (spec-luong.md 4.20). */
+const confirmedDates = (current: typeof employees.$inferSelect, input: Pick<typeof employees.$inferSelect, 'joinedOn' | 'officialOn' | 'leftOn'> & { joinedOnConfirmed?: boolean; officialOnConfirmed?: boolean; leftOnConfirmed?: boolean }) => ({
+  joinedOnConfirmed: input.joinedOnConfirmed ?? (current.joinedOn === input.joinedOn && current.joinedOnConfirmed),
+  officialOnConfirmed: input.officialOnConfirmed ?? (current.officialOn === input.officialOn && current.officialOnConfirmed),
+  leftOnConfirmed: input.leftOnConfirmed ?? (current.leftOn === input.leftOn && current.leftOnConfirmed),
+});
+const yesNo = (confirmed: boolean) => (confirmed ? 'Có' : 'Chưa');
 
 export async function listEmployees(db: Db): Promise<EmployeeDto[]> {
   const rows = await db.select().from(employees).orderBy(asc(employees.code));
@@ -227,10 +239,14 @@ async function employeeChanges(db: Db, before: typeof employees.$inferSelect, af
     ['Chức danh', before.title, after.title],
     ['Khu vực', regionName(before.regionId), regionName(after.regionId)],
     ['Loại', kindName(before), kindName(after)],
+    ['Khối', before.block ?? '', after.block ?? ''],
     ['Ngày vào', fullDate(before.joinedOn), fullDate(after.joinedOn)],
     ['Ngày chính thức', fullDate(before.officialOn), fullDate(after.officialOn)],
     ['Ngày nghỉ việc', fullDate(before.leftOn), fullDate(after.leftOn)],
     ['Phép ban đầu', String(before.openingLeave), String(after.openingLeave)],
+    ['Xác nhận ngày vào', yesNo(before.joinedOnConfirmed), yesNo(after.joinedOnConfirmed)],
+    ['Xác nhận ngày chính thức', yesNo(before.officialOnConfirmed), yesNo(after.officialOnConfirmed)],
+    ['Xác nhận ngày nghỉ việc', yesNo(before.leftOnConfirmed), yesNo(after.leftOnConfirmed)],
   ]);
 }
 
@@ -287,7 +303,7 @@ export async function updateEmployee(db: Db, id: string, raw: unknown, hr: HrMe,
   const hasClosed = await db.query.timesheetSnapshots.findFirst({ where: eq(timesheetSnapshots.employeeId, id) });
   const startIgnored = !!current && !!hasClosed && current.openingLeave !== input.openingLeave;
   try {
-    const [row] = await db.update(employees).set({ ...input, updatedAt: now }).where(eq(employees.id, id)).returning();
+    const [row] = await db.update(employees).set({ ...input, ...(current ? confirmedDates(current, input) : {}), updatedAt: now }).where(eq(employees.id, id)).returning();
     if (!row) throw notFound('Không tìm thấy nhân viên.');
     await rememberDepartment(db, hr, row.department, now);
     const changes = current ? await employeeChanges(db, current, row) : '';

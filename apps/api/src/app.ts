@@ -1,5 +1,6 @@
 import { cvLinkRoutes } from './routes/cv-link.js';
 import type { HrMe } from '@careers/shared';
+import type { PayrollRights } from './services/payroll-rights.js';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { secureHeaders } from 'hono/secure-headers';
@@ -14,7 +15,7 @@ import { shareNewsRoutes } from './routes/share-news.js';
 import { shareRoutes } from './routes/share.js';
 
 export interface Env {
-  Variables: { deps: Deps; hr?: HrMe };
+  Variables: { deps: Deps; hr?: HrMe; payroll?: PayrollRights };
 }
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);

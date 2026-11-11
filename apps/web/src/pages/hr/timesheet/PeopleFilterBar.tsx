@@ -2,9 +2,10 @@ import type { EmployeeDto, StaffKindDto, TimesheetRegionDto } from '@careers/sha
 import { FilterX, Search } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Input } from '../../../vendor/shadcn-grid/components/ui/input';
-import { filtersOn, START_FILTERS, type PeopleFilters, type WorkStatus } from './peopleFilters';
+import { BLOCK_OPTIONS, MISSING_BLOCK } from './employeeBlock';
+import { filtersOn, NO_BLOCK, START_FILTERS, type PeopleFilters, type WorkStatus } from './peopleFilters';
 
-const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white px-2 text-sm font-normal';
+const SELECT = 'ts-field h-9 min-w-0 rounded-md border bg-white pl-3 text-sm font-normal';
 const STATUSES: { value: WorkStatus; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
   { value: 'working', label: 'Đang làm' },
@@ -35,7 +36,7 @@ export function PeopleSearch({ value, onChange }: { value: string; onChange: (qu
 const departmentsOf = (people: readonly EmployeeDto[]) =>
   [...new Set(people.map((p) => p.department).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi'));
 
-/** Region, department, kind and whether they still work here: how HR narrows the staff list. */
+/** Region, department, block, kind and whether they still work here: how HR narrows the staff list. */
 export function PeopleFilterBar({ people, regions, kinds, filters, shown, onChange }: {
   /** Everyone: the departments that can be picked. */
   people: readonly EmployeeDto[];
@@ -48,7 +49,7 @@ export function PeopleFilterBar({ people, regions, kinds, filters, shown, onChan
   const set = (patch: Partial<PeopleFilters>) => onChange({ ...filters, ...patch });
   const count = filtersOn(filters);
   return (
-    <div role="group" aria-label="Lọc danh sách nhân viên" className="grid grid-cols-2 items-end gap-3 rounded-lg border bg-slate-50 p-3 md:grid-cols-4 xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]">
+    <div role="group" aria-label="Lọc danh sách nhân viên" className="grid grid-cols-2 items-end gap-3 rounded-lg border bg-slate-50 p-3 md:grid-cols-5 xl:grid-cols-[repeat(5,minmax(0,1fr))_auto]">
       <Pick label="Khu vực" value={filters.regionId} onChange={(regionId) => set({ regionId })}>
         <option value="">Tất cả</option>
         {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
@@ -56,6 +57,11 @@ export function PeopleFilterBar({ people, regions, kinds, filters, shown, onChan
       <Pick label="Bộ phận" value={filters.department} onChange={(department) => set({ department })}>
         <option value="">Tất cả</option>
         {departmentsOf(people).map((d) => <option key={d} value={d}>{d}</option>)}
+      </Pick>
+      <Pick label="Khối" value={filters.block} onChange={(block) => set({ block })}>
+        <option value="">Tất cả</option>
+        {BLOCK_OPTIONS.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
+        <option value={NO_BLOCK}>{MISSING_BLOCK}</option>
       </Pick>
       <Pick label="Loại NV" value={filters.staffKindId} onChange={(staffKindId) => set({ staffKindId })}>
         <option value="">Tất cả</option>

@@ -1,0 +1,21 @@
+/** The payroll engine (spec-luong.md §5, §15 steps 1–9): pure functions, no database. */
+export { moneyCell, rat, roundDong, toNumber, type Rational, type RoundingMode } from './rational.js';
+export * from './setting-core.js';
+export * from './defaults-law.js';
+export * from './defaults-company.js';
+export { applicableRow, resolveSetting } from './resolve.js';
+export { PAYROLL_SETTINGS, settingFor, type SettingKey, type SettingValue } from './settings.js';
+export * from './components.js';
+export * from './params.js';
+export * from './config.js';
+export * from './income.js';
+export * from './inputs.js';
+export * from './insurance.js';
+export * from './tax.js';
+export * from './line.js';
+export * from './presets.js';
+export * from './segments.js';
+export * from './review.js';
+export * from './prefill.js';
+export * from './order.js';
+export * from './explain.js';

@@ -227,7 +227,7 @@ export async function buildTimesheetBook(months: readonly ExportArgs[], logo: Ar
 
 export const buildTimesheetWorkbook = (args: ExportArgs, logo: ArrayBuffer) => buildTimesheetBook([args], logo);
 
-async function saveBook(book: Workbook, fileName: string): Promise<void> {
+export async function saveBook(book: Workbook, fileName: string): Promise<void> {
   const buffer = await book.xlsx.writeBuffer();
   const url = URL.createObjectURL(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
   const link = document.createElement('a');
@@ -237,7 +237,7 @@ async function saveBook(book: Workbook, fileName: string): Promise<void> {
   URL.revokeObjectURL(url);
 }
 
-const logoBytes = async () => (await fetch(logoUrl)).arrayBuffer();
+export const logoBytes = async () => (await fetch(logoUrl)).arrayBuffer();
 
 export async function exportTimesheet(args: ExportArgs): Promise<void> {
   const { isFreeRange, year, month, from, to } = args;
