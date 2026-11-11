@@ -1,4 +1,5 @@
-import { payrollKeyFrom } from './lib/payroll-crypto.js';
+import { PAYROLL_OPEN } from './services/payroll-rights.js';
+import { payrollKeyFrom, payrollKeyFromSecret } from './lib/payroll-crypto.js';
 import { createApp } from './app.js';
 import { createNeonDb, type Db } from './db/index.js';
 import { createGaRealtimeReader, gaRealtimeConfig, type RealtimeReader } from './lib/ga-realtime.js';
@@ -79,6 +80,12 @@ export const payrollAdmins = (value: string | undefined): string[] =>
     .map((email) => email.trim().toLowerCase())
     .filter((email) => email.length > 0);
 
+/** No email named: Lương is open to every HR account (PAYROLL_OPEN). */
+export const payrollAdminsOrOpen = (value: string | undefined): string[] => {
+  const named = payrollAdmins(value);
+  return named.length > 0 ? named : [PAYROLL_OPEN];
+};
+
 /** "Đang truy cập": off until the Google Analytics settings exist. */
 function realtimeReader(now: () => Date): RealtimeReader {
   const config = gaRealtimeConfig(process.env);
@@ -107,8 +114,10 @@ export function createProductionApp(local: LocalOverrides = {}) {
       sessionSecret: sessionSecret(),
       secureCookies: onVercel,
       indexNowKey: indexNowKey(isProduction),
-      payrollAdmins: payrollAdmins(process.env.PAYROLL_ADMINS),
-      payrollKey: payrollKeyFrom(process.env.PAYROLL_KEY, process.env.PAYROLL_KEY_VERSION),
+      payrollAdmins: payrollAdminsOrOpen(process.env.PAYROLL_ADMINS),
+      payrollKey:
+        payrollKeyFrom(process.env.PAYROLL_KEY, process.env.PAYROLL_KEY_VERSION) ??
+        payrollKeyFromSecret(sessionSecret()),
     },
     cvStore: useLocal.cvStore ?? vercelBlobCvStore,
     paperStore: useLocal.paperStore ?? vercelBlobPaperStore,
@@ -118,6 +127,10 @@ export function createProductionApp(local: LocalOverrides = {}) {
     now: () => new Date(),
     fetch: (url, init) => fetch(url, init),
     readRealtime: realtimeReader(() => new Date()),
-    mailer: mailerFromEnv(process.env, (url, init) => fetch(url, init), () => new Date()),
+    mailer: mailerFromEnv(
+      process.env,
+      (url, init) => fetch(url, init),
+      () => new Date(),
+    ),
   });
 }

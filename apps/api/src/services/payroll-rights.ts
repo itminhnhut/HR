@@ -58,10 +58,17 @@ async function bootstrapFromEnv(db: Db, admins: readonly string[], now: Date): P
   });
 }
 
+/**
+ * PAYROLL_ADMINS left unset: every HR account has both payroll rights and the rights screen decides nothing. The owner
+ * chose this while the company has no need to tell payroll users apart; naming emails in PAYROLL_ADMINS turns it off.
+ */
+export const PAYROLL_OPEN = '*';
+
 /** Read again on every request: a right taken away applies to the very next call. */
 export async function payrollRightsOf(db: Db, me: HrMe, admins: readonly string[], now: Date): Promise<PayrollRights> {
   const user = await db.query.hrUsers.findFirst({ where: eq(hrUsers.id, me.id) });
   if (!user) return { canPayroll: false, canApprovePayroll: false };
+  if (admins.includes(PAYROLL_OPEN)) return { canPayroll: true, canApprovePayroll: true };
   if (user.canPayroll || !admins.includes(user.email)) return rightsOf(user);
   await bootstrapFromEnv(db, admins, now);
   const fresh = await db.query.hrUsers.findFirst({ where: eq(hrUsers.id, me.id) });

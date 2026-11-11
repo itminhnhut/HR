@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
 import { hrUsers, payrollLog } from '../db/schema.js';
 import { writePayrollLog } from '../services/payroll-log.js';
+import { PAYROLL_OPEN } from '../services/payroll-rights.js';
 import { json, loginHr } from '../test/fixtures.js';
 import { createTestContext, HR_EMAIL, type TestContext } from '../test/harness.js';
 
@@ -436,5 +437,30 @@ describe('L-I10 the payroll log is only added to', () => {
 
     // Assert
     expect(writers).toEqual([]);
+  });
+});
+
+describe('Lương open to every HR account while PAYROLL_ADMINS names nobody', () => {
+  it('should give an HR account without any stored right both payroll rights', async () => {
+    // Arrange
+    t.deps.config.payrollAdmins = [PAYROLL_OPEN];
+    const hr = as(await loginHr(t));
+
+    // Act
+    const me = await json<HrMe>(await hr.call('GET', '/me'));
+    const access = await hr.call('GET', '/payroll/access');
+
+    // Assert
+    expect(me.canPayroll).toBe(true);
+    expect(me.canApprovePayroll).toBe(true);
+    expect(access.status).toBe(200);
+  });
+
+  it('should still ask for a sign-in first', async () => {
+    t.deps.config.payrollAdmins = [PAYROLL_OPEN];
+
+    const res = await t.send('GET', '/api/hr/payroll/access');
+
+    expect(res.status).toBe(401);
   });
 });
